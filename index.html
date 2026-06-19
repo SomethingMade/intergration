@@ -23,6 +23,23 @@
         .tab-active { color: #000; font-weight: 600; border-bottom: 3px solid #000; }
         .dark .tab-active { color: #fff; border-bottom: 3px solid #fff; }
         video { width: 100%; height: 100%; object-fit: cover; }
+        
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            width: 18px;
+            height: 18px;
+            animation: spin 0.8s linear infinite;
+        }
+        .dark .spinner {
+            border-top-color: #000;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .comment-sheet {
+            animation: slideUp 0.3s ease forwards;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-zinc-950 dark:text-white">
@@ -64,7 +81,6 @@
                     </div>
 
                     <div class="flex items-center gap-x-4">
-                        <!-- Dark Mode -->
                         <button onclick="toggleDarkMode()" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800">
                             <i class="fa-solid fa-moon text-lg" id="themeIcon"></i>
                         </button>
@@ -98,7 +114,6 @@
 
             <!-- Feed -->
             <div class="flex-1 max-w-[480px] mx-auto lg:mx-0">
-                <!-- Mobile Tabs -->
                 <div class="flex border-b dark:border-zinc-800 bg-white dark:bg-zinc-900 lg:hidden">
                     <div onclick="switchTab('foryou')" class="tab flex-1 text-center py-3 cursor-pointer tab-active" data-tab="foryou">For You</div>
                     <div onclick="switchTab('following')" class="tab flex-1 text-center py-3 cursor-pointer text-gray-500 dark:text-gray-400" data-tab="following">Following</div>
@@ -145,12 +160,8 @@
                     <div><div class="font-semibold" id="profileLikes"></div><div class="text-sm text-gray-500">Likes</div></div>
                 </div>
 
-                <!-- Action Buttons -->
-                <div id="profileActions" class="mt-6">
-                    <!-- Dynamically populated by JS -->
-                </div>
+                <div id="profileActions" class="mt-6"></div>
 
-                <!-- Edit Profile Form -->
                 <div id="editProfileForm" class="hidden mt-4 space-y-3">
                     <input id="editUsername" type="text" placeholder="Username" class="w-full px-4 py-2 border dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800 text-sm">
                     <textarea id="editBio" placeholder="Bio" class="w-full px-4 py-2 border dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800 text-sm" rows="2"></textarea>
@@ -172,21 +183,57 @@
             </div>
 
             <div class="space-y-4">
-                <div>
-                    <label class="text-sm text-gray-500">Video</label>
-                    <input type="file" id="videoFile" accept="video/*" class="w-full mt-1 text-sm">
+                <!-- Custom Upload Area -->
+                <div id="uploadArea" onclick="document.getElementById('videoFile').click()" 
+                     class="border-2 border-dashed border-gray-300 dark:border-zinc-700 rounded-2xl p-8 text-center cursor-pointer hover:border-gray-400 transition-colors">
+                    <i class="fa-solid fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                    <p class="text-sm font-medium">Click to select video</p>
+                    <p class="text-xs text-gray-500 mt-1">MP4 or MOV up to 50MB</p>
+                    <input type="file" id="videoFile" accept="video/*" class="hidden" onchange="handleFileSelect()">
                 </div>
+
+                <div id="selectedFile" class="hidden flex items-center gap-2 bg-gray-100 dark:bg-zinc-800 p-3 rounded-xl">
+                    <i class="fa-solid fa-video text-gray-500"></i>
+                    <span id="fileName" class="text-sm flex-1 truncate"></span>
+                    <button onclick="removeSelectedFile()" class="text-red-500 text-sm">×</button>
+                </div>
+
                 <div>
                     <label class="text-sm text-gray-500">Description</label>
                     <input id="videoDescription" type="text" class="w-full px-4 py-2 border dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800" placeholder="What's this video about?">
                 </div>
-                <button onclick="uploadVideo()" class="w-full py-3 bg-black dark:bg-white dark:text-black text-white rounded-2xl font-medium">Upload to Echo</button>
+
+                <button id="uploadBtn" onclick="uploadVideo()" 
+                        class="w-full py-3 bg-black dark:bg-white dark:text-black text-white rounded-2xl font-medium flex items-center justify-center gap-2">
+                    <span id="uploadBtnText">Upload to Echo</span>
+                    <div id="uploadSpinner" class="spinner hidden"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comments Sheet -->
+    <div id="commentsSheet" onclick="closeCommentsSheet()" class="hidden fixed inset-0 bg-black/50 z-[70] flex items-end lg:items-center justify-center">
+        <div onclick="event.stopImmediatePropagation()" class="bg-white dark:bg-zinc-900 w-full lg:w-[420px] lg:rounded-2xl rounded-t-3xl max-h-[80vh] flex flex-col">
+            <div class="p-4 border-b dark:border-zinc-800 flex items-center justify-between">
+                <div class="font-semibold">Comments</div>
+                <button onclick="closeCommentsSheet()" class="text-2xl text-gray-400">×</button>
+            </div>
+
+            <!-- Comments List -->
+            <div id="commentsList" class="flex-1 overflow-y-auto p-4 space-y-4 min-h-[200px]"></div>
+
+            <!-- Comment Input -->
+            <div class="p-4 border-t dark:border-zinc-800 flex gap-2">
+                <input id="commentInput" type="text" placeholder="Add a comment..." 
+                       class="flex-1 px-4 py-2 bg-gray-100 dark:bg-zinc-800 rounded-full text-sm focus:outline-none">
+                <button onclick="postComment()" 
+                        class="px-5 bg-black dark:bg-white dark:text-black text-white rounded-full text-sm font-medium">Send</button>
             </div>
         </div>
     </div>
 
     <script>
-        // ==================== CONFIG ====================
         const firebaseConfig = {
             apiKey: "AIzaSyBQSPwpVbGrdCuOoyitAeWQHIeipj2MgIY",
             authDomain: "newstart-64c43.firebaseapp.com",
@@ -208,6 +255,8 @@
         let currentFollowing = {};
         let lastLoadedKey = null;
         let isLoading = false;
+        let currentVideoId = null;
+        let videoObserver = null;
 
         // ==================== DARK MODE ====================
         function initDarkMode() {
@@ -224,10 +273,12 @@
 
         function updateThemeIcon() {
             const icon = document.getElementById('themeIcon');
-            icon.className = document.documentElement.classList.contains('dark') ? 'fa-solid fa-sun text-lg' : 'fa-solid fa-moon text-lg';
+            icon.className = document.documentElement.classList.contains('dark') 
+                ? 'fa-solid fa-sun text-lg' 
+                : 'fa-solid fa-moon text-lg';
         }
 
-        // ==================== CLOUDINARY UPLOAD ====================
+        // ==================== CLOUDINARY ====================
         async function uploadToCloudinary(file, resourceType = 'video') {
             const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`;
             const formData = new FormData();
@@ -275,15 +326,9 @@
         async function followUser(targetUid) {
             if (!currentUser || currentUser.uid === targetUid) return;
 
-            const followRef = database.ref(`follows/${currentUser.uid}/${targetUid}`);
-            const userRef = database.ref(`users/${targetUid}`);
-            const currentUserRef = database.ref(`users/${currentUser.uid}`);
-
-            await followRef.set(true);
-
-            // Update counts
-            await userRef.child('followersCount').transaction(count => (count || 0) + 1);
-            await currentUserRef.child('followingCount').transaction(count => (count || 0) + 1);
+            await database.ref(`follows/${currentUser.uid}/${targetUid}`).set(true);
+            await database.ref(`users/${targetUid}/followersCount`).transaction(c => (c || 0) + 1);
+            await database.ref(`users/${currentUser.uid}/followingCount`).transaction(c => (c || 0) + 1);
 
             currentFollowing[targetUid] = true;
             refreshProfileModal(targetUid);
@@ -292,14 +337,9 @@
         async function unfollowUser(targetUid) {
             if (!currentUser) return;
 
-            const followRef = database.ref(`follows/${currentUser.uid}/${targetUid}`);
-            const userRef = database.ref(`users/${targetUid}`);
-            const currentUserRef = database.ref(`users/${currentUser.uid}`);
-
-            await followRef.remove();
-
-            await userRef.child('followersCount').transaction(count => Math.max((count || 0) - 1, 0));
-            await currentUserRef.child('followingCount').transaction(count => Math.max((count || 0) - 1, 0));
+            await database.ref(`follows/${currentUser.uid}/${targetUid}`).remove();
+            await database.ref(`users/${targetUid}/followersCount`).transaction(c => Math.max((c || 0) - 1, 0));
+            await database.ref(`users/${currentUser.uid}/followingCount`).transaction(c => Math.max((c || 0) - 1, 0));
 
             delete currentFollowing[targetUid];
             refreshProfileModal(targetUid);
@@ -311,6 +351,113 @@
             currentFollowing = snapshot.val() || {};
         }
 
+        // ==================== AUTO PLAY VIDEOS IN VIEWPORT ====================
+        function setupVideoObserver() {
+            if (videoObserver) videoObserver.disconnect();
+
+            videoObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const video = entry.target;
+                    if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+                        video.play().catch(() => {});
+                        video.muted = false;
+                    } else {
+                        video.pause();
+                    }
+                });
+            }, {
+                threshold: 0.5
+            });
+        }
+
+        function observeVideos() {
+            if (!videoObserver) setupVideoObserver();
+
+            const videos = document.querySelectorAll('.feed video');
+            videos.forEach(video => {
+                videoObserver.observe(video);
+            });
+        }
+
+        // ==================== COMMENTS SHEET ====================
+        let currentCommentVideoId = null;
+
+        async function showCommentsSheet(videoId) {
+            currentCommentVideoId = videoId;
+            const sheet = document.getElementById('commentsSheet');
+            const list = document.getElementById('commentsList');
+            list.innerHTML = `<div class="flex justify-center p-8"><div class="spinner"></div></div>`;
+
+            sheet.classList.remove('hidden');
+            sheet.classList.add('flex');
+
+            // Fetch comments
+            const commentsRef = database.ref(`videos/${videoId}/comments`);
+            const snapshot = await commentsRef.once('value');
+
+            list.innerHTML = '';
+
+            if (!snapshot.exists()) {
+                list.innerHTML = `<div class="text-center text-gray-500 py-6">No comments yet. Be the first!</div>`;
+                return;
+            }
+
+            const comments = [];
+            snapshot.forEach(child => {
+                comments.push({ id: child.key, ...child.val() });
+            });
+
+            comments.sort((a, b) => b.timestamp - a.timestamp);
+
+            comments.forEach(comment => {
+                const div = document.createElement('div');
+                div.className = 'flex gap-3';
+                div.innerHTML = `
+                    <img src="${comment.avatar || 'https://i.pravatar.cc/32'}" class="w-8 h-8 rounded-full object-cover">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-semibold text-sm">${comment.username}</span>
+                            <span class="text-xs text-gray-400">${new Date(comment.timestamp).toLocaleTimeString()}</span>
+                        </div>
+                        <p class="text-sm">${comment.text}</p>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function closeCommentsSheet() {
+            const sheet = document.getElementById('commentsSheet');
+            sheet.classList.remove('flex');
+            sheet.classList.add('hidden');
+            document.getElementById('commentInput').value = '';
+        }
+
+        async function postComment() {
+            const input = document.getElementById('commentInput');
+            const text = input.value.trim();
+            if (!text || !currentCommentVideoId || !currentUser) return;
+
+            const commentData = {
+                userId: currentUser.uid,
+                username: currentUser.username,
+                avatar: currentUser.avatar,
+                text: text,
+                timestamp: Date.now()
+            };
+
+            const commentsRef = database.ref(`videos/${currentCommentVideoId}/comments`);
+            await commentsRef.push(commentData);
+
+            // Update comment count
+            await database.ref(`videos/${currentCommentVideoId}/commentsCount`).transaction(c => (c || 0) + 1);
+
+            input.value = '';
+            
+            // Refresh comments list
+            showCommentsSheet(currentCommentVideoId);
+        }
+
         // ==================== PROFILE ====================
         async function openProfile(user) {
             if (!user) return;
@@ -320,7 +467,6 @@
             const snapshot = await userRef.once('value');
             const userData = snapshot.val() || user;
 
-            // Set basic info
             document.getElementById('profileAvatar').src = userData.avatar || 'https://i.pravatar.cc/100';
             document.getElementById('profileUsername').textContent = userData.username;
             document.getElementById('profileHandle').textContent = '@' + userData.username;
@@ -337,12 +483,11 @@
             const isOwnProfile = currentUser && currentUser.uid === user.uid;
 
             if (isOwnProfile) {
-                // Own profile - Edit button
                 actionsDiv.innerHTML = `
                     <button onclick="showEditProfileForm()" class="w-full py-2.5 bg-black dark:bg-white dark:text-black text-white rounded-full font-medium text-sm">Edit Profile</button>
+                    <button onclick="signOut()" class="mt-2 w-full py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-full font-medium text-sm">Sign Out</button>
                 `;
             } else {
-                // Other user's profile
                 const isFollowing = currentFollowing[user.uid];
                 actionsDiv.innerHTML = `
                     <button onclick="${isFollowing ? 'unfollowUser' : 'followUser'}('${user.uid}')" 
@@ -358,9 +503,7 @@
 
         function showEditProfileForm() {
             document.getElementById('profileActions').classList.add('hidden');
-            const form = document.getElementById('editProfileForm');
-            form.classList.remove('hidden');
-
+            document.getElementById('editProfileForm').classList.remove('hidden');
             document.getElementById('editUsername').value = document.getElementById('profileUsername').textContent;
             document.getElementById('editBio').value = document.getElementById('profileBio').textContent;
         }
@@ -376,12 +519,10 @@
                 bio: newBio
             });
 
-            // Update current user
             currentUser.username = newUsername;
             document.getElementById('navAvatar').src = currentUser.avatar;
 
             closeProfileModal();
-            // Reopen to refresh
             setTimeout(() => openProfile(currentUser), 300);
         }
 
@@ -392,6 +533,7 @@
 
         async function changeProfilePicture() {
             if (!currentUser) return;
+
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = 'image/*';
@@ -409,16 +551,19 @@
                     document.getElementById('navAvatar').src = newAvatar;
                     document.getElementById('profileAvatar').src = newAvatar;
                 } catch (err) {
-                    alert("Failed to upload image: " + err.message);
+                    alert("Failed to upload image");
                 }
             };
             input.click();
         }
 
         function refreshProfileModal(uid) {
-            if (currentUser && currentUser.uid === uid) {
-                openProfile(currentUser);
-            }
+            closeProfileModal();
+            setTimeout(() => {
+                if (currentUser && currentUser.uid === uid) {
+                    openProfile(currentUser);
+                }
+            }, 400);
         }
 
         function closeProfileModal() {
@@ -429,33 +574,47 @@
             document.getElementById('profileActions').classList.remove('hidden');
         }
 
-        // ==================== VIDEO UPLOAD ====================
-        function showUploadModal() {
-            document.getElementById('uploadModal').classList.remove('hidden');
-            document.getElementById('uploadModal').classList.add('flex');
-        }
+        // ==================== CUSTOM UPLOAD ====================
+        let selectedFile = null;
 
-        function hideUploadModal() {
-            const modal = document.getElementById('uploadModal');
-            modal.classList.remove('flex');
-            modal.classList.add('hidden');
-            document.getElementById('videoFile').value = '';
-            document.getElementById('videoDescription').value = '';
-        }
-
-        async function uploadVideo() {
+        function handleFileSelect() {
             const fileInput = document.getElementById('videoFile');
-            const description = document.getElementById('videoDescription').value.trim();
-            const file = fileInput.files[0];
+            const selectedDiv = document.getElementById('selectedFile');
+            const fileNameSpan = document.getElementById('fileName');
 
-            if (!file || !currentUser) {
+            if (fileInput.files.length > 0) {
+                selectedFile = fileInput.files[0];
+                fileNameSpan.textContent = selectedFile.name;
+                selectedDiv.classList.remove('hidden');
+            }
+        }
+
+        function removeSelectedFile() {
+            selectedFile = null;
+            document.getElementById('videoFile').value = '';
+            document.getElementById('selectedFile').classList.add('hidden');
+        }
+
+        // ==================== UPLOAD WITH SPINNER ====================
+        async function uploadVideo() {
+            const uploadBtn = document.getElementById('uploadBtn');
+            const btnText = document.getElementById('uploadBtnText');
+            const spinner = document.getElementById('uploadSpinner');
+            const description = document.getElementById('videoDescription').value.trim();
+
+            if (!selectedFile || !currentUser) {
                 alert("Please select a video file");
                 return;
             }
 
-            const uploadBtn = event.currentTarget;
+            // Disable button and show spinner
+            uploadBtn.disabled = true;
+            uploadBtn.classList.add('opacity-70');
+            btnText.classList.add('hidden');
+            spinner.classList.remove('hidden');
+
             try {
-                const result = await uploadToCloudinary(file, 'video');
+                const result = await uploadToCloudinary(selectedFile, 'video');
                 const videoUrl = result.secure_url;
 
                 const newVideoRef = database.ref('videos').push();
@@ -471,11 +630,35 @@
                 });
 
                 hideUploadModal();
+                selectedFile = null;
                 alert("Video uploaded successfully!");
-                switchTab('foryou'); // refresh feed
+                switchTab('foryou');
+
             } catch (error) {
                 alert("Upload failed: " + error.message);
+            } finally {
+                // Reset button state
+                uploadBtn.disabled = false;
+                uploadBtn.classList.remove('opacity-70');
+                btnText.classList.remove('hidden');
+                spinner.classList.add('hidden');
             }
+        }
+
+        function showUploadModal() {
+            document.getElementById('uploadModal').classList.remove('hidden');
+            document.getElementById('uploadModal').classList.add('flex');
+            document.getElementById('selectedFile').classList.add('hidden');
+            document.getElementById('videoDescription').value = '';
+        }
+
+        function hideUploadModal() {
+            const modal = document.getElementById('uploadModal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            document.getElementById('videoFile').value = '';
+            document.getElementById('selectedFile').classList.add('hidden');
+            selectedFile = null;
         }
 
         // ==================== RENDER VIDEOS ====================
@@ -485,10 +668,7 @@
             div.innerHTML = `
                 <div class="w-full max-w-[480px] px-2">
                     <div class="relative bg-black rounded-3xl overflow-hidden shadow-sm video-container mx-auto">
-                        ${video.videoUrl ? 
-                            `<video src="${video.videoUrl}" class="w-full h-full object-cover" muted loop></video>` : 
-                            `<div class="w-full h-full flex items-center justify-center bg-zinc-800"><i class="fa-solid fa-play text-6xl text-white/60"></i></div>`
-                        }
+                        <video src="${video.videoUrl}" class="w-full h-full object-cover" muted></video>
                         
                         <div class="absolute bottom-0 left-0 right-0 p-4 video-overlay text-white">
                             <div>
@@ -509,23 +689,14 @@
                                 <span class="text-xs font-medium mt-0.5" id="likes-${video.id}">${formatCount(video.likes || 0)}</span>
                             </div>
 
-                            <div onclick="showComments('${video.id}')" class="flex flex-col items-center cursor-pointer">
+                            <div onclick="showCommentsSheet('${video.id}')" class="flex flex-col items-center cursor-pointer">
                                 <i class="fa-solid fa-comment-dots text-3xl"></i>
-                                <span class="text-xs font-medium mt-0.5">${video.commentsCount || 0}</span>
+                                <span class="text-xs font-medium mt-0.5" id="comments-${video.id}">${video.commentsCount || 0}</span>
                             </div>
                         </div>
                     </div>
                 </div>
             `;
-            
-            // Add video play/pause on click
-            const videoEl = div.querySelector('video');
-            if (videoEl) {
-                videoEl.addEventListener('click', () => {
-                    if (videoEl.paused) videoEl.play();
-                    else videoEl.pause();
-                });
-            }
             
             container.appendChild(div);
         }
@@ -554,10 +725,10 @@
             lastLoadedKey = null;
 
             let query = database.ref('videos').orderByKey().limitToLast(6);
-
             const snapshot = await query.once('value');
+
             if (!snapshot.exists()) {
-                container.innerHTML = `<div class="p-8 text-center text-gray-400">No videos yet. Be the first to upload!</div>`;
+                container.innerHTML = `<div class="p-8 text-center text-gray-400">No videos yet.</div>`;
                 return;
             }
 
@@ -566,17 +737,19 @@
                 videos.unshift({ id: child.key, ...child.val() });
             });
 
-            // Filter for Following tab
             if (tab === 'following') {
                 videos = videos.filter(v => currentFollowing[v.userId]);
                 if (videos.length === 0) {
-                    container.innerHTML = `<div class="p-8 text-center text-gray-400">Follow some creators to see their videos here.</div>`;
+                    container.innerHTML = `<div class="p-8 text-center text-gray-400">No videos from people you follow yet.</div>`;
                     return;
                 }
             }
 
             videos.forEach(video => renderVideo(video, container));
             if (videos.length > 0) lastLoadedKey = videos[0].id;
+
+            // Setup video autoplay
+            observeVideos();
         }
 
         async function loadMoreVideos(tab) {
@@ -585,8 +758,8 @@
 
             const container = document.getElementById(tab);
             const query = database.ref('videos').orderByKey().endBefore(lastLoadedKey).limitToLast(4);
-
             const snapshot = await query.once('value');
+
             if (!snapshot.exists()) {
                 isLoading = false;
                 return;
@@ -601,6 +774,8 @@
 
             videos.forEach(video => renderVideo(video, container));
             if (videos.length > 0) lastLoadedKey = videos[0].id;
+
+            observeVideos();
             isLoading = false;
         }
 
@@ -629,7 +804,9 @@
 
             document.querySelectorAll('.tab-item').forEach(item => {
                 item.classList.remove('bg-gray-100', 'dark:bg-zinc-800');
-                if (item.getAttribute('data-tab') === tab) item.classList.add('bg-gray-100', 'dark:bg-zinc-800');
+                if (item.getAttribute('data-tab') === tab) {
+                    item.classList.add('bg-gray-100', 'dark:bg-zinc-800');
+                }
             });
 
             loadVideos(tab);
@@ -643,13 +820,10 @@
             });
         }
 
-        function showComments(videoId) {
-            alert("Comments coming soon. Video ID: " + videoId);
-        }
-
-        // ==================== INIT ====================
+        // ==================== INITIALIZATION ====================
         function initApp() {
             initDarkMode();
+            setupVideoObserver();
 
             auth.onAuthStateChanged(async (user) => {
                 if (user) {
@@ -671,7 +845,6 @@
                     setupInfiniteScroll('following');
                     setupInfiniteScroll('discover');
 
-                    // Set default active tab
                     const defaultTab = document.querySelector('.tab-item[data-tab="foryou"]');
                     if (defaultTab) defaultTab.classList.add('bg-gray-100', 'dark:bg-zinc-800');
 
