@@ -9,9 +9,27 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600&display=swap');
         
+        /* App-wide user-select protections to prevent long-press highlighting/menus */
+        * {
+            -webkit-touch-callout: none; 
+            -webkit-user-select: none; 
+            user-select: none; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Re-enable selection ONLY for inputs */
+        input, textarea {
+            -webkit-user-select: auto;
+            user-select: auto;
+        }
+
+        /* Prevent long press saving on images, pass clicks to parent cards */
+        img {
+            pointer-events: none;
+        }
+
         body {
             font-family: 'Inter', system_ui, sans-serif;
-            -webkit-tap-highlight-color: transparent;
         }
         
         .mobile-container {
@@ -51,11 +69,11 @@
 <body class="bg-zinc-100 flex items-center justify-center min-h-screen">
     <div class="mobile-container w-full bg-white overflow-hidden flex flex-col" style="max-width: 420px; height: 100vh; max-height: 844px;">
         
-        <div id="main-header" class="bg-white sticky top-0 z-50 border-b">
+        <div id="main-header" class="bg-white sticky top-0 z-50 border-b border-zinc-100">
             <div class="px-4 pt-3 pb-2 flex items-center justify-between">
                 <div class="flex items-center gap-x-2">
                     <div>
-                        <div class="flex items-center gap-x-1.5 cursor-pointer">
+                        <div class="flex items-center gap-x-1.5 cursor-pointer active:opacity-70 transition-opacity">
                             <i class="fa-solid fa-location-dot text-[#0EA5E9]"></i>
                             <div>
                                 <p class="text-[10px] text-zinc-500 font-medium tracking-wide">DELIVERING TO</p>
@@ -69,13 +87,13 @@
                 </div>
                 
                 <div class="flex items-center gap-x-3">
-                    <div class="w-8 h-8 rounded-full overflow-hidden ring-2 ring-zinc-100">
+                    <div class="w-8 h-8 rounded-full overflow-hidden ring-2 ring-zinc-100 active:scale-95 transition-transform cursor-pointer">
                         <img src="https://i.pravatar.cc/32?img=32" alt="Profile" class="w-full h-full object-cover">
                     </div>
                 </div>
             </div>
 
-            <div class="px-4 pb-3 pt-1">
+            <div class="px-4 pb-3 pt-1 transition-all" id="header-search-bar">
                 <div class="relative w-full">
                     <input 
                         type="text" 
@@ -87,56 +105,56 @@
             </div>
         </div>
 
-        <div class="flex-1 overflow-y-auto pb-24 bg-white" id="main-content">
+        <div class="flex-1 overflow-y-auto pb-24 bg-zinc-50" id="main-content">
             
-            <div id="home-view">
+            <div id="home-view" class="bg-white">
                 
                 <div class="px-4 pt-3 pb-3 bg-white">
                     <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide" id="top-tabs">
                         <div onclick="filterByType('all')" 
-                             class="category-pill active px-5 py-1.5 text-sm font-medium border border-zinc-200 rounded-2xl flex items-center gap-x-2 whitespace-nowrap cursor-pointer" data-type="all">
+                             class="category-pill active px-5 py-1.5 text-sm font-medium border border-zinc-200 rounded-2xl flex items-center gap-x-2 whitespace-nowrap cursor-pointer active:scale-95" data-type="all">
                             <span>All</span>
                         </div>
                         <div onclick="filterByType('restaurant')" 
-                             class="category-pill px-5 py-1.5 text-sm font-medium border border-zinc-200 bg-white text-zinc-700 rounded-2xl flex items-center gap-x-2 whitespace-nowrap cursor-pointer" data-type="restaurant">
+                             class="category-pill px-5 py-1.5 text-sm font-medium border border-zinc-200 bg-white text-zinc-700 rounded-2xl flex items-center gap-x-2 whitespace-nowrap cursor-pointer active:scale-95" data-type="restaurant">
                             <i class="fa-solid fa-utensils"></i>
                             <span>Restaurants</span>
                         </div>
                         <div onclick="filterByType('shop')" 
-                             class="category-pill px-5 py-1.5 text-sm font-medium border border-zinc-200 bg-white text-zinc-700 rounded-2xl flex items-center gap-x-2 whitespace-nowrap cursor-pointer" data-type="shop">
+                             class="category-pill px-5 py-1.5 text-sm font-medium border border-zinc-200 bg-white text-zinc-700 rounded-2xl flex items-center gap-x-2 whitespace-nowrap cursor-pointer active:scale-95" data-type="shop">
                             <i class="fa-solid fa-store"></i>
                             <span>Shops</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="px-4 pb-4 border-b border-zinc-100">
+                <div class="px-4 pb-4 border-b border-zinc-100 bg-white">
                     <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-                        <div onclick="quickFilter('pizza')" class="flex flex-col items-center gap-y-1.5 cursor-pointer group flex-shrink-0 w-[60px]">
+                        <div onclick="quickFilter('pizza')" class="flex flex-col items-center gap-y-1.5 cursor-pointer active:scale-95 transition-transform group flex-shrink-0 w-[60px]">
                             <div class="w-14 h-14 bg-zinc-100 rounded-2xl flex items-center justify-center group-hover:bg-[#0EA5E9]/10 transition-colors">
                                 <i class="fa-solid fa-pizza-slice text-xl text-zinc-600 group-hover:text-[#0EA5E9]"></i>
                             </div>
                             <span class="text-[11px] font-semibold text-zinc-700 group-hover:text-[#0EA5E9]">Pizza</span>
                         </div>
-                        <div onclick="quickFilter('asian')" class="flex flex-col items-center gap-y-1.5 cursor-pointer group flex-shrink-0 w-[60px]">
+                        <div onclick="quickFilter('asian')" class="flex flex-col items-center gap-y-1.5 cursor-pointer active:scale-95 transition-transform group flex-shrink-0 w-[60px]">
                             <div class="w-14 h-14 bg-zinc-100 rounded-2xl flex items-center justify-center group-hover:bg-[#0EA5E9]/10 transition-colors">
                                 <i class="fa-solid fa-bowl-rice text-xl text-zinc-600 group-hover:text-[#0EA5E9]"></i>
                             </div>
                             <span class="text-[11px] font-semibold text-zinc-700 group-hover:text-[#0EA5E9]">Asian</span>
                         </div>
-                        <div onclick="quickFilter('burger')" class="flex flex-col items-center gap-y-1.5 cursor-pointer group flex-shrink-0 w-[60px]">
+                        <div onclick="quickFilter('burger')" class="flex flex-col items-center gap-y-1.5 cursor-pointer active:scale-95 transition-transform group flex-shrink-0 w-[60px]">
                             <div class="w-14 h-14 bg-zinc-100 rounded-2xl flex items-center justify-center group-hover:bg-[#0EA5E9]/10 transition-colors">
                                 <i class="fa-solid fa-burger text-xl text-zinc-600 group-hover:text-[#0EA5E9]"></i>
                             </div>
                             <span class="text-[11px] font-semibold text-zinc-700 group-hover:text-[#0EA5E9]">Burgers</span>
                         </div>
-                        <div onclick="quickFilter('grocery')" class="flex flex-col items-center gap-y-1.5 cursor-pointer group flex-shrink-0 w-[60px]">
+                        <div onclick="quickFilter('grocery')" class="flex flex-col items-center gap-y-1.5 cursor-pointer active:scale-95 transition-transform group flex-shrink-0 w-[60px]">
                             <div class="w-14 h-14 bg-zinc-100 rounded-2xl flex items-center justify-center group-hover:bg-[#0EA5E9]/10 transition-colors">
                                 <i class="fa-solid fa-carrot text-xl text-zinc-600 group-hover:text-[#0EA5E9]"></i>
                             </div>
                             <span class="text-[11px] font-semibold text-zinc-700 group-hover:text-[#0EA5E9]">Groceries</span>
                         </div>
-                        <div onclick="quickFilter('convenience')" class="flex flex-col items-center gap-y-1.5 cursor-pointer group flex-shrink-0 w-[60px]">
+                        <div onclick="quickFilter('convenience')" class="flex flex-col items-center gap-y-1.5 cursor-pointer active:scale-95 transition-transform group flex-shrink-0 w-[60px]">
                             <div class="w-14 h-14 bg-zinc-100 rounded-2xl flex items-center justify-center group-hover:bg-[#0EA5E9]/10 transition-colors">
                                 <i class="fa-solid fa-bottle-water text-xl text-zinc-600 group-hover:text-[#0EA5E9]"></i>
                             </div>
@@ -145,32 +163,32 @@
                     </div>
                 </div>
 
-                <div id="promo-section" class="pt-4 pb-2 border-b-8 border-zinc-50">
+                <div id="promo-section" class="pt-4 pb-4 border-b-8 border-zinc-50 bg-white">
                     <div class="px-4 flex items-center justify-between mb-3">
                         <h3 class="font-bold text-lg text-zinc-900">Offers near you</h3>
-                        <span class="text-xs font-semibold text-[#0EA5E9] cursor-pointer">See all</span>
+                        <span class="text-xs font-semibold text-[#0EA5E9] cursor-pointer active:opacity-70">See all</span>
                     </div>
-                    <div class="flex gap-4 overflow-x-auto px-4 pb-4 scrollbar-hide snap-x" id="promo-list">
+                    <div class="flex gap-4 overflow-x-auto px-4 pb-2 scrollbar-hide snap-x" id="promo-list">
                         </div>
                 </div>
 
-                <div class="px-4 pt-5">
+                <div class="px-4 pt-5 pb-6 bg-zinc-50">
                     <div class="flex items-center justify-between mb-4">
                         <h3 id="vertical-title" class="font-bold text-lg text-zinc-900">Popular near you</h3>
                     </div>
                     
-                    <div id="merchant-list" class="space-y-4">
+                    <div id="merchant-list" class="space-y-5">
                         </div>
                 </div>
             </div>
 
-            <div id="orders-view" class="hidden px-4 py-6 bg-white min-h-screen">
-                <h2 class="text-2xl font-bold mb-6 text-zinc-900">Your orders</h2>
+            <div id="orders-view" class="hidden px-4 py-5 bg-zinc-50 min-h-full">
+                <h2 class="text-xl font-bold mb-4 text-zinc-900">Your orders</h2>
                 <div class="space-y-4">
-                    <div class="border border-zinc-200 rounded-2xl p-4 shadow-sm">
+                    <div class="bg-white border border-zinc-200 rounded-2xl p-4 shadow-sm">
                         <div class="flex justify-between items-start">
                             <div class="flex items-center gap-x-3">
-                                <div class="w-12 h-12 rounded-lg bg-zinc-100 overflow-hidden">
+                                <div class="w-12 h-12 rounded-lg bg-zinc-100 overflow-hidden relative">
                                     <img src="https://picsum.photos/id/292/100/100" class="w-full h-full object-cover">
                                 </div>
                                 <div>
@@ -181,46 +199,46 @@
                         </div>
                         <div class="mt-4 pt-4 border-t border-zinc-100 flex justify-between items-center text-sm">
                             <span class="font-semibold text-zinc-900">R234.50 <span class="text-zinc-400 font-normal ml-1">• 4 items</span></span>
-                            <button class="px-4 py-1.5 bg-zinc-100 text-zinc-700 font-semibold rounded-full text-xs hover:bg-zinc-200">Reorder</button>
+                            <button class="px-5 py-2 bg-zinc-100 text-zinc-800 font-semibold rounded-full text-[13px] active:scale-95 transition-transform">Reorder</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div id="merchant-screen" class="hidden">
-                <div class="bg-white">
+            <div id="merchant-screen" class="hidden bg-zinc-50">
+                <div class="bg-white pb-2 shadow-sm">
                     <div id="merchant-header" class="relative">
                         </div>
 
-                    <div class="px-4 py-3 border-b border-zinc-100">
+                    <div class="px-4 pt-4 pb-3 border-b border-zinc-100">
                         <div class="flex items-center justify-between">
                             <div>
-                                <h2 id="merchant-name" class="text-xl font-bold text-zinc-900"></h2>
-                                <p id="merchant-subtitle" class="text-sm text-zinc-500 mt-0.5"></p>
-                            </div>
-                            <div class="text-right">
-                                <div class="flex items-center justify-end gap-x-1">
-                                    <i class="fa-solid fa-star text-yellow-400"></i>
-                                    <span id="merchant-rating" class="font-bold text-zinc-900"></span>
-                                </div>
+                                <h2 id="merchant-name" class="text-2xl font-bold text-zinc-900 leading-tight"></h2>
+                                <p id="merchant-subtitle" class="text-[13px] text-zinc-500 mt-1"></p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="px-4 py-3 flex items-center gap-x-4 text-sm border-b border-zinc-100 text-zinc-600">
-                        <div class="flex items-center gap-x-2">
-                            <i class="fa-solid fa-motorcycle text-[#0EA5E9]"></i>
-                            <span id="merchant-delivery"></span>
-                        </div>
-                        <div class="h-3 w-px bg-zinc-300"></div>
-                        <div id="merchant-min-order"></div>
-                    </div>
-
-                    <div class="px-4 pt-5 pb-6">
-                        <h3 class="font-bold text-lg mb-4 text-zinc-900" id="menu-title">Menu</h3>
-                        <div id="product-list" class="grid grid-cols-2 gap-3">
+                    <div class="px-4 py-3 flex items-center justify-between text-[13px] font-medium text-zinc-700">
+                        <div class="flex items-center gap-x-3">
+                            <div class="flex items-center gap-x-1.5">
+                                <i class="fa-solid fa-star text-[#0EA5E9]"></i>
+                                <span id="merchant-rating" class="font-bold text-zinc-900"></span>
                             </div>
+                            <span class="text-zinc-300">•</span>
+                            <div class="flex items-center gap-x-1.5">
+                                <i class="fa-solid fa-motorcycle text-zinc-400"></i>
+                                <span id="merchant-delivery"></span>
+                            </div>
+                        </div>
+                        <div id="merchant-min-order" class="text-zinc-500"></div>
                     </div>
+                </div>
+
+                <div class="px-4 pt-6 pb-8">
+                    <h3 class="font-bold text-lg mb-4 text-zinc-900" id="menu-title">Menu</h3>
+                    <div id="product-list" class="grid grid-cols-2 gap-3">
+                        </div>
                 </div>
             </div>
         </div>
@@ -232,12 +250,12 @@
                 
                 <div class="p-4 flex items-center justify-between border-b border-zinc-100">
                     <h3 class="font-bold text-lg text-zinc-900">Your order</h3>
-                    <button onclick="hideCart()" class="text-zinc-400 hover:text-zinc-600 w-8 h-8 flex items-center justify-center bg-zinc-100 rounded-full">
+                    <button onclick="hideCart()" class="text-zinc-400 active:scale-90 transition-transform w-8 h-8 flex items-center justify-center bg-zinc-100 rounded-full">
                         <i class="fa-solid fa-times text-sm"></i>
                     </button>
                 </div>
 
-                <div class="flex-1 overflow-y-auto p-4" id="cart-items">
+                <div class="flex-1 overflow-y-auto p-4 bg-zinc-50" id="cart-items">
                     </div>
 
                 <div class="border-t border-zinc-100 p-4 bg-white">
@@ -247,7 +265,7 @@
                     </div>
                     
                     <button onclick="placeOrder()" 
-                            class="w-full bg-[#0EA5E9] hover:bg-[#0284c7] text-white font-bold py-3.5 rounded-xl transition-colors flex justify-between px-6">
+                            class="w-full bg-[#0EA5E9] active:scale-95 text-white font-bold py-4 rounded-2xl transition-transform flex justify-between px-6 shadow-sm">
                         <span>Checkout</span>
                         <span id="cart-total-button">R0.00</span>
                     </button>
@@ -257,15 +275,15 @@
 
         <div class="fixed bottom-0 w-full max-w-[420px] bg-white border-t border-zinc-200 z-50 pb-[env(safe-area-inset-bottom)]">
             <div class="flex items-center h-[60px]">
-                <div onclick="switchTab('home')" id="nav-home" class="flex-1 flex flex-col items-center justify-center text-[#0EA5E9] cursor-pointer active:scale-95 transition-transform">
+                <div onclick="switchTab('home')" id="nav-home" class="flex-1 flex flex-col items-center justify-center text-[#0EA5E9] cursor-pointer active:scale-90 transition-transform">
                     <i class="fa-solid fa-house mb-1 text-lg"></i>
                     <span class="text-[10px] font-semibold">Home</span>
                 </div>
-                <div onclick="switchTab('orders')" id="nav-orders" class="flex-1 flex flex-col items-center justify-center text-zinc-400 cursor-pointer hover:text-[#0EA5E9] active:scale-95 transition-all">
+                <div onclick="switchTab('orders')" id="nav-orders" class="flex-1 flex flex-col items-center justify-center text-zinc-400 cursor-pointer active:scale-90 transition-transform">
                     <i class="fa-solid fa-receipt mb-1 text-lg"></i>
                     <span class="text-[10px] font-semibold">Orders</span>
                 </div>
-                <div onclick="showCart()" class="flex-1 flex flex-col items-center justify-center text-zinc-400 relative cursor-pointer hover:text-[#0EA5E9] active:scale-95 transition-all">
+                <div onclick="showCart()" class="flex-1 flex flex-col items-center justify-center text-zinc-400 relative cursor-pointer active:scale-90 transition-transform">
                     <i class="fa-solid fa-bag-shopping mb-1 text-lg"></i>
                     <span class="text-[10px] font-semibold">Cart</span>
                     <span id="cart-badge" 
@@ -278,13 +296,13 @@
     <script>
         // ==================== DATA ====================
         let merchants = [
-            { id: 1, type: "restaurant", name: "Pizza Express", subtitle: "Italian • Pizza", rating: 4.6, deliveryTime: "15-25 min", deliveryFee: 24.90, minOrder: 100, category: "pizza", image: "https://picsum.photos/id/292/400/250", isPromo: true },
-            { id: 2, type: "restaurant", name: "Sushi & Co", subtitle: "Japanese • Sushi", rating: 4.8, deliveryTime: "20-30 min", deliveryFee: 39.90, minOrder: 150, category: "asian", image: "https://picsum.photos/id/312/400/250", isPromo: false },
-            { id: 3, type: "restaurant", name: "Burger & Co", subtitle: "American • Burgers", rating: 4.4, deliveryTime: "10-20 min", deliveryFee: 19.90, minOrder: 80, category: "burger", image: "https://picsum.photos/id/431/400/250", isPromo: true },
-            { id: 4, type: "shop", name: "Co-op", subtitle: "Convenience • Groceries", rating: 4.3, deliveryTime: "10-15 min", deliveryFee: 14.90, minOrder: 50, category: "convenience", image: "https://picsum.photos/id/160/400/250", isPromo: false },
-            { id: 5, type: "shop", name: "Fresh & Co", subtitle: "Groceries • Produce", rating: 4.7, deliveryTime: "15-25 min", deliveryFee: 29.90, minOrder: 100, category: "grocery", image: "https://picsum.photos/id/1060/400/250", isPromo: false },
-            { id: 6, type: "restaurant", name: "Thai Orchid", subtitle: "Thai • Asian", rating: 4.5, deliveryTime: "20-30 min", deliveryFee: 29.90, minOrder: 120, category: "asian", image: "https://picsum.photos/id/42/400/250", isPromo: true },
-            { id: 7, type: "shop", name: "Boots Pharmacy", subtitle: "Pharmacy • Health", rating: 4.2, deliveryTime: "15-20 min", deliveryFee: 19.90, minOrder: 50, category: "convenience", image: "https://picsum.photos/id/201/400/250", isPromo: false }
+            { id: 1, type: "restaurant", name: "Pizza Express", subtitle: "Italian • Pizza", rating: 4.6, deliveryTime: "15-25 min", deliveryFee: 24.90, minOrder: 100, category: "pizza", image: "https://picsum.photos/id/292/800/600", isPromo: true },
+            { id: 2, type: "restaurant", name: "Sushi & Co", subtitle: "Japanese • Sushi", rating: 4.8, deliveryTime: "20-30 min", deliveryFee: 39.90, minOrder: 150, category: "asian", image: "https://picsum.photos/id/312/800/600", isPromo: false },
+            { id: 3, type: "restaurant", name: "Burger & Co", subtitle: "American • Burgers", rating: 4.4, deliveryTime: "10-20 min", deliveryFee: 19.90, minOrder: 80, category: "burger", image: "https://picsum.photos/id/431/800/600", isPromo: true },
+            { id: 4, type: "shop", name: "Co-op", subtitle: "Convenience • Groceries", rating: 4.3, deliveryTime: "10-15 min", deliveryFee: 14.90, minOrder: 50, category: "convenience", image: "https://picsum.photos/id/160/800/600", isPromo: false },
+            { id: 5, type: "shop", name: "Fresh & Co", subtitle: "Groceries • Produce", rating: 4.7, deliveryTime: "15-25 min", deliveryFee: 29.90, minOrder: 100, category: "grocery", image: "https://picsum.photos/id/1060/800/600", isPromo: false },
+            { id: 6, type: "restaurant", name: "Thai Orchid", subtitle: "Thai • Asian", rating: 4.5, deliveryTime: "20-30 min", deliveryFee: 29.90, minOrder: 120, category: "asian", image: "https://picsum.photos/id/42/800/600", isPromo: true },
+            { id: 7, type: "shop", name: "Boots Pharmacy", subtitle: "Pharmacy • Health", rating: 4.2, deliveryTime: "15-20 min", deliveryFee: 19.90, minOrder: 50, category: "convenience", image: "https://picsum.photos/id/201/800/600", isPromo: false }
         ];
 
         const products = {
@@ -344,9 +362,9 @@
             card.onclick = () => openMerchant(merchant);
             
             card.innerHTML = `
-                <div class="relative h-36 rounded-xl overflow-hidden mb-2 group-active:scale-95 transition-transform duration-200">
+                <div class="relative h-36 rounded-xl overflow-hidden mb-2 group-active:scale-[0.98] transition-transform duration-200 border border-zinc-100">
                     <img src="${merchant.image}" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-black/10"></div>
+                    <div class="absolute inset-0 bg-black/5"></div>
                     <div class="absolute top-2 left-2 bg-[#0EA5E9] text-white text-[11px] font-bold px-2 py-1 rounded shadow-sm">
                         Offers
                     </div>
@@ -357,10 +375,10 @@
                 <div class="px-1">
                     <h4 class="font-bold text-[15px] text-zinc-900 truncate">${merchant.name}</h4>
                     <p class="text-[13px] text-zinc-500 truncate mt-0.5">${merchant.subtitle}</p>
-                    <div class="flex items-center gap-x-3 text-[13px] mt-1.5 font-medium">
-                        <div class="flex items-center gap-x-1 text-[#0EA5E9]">
+                    <div class="flex items-center gap-x-2 text-[13px] mt-1 font-medium">
+                        <div class="flex items-center gap-x-1">
                             <i class="fa-solid fa-star text-[#0EA5E9]"></i>
-                            <span>${merchant.rating}</span>
+                            <span class="text-zinc-900">${merchant.rating}</span>
                         </div>
                         <span class="text-zinc-300">•</span>
                         <span class="text-zinc-500">R${merchant.deliveryFee.toFixed(2)} delivery</span>
@@ -372,33 +390,37 @@
 
         function renderVerticalCard(merchant, container) {
             const card = document.createElement('div');
-            card.className = `merchant-card bg-white rounded-xl overflow-hidden cursor-pointer group`;
+            // Full width stack card layout
+            card.className = `merchant-card bg-white rounded-2xl overflow-hidden cursor-pointer group shadow-sm border border-zinc-100`;
             card.onclick = () => openMerchant(merchant);
             
             card.innerHTML = `
-                <div class="flex gap-x-4">
-                    <div class="w-28 h-28 flex-shrink-0 rounded-xl overflow-hidden group-active:scale-95 transition-transform duration-200">
-                        <img src="${merchant.image}" class="w-full h-full object-cover">
+                <div class="flex flex-col">
+                    <div class="w-full h-[180px] relative overflow-hidden bg-zinc-100">
+                        <img src="${merchant.image}" class="w-full h-full object-cover group-active:scale-[1.02] transition-transform duration-300">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                        <div class="absolute bottom-3 right-3 bg-white px-2.5 py-1 rounded-full text-xs font-bold shadow-md flex items-center gap-x-1">
+                            <span class="text-zinc-900">${merchant.deliveryTime}</span>
+                        </div>
                     </div>
-                    <div class="flex-1 py-1 pr-2 flex flex-col justify-center">
+                    <div class="p-3.5 pt-3">
                         <div class="flex items-start justify-between">
                             <div>
-                                <h4 class="font-bold text-[16px] text-zinc-900">${merchant.name}</h4>
+                                <h4 class="font-bold text-lg text-zinc-900 leading-tight">${merchant.name}</h4>
                                 <p class="text-[13px] text-zinc-500 mt-0.5">${merchant.subtitle}</p>
+                            </div>
+                            <div class="flex items-center justify-center bg-zinc-100 px-2 py-1 rounded-lg">
+                                <span class="font-bold text-[13px] text-zinc-900"><i class="fa-solid fa-star text-[#0EA5E9] text-[10px] mr-1"></i>${merchant.rating}</span>
                             </div>
                         </div>
                         
-                        <div class="flex items-center gap-x-3 text-[13px] mt-3 font-medium">
-                            <div class="flex items-center gap-x-1 text-[#0EA5E9]">
-                                <i class="fa-solid fa-star"></i>
-                                <span>${merchant.rating}</span>
+                        <div class="flex items-center gap-x-3 text-[13px] mt-3.5 font-medium text-zinc-500">
+                            <div class="flex items-center gap-x-1.5">
+                                <i class="fa-solid fa-motorcycle text-zinc-400"></i>
+                                <span>R${merchant.deliveryFee.toFixed(2)}</span>
                             </div>
                             <span class="text-zinc-300">•</span>
-                            <div class="flex items-center text-zinc-500">
-                                <span>${merchant.deliveryTime}</span>
-                            </div>
-                            <span class="text-zinc-300">•</span>
-                            <span class="text-zinc-500">R${merchant.deliveryFee.toFixed(2)}</span>
+                            <span>Min R${merchant.minOrder.toFixed(2)}</span>
                         </div>
                     </div>
                 </div>
@@ -450,14 +472,18 @@
             document.getElementById('nav-home').classList.replace('text-[#0EA5E9]', 'text-zinc-400');
             document.getElementById('nav-orders').classList.replace('text-[#0EA5E9]', 'text-zinc-400');
 
+            const searchBar = document.getElementById('header-search-bar');
+
             if (tab === 'home') {
                 document.getElementById('home-view').classList.remove('hidden');
                 document.getElementById('orders-view').classList.add('hidden');
                 document.getElementById('nav-home').classList.replace('text-zinc-400', 'text-[#0EA5E9]');
+                if (searchBar) searchBar.classList.remove('hidden'); // Show search on home
             } else if (tab === 'orders') {
                 document.getElementById('home-view').classList.add('hidden');
                 document.getElementById('orders-view').classList.remove('hidden');
                 document.getElementById('nav-orders').classList.replace('text-zinc-400', 'text-[#0EA5E9]');
+                if (searchBar) searchBar.classList.add('hidden'); // Hide search on orders
             }
         }
 
@@ -475,9 +501,9 @@
             const isShop = merchant.type === 'shop';
 
             header.innerHTML = `
-                <div class="relative h-48">
+                <div class="relative h-56 bg-zinc-100">
                     <img src="${merchant.image}" class="w-full h-full object-cover" alt="">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                     
                     <button onclick="closeMerchant()" 
                             class="absolute top-4 left-4 bg-white shadow-sm w-10 h-10 flex items-center justify-center rounded-full text-zinc-900 active:scale-90 transition-transform">
@@ -546,7 +572,7 @@
                         <p class="text-[12px] text-zinc-500 line-clamp-2 leading-snug flex-1">${item.description}</p>
                         
                         <div class="mt-3 flex items-center justify-between">
-                            <span class="font-semibold text-[13px] text-zinc-900">R${item.price.toFixed(2)}</span>
+                            <span class="font-bold text-[13px] text-zinc-900">R${item.price.toFixed(2)}</span>
                             ${buttonHTML}
                         </div>
                     </div>
@@ -620,7 +646,7 @@
             cart.forEach((item) => {
                 total += item.price * item.quantity;
                 container.innerHTML += `
-                    <div class="flex justify-between items-start border-b border-zinc-100 py-4 last:border-b-0">
+                    <div class="flex justify-between items-start border-b border-zinc-100 py-4 last:border-b-0 bg-white px-4 mb-2 rounded-xl shadow-sm">
                         <div class="flex-1 pr-3">
                             <span class="font-bold text-zinc-900">${item.name}</span>
                             <div class="text-[13px] text-zinc-500 mt-1">R${item.price.toFixed(2)} each</div>
@@ -629,9 +655,9 @@
                         <div class="flex flex-col items-end gap-y-2">
                             <span class="font-bold text-zinc-900">R${(item.price * item.quantity).toFixed(2)}</span>
                             <div class="flex items-center bg-zinc-100 rounded-full h-8">
-                                <button onclick="updateCartItem(${item.id}, ${item.merchantId}, -1)" class="w-8 h-8 text-zinc-500 hover:text-zinc-900 font-bold">-</button>
+                                <button onclick="updateCartItem(${item.id}, ${item.merchantId}, -1)" class="w-8 h-8 text-zinc-500 hover:text-zinc-900 font-bold active:scale-90">-</button>
                                 <span class="px-2 text-[13px] font-bold w-6 text-center">${item.quantity}</span>
-                                <button onclick="updateCartItem(${item.id}, ${item.merchantId}, 1)" class="w-8 h-8 text-[#0EA5E9] hover:text-[#0284c7] font-bold">+</button>
+                                <button onclick="updateCartItem(${item.id}, ${item.merchantId}, 1)" class="w-8 h-8 text-[#0EA5E9] font-bold active:scale-90">+</button>
                             </div>
                         </div>
                     </div>
@@ -687,17 +713,17 @@
                     <div onclick="event.stopImmediatePropagation()" class="absolute bottom-0 w-full max-w-[420px] bg-white rounded-t-3xl shadow-2xl flex flex-col transition-transform" style="height: 70vh; max-height: 620px;">
                         <div class="p-4 flex items-center justify-between border-b border-zinc-100">
                             <h3 class="font-bold text-lg text-zinc-900">Your order</h3>
-                            <button onclick="hideCart()" class="text-zinc-400 hover:text-zinc-600 w-8 h-8 flex items-center justify-center bg-zinc-100 rounded-full">
+                            <button onclick="hideCart()" class="text-zinc-400 active:scale-90 transition-transform w-8 h-8 flex items-center justify-center bg-zinc-100 rounded-full">
                                 <i class="fa-solid fa-times text-sm"></i>
                             </button>
                         </div>
-                        <div class="flex-1 overflow-y-auto p-4" id="cart-items"></div>
+                        <div class="flex-1 overflow-y-auto p-4 bg-zinc-50" id="cart-items"></div>
                         <div class="border-t border-zinc-100 p-4 bg-white">
                             <div class="flex justify-between items-center mb-4 px-1">
                                 <span class="text-zinc-600 font-medium">Total</span>
                                 <span id="cart-total" class="font-bold text-xl text-zinc-900">R0.00</span>
                             </div>
-                            <button onclick="placeOrder()" class="w-full bg-[#0EA5E9] hover:bg-[#0284c7] text-white font-bold py-3.5 rounded-xl transition-colors flex justify-between px-6">
+                            <button onclick="placeOrder()" class="w-full bg-[#0EA5E9] active:scale-95 text-white font-bold py-4 rounded-2xl transition-transform flex justify-between px-6 shadow-sm">
                                 <span>Checkout</span>
                                 <span id="cart-total-button">R0.00</span>
                             </button>
