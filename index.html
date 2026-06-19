@@ -64,9 +64,299 @@
             padding: 1px 6px;
             border-radius: 9999px;
         }
+
+        /* ===== SPLASH SCREEN ===== */
+        #splash-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: linear-gradient(145deg, #0EA5E9 0%, #0284C7 50%, #0369A1 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        #splash-screen.fade-out {
+            opacity: 0;
+            transform: scale(1.05);
+            pointer-events: none;
+        }
+        .splash-logo-ring {
+            width: 110px;
+            height: 110px;
+            border-radius: 30px;
+            background: rgba(255,255,255,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 0 12px rgba(255,255,255,0.08), 0 20px 50px rgba(0,0,0,0.25);
+            animation: splashPop 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
+        }
+        @keyframes splashPop {
+            from { transform: scale(0.5); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+        .splash-title {
+            animation: splashFadeUp 0.5s ease 0.5s both;
+        }
+        .splash-subtitle {
+            animation: splashFadeUp 0.5s ease 0.7s both;
+        }
+        @keyframes splashFadeUp {
+            from { transform: translateY(16px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+        .splash-dots {
+            display: flex;
+            gap: 8px;
+            animation: splashFadeUp 0.5s ease 0.9s both;
+        }
+        .splash-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            animation: dotPulse 1.4s ease-in-out infinite;
+        }
+        .splash-dot:nth-child(2) { animation-delay: 0.2s; }
+        .splash-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes dotPulse {
+            0%, 80%, 100% { background: rgba(255,255,255,0.35); transform: scale(1); }
+            40%            { background: rgba(255,255,255,0.95); transform: scale(1.3); }
+        }
+        .splash-progress-bar {
+            width: 160px;
+            height: 3px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 99px;
+            overflow: hidden;
+            animation: splashFadeUp 0.5s ease 0.9s both;
+        }
+        .splash-progress-fill {
+            height: 100%;
+            background: white;
+            border-radius: 99px;
+            animation: progressFill 4.2s linear 1s both;
+        }
+        @keyframes progressFill {
+            from { width: 0%; }
+            to   { width: 100%; }
+        }
+
+        /* ===== ONBOARDING ===== */
+        #onboarding-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            background: white;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #onboarding-screen.visible {
+            display: flex;
+        }
+        .onboard-slide {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            animation: slideIn 0.4s cubic-bezier(0.4,0,0.2,1) both;
+        }
+        .onboard-slide.active {
+            display: flex;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(32px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        .onboard-img-wrap {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        .onboard-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .onboard-img-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(14,165,233,0.25) 100%);
+        }
+        .onboard-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: white;
+            border-radius: 50px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #0EA5E9;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .onboard-card {
+            background: white;
+            border-radius: 32px 32px 0 0;
+            padding: 28px 24px 32px;
+            box-shadow: 0 -4px 30px rgba(0,0,0,0.08);
+            position: relative;
+            z-index: 2;
+        }
+        .onboard-pip-row {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .onboard-pip {
+            height: 5px;
+            border-radius: 99px;
+            background: #e4e4e7;
+            transition: all 0.3s ease;
+            width: 20px;
+        }
+        .onboard-pip.active {
+            background: #0EA5E9;
+            width: 36px;
+        }
+        .onboard-btn {
+            width: 100%;
+            background: #0EA5E9;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            border: none;
+            border-radius: 16px;
+            padding: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 8px 24px rgba(14,165,233,0.35);
+        }
+        .onboard-btn:active { transform: scale(0.97); }
+        .onboard-skip {
+            text-align: center;
+            margin-top: 14px;
+            font-size: 13px;
+            color: #a1a1aa;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .onboard-skip:active { opacity: 0.6; }
+        .onboard-icon-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f0f9ff;
+            color: #0EA5E9;
+            border-radius: 50px;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body class="bg-zinc-100 flex items-center justify-center min-h-screen">
+
+    <!-- ===== SPLASH SCREEN ===== -->
+    <div id="splash-screen">
+        <div class="splash-logo-ring">
+            <i class="fa-solid fa-motorcycle text-white" style="font-size: 44px;"></i>
+        </div>
+        <p class="splash-title" style="color:white; font-family:'Poppins',sans-serif; font-size:28px; font-weight:700; margin-top:24px; letter-spacing:-0.5px;">DeliverApp</p>
+        <p class="splash-subtitle" style="color:rgba(255,255,255,0.75); font-size:14px; margin-top:6px; margin-bottom:36px;">Food &amp; groceries at your door</p>
+        <div class="splash-progress-bar">
+            <div class="splash-progress-fill"></div>
+        </div>
+        <div class="splash-dots" style="margin-top:18px;">
+            <div class="splash-dot"></div>
+            <div class="splash-dot"></div>
+            <div class="splash-dot"></div>
+        </div>
+    </div>
+
+    <!-- ===== ONBOARDING ===== -->
+    <div id="onboarding-screen">
+
+        <!-- Slide 1: Discover -->
+        <div class="onboard-slide active" id="ob-slide-0">
+            <div class="onboard-img-wrap">
+                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80" alt="Delicious food">
+                <div class="onboard-img-overlay"></div>
+                <div class="onboard-badge"><i class="fa-solid fa-fire"></i> 500+ restaurants</div>
+            </div>
+            <div class="onboard-card">
+                <div class="onboard-pip-row">
+                    <div class="onboard-pip active"></div>
+                    <div class="onboard-pip"></div>
+                    <div class="onboard-pip"></div>
+                </div>
+                <div class="onboard-icon-pill"><i class="fa-solid fa-utensils"></i> Discover</div>
+                <h2 style="font-size:24px; font-weight:800; color:#18181b; line-height:1.25; margin-bottom:8px;">The best food,<br>right near you</h2>
+                <p style="font-size:14px; color:#71717a; line-height:1.6; margin-bottom:24px;">Browse hundreds of restaurants, local favourites, and grocery stores — all in one place.</p>
+                <button class="onboard-btn" onclick="nextSlide()">
+                    Next <i class="fa-solid fa-arrow-right"></i>
+                </button>
+                <p class="onboard-skip" onclick="finishOnboarding()">Skip intro</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Order -->
+        <div class="onboard-slide" id="ob-slide-1">
+            <div class="onboard-img-wrap">
+                <img src="https://images.unsplash.com/photo-1543353071-873f17a7a088?w=600&q=80" alt="Add to cart">
+                <div class="onboard-img-overlay"></div>
+                <div class="onboard-badge"><i class="fa-solid fa-bolt"></i> Super fast</div>
+            </div>
+            <div class="onboard-card">
+                <div class="onboard-pip-row">
+                    <div class="onboard-pip"></div>
+                    <div class="onboard-pip active"></div>
+                    <div class="onboard-pip"></div>
+                </div>
+                <div class="onboard-icon-pill"><i class="fa-solid fa-basket-shopping"></i> Order</div>
+                <h2 style="font-size:24px; font-weight:800; color:#18181b; line-height:1.25; margin-bottom:8px;">Add items &amp;<br>checkout in seconds</h2>
+                <p style="font-size:14px; color:#71717a; line-height:1.6; margin-bottom:24px;">Tap a restaurant, pick your items, and place your order in just a few taps — no fuss, no hassle.</p>
+                <button class="onboard-btn" onclick="nextSlide()">
+                    Next <i class="fa-solid fa-arrow-right"></i>
+                </button>
+                <p class="onboard-skip" onclick="finishOnboarding()">Skip intro</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: Track -->
+        <div class="onboard-slide" id="ob-slide-2">
+            <div class="onboard-img-wrap">
+                <img src="https://images.unsplash.com/photo-1526367790999-0150786686a2?w=600&q=80" alt="Delivery rider">
+                <div class="onboard-img-overlay"></div>
+                <div class="onboard-badge"><i class="fa-solid fa-location-dot"></i> Live tracking</div>
+            </div>
+            <div class="onboard-card">
+                <div class="onboard-pip-row">
+                    <div class="onboard-pip"></div>
+                    <div class="onboard-pip"></div>
+                    <div class="onboard-pip active"></div>
+                </div>
+                <div class="onboard-icon-pill"><i class="fa-solid fa-motorcycle"></i> Track</div>
+                <h2 style="font-size:24px; font-weight:800; color:#18181b; line-height:1.25; margin-bottom:8px;">Track your rider<br>in real time</h2>
+                <p style="font-size:14px; color:#71717a; line-height:1.6; margin-bottom:24px;">Know exactly when your order arrives. Watch your rider come to you on a live map.</p>
+                <button class="onboard-btn" onclick="finishOnboarding()" style="background: linear-gradient(135deg,#0EA5E9,#0369A1);">
+                    Get Started <i class="fa-solid fa-check"></i>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
     <div class="mobile-container w-full bg-white overflow-hidden flex flex-col" style="max-width: 420px; height: 100vh; max-height: 844px;">
         
         <div id="main-header" class="bg-white sticky top-0 z-50 border-b border-zinc-100">
@@ -773,11 +1063,52 @@
             }, 2000);
         }
 
+        // ==================== SPLASH & ONBOARDING ====================
+        let currentOnboardSlide = 0;
+        const TOTAL_SLIDES = 3;
+        const ONBOARDING_KEY = 'deliverapp_onboarded';
+
+        function nextSlide() {
+            const cur = document.getElementById('ob-slide-' + currentOnboardSlide);
+            cur.classList.remove('active');
+            currentOnboardSlide++;
+            const next = document.getElementById('ob-slide-' + currentOnboardSlide);
+            next.classList.add('active');
+        }
+
+        function finishOnboarding() {
+            const ob = document.getElementById('onboarding-screen');
+            ob.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
+            ob.style.opacity = '0';
+            ob.style.transform = 'scale(1.04)';
+            setTimeout(() => {
+                ob.style.display = 'none';
+                localStorage.setItem(ONBOARDING_KEY, '1');
+            }, 450);
+        }
+
+        function startSplash() {
+            const splash = document.getElementById('splash-screen');
+            // After 5 seconds, fade out splash and decide what to show
+            setTimeout(() => {
+                splash.classList.add('fade-out');
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    const seen = localStorage.getItem(ONBOARDING_KEY);
+                    if (!seen) {
+                        const ob = document.getElementById('onboarding-screen');
+                        ob.classList.add('visible');
+                    }
+                }, 650);
+            }, 5000);
+        }
+
         // ==================== INIT ====================
         function initializeApp() {
             renderMerchants(merchants, false);
             setupSearch();
             updateCartBadge();
+            startSplash();
         }
 
         window.onload = initializeApp;
