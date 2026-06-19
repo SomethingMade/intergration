@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Business Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #128C7E;
+            --primary-hover: #075E54;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Layout */
+        .sidebar {
+            width: 250px;
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .nav-menu {
+            padding: 20px 0;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .nav-item {
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background-color: #f0fdf4;
+            color: var(--primary);
+            border-right: 3px solid var(--primary);
+        }
+
+        /* Main Content */
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            background-color: var(--card-bg);
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content {
+            padding: 32px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            max-width: 1200px;
+        }
+
+        /* Cards & Forms */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group { margin-bottom: 20px; }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+            background-color: #f9fafb;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--primary);
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(18, 140, 126, 0.1);
+        }
+
+        .helper-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+        button:hover:not(:disabled) { background-color: var(--primary-hover); }
+        button:disabled { background-color: #9ca3af; cursor: not-allowed; }
+
+        /* Status Banner */
+        #status {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-success { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .status-error { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+        /* Info Card */
+        .info-list { list-style: none; }
+        .info-list li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        .info-list li::before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: -4px;
+        }
+
+        @media (max-width: 768px) {
+            .content { grid-template-columns: 1fr; }
+            .sidebar { display: none; } /* Simplified for mobile */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+            MsgBoard
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li>
+                    <a href="#" class="nav-item active">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"></path><path d="M22 2L15 22L11 13L2 9L22 2Z"></path></svg>
+                        Send Message
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        Settings
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-wrapper">
+        <header class="topbar">
+            <h2 style="font-size: 1.25rem; font-weight: 600;">Client Outreach</h2>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-weight: 500; font-size: 0.9rem;">Katlego</span>
+                <div style="width: 36px; height: 36px; border-radius: 50%; background-color: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">K</div>
+            </div>
+        </header>
+
+        <section class="content">
+            
+            <!-- Compose Card -->
+            <div class="card">
+                <h3 class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    Compose Message
+                </h3>
+                
+                <div id="status">
+                    <svg id="status-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"></svg>
+                    <span id="status-text"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Recipient Phone Number</label>
+                    <input type="text" id="phone" placeholder="e.g., 27821234567">
+                    <p class="helper-text">Include country code. Omit the plus sign (+) and any leading zeros.</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Message Content</label>
+                    <textarea id="message" rows="5" placeholder="Type your message to the client here..."></textarea>
+                </div>
+
+                <button id="sendBtn" disabled>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><path d="M22 2L15 22L11 13L2 9L22 2Z"></path></svg>
+                    Connecting to Firebase...
+                </button>
+            </div>
+
+            <!-- Context/Info Card -->
+            <div class="card" style="height: fit-content; background-color: #f8fafc; border-color: #e2e8f0;">
+                <h3 class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    Important Rules
+                </h3>
+                <ul class="info-list">
+                    <li><strong>The 24-Hour Rule:</strong> You can only send free-form text messages if the client has sent a message to your API number within the last 24 hours.</li>
+                    <li><strong>Sandbox Restrictions:</strong> If your Meta app is in development mode, you can only message numbers that have been verified in your Meta dashboard.</li>
+                    <li><strong>No Spam:</strong> Promotional messages or initiating new conversations require pre-approved Meta Templates.</li>
+                </ul>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Modern Firebase v10 Modular SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getRemoteConfig, fetchAndActivate, getValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-remote-config.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDllNp4lOwf8VNElzM16pBug8pLB6-9XNY",
+            authDomain: "newstart-64c43.firebaseapp.com",
+            databaseURL: "https://newstart-64c43-default-rtdb.firebaseio.com",
+            projectId: "newstart-64c43",
+            storageBucket: "newstart-64c43.firebasestorage.app",
+            messagingSenderId: "941619830061",
+            appId: "1:941619830061:web:097b8f4f50c9486bcf87a4",
+            measurementId: "G-ZGV4MDXC7W"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const remoteConfig = getRemoteConfig(app);
+        remoteConfig.settings.minimumFetchIntervalMillis = 10000;
+
+        const sendBtn = document.getElementById('sendBtn');
+        const statusDiv = document.getElementById('status');
+        const statusText = document.getElementById('status-text');
+        const statusIcon = document.getElementById('status-icon');
+
+        async function initializeConfig() {
+            try {
+                await fetchAndActivate(remoteConfig);
+                resetButton();
+            } catch (error) {
+                showStatus("Failed to load Firebase Config: " + error.message, "error");
+            }
+        }
+
+        async function sendMessage() {
+            const phone = document.getElementById('phone').value;
+            const messageText = document.getElementById('message').value;
+
+            if (!phone || !messageText) {
+                showStatus("Please enter both phone number and message.", "error");
+                return;
+            }
+
+            // Loading state
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg> Sending Message...`;
+
+            // Spin animation for loading
+            document.head.insertAdjacentHTML("beforeend", `<style>.spin { animation: spin 1s linear infinite; } @keyframes spin { 100% { transform: rotate(360deg); } }</style>`);
+
+            const waToken = getValue(remoteConfig, "wa_api_token").asString();
+            const waPhoneId = getValue(remoteConfig, "wa_phone_number_id").asString();
+
+            if (!waToken || !waPhoneId) {
+                showStatus("WhatsApp credentials missing in Remote Config.", "error");
+                resetButton();
+                return;
+            }
+
+            const url = `https://graph.facebook.com/v18.0/${waPhoneId}/messages`;
+            
+            const payload = {
+                messaging_product: "whatsapp",
+                recipient_type: "individual",
+                to: phone,
+                type: "text",
+                text: { 
+                    preview_url: false,
+                    body: messageText 
+                }
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${waToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showStatus("Message sent successfully!", "success");
+                    document.getElementById('message').value = '';
+                } else {
+                    showStatus(data.error?.message || "Unknown error occurred.", "error");
+                }
+            } catch (error) {
+                showStatus("Network error: " + error.message, "error");
+            } finally {
+                resetButton();
+            }
+        }
+
+        function showStatus(text, type) {
+            statusDiv.style.display = 'flex';
+            statusText.textContent = text;
+            
+            if (type === 'success') {
+                statusDiv.className = 'status-success';
+                statusIcon.innerHTML = `<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>`;
+            } else {
+                statusDiv.className = 'status-error';
+                statusIcon.innerHTML = `<circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line>`;
+            }
+        }
+
+        function resetButton() {
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><path d="M22 2L15 22L11 13L2 9L22 2Z"></path></svg> Send Message`;
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        initializeConfig();
+    </script>
+</body>
+</html>
