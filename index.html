@@ -7,44 +7,28 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- Firebase SDKs -->
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Poppins:wght@700&amp;display=swap');
-        
         body { font-family: 'Inter', system_ui, sans-serif; }
         .app-logo { font-family: 'Poppins', sans-serif; font-weight: 700; letter-spacing: -1.5px; }
-        
-        .video-container { aspect-ratio: 9 / 16; max-height: 680px; }
+        .video-container { aspect-ratio: 9 / 16; max-height: 680px; background: #000; }
         .feed-container { scrollbar-width: none; }
         .feed-container::-webkit-scrollbar { display: none; }
-        
-        .video-overlay {
-            background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.4));
-        }
-        
-        .dark .video-overlay {
-            background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.6));
-        }
-
-        .tab-active { 
-            color: #000; 
-            font-weight: 600; 
-            border-bottom: 3px solid #000; 
-        }
-        .dark .tab-active { 
-            color: #fff; 
-            border-bottom: 3px solid #fff; 
-        }
+        .video-overlay { background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.5)); }
+        .dark .video-overlay { background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.65)); }
+        .tab-active { color: #000; font-weight: 600; border-bottom: 3px solid #000; }
+        .dark .tab-active { color: #fff; border-bottom: 3px solid #fff; }
+        video { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-zinc-950 dark:text-white">
 
     <!-- Login Screen -->
-    <div id="loginScreen" class="hidden fixed inset-0 bg-white dark:bg-zinc-950 flex items-center justify-center z-50">
+    <div id="loginScreen" class="fixed inset-0 bg-white dark:bg-zinc-950 flex items-center justify-center z-50">
         <div class="text-center px-6">
             <div class="flex items-center justify-center gap-x-2 mb-8">
                 <i class="fa-solid fa-play text-4xl"></i>
@@ -53,8 +37,8 @@
             <h1 class="text-2xl font-semibold mb-2">Welcome to Echo</h1>
             <p class="text-gray-500 dark:text-gray-400 mb-8">Short videos. Real moments.</p>
             
-            <button onclick="signInWithGoogle()"
-                    class="flex items-center justify-center gap-x-3 w-full max-w-xs mx-auto px-6 py-3 bg-white dark:bg-zinc-900 border dark:border-zinc-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+            <button onclick="signInWithGoogle()" 
+                    class="flex items-center justify-center gap-x-3 w-full max-w-xs mx-auto px-6 py-3 bg-white dark:bg-zinc-900 border dark:border-zinc-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-zinc-800">
                 <img src="https://www.google.com/favicon.ico" class="w-5 h-5" alt="">
                 <span class="font-medium">Continue with Google</span>
             </button>
@@ -69,10 +53,9 @@
                 <div class="h-14 flex items-center justify-between">
                     <div class="flex items-center gap-x-2">
                         <i class="fa-solid fa-play text-3xl"></i>
-                        <span class="app-logo text-3xl font-bold tracking-tighter">Echo</span>
+                        <span class="app-logo text-3xl font-bold">Echo</span>
                     </div>
 
-                    <!-- Search -->
                     <div class="hidden md:flex flex-1 max-w-md mx-8">
                         <div class="w-full bg-gray-100 dark:bg-zinc-800 rounded-full flex items-center px-4 py-2">
                             <i class="fa-solid fa-search text-gray-400 mr-3"></i>
@@ -81,27 +64,23 @@
                     </div>
 
                     <div class="flex items-center gap-x-4">
-                        <!-- Dark Mode Toggle -->
-                        <button onclick="toggleDarkMode()" 
-                                class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800">
+                        <!-- Dark Mode -->
+                        <button onclick="toggleDarkMode()" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800">
                             <i class="fa-solid fa-moon text-lg" id="themeIcon"></i>
                         </button>
 
-                        <button onclick="showUploadModal()" 
-                                class="hidden md:flex items-center gap-x-2 px-5 py-2 rounded-full bg-black dark:bg-white dark:text-black text-white text-sm font-medium">
+                        <button onclick="showUploadModal()" class="hidden md:flex items-center gap-x-2 px-5 py-2 rounded-full bg-black dark:bg-white dark:text-black text-white text-sm font-medium">
                             <i class="fa-solid fa-plus"></i>
                             <span>Upload</span>
                         </button>
                         
-                        <img id="navAvatar" onclick="openProfile(currentUser)" 
-                             class="w-8 h-8 rounded-full cursor-pointer ring-2 ring-white dark:ring-zinc-900 object-cover" alt="Profile">
+                        <img id="navAvatar" onclick="openProfile(currentUser)" class="w-8 h-8 rounded-full cursor-pointer object-cover ring-2 ring-white dark:ring-zinc-900" alt="Profile">
                     </div>
                 </div>
             </div>
         </nav>
 
         <div class="max-w-[1200px] mx-auto flex">
-            
             <!-- Sidebar -->
             <div class="hidden lg:flex w-56 flex-col border-r dark:border-zinc-800 bg-white dark:bg-zinc-900 min-h-[calc(100vh-56px)] p-3">
                 <div class="space-y-1">
@@ -119,7 +98,6 @@
 
             <!-- Feed -->
             <div class="flex-1 max-w-[480px] mx-auto lg:mx-0">
-                
                 <!-- Mobile Tabs -->
                 <div class="flex border-b dark:border-zinc-800 bg-white dark:bg-zinc-900 lg:hidden">
                     <div onclick="switchTab('foryou')" class="tab flex-1 text-center py-3 cursor-pointer tab-active" data-tab="foryou">For You</div>
@@ -127,7 +105,6 @@
                     <div onclick="switchTab('discover')" class="tab flex-1 text-center py-3 cursor-pointer text-gray-500 dark:text-gray-400" data-tab="discover">Discover</div>
                 </div>
 
-                <!-- Video Feeds -->
                 <div id="foryou" class="feed feed-container h-[calc(100vh-112px)] lg:h-[calc(100vh-56px)] overflow-y-auto snap-y snap-mandatory"></div>
                 <div id="following" class="feed feed-container h-[calc(100vh-112px)] lg:h-[calc(100vh-56px)] overflow-y-auto snap-y snap-mandatory hidden"></div>
                 <div id="discover" class="feed feed-container h-[calc(100vh-112px)] lg:h-[calc(100vh-56px)] overflow-y-auto snap-y snap-mandatory hidden"></div>
@@ -141,21 +118,22 @@
                 <div onclick="switchTab('discover')" class="flex flex-col items-center text-xs text-gray-500 dark:text-gray-400 cursor-pointer"><i class="fa-solid fa-compass text-xl"></i></div>
                 <div onclick="showUploadModal()" class="flex flex-col items-center -mt-5"><div class="bg-black dark:bg-white dark:text-black text-white w-12 h-12 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-plus text-xl"></i></div></div>
                 <div onclick="switchTab('following')" class="flex flex-col items-center text-xs text-gray-500 dark:text-gray-400 cursor-pointer"><i class="fa-solid fa-users text-xl"></i></div>
-                <div onclick="openProfile(currentUser)" class="flex flex-col items-center text-xs text-gray-500 dark:text-gray-400 cursor-pointer"><i class="fa-solid fa-user text-xl"></i></div>
+                <div onclick="openProfile(currentUser)" class="flex flex-col items-center text-xs cursor-pointer"><i class="fa-solid fa-user text-xl"></i></div>
             </div>
         </div>
     </div>
 
     <!-- Profile Modal -->
     <div id="profileModal" onclick="closeProfileModal()" class="hidden fixed inset-0 bg-black/50 z-[60] flex items-end lg:items-center justify-center">
-        <div onclick="event.stopImmediatePropagation()" class="bg-white dark:bg-zinc-900 w-full lg:w-[420px] lg:rounded-2xl lg:m-4 rounded-t-3xl">
+        <div onclick="event.stopImmediatePropagation()" class="bg-white dark:bg-zinc-900 w-full lg:w-[420px] lg:rounded-2xl rounded-t-3xl">
             <div class="p-6">
-                <div class="flex justify-between">
+                <div class="flex justify-between items-start">
                     <div class="flex gap-4">
-                        <img id="profileAvatar" class="w-16 h-16 rounded-full object-cover" alt="">
+                        <img id="profileAvatar" class="w-16 h-16 rounded-full object-cover cursor-pointer" onclick="changeProfilePicture()">
                         <div>
                             <div id="profileUsername" class="font-semibold text-xl"></div>
                             <div id="profileHandle" class="text-gray-500 dark:text-gray-400"></div>
+                            <div id="profileBio" class="text-sm mt-1 text-gray-600 dark:text-gray-400"></div>
                         </div>
                     </div>
                     <button onclick="closeProfileModal()" class="text-2xl">×</button>
@@ -167,27 +145,48 @@
                     <div><div class="font-semibold" id="profileLikes"></div><div class="text-sm text-gray-500">Likes</div></div>
                 </div>
 
-                <button onclick="signOut()" 
-                        class="mt-6 w-full py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-full font-medium text-sm">
-                    Sign Out
-                </button>
+                <!-- Action Buttons -->
+                <div id="profileActions" class="mt-6">
+                    <!-- Dynamically populated by JS -->
+                </div>
+
+                <!-- Edit Profile Form -->
+                <div id="editProfileForm" class="hidden mt-4 space-y-3">
+                    <input id="editUsername" type="text" placeholder="Username" class="w-full px-4 py-2 border dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800 text-sm">
+                    <textarea id="editBio" placeholder="Bio" class="w-full px-4 py-2 border dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800 text-sm" rows="2"></textarea>
+                    <div class="flex gap-2">
+                        <button onclick="saveProfileChanges()" class="flex-1 py-2 bg-black dark:bg-white dark:text-black text-white rounded-xl text-sm font-medium">Save</button>
+                        <button onclick="cancelEditProfile()" class="flex-1 py-2 border dark:border-zinc-700 rounded-xl text-sm">Cancel</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Upload Modal -->
     <div id="uploadModal" onclick="hideUploadModal()" class="hidden fixed inset-0 bg-black/40 z-50 flex items-end lg:items-center justify-center">
-        <div onclick="event.stopImmediatePropagation()" class="bg-white dark:bg-zinc-900 w-full lg:w-[400px] lg:rounded-2xl rounded-t-3xl p-6">
-            <div class="flex justify-between mb-6">
-                <h3 class="font-semibold text-xl">Create post</h3>
+        <div onclick="event.stopImmediatePropagation()" class="bg-white dark:bg-zinc-900 w-full lg:w-[420px] lg:rounded-2xl rounded-t-3xl p-6">
+            <div class="flex justify-between mb-4">
+                <h3 class="font-semibold text-xl">Upload Video</h3>
                 <button onclick="hideUploadModal()" class="text-2xl">×</button>
             </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Uploading videos will be added in the next update.</p>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="text-sm text-gray-500">Video</label>
+                    <input type="file" id="videoFile" accept="video/*" class="w-full mt-1 text-sm">
+                </div>
+                <div>
+                    <label class="text-sm text-gray-500">Description</label>
+                    <input id="videoDescription" type="text" class="w-full px-4 py-2 border dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800" placeholder="What's this video about?">
+                </div>
+                <button onclick="uploadVideo()" class="w-full py-3 bg-black dark:bg-white dark:text-black text-white rounded-2xl font-medium">Upload to Echo</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // ==================== FIREBASE CONFIG ====================
+        // ==================== CONFIG ====================
         const firebaseConfig = {
             apiKey: "AIzaSyBQSPwpVbGrdCuOoyitAeWQHIeipj2MgIY",
             authDomain: "newstart-64c43.firebaseapp.com",
@@ -195,225 +194,430 @@
             projectId: "newstart-64c43",
             storageBucket: "newstart-64c43.firebasestorage.app",
             messagingSenderId: "941619830061",
-            appId: "1:941619830061:web:de9e0f791eb8f6eacf87a4",
-            measurementId: "G-7064P2RFHN"
+            appId: "1:941619830061:web:de9e0f791eb8f6eacf87a4"
         };
 
-        // Initialize Firebase
+        const CLOUDINARY_CLOUD_NAME = 'dqkujefxj';
+        const CLOUDINARY_UPLOAD_PRESET = 'banter_box';
+
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const database = firebase.database();
 
         let currentUser = null;
+        let currentFollowing = {};
         let lastLoadedKey = null;
         let isLoading = false;
 
         // ==================== DARK MODE ====================
         function initDarkMode() {
-            const isDark = localStorage.getItem('darkMode') === 'true' || 
-                          (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches);
-            
-            if (isDark) {
-                document.documentElement.classList.add('dark');
-            }
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            if (isDark) document.documentElement.classList.add('dark');
             updateThemeIcon();
         }
 
         function toggleDarkMode() {
             document.documentElement.classList.toggle('dark');
-            const isDark = document.documentElement.classList.contains('dark');
-            localStorage.setItem('darkMode', isDark);
+            localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
             updateThemeIcon();
         }
 
         function updateThemeIcon() {
             const icon = document.getElementById('themeIcon');
-            const isDark = document.documentElement.classList.contains('dark');
-            icon.className = isDark ? 'fa-solid fa-sun text-lg' : 'fa-solid fa-moon text-lg';
+            icon.className = document.documentElement.classList.contains('dark') ? 'fa-solid fa-sun text-lg' : 'fa-solid fa-moon text-lg';
         }
 
-        // ==================== AUTHENTICATION ====================
-        function signInWithGoogle() {
+        // ==================== CLOUDINARY UPLOAD ====================
+        async function uploadToCloudinary(file, resourceType = 'video') {
+            const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`;
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+            const response = await fetch(url, { method: 'POST', body: formData });
+            return await response.json();
+        }
+
+        // ==================== AUTH ====================
+        async function signInWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider)
-                .then((result) => {
-                    // User signed in
-                    document.getElementById('loginScreen').classList.add('hidden');
-                    document.getElementById('mainApp').classList.remove('hidden');
-                })
-                .catch((error) => {
-                    alert("Sign in failed: " + error.message);
+            try {
+                const result = await auth.signInWithPopup(provider);
+                await ensureUserInDatabase(result.user);
+            } catch (error) {
+                alert("Sign in failed: " + error.message);
+            }
+        }
+
+        async function ensureUserInDatabase(user) {
+            const userRef = database.ref(`users/${user.uid}`);
+            const snapshot = await userRef.once('value');
+
+            if (!snapshot.exists()) {
+                await userRef.set({
+                    uid: user.uid,
+                    username: user.displayName || user.email.split('@')[0],
+                    avatar: user.photoURL || `https://i.pravatar.cc/100?u=${user.uid}`,
+                    bio: "Just joined Echo!",
+                    followersCount: 0,
+                    followingCount: 0,
+                    likesCount: 0,
+                    createdAt: Date.now()
                 });
+            }
         }
 
         function signOut() {
-            auth.signOut().then(() => {
-                document.getElementById('mainApp').classList.add('hidden');
-                document.getElementById('loginScreen').classList.remove('hidden');
-                document.getElementById('profileModal').classList.add('hidden');
-            });
+            auth.signOut();
         }
 
-        // ==================== INFINITE SCROLL ====================
+        // ==================== FOLLOW SYSTEM ====================
+        async function followUser(targetUid) {
+            if (!currentUser || currentUser.uid === targetUid) return;
+
+            const followRef = database.ref(`follows/${currentUser.uid}/${targetUid}`);
+            const userRef = database.ref(`users/${targetUid}`);
+            const currentUserRef = database.ref(`users/${currentUser.uid}`);
+
+            await followRef.set(true);
+
+            // Update counts
+            await userRef.child('followersCount').transaction(count => (count || 0) + 1);
+            await currentUserRef.child('followingCount').transaction(count => (count || 0) + 1);
+
+            currentFollowing[targetUid] = true;
+            refreshProfileModal(targetUid);
+        }
+
+        async function unfollowUser(targetUid) {
+            if (!currentUser) return;
+
+            const followRef = database.ref(`follows/${currentUser.uid}/${targetUid}`);
+            const userRef = database.ref(`users/${targetUid}`);
+            const currentUserRef = database.ref(`users/${currentUser.uid}`);
+
+            await followRef.remove();
+
+            await userRef.child('followersCount').transaction(count => Math.max((count || 0) - 1, 0));
+            await currentUserRef.child('followingCount').transaction(count => Math.max((count || 0) - 1, 0));
+
+            delete currentFollowing[targetUid];
+            refreshProfileModal(targetUid);
+        }
+
+        async function loadCurrentUserFollowing() {
+            if (!currentUser) return;
+            const snapshot = await database.ref(`follows/${currentUser.uid}`).once('value');
+            currentFollowing = snapshot.val() || {};
+        }
+
+        // ==================== PROFILE ====================
+        async function openProfile(user) {
+            if (!user) return;
+
+            const modal = document.getElementById('profileModal');
+            const userRef = database.ref(`users/${user.uid}`);
+            const snapshot = await userRef.once('value');
+            const userData = snapshot.val() || user;
+
+            // Set basic info
+            document.getElementById('profileAvatar').src = userData.avatar || 'https://i.pravatar.cc/100';
+            document.getElementById('profileUsername').textContent = userData.username;
+            document.getElementById('profileHandle').textContent = '@' + userData.username;
+            document.getElementById('profileBio').textContent = userData.bio || '';
+
+            document.getElementById('profileFollowers').textContent = userData.followersCount || 0;
+            document.getElementById('profileFollowing').textContent = userData.followingCount || 0;
+            document.getElementById('profileLikes').textContent = userData.likesCount || 0;
+
+            const actionsDiv = document.getElementById('profileActions');
+            actionsDiv.innerHTML = '';
+            document.getElementById('editProfileForm').classList.add('hidden');
+
+            const isOwnProfile = currentUser && currentUser.uid === user.uid;
+
+            if (isOwnProfile) {
+                // Own profile - Edit button
+                actionsDiv.innerHTML = `
+                    <button onclick="showEditProfileForm()" class="w-full py-2.5 bg-black dark:bg-white dark:text-black text-white rounded-full font-medium text-sm">Edit Profile</button>
+                `;
+            } else {
+                // Other user's profile
+                const isFollowing = currentFollowing[user.uid];
+                actionsDiv.innerHTML = `
+                    <button onclick="${isFollowing ? 'unfollowUser' : 'followUser'}('${user.uid}')" 
+                            class="w-full py-2.5 ${isFollowing ? 'bg-gray-200 dark:bg-zinc-700 text-black dark:text-white' : 'bg-black dark:bg-white dark:text-black text-white'} rounded-full font-medium text-sm">
+                        ${isFollowing ? 'Following' : 'Follow'}
+                    </button>
+                `;
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function showEditProfileForm() {
+            document.getElementById('profileActions').classList.add('hidden');
+            const form = document.getElementById('editProfileForm');
+            form.classList.remove('hidden');
+
+            document.getElementById('editUsername').value = document.getElementById('profileUsername').textContent;
+            document.getElementById('editBio').value = document.getElementById('profileBio').textContent;
+        }
+
+        async function saveProfileChanges() {
+            if (!currentUser) return;
+
+            const newUsername = document.getElementById('editUsername').value.trim();
+            const newBio = document.getElementById('editBio').value.trim();
+
+            await database.ref(`users/${currentUser.uid}`).update({
+                username: newUsername,
+                bio: newBio
+            });
+
+            // Update current user
+            currentUser.username = newUsername;
+            document.getElementById('navAvatar').src = currentUser.avatar;
+
+            closeProfileModal();
+            // Reopen to refresh
+            setTimeout(() => openProfile(currentUser), 300);
+        }
+
+        function cancelEditProfile() {
+            document.getElementById('editProfileForm').classList.add('hidden');
+            document.getElementById('profileActions').classList.remove('hidden');
+        }
+
+        async function changeProfilePicture() {
+            if (!currentUser) return;
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                try {
+                    const result = await uploadToCloudinary(file, 'image');
+                    const newAvatar = result.secure_url;
+
+                    await database.ref(`users/${currentUser.uid}/avatar`).set(newAvatar);
+                    currentUser.avatar = newAvatar;
+                    document.getElementById('navAvatar').src = newAvatar;
+                    document.getElementById('profileAvatar').src = newAvatar;
+                } catch (err) {
+                    alert("Failed to upload image: " + err.message);
+                }
+            };
+            input.click();
+        }
+
+        function refreshProfileModal(uid) {
+            if (currentUser && currentUser.uid === uid) {
+                openProfile(currentUser);
+            }
+        }
+
+        function closeProfileModal() {
+            const modal = document.getElementById('profileModal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            document.getElementById('editProfileForm').classList.add('hidden');
+            document.getElementById('profileActions').classList.remove('hidden');
+        }
+
+        // ==================== VIDEO UPLOAD ====================
+        function showUploadModal() {
+            document.getElementById('uploadModal').classList.remove('hidden');
+            document.getElementById('uploadModal').classList.add('flex');
+        }
+
+        function hideUploadModal() {
+            const modal = document.getElementById('uploadModal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            document.getElementById('videoFile').value = '';
+            document.getElementById('videoDescription').value = '';
+        }
+
+        async function uploadVideo() {
+            const fileInput = document.getElementById('videoFile');
+            const description = document.getElementById('videoDescription').value.trim();
+            const file = fileInput.files[0];
+
+            if (!file || !currentUser) {
+                alert("Please select a video file");
+                return;
+            }
+
+            const uploadBtn = event.currentTarget;
+            try {
+                const result = await uploadToCloudinary(file, 'video');
+                const videoUrl = result.secure_url;
+
+                const newVideoRef = database.ref('videos').push();
+                await newVideoRef.set({
+                    userId: currentUser.uid,
+                    username: currentUser.username,
+                    avatar: currentUser.avatar,
+                    description: description || "New video",
+                    videoUrl: videoUrl,
+                    likes: 0,
+                    commentsCount: 0,
+                    timestamp: Date.now()
+                });
+
+                hideUploadModal();
+                alert("Video uploaded successfully!");
+                switchTab('foryou'); // refresh feed
+            } catch (error) {
+                alert("Upload failed: " + error.message);
+            }
+        }
+
+        // ==================== RENDER VIDEOS ====================
+        function renderVideo(video, container) {
+            const div = document.createElement('div');
+            div.className = 'video-card flex justify-center py-2 lg:py-4';
+            div.innerHTML = `
+                <div class="w-full max-w-[480px] px-2">
+                    <div class="relative bg-black rounded-3xl overflow-hidden shadow-sm video-container mx-auto">
+                        ${video.videoUrl ? 
+                            `<video src="${video.videoUrl}" class="w-full h-full object-cover" muted loop></video>` : 
+                            `<div class="w-full h-full flex items-center justify-center bg-zinc-800"><i class="fa-solid fa-play text-6xl text-white/60"></i></div>`
+                        }
+                        
+                        <div class="absolute bottom-0 left-0 right-0 p-4 video-overlay text-white">
+                            <div>
+                                <div class="flex items-center gap-x-2">
+                                    <span onclick="openProfileById('${video.userId}', event)" class="font-semibold cursor-pointer hover:underline">${video.username}</span>
+                                </div>
+                                <p class="text-sm mt-1 line-clamp-2">${video.description || ''}</p>
+                            </div>
+                        </div>
+
+                        <div class="absolute right-3 bottom-20 flex flex-col items-center gap-y-5 text-white">
+                            <div onclick="openProfileById('${video.userId}', event)" class="cursor-pointer">
+                                <img src="${video.avatar || 'https://i.pravatar.cc/40'}" class="w-10 h-10 rounded-full border-2 border-white object-cover">
+                            </div>
+
+                            <div onclick="likeVideo(this, '${video.id}')" class="flex flex-col items-center cursor-pointer">
+                                <i class="fa-solid fa-heart text-3xl"></i>
+                                <span class="text-xs font-medium mt-0.5" id="likes-${video.id}">${formatCount(video.likes || 0)}</span>
+                            </div>
+
+                            <div onclick="showComments('${video.id}')" class="flex flex-col items-center cursor-pointer">
+                                <i class="fa-solid fa-comment-dots text-3xl"></i>
+                                <span class="text-xs font-medium mt-0.5">${video.commentsCount || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add video play/pause on click
+            const videoEl = div.querySelector('video');
+            if (videoEl) {
+                videoEl.addEventListener('click', () => {
+                    if (videoEl.paused) videoEl.play();
+                    else videoEl.pause();
+                });
+            }
+            
+            container.appendChild(div);
+        }
+
+        function formatCount(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num;
+        }
+
+        // ==================== LIKE ====================
+        async function likeVideo(element, videoId) {
+            const likesRef = database.ref(`videos/${videoId}/likes`);
+            const countEl = element.querySelector('span');
+
+            const result = await likesRef.transaction(current => (current || 0) + 1);
+            if (result.committed) {
+                countEl.textContent = formatCount(result.snapshot.val());
+            }
+        }
+
+        // ==================== LOAD VIDEOS ====================
+        async function loadVideos(tab) {
+            const container = document.getElementById(tab);
+            container.innerHTML = '';
+            lastLoadedKey = null;
+
+            let query = database.ref('videos').orderByKey().limitToLast(6);
+
+            const snapshot = await query.once('value');
+            if (!snapshot.exists()) {
+                container.innerHTML = `<div class="p-8 text-center text-gray-400">No videos yet. Be the first to upload!</div>`;
+                return;
+            }
+
+            let videos = [];
+            snapshot.forEach(child => {
+                videos.unshift({ id: child.key, ...child.val() });
+            });
+
+            // Filter for Following tab
+            if (tab === 'following') {
+                videos = videos.filter(v => currentFollowing[v.userId]);
+                if (videos.length === 0) {
+                    container.innerHTML = `<div class="p-8 text-center text-gray-400">Follow some creators to see their videos here.</div>`;
+                    return;
+                }
+            }
+
+            videos.forEach(video => renderVideo(video, container));
+            if (videos.length > 0) lastLoadedKey = videos[0].id;
+        }
+
+        async function loadMoreVideos(tab) {
+            if (isLoading || !lastLoadedKey) return;
+            isLoading = true;
+
+            const container = document.getElementById(tab);
+            const query = database.ref('videos').orderByKey().endBefore(lastLoadedKey).limitToLast(4);
+
+            const snapshot = await query.once('value');
+            if (!snapshot.exists()) {
+                isLoading = false;
+                return;
+            }
+
+            let videos = [];
+            snapshot.forEach(child => videos.unshift({ id: child.key, ...child.val() }));
+
+            if (tab === 'following') {
+                videos = videos.filter(v => currentFollowing[v.userId]);
+            }
+
+            videos.forEach(video => renderVideo(video, container));
+            if (videos.length > 0) lastLoadedKey = videos[0].id;
+            isLoading = false;
+        }
+
         function setupInfiniteScroll(tab) {
             const container = document.getElementById(tab);
-            
             container.addEventListener('scroll', () => {
-                if (isLoading) return;
-                
-                const { scrollTop, scrollHeight, clientHeight } = container;
-                
-                if (scrollTop + clientHeight >= scrollHeight - 200) {
+                if (container.scrollTop + container.clientHeight >= container.scrollHeight - 300) {
                     loadMoreVideos(tab);
                 }
             });
         }
 
-        function loadMoreVideos(tab) {
-            if (isLoading) return;
-            isLoading = true;
-
-            const container = document.getElementById(tab);
-            const videosRef = database.ref('videos');
-
-            let query = videosRef.orderByKey().limitToLast(5);
-            
-            if (lastLoadedKey) {
-                query = videosRef.orderByKey().endBefore(lastLoadedKey).limitToLast(5);
-            }
-
-            query.once('value')
-                .then(snapshot => {
-                    if (!snapshot.exists()) {
-                        isLoading = false;
-                        return;
-                    }
-
-                    const videos = [];
-                    snapshot.forEach(child => {
-                        videos.unshift({ id: child.key, ...child.val() });
-                    });
-
-                    if (videos.length > 0) {
-                        lastLoadedKey = videos[0].id;
-                        renderVideoCards(videos, container);
-                    }
-                    isLoading = false;
-                })
-                .catch(err => {
-                    console.error(err);
-                    isLoading = false;
-                });
-        }
-
-        // ==================== RENDER VIDEOS ====================
-        function renderVideoCards(videos, container) {
-            videos.forEach(video => {
-                const videoHTML = `
-                    <div class="video-card flex justify-center py-2 lg:py-4">
-                        <div class="w-full max-w-[480px] px-2">
-                            <div class="relative bg-black rounded-3xl overflow-hidden shadow-sm video-container mx-auto">
-                                <div class="w-full h-full bg-gradient-to-br ${video.bgColor || 'from-zinc-700 to-zinc-900'} flex items-center justify-center relative">
-                                    <div class="text-center">
-                                        <i class="fa-solid fa-play text-6xl text-white/60 mb-2"></i>
-                                        <p class="text-white/60 text-sm">Video</p>
-                                    </div>
-                                    
-                                    <div class="absolute bottom-0 left-0 right-0 p-4 video-overlay text-white">
-                                        <div>
-                                            <div class="flex items-center gap-x-2">
-                                                <span onclick="openProfileByUsername('${video.username}', '${video.avatar}', event)" 
-                                                      class="font-semibold cursor-pointer hover:underline">${video.username}</span>
-                                            </div>
-                                            <p class="text-sm mt-1 line-clamp-2">${video.description || ''}</p>
-                                            <div class="flex items-center gap-x-1.5 mt-2 text-xs">
-                                                <i class="fa-solid fa-music"></i>
-                                                <span>${video.sound || 'Original sound'}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="absolute right-3 bottom-20 flex flex-col items-center gap-y-5 text-white">
-                                        <div onclick="openProfileByUsername('${video.username}', '${video.avatar}', event)" 
-                                             class="cursor-pointer">
-                                            <div class="relative">
-                                                <img src="${video.avatar || 'https://i.pravatar.cc/40'}" 
-                                                     class="w-10 h-10 rounded-full border-2 border-white object-cover" alt="">
-                                            </div>
-                                        </div>
-
-                                        <div onclick="likeVideo(this, '${video.id}')" class="flex flex-col items-center cursor-pointer">
-                                            <i class="fa-solid fa-heart text-3xl"></i>
-                                            <span class="text-xs font-medium mt-0.5" id="likes-${video.id}">${formatLikes(video.likes || 0)}</span>
-                                        </div>
-
-                                        <div onclick="showComments('${video.id}')" class="flex flex-col items-center cursor-pointer">
-                                            <i class="fa-solid fa-comment-dots text-3xl"></i>
-                                            <span class="text-xs font-medium mt-0.5">${video.commentsCount || 0}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                container.innerHTML += videoHTML;
-            });
-        }
-
-        function formatLikes(likes) {
-            if (likes >= 1000000) return (likes / 1000000).toFixed(1) + 'M';
-            if (likes >= 1000) return (likes / 1000).toFixed(1) + 'K';
-            return likes;
-        }
-
-        // ==================== LIKE FUNCTIONALITY ====================
-        function likeVideo(element, videoId) {
-            const likesRef = database.ref(`videos/${videoId}/likes`);
-            const countEl = element.querySelector('span');
-
-            likesRef.transaction(currentLikes => {
-                return (currentLikes || 0) + 1;
-            }).then(result => {
-                if (result.committed) {
-                    countEl.textContent = formatLikes(result.snapshot.val());
-                }
-            });
-        }
-
-        // ==================== LOAD INITIAL VIDEOS ====================
-        function loadInitialVideos(tab) {
-            const container = document.getElementById(tab);
-            container.innerHTML = '';
-            lastLoadedKey = null;
-            isLoading = false;
-
-            const videosRef = database.ref('videos').orderByKey().limitToLast(5);
-
-            videosRef.once('value').then(snapshot => {
-                if (!snapshot.exists()) {
-                    container.innerHTML = `<div class="p-8 text-center text-gray-400">No videos yet. Add some in Firebase.</div>`;
-                    return;
-                }
-
-                const videos = [];
-                snapshot.forEach(child => {
-                    videos.unshift({ id: child.key, ...child.val() });
-                });
-
-                if (videos.length > 0) {
-                    lastLoadedKey = videos[0].id;
-                    renderVideoCards(videos, container);
-                }
-            });
-        }
-
-        // ==================== TAB SWITCHING ====================
+        // ==================== TABS ====================
         function switchTab(tab) {
-            document.querySelectorAll('.feed').forEach(feed => feed.classList.add('hidden'));
+            document.querySelectorAll('.feed').forEach(f => f.classList.add('hidden'));
             document.getElementById(tab).classList.remove('hidden');
 
-            // Update mobile tabs
             document.querySelectorAll('.tab').forEach(t => {
                 t.classList.remove('tab-active', 'text-black', 'dark:text-white');
                 t.classList.add('text-gray-500', 'dark:text-gray-400');
@@ -423,114 +627,61 @@
                 }
             });
 
-            // Update sidebar
             document.querySelectorAll('.tab-item').forEach(item => {
                 item.classList.remove('bg-gray-100', 'dark:bg-zinc-800');
-                if (item.getAttribute('data-tab') === tab) {
-                    item.classList.add('bg-gray-100', 'dark:bg-zinc-800');
-                }
+                if (item.getAttribute('data-tab') === tab) item.classList.add('bg-gray-100', 'dark:bg-zinc-800');
             });
 
-            // Load videos if feed is empty
-            const feed = document.getElementById(tab);
-            if (feed.innerHTML.trim() === '') {
-                loadInitialVideos(tab);
-            }
+            loadVideos(tab);
         }
 
-        // ==================== PROFILE ====================
-        let currentProfileUser = null;
-
-        function openProfileByUsername(username, avatar, event) {
+        function openProfileById(uid, event) {
             if (event) event.stopImmediatePropagation();
-            
-            const profileData = {
-                username: username,
-                avatar: avatar || 'https://i.pravatar.cc/100',
-                uid: null
-            };
-            openProfile(profileData);
-        }
-
-        function openProfile(userData) {
-            if (!userData) return;
-            
-            currentProfileUser = userData;
-            const modal = document.getElementById('profileModal');
-
-            document.getElementById('profileAvatar').src = userData.avatar || 'https://i.pravatar.cc/100';
-            document.getElementById('profileUsername').textContent = userData.username || 'User';
-            document.getElementById('profileHandle').textContent = '@' + (userData.username || 'user');
-
-            // Fake stats (can be improved later)
-            document.getElementById('profileFollowers').textContent = '124.8K';
-            document.getElementById('profileFollowing').textContent = '342';
-            document.getElementById('profileLikes').textContent = '2.4M';
-
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeProfileModal() {
-            const modal = document.getElementById('profileModal');
-            modal.classList.remove('flex');
-            modal.classList.add('hidden');
-        }
-
-        // ==================== OTHER FUNCTIONS ====================
-        function showUploadModal() {
-            document.getElementById('uploadModal').classList.remove('hidden');
-            document.getElementById('uploadModal').classList.add('flex');
-        }
-
-        function hideUploadModal() {
-            const modal = document.getElementById('uploadModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            database.ref(`users/${uid}`).once('value').then(snapshot => {
+                const userData = snapshot.val();
+                if (userData) openProfile(userData);
+            });
         }
 
         function showComments(videoId) {
-            alert("Comments feature coming soon. Video ID: " + videoId);
+            alert("Comments coming soon. Video ID: " + videoId);
         }
 
-        // ==================== INITIALIZATION ====================
+        // ==================== INIT ====================
         function initApp() {
             initDarkMode();
 
-            // Auth state listener
-            auth.onAuthStateChanged(user => {
+            auth.onAuthStateChanged(async (user) => {
                 if (user) {
-                    currentUser = {
+                    const userSnapshot = await database.ref(`users/${user.uid}`).once('value');
+                    currentUser = userSnapshot.val() || {
                         uid: user.uid,
                         username: user.displayName || user.email.split('@')[0],
                         avatar: user.photoURL || 'https://i.pravatar.cc/32'
                     };
 
-                    // Show main app
                     document.getElementById('loginScreen').classList.add('hidden');
                     document.getElementById('mainApp').classList.remove('hidden');
 
-                    // Set navbar avatar
                     document.getElementById('navAvatar').src = currentUser.avatar;
 
-                    // Load initial feed
-                    loadInitialVideos('foryou');
+                    await loadCurrentUserFollowing();
+                    loadVideos('foryou');
                     setupInfiniteScroll('foryou');
+                    setupInfiniteScroll('following');
+                    setupInfiniteScroll('discover');
 
-                    // Set default sidebar active
+                    // Set default active tab
                     const defaultTab = document.querySelector('.tab-item[data-tab="foryou"]');
                     if (defaultTab) defaultTab.classList.add('bg-gray-100', 'dark:bg-zinc-800');
 
                 } else {
-                    // Show login screen
                     document.getElementById('mainApp').classList.add('hidden');
                     document.getElementById('loginScreen').classList.remove('hidden');
+                    currentUser = null;
+                    currentFollowing = {};
                 }
             });
-
-            // Setup infinite scroll for other tabs
-            setupInfiniteScroll('following');
-            setupInfiniteScroll('discover');
         }
 
         window.onload = initApp;
