@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Client Messenger</title>
+    <style>
+        body { font-family: sans-serif; max-width: 500px; margin: 40px auto; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, textarea { width: 100%; padding: 8px; box-sizing: border-box; }
+        button { padding: 10px 15px; background-color: #25D366; color: white; border: none; cursor: pointer; font-size: 16px; }
+        button:disabled { background-color: #ccc; }
+        #status { margin-top: 15px; padding: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+    <h2>Send WhatsApp Message</h2>
+    
+    <div class="form-group">
+        <label for="phone">Client Phone Number (with country code, no +)</label>
+        <input type="text" id="phone" placeholder="e.g., 27821234567">
+    </div>
+
+    <div class="form-group">
+        <label for="message">Message</label>
+        <textarea id="message" rows="4" placeholder="Type your message here..."></textarea>
+    </div>
+
+    <button id="sendBtn" disabled>Loading Config...</button>
+    <div id="status"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getRemoteConfig, fetchAndActivate, getValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-remote-config.js";
+
+        // Your specific Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDllNp4lOwf8VNElzM16pBug8pLB6-9XNY",
+            authDomain: "newstart-64c43.firebaseapp.com",
+            databaseURL: "https://newstart-64c43-default-rtdb.firebaseio.com",
+            projectId: "newstart-64c43",
+            storageBucket: "newstart-64c43.firebasestorage.app",
+            messagingSenderId: "941619830061",
+            appId: "1:941619830061:web:097b8f4f50c9486bcf87a4",
+            measurementId: "G-ZGV4MDXC7W"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const remoteConfig = getRemoteConfig(app);
+        
+        // Lowering fetch interval for development testing
+        remoteConfig.settings.minimumFetchIntervalMillis = 10000;
+
+        const sendBtn = document.getElementById('sendBtn');
+        const statusDiv = document.getElementById('status');
+
+        // Fetch Remote Config on load
+        async function initializeConfig() {
+            try {
+                await fetchAndActivate(remoteConfig);
+                sendBtn.textContent = "Send Message";
+                sendBtn.disabled = false;
+            } catch (error) {
+                showStatus("Failed to load Firebase Config: " + error.message, "red");
+            }
+        }
+
+        // Send WhatsApp Message
+        async function sendMessage() {
+            const phone = document.getElementById('phone').value;
+            const messageText = document.getElementById('message').value;
+
+            if (!phone || !messageText) {
+                showStatus("Please enter both phone number and message.", "red");
+                return;
+            }
+
+            sendBtn.disabled = true;
+            sendBtn.textContent = "Sending...";
+
+            // Retrieve credentials from Remote Config
+            const waToken = getValue(remoteConfig, "wa_api_token").asString();
+            const waPhoneId = getValue(remoteConfig, "wa_phone_number_id").asString();
+
+            if (!waToken || !waPhoneId) {
+                showStatus("WhatsApp credentials missing in Remote Config.", "red");
+                sendBtn.disabled = false;
+                sendBtn.textContent = "Send Message";
+                return;
+            }
+
+            const url = `https://graph.facebook.com/v18.0/${waPhoneId}/messages`;
+            
+            const payload = {
+                messaging_product: "whatsapp",
+                recipient_type: "individual",
+                to: phone,
+                type: "text",
+                text: { 
+                    preview_url: false,
+                    body: messageText 
+                }
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${waToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showStatus("Message sent successfully!", "green");
+                    document.getElementById('message').value = '';
+                } else {
+                    showStatus("Error sending message: " + (data.error?.message || "Unknown error"), "red");
+                }
+            } catch (error) {
+                showStatus("Network error: " + error.message, "red");
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = "Send Message";
+            }
+        }
+
+        function showStatus(text, color) {
+            statusDiv.style.display = 'block';
+            statusDiv.style.backgroundColor = color === 'green' ? '#d4edda' : '#f8d7da';
+            statusDiv.style.color = color === 'green' ? '#155724' : '#721c24';
+            statusDiv.textContent = text;
+        }
+
+        // Event Listeners
+        sendBtn.addEventListener('click', sendMessage);
+        
+        // Boot up
+        initializeConfig();
+    </script>
+</body>
+</html>
