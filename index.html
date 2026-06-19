@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Deliveroo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Poppins:wght@600&amp;display=swap');
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .deliveroo-orange {
+            color: #FF4D00;
+        }
+        
+        .mobile-container {
+            max-width: 420px;
+            margin: 0 auto;
+            box-shadow: 0 0 0 1px #e5e7eb;
+            min-height: 100vh;
+            background: white;
+        }
+
+        .merchant-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .merchant-card:active {
+            transform: scale(0.98);
+        }
+
+        .category-pill {
+            transition: all 0.2s ease;
+        }
+
+        .category-pill.active {
+            background-color: #FF4D00;
+            color: white;
+            border-color: #FF4D00;
+        }
+
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .bottom-nav {
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .deliveroo-header {
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .merchant-type {
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="bg-zinc-100 flex items-center justify-center min-h-screen">
+    <!-- Mobile Container -->
+    <div class="mobile-container w-full bg-white overflow-hidden flex flex-col" style="max-width: 420px; height: 100vh; max-height: 844px;">
+        
+        <!-- Header -->
+        <div class="px-4 pt-3 pb-2 bg-white sticky top-0 z-50 border-b">
+            <div class="flex items-center justify-between">
+                <!-- Location -->
+                <div class="flex items-center gap-x-2">
+                    <div>
+                        <div class="flex items-center gap-x-1.5">
+                            <i class="fa-solid fa-location-dot text-[#FF4D00]"></i>
+                            <div>
+                                <p class="text-[10px] text-zinc-500 font-medium tracking-wide">DELIVERING TO</p>
+                                <p class="font-semibold text-sm leading-none">Shoreditch, London</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-x-3">
+                    <div class="flex items-center bg-zinc-100 rounded-2xl px-3 py-1 text-xs">
+                        <i class="fa-solid fa-clock text-zinc-500 mr-1.5"></i>
+                        <span class="font-medium text-zinc-700">25 min</span>
+                    </div>
+                    <div class="w-8 h-8 rounded-full overflow-hidden ring-2 ring-zinc-100">
+                        <img src="https://i.pravatar.cc/32?img=32" alt="Profile" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-y-auto pb-20" id="main-content">
+            
+            <!-- HOME SCREEN -->
+            <div id="home-screen">
+                
+                <!-- Search -->
+                <div class="px-4 pt-3 pb-3 bg-white sticky top-[57px] z-40">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="search-input"
+                            placeholder="Search restaurants and shops..."
+                            class="w-full bg-zinc-100 border border-zinc-200 rounded-3xl pl-10 py-3 text-sm focus:outline-none focus:border-[#FF4D00]">
+                        <i class="fa-solid fa-search absolute left-4 top-3.5 text-zinc-400"></i>
+                    </div>
+                </div>
+
+                <!-- Top Category Tabs -->
+                <div class="px-4 pt-1 pb-3 bg-white">
+                    <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide" id="top-tabs">
+                        <div onclick="filterByType('all')" 
+                             class="category-pill active px-5 py-1.5 text-sm font-medium border border-zinc-200 rounded-2xl flex items-center gap-x-2 whitespace-nowrap cursor-pointer" data-type="all">
+                            <span>All</span>
+                        </div>
+                        <div onclick="filterByType('restaurant')" 
+                             class="category-pill px-5 py-1.5 text-sm font-medium border border-zinc-200 rounded-2xl flex items-center gap-x-2 whitespace-nowrap cursor-pointer" data-type="restaurant">
+                            <i class="fa-solid fa-utensils"></i>
+                            <span>Restaurants</span>
+                        </div>
+                        <div onclick="filterByType('shop')" 
+                             class="category-pill px-5 py-1.5 text-sm font-medium border border-zinc-200 rounded-2xl flex items-center gap-x-2 whitespace-nowrap cursor-pointer" data-type="shop">
+                            <i class="fa-solid fa-store"></i>
+                            <span>Shops</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Categories -->
+                <div class="px-4 pb-4">
+                    <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                        <div onclick="quickFilter('pizza')" class="px-4 py-1.5 bg-white border border-zinc-200 rounded-2xl text-sm font-medium flex-shrink-0 flex items-center gap-x-2 cursor-pointer">
+                            <i class="fa-solid fa-pizza-slice"></i>
+                            <span>Pizza</span>
+                        </div>
+                        <div onclick="quickFilter('asian')" class="px-4 py-1.5 bg-white border border-zinc-200 rounded-2xl text-sm font-medium flex-shrink-0 flex items-center gap-x-2 cursor-pointer">
+                            <span>Asian</span>
+                        </div>
+                        <div onclick="quickFilter('burger')" class="px-4 py-1.5 bg-white border border-zinc-200 rounded-2xl text-sm font-medium flex-shrink-0 flex items-center gap-x-2 cursor-pointer">
+                            <span>Burgers</span>
+                        </div>
+                        <div onclick="quickFilter('grocery')" class="px-4 py-1.5 bg-white border border-zinc-200 rounded-2xl text-sm font-medium flex-shrink-0 flex items-center gap-x-2 cursor-pointer">
+                            <i class="fa-solid fa-carrot"></i>
+                            <span>Groceries</span>
+                        </div>
+                        <div onclick="quickFilter('convenience')" class="px-4 py-1.5 bg-white border border-zinc-200 rounded-2xl text-sm font-medium flex-shrink-0 flex items-center gap-x-2 cursor-pointer">
+                            <span>Convenience</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Merchants List -->
+                <div class="px-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="section-title">Popular near you</h3>
+                        <span class="text-xs font-medium text-zinc-500">48 places</span>
+                    </div>
+                    
+                    <div id="merchant-list" class="space-y-3">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- MERCHANT DETAIL SCREEN -->
+            <div id="merchant-screen" class="hidden">
+                <div class="bg-white">
+                    <!-- Merchant Header -->
+                    <div id="merchant-header" class="relative">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <!-- Merchant Info -->
+                    <div class="px-4 py-3 border-b">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 id="merchant-name" class="text-xl font-semibold"></h2>
+                                <p id="merchant-subtitle" class="text-sm text-zinc-500"></p>
+                            </div>
+                            <div class="text-right">
+                                <div class="flex items-center justify-end gap-x-1">
+                                    <i class="fa-solid fa-star text-yellow-400"></i>
+                                    <span id="merchant-rating" class="font-semibold"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-4 py-3 flex items-center gap-x-4 text-sm border-b">
+                        <div class="flex items-center gap-x-2">
+                            <i class="fa-solid fa-motorcycle text-[#FF4D00]"></i>
+                            <span id="merchant-delivery"></span>
+                        </div>
+                        <div class="h-3 w-px bg-zinc-200"></div>
+                        <div id="merchant-min-order"></div>
+                    </div>
+
+                    <!-- Menu / Products -->
+                    <div class="px-4 pt-4 pb-6">
+                        <h3 class="font-semibold mb-3 px-1" id="menu-title">Menu</h3>
+                        <div id="product-list" class="space-y-2">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Bottom Sheet -->
+        <div id="cart-sheet" class="hidden fixed inset-0 z-50 bg-black bg-opacity-40" onclick="hideCart()">
+            <div onclick="event.stopImmediatePropagation()" 
+                 class="absolute bottom-0 w-full max-w-[420px] bg-white rounded-t-3xl shadow-2xl flex flex-col"
+                 style="height: 70vh; max-height: 620px;">
+                
+                <div class="p-4 flex items-center justify-between border-b">
+                    <h3 class="font-semibold text-lg">Your order</h3>
+                    <button onclick="hideCart()" class="text-zinc-400 hover:text-zinc-600">
+                        <i class="fa-solid fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto p-4" id="cart-items">
+                    <!-- Dynamic cart items -->
+                </div>
+
+                <div class="border-t p-4">
+                    <div class="flex justify-between items-center mb-4 px-1">
+                        <span class="text-zinc-600">Total</span>
+                        <span id="cart-total" class="font-bold text-xl">£0.00</span>
+                    </div>
+                    
+                    <button onclick="placeOrder()" 
+                            class="w-full bg-[#FF4D00] hover:bg-[#e64400] text-white font-semibold py-3.5 rounded-2xl transition-colors">
+                        Checkout • <span id="cart-total-button">£0.00</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="fixed bottom-0 w-full max-w-[420px] bg-white border-t z-50">
+            <div class="flex items-center h-16">
+                <div onclick="showHomeScreen()" class="flex-1 flex flex-col items-center justify-center text-[#FF4D00]">
+                    <i class="fa-solid fa-home"></i>
+                    <span class="text-[10px] font-medium">Home</span>
+                </div>
+                <div onclick="showOrders()" class="flex-1 flex flex-col items-center justify-center text-zinc-400">
+                    <i class="fa-solid fa-receipt"></i>
+                    <span class="text-[10px] font-medium">Orders</span>
+                </div>
+                <div onclick="showCart()" class="flex-1 flex flex-col items-center justify-center text-zinc-400 relative">
+                    <i class="fa-solid fa-shopping-bag"></i>
+                    <span class="text-[10px] font-medium">Cart</span>
+                    <span id="cart-badge" 
+                          class="absolute top-1 right-6 bg-[#FF4D00] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-medium hidden">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DATA ====================
+        let merchants = [
+            {
+                id: 1,
+                type: "restaurant",
+                name: "Pizza Express",
+                subtitle: "Italian • Pizza",
+                rating: 4.6,
+                deliveryTime: "15-25 min",
+                deliveryFee: 2.49,
+                minOrder: 10,
+                category: "pizza",
+                image: "https://picsum.photos/id/292/400/250",
+                distance: "0.6 mi"
+            },
+            {
+                id: 2,
+                type: "restaurant",
+                name: "Sushi & Co",
+                subtitle: "Japanese • Sushi",
+                rating: 4.8,
+                deliveryTime: "20-30 min",
+                deliveryFee: 3.99,
+                minOrder: 15,
+                category: "asian",
+                image: "https://picsum.photos/id/312/400/250",
+                distance: "1.1 mi"
+            },
+            {
+                id: 3,
+                type: "restaurant",
+                name: "Burger & Co",
+                subtitle: "American • Burgers",
+                rating: 4.4,
+                deliveryTime: "10-20 min",
+                deliveryFee: 1.99,
+                minOrder: 8,
+                category: "burger",
+                image: "https://picsum.photos/id/292/400/250",
+                distance: "0.4 mi"
+            },
+            {
+                id: 4,
+                type: "shop",
+                name: "Co-op",
+                subtitle: "Convenience • Groceries",
+                rating: 4.3,
+                deliveryTime: "10-15 min",
+                deliveryFee: 1.49,
+                minOrder: 5,
+                category: "convenience",
+                image: "https://picsum.photos/id/160/400/250",
+                distance: "0.3 mi"
+            },
+            {
+                id: 5,
+                type: "shop",
+                name: "Fresh & Co",
+                subtitle: "Groceries • Produce",
+                rating: 4.7,
+                deliveryTime: "15-25 min",
+                deliveryFee: 2.99,
+                minOrder: 10,
+                category: "grocery",
+                image: "https://picsum.photos/id/1060/400/250",
+                distance: "1.3 mi"
+            },
+            {
+                id: 6,
+                type: "restaurant",
+                name: "Thai Orchid",
+                subtitle: "Thai • Asian",
+                rating: 4.5,
+                deliveryTime: "20-30 min",
+                deliveryFee: 2.99,
+                minOrder: 12,
+                category: "asian",
+                image: "https://picsum.photos/id/292/400/250",
+                distance: "1.8 mi"
+            },
+            {
+                id: 7,
+                type: "shop",
+                name: "Boots Pharmacy",
+                subtitle: "Pharmacy • Health",
+                rating: 4.2,
+                deliveryTime: "15-20 min",
+                deliveryFee: 1.99,
+                minOrder: 5,
+                category: "convenience",
+                image: "https://picsum.photos/id/201/400/250",
+                distance: "0.7 mi"
+            }
+        ];
+
+        const products = {
+            // Restaurants
+            1: [
+                { id: 101, name: "Margherita Pizza", price: 9.99, description: "Tomato, mozzarella, fresh basil" },
+                { id: 102, name: "Pepperoni Pizza", price: 11.99, description: "Pepperoni, mozzarella, tomato sauce" },
+                { id: 103, name: "Garlic Bread", price: 4.49, description: "With rosemary and sea salt" },
+            ],
+            2: [
+                { id: 201, name: "Salmon Avocado Roll", price: 7.99, description: "6 pieces" },
+                { id: 202, name: "Spicy Tuna Roll", price: 8.99, description: "6 pieces" },
+                { id: 203, name: "Chicken Katsu Curry", price: 12.99, description: "With rice" },
+            ],
+            3: [
+                { id: 301, name: "Classic Cheeseburger", price: 7.99, description: "Beef, cheese, pickles, sauce" },
+                { id: 302, name: "Bacon Burger", price: 9.49, description: "Beef, bacon, cheese" },
+                { id: 303, name: "Crispy Fries", price: 3.49, description: "Seasoned" },
+            ],
+            6: [
+                { id: 601, name: "Pad Thai", price: 11.99, description: "Chicken, prawns, peanuts" },
+                { id: 602, name: "Green Curry", price: 12.49, description: "Chicken, aubergine, basil" },
+            ],
+            // Shops
+            4: [
+                { id: 401, name: "Whole Milk 1L", price: 1.29, description: "Fresh British milk" },
+                { id: 402, name: "Bananas (5 pack)", price: 1.49, description: "Ripe bananas" },
+                { id: 403, name: "White Bread", price: 1.10, description: "Sliced white bread" },
+                { id: 404, name: "Coca-Cola 500ml", price: 1.69, description: "Classic" },
+            ],
+            5: [
+                { id: 501, name: "Avocados (4 pack)", price: 2.49, description: "Ready to eat" },
+                { id: 502, name: "Chicken Breast 500g", price: 4.99, description: "Free range" },
+                { id: 503, name: "Organic Eggs (6)", price: 2.29, description: "Large free range" },
+                { id: 504, name: "Broccoli", price: 0.99, description: "Fresh" },
+            ],
+            7: [
+                { id: 701, name: "Paracetamol 500mg", price: 2.99, description: "16 tablets" },
+                { id: 702, name: "Hand Sanitiser 250ml", price: 3.49, description: "Alcohol based" },
+                { id: 703, name: "Plasters (Pack of 20)", price: 2.49, description: "Assorted sizes" },
+            ]
+        };
+
+        // ==================== STATE ====================
+        let cart = [];
+        let currentMerchant = null;
+        let currentFilter = 'all';
+
+        // ==================== RENDER MERCHANTS ====================
+        function renderMerchants(filteredMerchants = merchants) {
+            const container = document.getElementById('merchant-list');
+            container.innerHTML = '';
+
+            if (filteredMerchants.length === 0) {
+                container.innerHTML = `<p class="text-center text-zinc-500 py-8">No results found</p>`;
+                return;
+            }
+
+            filteredMerchants.forEach(merchant => {
+                const isShop = merchant.type === 'shop';
+                
+                const card = document.createElement('div');
+                card.className = `merchant-card bg-white border border-zinc-200 rounded-2xl overflow-hidden cursor-pointer`;
+                
+                card.innerHTML = `
+                    <div class="flex">
+                        <div class="w-24 h-24 flex-shrink-0">
+                            <img src="${merchant.image}" class="w-full h-full object-cover" alt="${merchant.name}">
+                        </div>
+                        <div class="flex-1 p-3 pr-4">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <div class="flex items-center gap-x-2">
+                                        <h4 class="font-semibold text-[15px]">${merchant.name}</h4>
+                                        <span class="merchant-type ${isShop ? 'bg-blue-100 text-blue-600' : 'bg-orange-100 text-orange-600'} font-medium">
+                                            ${isShop ? 'Shop' : 'Restaurant'}
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-zinc-500 mt-0.5">${merchant.subtitle}</p>
+                                </div>
+                                <div class="flex items-center gap-x-1 text-xs">
+                                    <i class="fa-solid fa-star text-yellow-400"></i>
+                                    <span class="font-semibold">${merchant.rating}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-x-2 text-xs mt-3 text-zinc-500">
+                                <div class="flex items-center">
+                                    <i class="fa-solid fa-clock mr-1"></i>
+                                    <span>${merchant.deliveryTime}</span>
+                                </div>
+                                <span>•</span>
+                                <span>£${merchant.deliveryFee}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                card.onclick = () => openMerchant(merchant);
+                container.appendChild(card);
+            });
+        }
+
+        // ==================== FILTERING ====================
+        function filterByType(type) {
+            currentFilter = type;
+            
+            // Update active tab
+            document.querySelectorAll('#top-tabs .category-pill').forEach(el => {
+                el.classList.remove('active', 'bg-[#FF4D00]', 'text-white', 'border-[#FF4D00]');
+                el.classList.add('border-zinc-200');
+                
+                if (el.dataset.type === type) {
+                    el.classList.add('active', 'bg-[#FF4D00]', 'text-white', 'border-[#FF4D00]');
+                }
+            });
+
+            let filtered = merchants;
+            
+            if (type !== 'all') {
+                filtered = merchants.filter(m => m.type === type);
+            }
+            
+            renderMerchants(filtered);
+        }
+
+        function quickFilter(category) {
+            let filtered = merchants;
+            
+            if (category === 'pizza' || category === 'asian' || category === 'burger') {
+                filtered = merchants.filter(m => m.category === category);
+            } else if (category === 'grocery') {
+                filtered = merchants.filter(m => m.category === 'grocery');
+            } else if (category === 'convenience') {
+                filtered = merchants.filter(m => m.category === 'convenience');
+            }
+            
+            // Reset tabs
+            document.querySelectorAll('#top-tabs .category-pill').forEach(el => {
+                el.classList.remove('active', 'bg-[#FF4D00]', 'text-white', 'border-[#FF4D00]');
+                el.classList.add('border-zinc-200');
+                if (el.dataset.type === 'all') el.classList.add('active', 'bg-[#FF4D00]', 'text-white', 'border-[#FF4D00]');
+            });
+            
+            renderMerchants(filtered);
+        }
+
+        // ==================== OPEN MERCHANT ====================
+        function openMerchant(merchant) {
+            currentMerchant = merchant;
+            
+            document.getElementById('home-screen').classList.add('hidden');
+            document.getElementById('merchant-screen').classList.remove('hidden');
+
+            const header = document.getElementById('merchant-header');
+            const isShop = merchant.type === 'shop';
+
+            header.innerHTML = `
+                <div class="relative h-40">
+                    <img src="${merchant.image}" class="w-full h-full object-cover" alt="">
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/10 to-black/30"></div>
+                    
+                    <button onclick="closeMerchant()" 
+                            class="absolute top-4 left-4 bg-white/90 w-9 h-9 flex items-center justify-center rounded-full">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    
+                    <div class="absolute bottom-3 right-3 bg-white px-3 py-1 rounded-2xl text-xs flex items-center gap-x-1 shadow">
+                        <i class="fa-solid fa-clock text-[#FF4D00]"></i>
+                        <span class="font-medium">${merchant.deliveryTime}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('merchant-name').textContent = merchant.name;
+            document.getElementById('merchant-subtitle').textContent = merchant.subtitle;
+            document.getElementById('merchant-rating').textContent = merchant.rating;
+            document.getElementById('merchant-delivery').innerHTML = `£${merchant.deliveryFee} delivery`;
+            document.getElementById('merchant-min-order').innerHTML = `Min. order £${merchant.minOrder}`;
+
+            // Change title based on type
+            document.getElementById('menu-title').textContent = isShop ? "Products" : "Menu";
+
+            renderProducts(merchant.id);
+        }
+
+        function closeMerchant() {
+            document.getElementById('merchant-screen').classList.add('hidden');
+            document.getElementById('home-screen').classList.remove('hidden');
+        }
+
+        // ==================== RENDER PRODUCTS ====================
+        function renderProducts(merchantId) {
+            const container = document.getElementById('product-list');
+            container.innerHTML = '';
+            
+            const items = products[merchantId] || [];
+            
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `flex justify-between items-center bg-white border border-zinc-100 rounded-2xl p-3`;
+                
+                div.innerHTML = `
+                    <div class="flex-1 pr-3">
+                        <h4 class="font-medium">${item.name}</h4>
+                        <p class="text-xs text-zinc-500 mt-0.5">${item.description}</p>
+                        <p class="font-semibold text-[#FF4D00] mt-1">£${item.price.toFixed(2)}</p>
+                    </div>
+                    
+                    <button onclick="addToCart(${item.id}, ${merchantId}); event.stopImmediatePropagation()"
+                            class="bg-[#FF4D00] text-white px-4 py-2 rounded-2xl text-sm font-semibold flex items-center gap-x-1 active:scale-95 transition-transform">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add</span>
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // ==================== CART FUNCTIONS ====================
+        function addToCart(itemId, merchantId) {
+            const merchant = merchants.find(m => m.id === merchantId);
+            const itemList = products[merchantId];
+            const item = itemList.find(i => i.id === itemId);
+            if (!item) return;
+
+            // Check if cart has items from another merchant
+            if (cart.length > 0 && cart[0].merchantId !== merchantId) {
+                const confirmSwitch = confirm(`Your cart contains items from ${cart[0].merchantName}. Start a new order?`);
+                if (!confirmSwitch) return;
+                cart = [];
+            }
+
+            const existing = cart.find(i => i.id === itemId);
+            
+            if (existing) {
+                existing.quantity++;
+            } else {
+                cart.push({
+                    ...item,
+                    quantity: 1,
+                    merchantId: merchantId,
+                    merchantName: merchant.name,
+                    merchantType: merchant.type
+                });
+            }
+
+            updateCartBadge();
+            showToast(`${item.name} added`);
+        }
+
+        function updateCartBadge() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const badge = document.getElementById('cart-badge');
+            
+            if (count > 0) {
+                badge.textContent = count;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function showCart() {
+            const sheet = document.getElementById('cart-sheet');
+            const container = document.getElementById('cart-items');
+            sheet.classList.remove('hidden');
+            container.innerHTML = '';
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-48">
+                        <i class="fa-solid fa-shopping-bag text-4xl text-zinc-300 mb-3"></i>
+                        <p class="text-zinc-500">Your cart is empty</p>
+                    </div>
+                `;
+                document.getElementById('cart-total').textContent = '£0.00';
+                document.getElementById('cart-total-button').textContent = '£0.00';
+                return;
+            }
+
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                total += item.price * item.quantity;
+
+                const html = `
+                    <div class="flex justify-between items-start border-b py-3 last:border-b-0">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-x-2">
+                                <span class="font-medium">${item.name}</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-500">${item.merchantName}</span>
+                            </div>
+                            <div class="text-xs text-zinc-500 mt-0.5">£${item.price.toFixed(2)} × ${item.quantity}</div>
+                        </div>
+                        
+                        <div class="flex items-center gap-x-3">
+                            <div class="flex items-center border rounded-2xl">
+                                <button onclick="changeQuantity(${index}, -1)" class="w-7 h-7 text-zinc-500">-</button>
+                                <span class="px-2 text-sm font-medium">${item.quantity}</span>
+                                <button onclick="changeQuantity(${index}, 1)" class="w-7 h-7 text-zinc-500">+</button>
+                            </div>
+                            <div class="w-14 text-right">
+                                <span class="font-semibold">£${(item.price * item.quantity).toFixed(2)}</span>
+                            </div>
+                            <button onclick="removeFromCart(${index})" class="text-red-400 ml-1">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+
+            document.getElementById('cart-total').textContent = `£${total.toFixed(2)}`;
+            document.getElementById('cart-total-button').textContent = `£${total.toFixed(2)}`;
+        }
+
+        function changeQuantity(index, change) {
+            cart[index].quantity += change;
+            if (cart[index].quantity < 1) cart.splice(index, 1);
+            
+            showCart();
+            updateCartBadge();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            showCart();
+            updateCartBadge();
+        }
+
+        function hideCart() {
+            document.getElementById('cart-sheet').classList.add('hidden');
+        }
+
+        // ==================== ORDER ====================
+        function placeOrder() {
+            if (cart.length === 0) return;
+
+            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            const sheet = document.getElementById('cart-sheet');
+
+            sheet.innerHTML = `
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-check text-green-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold">Order placed!</h3>
+                    <p class="text-zinc-500 mt-1">Thank you. Your order is being prepared.</p>
+                    
+                    <div class="mt-6 bg-zinc-50 rounded-2xl p-4 text-left text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-zinc-500">Order number</span>
+                            <span class="font-medium">#DR${Math.floor(100000 + Math.random() * 900000)}</span>
+                        </div>
+                        <div class="flex justify-between mt-2">
+                            <span class="text-zinc-500">Total</span>
+                            <span class="font-semibold">£${total.toFixed(2)}</span>
+                        </div>
+                    </div>
+
+                    <button onclick="finishOrder()" 
+                            class="mt-6 w-full bg-zinc-900 text-white py-3 rounded-2xl font-semibold">
+                        Track your order
+                    </button>
+                </div>
+            `;
+        }
+
+        function finishOrder() {
+            cart = [];
+            updateCartBadge();
+            document.getElementById('cart-sheet').classList.add('hidden');
+            showToast("Order confirmed!", true);
+            setTimeout(() => {
+                showHomeScreen();
+                document.getElementById('cart-sheet').innerHTML = `
+                    <div onclick="event.stopImmediatePropagation()" class="absolute bottom-0 w-full max-w-[420px] bg-white rounded-t-3xl" style="height: 70vh"></div>
+                `;
+            }, 1200);
+        }
+
+        // ==================== NAVIGATION ====================
+        function showHomeScreen() {
+            document.getElementById('merchant-screen').classList.add('hidden');
+            document.getElementById('home-screen').classList.remove('hidden');
+            document.getElementById('cart-sheet').classList.add('hidden');
+        }
+
+        function showOrders() {
+            const main = document.getElementById('main-content');
+            main.innerHTML = `
+                <div class="p-4">
+                    <h2 class="text-xl font-semibold mb-5">Your orders</h2>
+                    
+                    <div class="space-y-3">
+                        <div class="bg-white border rounded-2xl p-4">
+                            <div class="flex justify-between">
+                                <div>
+                                    <span class="font-semibold">Pizza Express</span>
+                                    <p class="text-sm text-zinc-500">Today • 18:42</p>
+                                </div>
+                                <span class="text-xs px-2 py-1 bg-green-100 text-green-600 rounded-full h-fit">Delivered</span>
+                            </div>
+                            <div class="mt-3 flex justify-between text-sm">
+                                <span>£23.47</span>
+                                <span class="text-zinc-400">4 items</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="location.reload()" 
+                            class="mt-8 w-full py-3 text-sm font-medium text-zinc-500 flex items-center justify-center gap-x-2">
+                        <i class="fa-solid fa-arrow-left"></i> Back to home
+                    </button>
+                </div>
+            `;
+        }
+
+        // ==================== SEARCH ====================
+        function setupSearch() {
+            const input = document.getElementById('search-input');
+            
+            input.addEventListener('input', () => {
+                const query = input.value.toLowerCase().trim();
+                
+                if (!query) {
+                    renderMerchants(merchants);
+                    return;
+                }
+                
+                const filtered = merchants.filter(m => 
+                    m.name.toLowerCase().includes(query) || 
+                    m.subtitle.toLowerCase().includes(query)
+                );
+                
+                renderMerchants(filtered);
+            });
+        }
+
+        // ==================== UTILITIES ====================
+        function showToast(message, success = false) {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-20 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-2xl shadow-lg text-sm font-medium flex items-center gap-x-2 z-[100] ${success ? 'bg-green-600 text-white' : 'bg-zinc-800 text-white'}`;
+            
+            toast.innerHTML = `
+                <div class="flex items-center gap-x-2">
+                    ${success ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-shopping-bag"></i>'}
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.transition = 'all 0.3s ease';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 200);
+            }, 2000);
+        }
+
+        // ==================== INITIALIZATION ====================
+        function initializeApp() {
+            // Render all merchants initially
+            renderMerchants(merchants);
+            
+            // Setup search
+            setupSearch();
+            
+            // Set initial active tab
+            const allTab = document.querySelector('#top-tabs .category-pill[data-type="all"]');
+            if (allTab) {
+                allTab.classList.add('active', 'bg-[#FF4D00]', 'text-white', 'border-[#FF4D00]');
+            }
+            
+            updateCartBadge();
+            
+            // Optional: Preload one item for demo
+            // cart.push({...products[1][0], quantity: 1, merchantId: 1, merchantName: "Pizza Express", merchantType: "restaurant"});
+            // updateCartBadge();
+        }
+
+        // Start app
+        window.onload = initializeApp;
+    </script>
+</body>
+</html>
