@@ -88,7 +88,7 @@
             from { transform: scale(0.5); opacity: 0; }
             to   { transform: scale(1);   opacity: 1; }
         }
-        .splash-title, .splash-subtitle, .splash-dots, .splash-progress-bar {
+        .splash-title, .splash-subtitle, .splash-dots {
             animation: splashFadeUp 0.5s ease 0.5s both;
         }
         @keyframes splashFadeUp {
@@ -108,7 +108,7 @@
             40% { background: rgba(255,255,255,0.95); transform: scale(1.3); }
         }
 
-        /* ===== ONBOARDING (FULL HEIGHT) ===== */
+        /* ===== ONBOARDING ===== */
         #onboarding-screen {
             position: absolute;
             inset: 0;
@@ -139,9 +139,7 @@
             z-index: 1;
         }
         .onboard-img-wrap img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            width: 100%; height: 100%; object-fit: cover;
         }
         .onboard-img-overlay {
             position: absolute;
@@ -150,30 +148,17 @@
         }
         .onboard-badge {
             position: absolute;
-            top: 40px;
-            left: 20px;
+            top: 40px; left: 20px;
             background: rgba(255,255,255,0.95);
-            border-radius: 50px;
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 700;
-            color: #0EA5E9;
+            border-radius: 50px; padding: 8px 16px;
+            font-size: 13px; font-weight: 700; color: #0EA5E9;
             box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            z-index: 3;
+            display: flex; align-items: center; gap: 6px; z-index: 3;
         }
         .onboard-card {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            border-radius: 36px 36px 0 0;
-            padding: 32px 24px 40px;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
-            z-index: 2;
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: white; border-radius: 36px 36px 0 0;
+            padding: 32px 24px 40px; box-shadow: 0 -10px 40px rgba(0,0,0,0.15); z-index: 2;
         }
         .onboard-pip-row { display: flex; gap: 6px; justify-content: center; margin-bottom: 24px; }
         .onboard-pip {
@@ -182,12 +167,10 @@
         }
         .onboard-pip.active { background: #0EA5E9; width: 36px; }
         .onboard-btn {
-            width: 100%; background: #0EA5E9; color: white;
-            font-weight: 700; font-size: 16px; border: none;
-            border-radius: 16px; padding: 18px; cursor: pointer;
+            width: 100%; background: #0EA5E9; color: white; font-weight: 700; font-size: 16px; 
+            border: none; border-radius: 16px; padding: 18px; cursor: pointer;
             display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-            box-shadow: 0 8px 24px rgba(14,165,233,0.35);
+            transition: transform 0.15s ease; box-shadow: 0 8px 24px rgba(14,165,233,0.35);
         }
         .onboard-btn:active { transform: scale(0.97); }
         .onboard-skip {
@@ -197,8 +180,7 @@
         
         /* Custom Checkbox */
         .custom-checkbox input:checked + div {
-            background-color: #0EA5E9;
-            border-color: #0EA5E9;
+            background-color: #0EA5E9; border-color: #0EA5E9;
         }
         .custom-checkbox input:checked + div svg {
             display: block;
@@ -222,10 +204,7 @@
 
         <div id="onboarding-screen">
             <div class="onboard-slide active" id="ob-slide-0">
-                <div class="onboard-img-wrap">
-                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80" alt="Delicious food">
-                    <div class="onboard-img-overlay"></div>
-                </div>
+                <div class="onboard-img-wrap"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80"><div class="onboard-img-overlay"></div></div>
                 <div class="onboard-badge"><i class="fa-solid fa-fire"></i> 500+ restaurants</div>
                 <div class="onboard-card">
                     <div class="onboard-pip-row"><div class="onboard-pip active"></div><div class="onboard-pip"></div><div class="onboard-pip"></div></div>
@@ -235,12 +214,8 @@
                     <p class="onboard-skip" onclick="finishOnboarding()">Skip intro</p>
                 </div>
             </div>
-
             <div class="onboard-slide" id="ob-slide-1">
-                <div class="onboard-img-wrap">
-                    <img src="https://images.unsplash.com/photo-1543353071-873f17a7a088?w=800&q=80" alt="Add to cart">
-                    <div class="onboard-img-overlay"></div>
-                </div>
+                <div class="onboard-img-wrap"><img src="https://images.unsplash.com/photo-1543353071-873f17a7a088?w=800&q=80"><div class="onboard-img-overlay"></div></div>
                 <div class="onboard-badge"><i class="fa-solid fa-bolt"></i> Super fast</div>
                 <div class="onboard-card">
                     <div class="onboard-pip-row"><div class="onboard-pip"></div><div class="onboard-pip active"></div><div class="onboard-pip"></div></div>
@@ -250,12 +225,8 @@
                     <p class="onboard-skip" onclick="finishOnboarding()">Skip intro</p>
                 </div>
             </div>
-
             <div class="onboard-slide" id="ob-slide-2">
-                <div class="onboard-img-wrap">
-                    <img src="https://images.unsplash.com/photo-1526367790999-0150786686a2?w=800&q=80" alt="Delivery rider">
-                    <div class="onboard-img-overlay"></div>
-                </div>
+                <div class="onboard-img-wrap"><img src="https://images.unsplash.com/photo-1526367790999-0150786686a2?w=800&q=80"><div class="onboard-img-overlay"></div></div>
                 <div class="onboard-badge"><i class="fa-solid fa-location-dot"></i> Live tracking</div>
                 <div class="onboard-card">
                     <div class="onboard-pip-row"><div class="onboard-pip"></div><div class="onboard-pip"></div><div class="onboard-pip active"></div></div>
@@ -269,19 +240,19 @@
         <div id="main-header" class="bg-white sticky top-0 z-40 border-b border-zinc-100 hidden">
             <div class="px-4 pt-3 pb-2 flex items-center justify-between">
                 <div class="flex items-center gap-x-2">
-                    <div class="flex items-center gap-x-1.5 cursor-pointer">
+                    <div class="flex items-center gap-x-1.5 cursor-pointer" onclick="switchTab('profile')">
                         <i class="fa-solid fa-location-dot text-[#0EA5E9]"></i>
                         <div>
                             <p class="text-[10px] text-zinc-500 font-medium tracking-wide">DELIVERING TO</p>
                             <div class="flex items-center gap-x-1">
-                                <p class="font-semibold text-sm leading-none">Pretoria, Gauteng</p>
+                                <p class="font-semibold text-sm leading-none" id="header-location">Mokopane, South Africa</p>
                                 <i class="fa-solid fa-chevron-down text-[10px] text-[#0EA5E9]"></i>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="w-8 h-8 rounded-full overflow-hidden ring-2 ring-zinc-100">
-                    <img src="https://i.pravatar.cc/32?img=32" alt="Profile" class="w-full h-full object-cover">
+                <div class="w-8 h-8 rounded-full overflow-hidden ring-2 ring-zinc-100 cursor-pointer" onclick="switchTab('profile')">
+                    <img src="https://i.pravatar.cc/100?img=33" alt="Profile" class="w-full h-full object-cover">
                 </div>
             </div>
             <div class="px-4 pb-3 pt-1" id="header-search-bar">
@@ -338,21 +309,36 @@
                 </div>
             </div>
 
+            <div id="favourites-view" class="hidden px-4 py-5 bg-zinc-50 min-h-full">
+                <h2 class="text-xl font-bold mb-4 text-zinc-900">Saved for later</h2>
+                <div id="favourites-list-container" class="space-y-3">
+                    </div>
+            </div>
+
             <div id="orders-view" class="hidden px-4 py-5 bg-zinc-50 min-h-full">
                 <h2 class="text-xl font-bold mb-4 text-zinc-900">Your orders</h2>
                 <div class="space-y-4" id="orders-list-container">
-                    <div class="bg-white border border-zinc-200 rounded-2xl p-4 shadow-sm">
-                        <div class="flex justify-between items-start">
-                            <div class="flex items-center gap-x-3">
-                                <div class="w-12 h-12 rounded-lg bg-zinc-100 overflow-hidden"><img src="https://picsum.photos/id/292/100/100" class="w-full h-full object-cover"></div>
-                                <div><span class="font-bold text-[15px] text-zinc-900">Pizza Express</span><p class="text-[13px] text-zinc-500 mt-0.5">Delivered • 12 May</p></div>
-                            </div>
-                        </div>
-                        <div class="mt-4 pt-4 border-t border-zinc-100 flex justify-between items-center text-sm">
-                            <span class="font-semibold text-zinc-900">R234.50 <span class="text-zinc-400 font-normal ml-1">• 4 items</span></span>
-                            <button class="px-5 py-2 bg-zinc-100 text-zinc-800 font-semibold rounded-full text-[13px]">Reorder</button>
-                        </div>
                     </div>
+            </div>
+
+            <div id="profile-view" class="hidden px-4 py-5 bg-zinc-50 min-h-full">
+                <h2 class="text-xl font-bold mb-6 text-zinc-900">Profile Details</h2>
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-zinc-100 space-y-5">
+                    <div>
+                        <label class="text-xs font-semibold text-zinc-500 uppercase tracking-wide">Full Name</label>
+                        <input type="text" id="profile-name" class="w-full mt-1 border-b border-zinc-200 py-2 focus:outline-none focus:border-[#0EA5E9] font-semibold text-zinc-900 transition-colors">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-zinc-500 uppercase tracking-wide">Email Address</label>
+                        <input type="email" id="profile-email" class="w-full mt-1 border-b border-zinc-200 py-2 focus:outline-none focus:border-[#0EA5E9] font-semibold text-zinc-900 transition-colors">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-zinc-500 uppercase tracking-wide">Delivery Address</label>
+                        <textarea id="profile-address" rows="2" class="w-full mt-1 border-b border-zinc-200 py-2 focus:outline-none focus:border-[#0EA5E9] font-semibold text-zinc-900 resize-none transition-colors"></textarea>
+                    </div>
+                    <button onclick="saveProfile()" class="w-full mt-2 bg-zinc-900 text-white font-bold py-3.5 rounded-xl active:scale-95 transition-transform shadow-md">
+                        Save Changes
+                    </button>
                 </div>
             </div>
 
@@ -408,14 +394,14 @@
                     </div>
                     
                     <div class="space-y-6 mt-8 relative before:absolute before:inset-0 before:ml-[15px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-zinc-100">
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                        <div class="relative flex items-center justify-between group is-active">
                             <div class="flex items-center justify-center w-8 h-8 rounded-full bg-green-500 text-white shadow shrink-0 z-10"><i class="fa-solid fa-check text-xs"></i></div>
-                            <div class="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] pl-4 md:pl-0 md:pr-4">
+                            <div class="w-[calc(100%-3rem)] pl-4">
                                 <h4 class="font-bold text-zinc-900 text-sm">Order Confirmed</h4>
                                 <p class="text-xs text-zinc-500 mt-0.5">Restaurant has accepted your order.</p>
                             </div>
                         </div>
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                        <div class="relative flex items-center justify-between group is-active">
                             <div class="flex items-center justify-center w-8 h-8 rounded-full border-4 border-white bg-[#0EA5E9] shadow shrink-0 z-10">
                                 <div class="w-2.5 h-2.5 bg-white rounded-full animate-pulse"></div>
                             </div>
@@ -424,7 +410,7 @@
                                 <p class="text-xs text-zinc-500 mt-0.5">Your meal is being prepared.</p>
                             </div>
                         </div>
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                        <div class="relative flex items-center justify-between group">
                             <div class="flex items-center justify-center w-8 h-8 rounded-full border-2 border-zinc-200 bg-white shadow-sm shrink-0 z-10"></div>
                             <div class="w-[calc(100%-3rem)] pl-4 opacity-50">
                                 <h4 class="font-bold text-zinc-900 text-sm">On the Way</h4>
@@ -439,22 +425,18 @@
 
         <div id="item-sheet" class="hidden fixed inset-0 z-[70] bg-black/50 flex flex-col justify-end" onclick="closeItemSheet()">
             <div onclick="event.stopImmediatePropagation()" class="bg-white w-full max-w-[420px] mx-auto rounded-t-3xl h-[85vh] flex flex-col overflow-hidden transform transition-transform translate-y-0 shadow-2xl">
-                
                 <div class="relative h-56 bg-zinc-100 flex-shrink-0 w-full">
                     <img id="item-sheet-img" src="" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                    <button onclick="closeItemSheet()" class="absolute top-4 right-4 bg-white/90 backdrop-blur rounded-full w-9 h-9 flex items-center justify-center text-zinc-800 shadow-sm active:scale-90 transition-transform">
-                        <i class="fa-solid fa-times"></i>
-                    </button>
+                    <button onclick="closeItemSheet()" class="absolute top-4 right-4 bg-white/90 backdrop-blur rounded-full w-9 h-9 flex items-center justify-center text-zinc-800 shadow-sm active:scale-90 transition-transform"><i class="fa-solid fa-times"></i></button>
+                    <button id="item-sheet-fav-btn" class="absolute top-4 left-4 bg-white/90 backdrop-blur rounded-full w-9 h-9 flex items-center justify-center shadow-sm active:scale-90 transition-transform"><i class="fa-solid fa-heart"></i></button>
                 </div>
-                
                 <div class="p-5 flex-1 overflow-y-auto bg-zinc-50 pb-24">
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-zinc-100 mb-4">
                         <h2 id="item-sheet-title" class="text-2xl font-bold text-zinc-900 leading-tight"></h2>
                         <p id="item-sheet-desc" class="text-zinc-500 text-[13px] mt-2 leading-relaxed"></p>
                         <h3 id="item-sheet-price" class="text-lg font-bold text-[#0EA5E9] mt-3"></h3>
                     </div>
-
                     <div id="item-sheet-extras-container" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-zinc-100 mb-4">
                         <div class="flex justify-between items-center mb-3">
                             <h3 class="font-bold text-zinc-900 text-[15px]">Extras</h3>
@@ -462,7 +444,6 @@
                         </div>
                         <div id="item-sheet-extras-list" class="space-y-3"></div>
                     </div>
-                    
                     <div id="item-sheet-drinks-container" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-zinc-100 mb-4">
                         <div class="flex justify-between items-center mb-3">
                             <h3 class="font-bold text-zinc-900 text-[15px]">Drinks</h3>
@@ -471,7 +452,6 @@
                         <div id="item-sheet-drinks-list" class="space-y-3"></div>
                     </div>
                 </div>
-
                 <div class="p-4 bg-white border-t border-zinc-100 absolute bottom-0 w-full flex items-center gap-4 shadow-[0_-10px_20px_rgba(0,0,0,0.03)]">
                     <div class="flex items-center bg-zinc-100 rounded-2xl h-14 px-2">
                         <button onclick="changeItemSheetQuantity(-1)" class="w-10 h-full flex items-center justify-center text-zinc-600 font-bold text-lg">-</button>
@@ -507,65 +487,96 @@
         </div>
 
         <div class="fixed bottom-0 w-full max-w-[420px] bg-white border-t border-zinc-200 z-40 pb-[env(safe-area-inset-bottom)] hidden" id="bottom-nav">
-            <div class="flex items-center h-[65px]">
+            <div class="flex items-center h-[65px] px-2">
                 <div onclick="switchTab('home')" id="nav-home" class="flex-1 flex flex-col items-center justify-center text-[#0EA5E9] cursor-pointer active:scale-90 transition-transform">
-                    <i class="fa-solid fa-house mb-1 text-lg"></i><span class="text-[10px] font-semibold">Home</span>
+                    <i class="fa-solid fa-house mb-1 text-[19px]"></i><span class="text-[10px] font-semibold">Home</span>
+                </div>
+                <div onclick="switchTab('favourites')" id="nav-favourites" class="flex-1 flex flex-col items-center justify-center text-zinc-400 cursor-pointer active:scale-90 transition-transform">
+                    <i class="fa-solid fa-heart mb-1 text-[19px]"></i><span class="text-[10px] font-semibold">Saved</span>
                 </div>
                 <div onclick="switchTab('orders')" id="nav-orders" class="flex-1 flex flex-col items-center justify-center text-zinc-400 cursor-pointer active:scale-90 transition-transform">
-                    <i class="fa-solid fa-receipt mb-1 text-lg"></i><span class="text-[10px] font-semibold">Orders</span>
+                    <i class="fa-solid fa-receipt mb-1 text-[19px]"></i><span class="text-[10px] font-semibold">Orders</span>
                 </div>
-                <div onclick="showCart()" class="flex-1 flex flex-col items-center justify-center text-zinc-400 relative cursor-pointer active:scale-90 transition-transform">
-                    <i class="fa-solid fa-bag-shopping mb-1 text-lg"></i><span class="text-[10px] font-semibold">Cart</span>
-                    <span id="cart-badge" class="absolute top-1 right-[26px] bg-[#0EA5E9] text-white text-[10px] w-[18px] h-[18px] rounded-full flex items-center justify-center font-bold border-2 border-white hidden">0</span>
+                <div onclick="switchTab('profile')" id="nav-profile" class="flex-1 flex flex-col items-center justify-center text-zinc-400 cursor-pointer active:scale-90 transition-transform">
+                    <i class="fa-solid fa-user mb-1 text-[19px]"></i><span class="text-[10px] font-semibold">Profile</span>
+                </div>
+                <div onclick="showCart()" class="absolute -top-6 right-6 bg-zinc-900 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg cursor-pointer active:scale-95 transition-transform">
+                    <i class="fa-solid fa-bag-shopping text-xl"></i>
+                    <span id="cart-badge" class="absolute -top-1 -right-1 bg-[#0EA5E9] text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold border-2 border-white hidden">0</span>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // ==================== DATA ====================
+        // ==================== DATA & STATE ====================
         let merchants = [
             { id: 1, type: "restaurant", name: "Pizza Express", subtitle: "Italian • Pizza", rating: 4.6, deliveryTime: "15-25 min", deliveryFee: 24.90, minOrder: 100, category: "pizza", image: "https://picsum.photos/id/292/800/600", isPromo: true },
             { id: 3, type: "restaurant", name: "Burger & Co", subtitle: "American • Burgers", rating: 4.4, deliveryTime: "10-20 min", deliveryFee: 19.90, minOrder: 80, category: "burger", image: "https://picsum.photos/id/431/800/600", isPromo: true },
             { id: 2, type: "restaurant", name: "Sushi & Co", subtitle: "Japanese • Sushi", rating: 4.8, deliveryTime: "20-30 min", deliveryFee: 39.90, minOrder: 150, category: "asian", image: "https://picsum.photos/id/312/800/600", isPromo: false }
         ];
 
-        // Added Extras and Drinks to products
         const products = {
             1: [
-                { id: 101, name: "Margherita Pizza", price: 99.90, description: "Tomato, mozzarella, fresh basil", 
-                  extras: [{name: "Extra Cheese", price: 15.00}, {name: "Olives", price: 10.00}], 
-                  drinks: [{name: "Coca-Cola 330ml", price: 18.00}, {name: "Sparkling Water", price: 15.00}] }, 
-                { id: 102, name: "Pepperoni Pizza", price: 119.90, description: "Pepperoni, mozzarella, tomato sauce",
-                  extras: [{name: "Extra Pepperoni", price: 20.00}, {name: "Chili Flakes", price: 5.00}],
-                  drinks: [{name: "Fanta Orange", price: 18.00}] }
+                { id: 101, name: "Margherita Pizza", price: 99.90, description: "Tomato, mozzarella, fresh basil", extras: [{name: "Extra Cheese", price: 15.00}, {name: "Olives", price: 10.00}], drinks: [{name: "Coca-Cola 330ml", price: 18.00}] }, 
+                { id: 102, name: "Pepperoni Pizza", price: 119.90, description: "Pepperoni, mozzarella, tomato sauce", extras: [{name: "Extra Pepperoni", price: 20.00}], drinks: [{name: "Fanta Orange", price: 18.00}] }
             ],
             3: [
-                { id: 301, name: "Classic Cheeseburger", price: 79.90, description: "Beef, cheese, pickles, sauce",
-                  extras: [{name: "Extra Patty", price: 35.00}, {name: "Bacon", price: 20.00}, {name: "Avocado", price: 15.00}],
-                  drinks: [{name: "Milkshake (Vanilla)", price: 35.00}, {name: "Coke Zero", price: 18.00}] }
+                { id: 301, name: "Classic Cheeseburger", price: 79.90, description: "Beef, cheese, pickles, sauce", extras: [{name: "Extra Patty", price: 35.00}, {name: "Bacon", price: 20.00}], drinks: [{name: "Milkshake", price: 35.00}] }
             ],
             2: [
                 { id: 201, name: "Salmon Avocado Roll", price: 79.90, description: "6 pieces", extras: [{name: "Extra Wasabi", price: 5.00}], drinks: [{name: "Green Tea", price: 25.00}] }
             ]
         };
 
-        // ==================== STATE ====================
+        let profile = {
+            name: "K. Phasha",
+            email: "k.phasha@example.com",
+            address: "Mokopane, South Africa"
+        };
+
         let cart = [];
+        let orderHistory = [];
+        let favourites = []; // Array of { merchantId, itemId }
+        
         let currentFilter = 'all';
         let currentMerchant = null;
-        
-        // Item Customization State
         let activeItemData = null;
         let activeItemQty = 1;
         let activeItemExtras = [];
 
         // ==================== INITIALIZATION ====================
         function initializeApp() {
+            populateProfileFields();
+            
+            // Seed order history with one previous order to demonstrate re-order UI
+            orderHistory.push({
+                id: 'DR54321', date: '18 Jun', total: 119.90, merchantName: 'Pizza Express', merchantImage: merchants[0].image,
+                items: [{ ...products[1][0], cartItemId: '101_', unitPrice: 119.90, quantity: 1, selectedExtras: [], merchantId: 1, merchantName: 'Pizza Express' }]
+            });
+
             renderMerchants(merchants, false);
+            renderOrders();
             setupSearch();
             updateCartBadge();
             startSplash();
+        }
+
+        // ==================== PROFILE ====================
+        function populateProfileFields() {
+            document.getElementById('profile-name').value = profile.name;
+            document.getElementById('profile-email').value = profile.email;
+            document.getElementById('profile-address').value = profile.address;
+            document.getElementById('header-location').textContent = profile.address;
+        }
+
+        function saveProfile() {
+            profile.name = document.getElementById('profile-name').value;
+            profile.email = document.getElementById('profile-email').value;
+            profile.address = document.getElementById('profile-address').value;
+            
+            document.getElementById('header-location').textContent = profile.address;
+            showToast('Profile updated successfully', true);
         }
 
         // ==================== RENDER MERCHANTS ====================
@@ -575,8 +586,7 @@
             const promoList = document.getElementById('promo-list');
             const verticalTitle = document.getElementById('vertical-title');
 
-            listContainer.innerHTML = '';
-            promoList.innerHTML = '';
+            listContainer.innerHTML = ''; promoList.innerHTML = '';
 
             if (filteredMerchants.length === 0) {
                 promoSection.classList.add('hidden');
@@ -608,7 +618,6 @@
                     <div class="px-1">
                         <h4 class="font-bold text-[15px] text-zinc-900 truncate">${m.name}</h4>
                         <p class="text-[13px] text-zinc-500 truncate mt-0.5">${m.subtitle}</p>
-                        <div class="flex items-center gap-x-2 text-[13px] mt-1 font-medium"><i class="fa-solid fa-star text-[#0EA5E9]"></i><span class="text-zinc-900">${m.rating}</span><span class="text-zinc-300">•</span><span class="text-zinc-500">R${m.deliveryFee.toFixed(2)}</span></div>
                     </div>
                 </div>`;
         }
@@ -626,7 +635,6 @@
                             <div><h4 class="font-bold text-lg text-zinc-900 leading-tight">${m.name}</h4><p class="text-[13px] text-zinc-500 mt-0.5">${m.subtitle}</p></div>
                             <div class="flex items-center bg-zinc-100 px-2 py-1 rounded-lg"><i class="fa-solid fa-star text-[#0EA5E9] text-[10px] mr-1"></i><span class="font-bold text-[13px] text-zinc-900">${m.rating}</span></div>
                         </div>
-                        <div class="flex items-center gap-x-3 text-[13px] mt-3.5 font-medium text-zinc-500"><i class="fa-solid fa-motorcycle text-zinc-400"></i><span>R${m.deliveryFee.toFixed(2)}</span><span class="text-zinc-300">•</span><span>Min R${m.minOrder.toFixed(2)}</span></div>
                     </div>
                 </div>`;
         }
@@ -651,39 +659,90 @@
 
         // ==================== NAVIGATION ====================
         function switchTab(tab) {
-            document.getElementById('merchant-screen').classList.add('hidden');
-            document.getElementById('tracking-view').classList.add('hidden');
-            
-            const mainHeader = document.getElementById('main-header');
-            const mainContent = document.getElementById('main-content');
-            
-            mainHeader.classList.remove('hidden');
-            mainContent.classList.remove('hidden');
+            const views = ['home-view', 'favourites-view', 'orders-view', 'profile-view', 'merchant-screen', 'tracking-view'];
+            views.forEach(v => { const el = document.getElementById(v); if(el) el.classList.add('hidden'); });
 
-            document.getElementById('nav-home').classList.replace('text-[#0EA5E9]', 'text-zinc-400');
-            document.getElementById('nav-orders').classList.replace('text-[#0EA5E9]', 'text-zinc-400');
+            const navs = ['nav-home', 'nav-favourites', 'nav-orders', 'nav-profile'];
+            navs.forEach(n => { const el = document.getElementById(n); if(el) el.classList.replace('text-[#0EA5E9]', 'text-zinc-400'); });
 
-            if (tab === 'home') {
+            document.getElementById('main-header').classList.remove('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            
+            if(tab === 'home') {
                 document.getElementById('home-view').classList.remove('hidden');
-                document.getElementById('orders-view').classList.add('hidden');
                 document.getElementById('nav-home').classList.replace('text-zinc-400', 'text-[#0EA5E9]');
                 document.getElementById('header-search-bar').classList.remove('hidden');
-            } else if (tab === 'orders') {
-                document.getElementById('home-view').classList.add('hidden');
+            } else if(tab === 'favourites') {
+                document.getElementById('favourites-view').classList.remove('hidden');
+                document.getElementById('nav-favourites').classList.replace('text-zinc-400', 'text-[#0EA5E9]');
+                document.getElementById('header-search-bar').classList.add('hidden');
+                renderFavourites();
+            } else if(tab === 'orders') {
                 document.getElementById('orders-view').classList.remove('hidden');
                 document.getElementById('nav-orders').classList.replace('text-zinc-400', 'text-[#0EA5E9]');
                 document.getElementById('header-search-bar').classList.add('hidden');
+                renderOrders();
+            } else if(tab === 'profile') {
+                document.getElementById('profile-view').classList.remove('hidden');
+                document.getElementById('nav-profile').classList.replace('text-zinc-400', 'text-[#0EA5E9]');
+                document.getElementById('header-search-bar').classList.add('hidden');
             }
+        }
+
+        // ==================== FAVOURITES ====================
+        function toggleFavourite(merchantId, itemId, event) {
+            if(event) event.stopImmediatePropagation();
+            const index = favourites.findIndex(f => f.itemId === itemId && f.merchantId === merchantId);
+            if(index > -1) {
+                favourites.splice(index, 1);
+                showToast("Removed from favourites");
+            } else {
+                favourites.push({merchantId, itemId});
+                showToast("Saved to favourites", true);
+            }
+            if(currentMerchant) renderProducts(); // Refresh list if currently viewing
+            renderFavourites(); // Refresh fav view if open
+        }
+
+        function renderFavourites() {
+            const container = document.getElementById('favourites-list-container');
+            container.innerHTML = '';
+            if(favourites.length === 0) {
+                container.innerHTML = `<div class="flex flex-col items-center justify-center py-16 text-zinc-400"><i class="fa-regular fa-heart text-5xl mb-4"></i><p>No saved items yet</p></div>`;
+                return;
+            }
+
+            favourites.forEach(fav => {
+                const merchant = merchants.find(m => m.id === fav.merchantId);
+                const item = products[fav.merchantId].find(i => i.id === fav.itemId);
+                
+                container.innerHTML += `
+                    <div class="flex items-center bg-white border border-zinc-100 rounded-2xl p-3 shadow-sm relative cursor-pointer" onclick="openMerchant(${merchant.id}); setTimeout(()=>openItemSheet(${item.id}), 100);">
+                        <img src="https://picsum.photos/seed/${item.id}/200/200" class="w-20 h-20 rounded-xl object-cover">
+                        <div class="ml-4 flex-1">
+                            <p class="text-xs text-zinc-500 font-semibold uppercase">${merchant.name}</p>
+                            <h4 class="font-bold text-[15px] text-zinc-900 leading-tight mt-0.5">${item.name}</h4>
+                            <p class="text-[#0EA5E9] font-bold text-sm mt-1">R${item.price.toFixed(2)}</p>
+                        </div>
+                        <button onclick="toggleFavourite(${merchant.id}, ${item.id}, event)" class="w-8 h-8 flex items-center justify-center text-red-500 active:scale-90"><i class="fa-solid fa-heart text-lg"></i></button>
+                    </div>
+                `;
+            });
         }
 
         // ==================== MERCHANT DETAIL ====================
         function openMerchant(id) {
             currentMerchant = merchants.find(m => m.id === id);
             document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('favourites-view').classList.add('hidden');
             document.getElementById('main-header').classList.add('hidden');
             document.getElementById('merchant-screen').classList.remove('hidden');
 
-            document.getElementById('merchant-header').innerHTML = `<div class="relative h-56 bg-zinc-100"><img src="${currentMerchant.image}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div><button onclick="closeMerchant()" class="absolute top-4 left-4 bg-white shadow-sm w-10 h-10 flex items-center justify-center rounded-full text-zinc-900 active:scale-90"><i class="fa-solid fa-arrow-left"></i></button><div class="absolute bottom-4 right-4 bg-white px-3 py-1.5 rounded-full text-[13px] font-bold shadow-md">${currentMerchant.deliveryTime}</div></div>`;
+            document.getElementById('merchant-header').innerHTML = `
+                <div class="relative h-56 bg-zinc-100"><img src="${currentMerchant.image}" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                <button onclick="closeMerchant()" class="absolute top-4 left-4 bg-white shadow-sm w-10 h-10 flex items-center justify-center rounded-full text-zinc-900 active:scale-90"><i class="fa-solid fa-arrow-left"></i></button>
+                <div class="absolute bottom-4 right-4 bg-white px-3 py-1.5 rounded-full text-[13px] font-bold shadow-md">${currentMerchant.deliveryTime}</div></div>`;
             document.getElementById('merchant-name').textContent = currentMerchant.name;
             document.getElementById('merchant-subtitle').textContent = currentMerchant.subtitle;
             document.getElementById('merchant-rating').textContent = currentMerchant.rating;
@@ -697,9 +756,13 @@
         function renderProducts() {
             const container = document.getElementById('product-list'); container.innerHTML = '';
             (products[currentMerchant.id] || []).forEach(item => {
+                const isFav = favourites.some(f => f.itemId === item.id && f.merchantId === currentMerchant.id);
                 container.innerHTML += `
-                    <div class="flex flex-col bg-white border border-zinc-100 rounded-2xl overflow-hidden shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onclick="openItemSheet(${item.id})">
-                        <div class="h-32 w-full bg-zinc-100 relative"><img src="https://picsum.photos/seed/${item.id}/400/300" class="w-full h-full object-cover"></div>
+                    <div class="flex flex-col bg-white border border-zinc-100 rounded-2xl overflow-hidden shadow-sm cursor-pointer active:scale-[0.98] transition-transform relative" onclick="openItemSheet(${item.id})">
+                        <div class="h-32 w-full bg-zinc-100 relative">
+                            <img src="https://picsum.photos/seed/${item.id}/400/300" class="w-full h-full object-cover">
+                            <button onclick="toggleFavourite(${currentMerchant.id}, ${item.id}, event)" class="absolute top-2 right-2 w-8 h-8 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-[15px] ${isFav ? 'text-red-500' : 'text-zinc-400'} shadow-sm"><i class="fa-${isFav ? 'solid' : 'regular'} fa-heart"></i></button>
+                        </div>
                         <div class="p-3 flex flex-col flex-1">
                             <h4 class="font-bold text-[14px] text-zinc-900 mb-1">${item.name}</h4>
                             <p class="text-[12px] text-zinc-500 line-clamp-2 flex-1">${item.description}</p>
@@ -721,6 +784,11 @@
             document.getElementById('item-sheet-title').textContent = activeItemData.name;
             document.getElementById('item-sheet-desc').textContent = activeItemData.description;
             
+            const isFav = favourites.some(f => f.itemId === itemId && f.merchantId === currentMerchant.id);
+            const favBtn = document.getElementById('item-sheet-fav-btn');
+            favBtn.innerHTML = `<i class="fa-${isFav ? 'solid text-red-500' : 'regular text-zinc-800'} fa-heart"></i>`;
+            favBtn.onclick = (e) => { toggleFavourite(currentMerchant.id, itemId, e); openItemSheet(itemId); };
+
             renderOptions('extras', activeItemData.extras);
             renderOptions('drinks', activeItemData.drinks);
             
@@ -736,7 +804,6 @@
             
             container.classList.remove('hidden');
             list.forEach((opt, idx) => {
-                const optId = `${type}-${idx}`;
                 uiList.innerHTML += `
                     <label class="flex items-center justify-between cursor-pointer custom-checkbox group">
                         <div class="flex items-center gap-3">
@@ -792,7 +859,7 @@
             closeItemSheet(); updateCartBadge(); showToast("Added to cart", true);
         }
 
-        // ==================== CART LOGIC ====================
+        // ==================== CART & ORDER LOGIC ====================
         function updateCartBadge() {
             const count = cart.reduce((sum, item) => sum + item.quantity, 0);
             const badge = document.getElementById('cart-badge');
@@ -850,30 +917,90 @@
             const total = cart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
             const orderId = `DR${Math.floor(100000 + Math.random() * 900000)}`;
             
+            // Save to order history
+            const mId = cart[0].merchantId;
+            const newOrder = {
+                id: orderId,
+                date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
+                total: total,
+                merchantName: cart[0].merchantName,
+                merchantImage: merchants.find(m => m.id === mId).image,
+                items: JSON.parse(JSON.stringify(cart)) // deep copy
+            };
+            orderHistory.unshift(newOrder);
+            
             document.getElementById('cart-sheet').innerHTML = `
                 <div class="absolute bottom-0 w-full max-w-[420px] bg-white rounded-t-3xl shadow-2xl flex flex-col p-6 text-center" style="height: 75vh;">
-                    <div class="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 mt-4">
-                        <i class="fa-solid fa-check text-green-500 text-5xl"></i>
-                    </div>
+                    <div class="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 mt-4"><i class="fa-solid fa-check text-green-500 text-5xl"></i></div>
                     <h3 class="text-2xl font-bold text-zinc-900">Order Confirmed!</h3>
                     <p class="text-zinc-500 mt-2">The restaurant is preparing your food.</p>
-                    
                     <div class="mt-8 bg-zinc-50 rounded-2xl p-5 text-left text-sm border border-zinc-100">
-                        <div class="flex justify-between items-center mb-3 border-b border-zinc-200 pb-3">
-                            <span class="text-zinc-500 font-medium">Order Number</span>
-                            <span class="font-bold text-zinc-900">${orderId}</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-zinc-500 font-medium">Total Paid</span>
-                            <span class="font-bold text-lg text-[#0EA5E9]">R${total.toFixed(2)}</span>
-                        </div>
+                        <div class="flex justify-between items-center mb-3 border-b border-zinc-200 pb-3"><span class="text-zinc-500 font-medium">Order Number</span><span class="font-bold text-zinc-900">${orderId}</span></div>
+                        <div class="flex justify-between items-center"><span class="text-zinc-500 font-medium">Total Paid</span><span class="font-bold text-lg text-[#0EA5E9]">R${total.toFixed(2)}</span></div>
                     </div>
-                    <button onclick="openTracking('${orderId}')" class="mt-auto mb-4 w-full bg-[#0EA5E9] text-white py-4 rounded-2xl font-bold active:scale-95 transition-transform shadow-md shadow-[#0EA5E9]/20">
-                        Track your order
-                    </button>
+                    <button onclick="openTracking('${orderId}')" class="mt-auto mb-4 w-full bg-[#0EA5E9] text-white py-4 rounded-2xl font-bold active:scale-95 transition-transform shadow-md shadow-[#0EA5E9]/20">Track your order</button>
                 </div>
             `;
-            cart = []; updateCartBadge();
+            cart = []; updateCartBadge(); renderOrders();
+        }
+
+        // ==================== RE-ORDER LOGIC ====================
+        function renderOrders() {
+            const container = document.getElementById('orders-list-container');
+            container.innerHTML = '';
+            
+            if(orderHistory.length === 0) {
+                container.innerHTML = `<p class="text-center text-zinc-500 py-10">No previous orders</p>`; return;
+            }
+
+            orderHistory.forEach(order => {
+                const itemCount = order.items.reduce((sum, i) => sum + i.quantity, 0);
+                container.innerHTML += `
+                    <div class="bg-white border border-zinc-200 rounded-2xl p-4 shadow-sm mb-4">
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-center gap-x-3">
+                                <div class="w-12 h-12 rounded-lg bg-zinc-100 overflow-hidden"><img src="${order.merchantImage}" class="w-full h-full object-cover"></div>
+                                <div><span class="font-bold text-[15px] text-zinc-900">${order.merchantName}</span><p class="text-[13px] text-zinc-500 mt-0.5">Delivered • ${order.date}</p></div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-zinc-100 flex justify-between items-center text-sm">
+                            <span class="font-semibold text-zinc-900">R${order.total.toFixed(2)} <span class="text-zinc-400 font-normal ml-1">• ${itemCount} items</span></span>
+                            <button onclick="reorder('${order.id}')" class="px-5 py-2 bg-zinc-900 text-white font-bold rounded-full text-[13px] active:scale-95 shadow-sm">Reorder</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function reorder(orderId) {
+            const pastOrder = orderHistory.find(o => o.id === orderId);
+            if(!pastOrder) return;
+
+            if(cart.length > 0 && cart[0].merchantId !== pastOrder.items[0].merchantId) {
+                if(!confirm(`Clear current cart to re-order from ${pastOrder.merchantName}?`)) return;
+            }
+            
+            // Deep copy items into cart
+            cart = JSON.parse(JSON.stringify(pastOrder.items));
+            updateCartBadge();
+            
+            // Re-render standard cart UI format so it can be shown immediately
+            document.getElementById('cart-sheet').innerHTML = `
+                <div onclick="event.stopImmediatePropagation()" class="absolute bottom-0 w-full max-w-[420px] bg-white rounded-t-3xl shadow-2xl flex flex-col transition-transform" style="height: 70vh; max-height: 620px;">
+                    <div class="p-4 flex items-center justify-between border-b border-zinc-100">
+                        <h3 class="font-bold text-lg text-zinc-900">Your order</h3>
+                        <button onclick="hideCart()" class="text-zinc-400 active:scale-90 transition-transform w-8 h-8 flex items-center justify-center bg-zinc-100 rounded-full"><i class="fa-solid fa-times text-sm"></i></button>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-4 bg-zinc-50" id="cart-items"></div>
+                    <div class="border-t border-zinc-100 p-4 bg-white">
+                        <div class="flex justify-between items-center mb-4 px-1"><span class="text-zinc-600 font-medium">Total</span><span id="cart-total" class="font-bold text-xl text-zinc-900">R0.00</span></div>
+                        <button onclick="placeOrder()" class="w-full bg-[#0EA5E9] active:scale-95 text-white font-bold py-4 rounded-2xl transition-transform flex justify-between px-6 shadow-md shadow-[#0EA5E9]/20">
+                            <span>Checkout</span><span id="cart-total-button">R0.00</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            showCart();
         }
 
         // ==================== TRACKING & UTILS ====================
@@ -895,7 +1022,7 @@
 
         function showToast(msg, success = false) {
             const t = document.createElement('div');
-            t.className = `fixed bottom-24 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full shadow-2xl text-[13px] font-bold flex items-center gap-x-2 z-[100] ${success ? 'bg-zinc-900 text-white' : 'bg-zinc-900 text-white'}`;
+            t.className = `fixed bottom-24 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full shadow-2xl text-[13px] font-bold flex items-center gap-x-2 z-[100] bg-zinc-900 text-white`;
             t.innerHTML = `<i class="fa-solid fa-${success?'check text-green-400':'info text-[#0EA5E9]'}"></i><span>${msg}</span>`;
             document.body.appendChild(t);
             setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 2000);
