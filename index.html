@@ -11,6 +11,7 @@
         
         body {
             font-family: 'Inter', system_ui, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
         
         .mobile-container {
@@ -19,14 +20,6 @@
             box-shadow: 0 0 0 1px #e5e7eb;
             min-height: 100vh;
             background: white;
-        }
-
-        .merchant-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        
-        .merchant-card:active {
-            transform: scale(0.98);
         }
 
         .category-pill {
@@ -39,14 +32,13 @@
             border-color: #0EA5E9;
         }
 
-        /* Hide scrollbar for Chrome, Safari and Opera */
+        /* Hide scrollbar */
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
         }
-        /* Hide scrollbar for IE, Edge and Firefox */
         .scrollbar-hide {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
 
         .merchant-type {
@@ -59,7 +51,7 @@
 <body class="bg-zinc-100 flex items-center justify-center min-h-screen">
     <div class="mobile-container w-full bg-white overflow-hidden flex flex-col" style="max-width: 420px; height: 100vh; max-height: 844px;">
         
-        <div class="bg-white sticky top-0 z-50 border-b">
+        <div id="main-header" class="bg-white sticky top-0 z-50 border-b">
             <div class="px-4 pt-3 pb-2 flex items-center justify-between">
                 <div class="flex items-center gap-x-2">
                     <div>
@@ -97,7 +89,7 @@
 
         <div class="flex-1 overflow-y-auto pb-24 bg-white" id="main-content">
             
-            <div id="home-screen">
+            <div id="home-view">
                 
                 <div class="px-4 pt-3 pb-3 bg-white">
                     <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide" id="top-tabs">
@@ -106,22 +98,57 @@
                             <span>All</span>
                         </div>
                         <div onclick="filterByType('restaurant')" 
-                             class="category-pill px-5 py-1.5 text-sm font-medium border border-zinc-200 rounded-2xl flex items-center gap-x-2 whitespace-nowrap cursor-pointer" data-type="restaurant">
+                             class="category-pill px-5 py-1.5 text-sm font-medium border border-zinc-200 bg-white text-zinc-700 rounded-2xl flex items-center gap-x-2 whitespace-nowrap cursor-pointer" data-type="restaurant">
                             <i class="fa-solid fa-utensils"></i>
                             <span>Restaurants</span>
                         </div>
                         <div onclick="filterByType('shop')" 
-                             class="category-pill px-5 py-1.5 text-sm font-medium border border-zinc-200 rounded-2xl flex items-center gap-x-2 whitespace-nowrap cursor-pointer" data-type="shop">
+                             class="category-pill px-5 py-1.5 text-sm font-medium border border-zinc-200 bg-white text-zinc-700 rounded-2xl flex items-center gap-x-2 whitespace-nowrap cursor-pointer" data-type="shop">
                             <i class="fa-solid fa-store"></i>
                             <span>Shops</span>
                         </div>
                     </div>
                 </div>
 
-                <div id="promo-section" class="pt-2 pb-2 border-b-8 border-zinc-50">
+                <div class="px-4 pb-4 border-b border-zinc-100">
+                    <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                        <div onclick="quickFilter('pizza')" class="flex flex-col items-center gap-y-1.5 cursor-pointer group flex-shrink-0 w-[60px]">
+                            <div class="w-14 h-14 bg-zinc-100 rounded-2xl flex items-center justify-center group-hover:bg-[#0EA5E9]/10 transition-colors">
+                                <i class="fa-solid fa-pizza-slice text-xl text-zinc-600 group-hover:text-[#0EA5E9]"></i>
+                            </div>
+                            <span class="text-[11px] font-semibold text-zinc-700 group-hover:text-[#0EA5E9]">Pizza</span>
+                        </div>
+                        <div onclick="quickFilter('asian')" class="flex flex-col items-center gap-y-1.5 cursor-pointer group flex-shrink-0 w-[60px]">
+                            <div class="w-14 h-14 bg-zinc-100 rounded-2xl flex items-center justify-center group-hover:bg-[#0EA5E9]/10 transition-colors">
+                                <i class="fa-solid fa-bowl-rice text-xl text-zinc-600 group-hover:text-[#0EA5E9]"></i>
+                            </div>
+                            <span class="text-[11px] font-semibold text-zinc-700 group-hover:text-[#0EA5E9]">Asian</span>
+                        </div>
+                        <div onclick="quickFilter('burger')" class="flex flex-col items-center gap-y-1.5 cursor-pointer group flex-shrink-0 w-[60px]">
+                            <div class="w-14 h-14 bg-zinc-100 rounded-2xl flex items-center justify-center group-hover:bg-[#0EA5E9]/10 transition-colors">
+                                <i class="fa-solid fa-burger text-xl text-zinc-600 group-hover:text-[#0EA5E9]"></i>
+                            </div>
+                            <span class="text-[11px] font-semibold text-zinc-700 group-hover:text-[#0EA5E9]">Burgers</span>
+                        </div>
+                        <div onclick="quickFilter('grocery')" class="flex flex-col items-center gap-y-1.5 cursor-pointer group flex-shrink-0 w-[60px]">
+                            <div class="w-14 h-14 bg-zinc-100 rounded-2xl flex items-center justify-center group-hover:bg-[#0EA5E9]/10 transition-colors">
+                                <i class="fa-solid fa-carrot text-xl text-zinc-600 group-hover:text-[#0EA5E9]"></i>
+                            </div>
+                            <span class="text-[11px] font-semibold text-zinc-700 group-hover:text-[#0EA5E9]">Groceries</span>
+                        </div>
+                        <div onclick="quickFilter('convenience')" class="flex flex-col items-center gap-y-1.5 cursor-pointer group flex-shrink-0 w-[60px]">
+                            <div class="w-14 h-14 bg-zinc-100 rounded-2xl flex items-center justify-center group-hover:bg-[#0EA5E9]/10 transition-colors">
+                                <i class="fa-solid fa-bottle-water text-xl text-zinc-600 group-hover:text-[#0EA5E9]"></i>
+                            </div>
+                            <span class="text-[11px] font-semibold text-zinc-700 group-hover:text-[#0EA5E9]">Drinks</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="promo-section" class="pt-4 pb-2 border-b-8 border-zinc-50">
                     <div class="px-4 flex items-center justify-between mb-3">
                         <h3 class="font-bold text-lg text-zinc-900">Offers near you</h3>
-                        <span class="text-xs font-semibold text-[#0EA5E9]">See all</span>
+                        <span class="text-xs font-semibold text-[#0EA5E9] cursor-pointer">See all</span>
                     </div>
                     <div class="flex gap-4 overflow-x-auto px-4 pb-4 scrollbar-hide snap-x" id="promo-list">
                         </div>
@@ -134,6 +161,29 @@
                     
                     <div id="merchant-list" class="space-y-4">
                         </div>
+                </div>
+            </div>
+
+            <div id="orders-view" class="hidden px-4 py-6 bg-white min-h-screen">
+                <h2 class="text-2xl font-bold mb-6 text-zinc-900">Your orders</h2>
+                <div class="space-y-4">
+                    <div class="border border-zinc-200 rounded-2xl p-4 shadow-sm">
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-center gap-x-3">
+                                <div class="w-12 h-12 rounded-lg bg-zinc-100 overflow-hidden">
+                                    <img src="https://picsum.photos/id/292/100/100" class="w-full h-full object-cover">
+                                </div>
+                                <div>
+                                    <span class="font-bold text-[15px] text-zinc-900">Pizza Express</span>
+                                    <p class="text-[13px] text-zinc-500 mt-0.5">Today • 18:42</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-zinc-100 flex justify-between items-center text-sm">
+                            <span class="font-semibold text-zinc-900">R234.50 <span class="text-zinc-400 font-normal ml-1">• 4 items</span></span>
+                            <button class="px-4 py-1.5 bg-zinc-100 text-zinc-700 font-semibold rounded-full text-xs hover:bg-zinc-200">Reorder</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -168,7 +218,7 @@
 
                     <div class="px-4 pt-5 pb-6">
                         <h3 class="font-bold text-lg mb-4 text-zinc-900" id="menu-title">Menu</h3>
-                        <div id="product-list" class="space-y-3">
+                        <div id="product-list" class="space-y-4">
                             </div>
                     </div>
                 </div>
@@ -177,7 +227,7 @@
 
         <div id="cart-sheet" class="hidden fixed inset-0 z-[60] bg-black bg-opacity-40" onclick="hideCart()">
             <div onclick="event.stopImmediatePropagation()" 
-                 class="absolute bottom-0 w-full max-w-[420px] bg-white rounded-t-3xl shadow-2xl flex flex-col"
+                 class="absolute bottom-0 w-full max-w-[420px] bg-white rounded-t-3xl shadow-2xl flex flex-col transition-transform"
                  style="height: 70vh; max-height: 620px;">
                 
                 <div class="p-4 flex items-center justify-between border-b border-zinc-100">
@@ -193,29 +243,29 @@
                 <div class="border-t border-zinc-100 p-4 bg-white">
                     <div class="flex justify-between items-center mb-4 px-1">
                         <span class="text-zinc-600 font-medium">Total</span>
-                        <span id="cart-total" class="font-bold text-xl text-zinc-900">£0.00</span>
+                        <span id="cart-total" class="font-bold text-xl text-zinc-900">R0.00</span>
                     </div>
                     
                     <button onclick="placeOrder()" 
                             class="w-full bg-[#0EA5E9] hover:bg-[#0284c7] text-white font-bold py-3.5 rounded-xl transition-colors flex justify-between px-6">
                         <span>Checkout</span>
-                        <span id="cart-total-button">£0.00</span>
+                        <span id="cart-total-button">R0.00</span>
                     </button>
                 </div>
             </div>
         </div>
 
-        <div class="fixed bottom-0 w-full max-w-[420px] bg-white border-t border-zinc-200 z-50">
-            <div class="flex items-center h-16">
-                <div onclick="showHomeScreen()" id="nav-home" class="flex-1 flex flex-col items-center justify-center text-[#0EA5E9] cursor-pointer">
+        <div class="fixed bottom-0 w-full max-w-[420px] bg-white border-t border-zinc-200 z-50 pb-[env(safe-area-inset-bottom)]">
+            <div class="flex items-center h-[60px]">
+                <div onclick="switchTab('home')" id="nav-home" class="flex-1 flex flex-col items-center justify-center text-[#0EA5E9] cursor-pointer active:scale-95 transition-transform">
                     <i class="fa-solid fa-house mb-1 text-lg"></i>
                     <span class="text-[10px] font-semibold">Home</span>
                 </div>
-                <div onclick="showOrders()" id="nav-orders" class="flex-1 flex flex-col items-center justify-center text-zinc-400 cursor-pointer hover:text-[#0EA5E9] transition-colors">
+                <div onclick="switchTab('orders')" id="nav-orders" class="flex-1 flex flex-col items-center justify-center text-zinc-400 cursor-pointer hover:text-[#0EA5E9] active:scale-95 transition-all">
                     <i class="fa-solid fa-receipt mb-1 text-lg"></i>
                     <span class="text-[10px] font-semibold">Orders</span>
                 </div>
-                <div onclick="showCart()" class="flex-1 flex flex-col items-center justify-center text-zinc-400 relative cursor-pointer hover:text-[#0EA5E9] transition-colors">
+                <div onclick="showCart()" class="flex-1 flex flex-col items-center justify-center text-zinc-400 relative cursor-pointer hover:text-[#0EA5E9] active:scale-95 transition-all">
                     <i class="fa-solid fa-bag-shopping mb-1 text-lg"></i>
                     <span class="text-[10px] font-semibold">Cart</span>
                     <span id="cart-badge" 
@@ -228,28 +278,29 @@
     <script>
         // ==================== DATA ====================
         let merchants = [
-            { id: 1, type: "restaurant", name: "Pizza Express", subtitle: "Italian • Pizza", rating: 4.6, deliveryTime: "15-25 min", deliveryFee: 2.49, minOrder: 10, category: "pizza", image: "https://picsum.photos/id/292/400/250", isPromo: true },
-            { id: 2, type: "restaurant", name: "Sushi & Co", subtitle: "Japanese • Sushi", rating: 4.8, deliveryTime: "20-30 min", deliveryFee: 3.99, minOrder: 15, category: "asian", image: "https://picsum.photos/id/312/400/250", isPromo: false },
-            { id: 3, type: "restaurant", name: "Burger & Co", subtitle: "American • Burgers", rating: 4.4, deliveryTime: "10-20 min", deliveryFee: 1.99, minOrder: 8, category: "burger", image: "https://picsum.photos/id/431/400/250", isPromo: true },
-            { id: 4, type: "shop", name: "Co-op", subtitle: "Convenience • Groceries", rating: 4.3, deliveryTime: "10-15 min", deliveryFee: 1.49, minOrder: 5, category: "convenience", image: "https://picsum.photos/id/160/400/250", isPromo: false },
-            { id: 5, type: "shop", name: "Fresh & Co", subtitle: "Groceries • Produce", rating: 4.7, deliveryTime: "15-25 min", deliveryFee: 2.99, minOrder: 10, category: "grocery", image: "https://picsum.photos/id/1060/400/250", isPromo: false },
-            { id: 6, type: "restaurant", name: "Thai Orchid", subtitle: "Thai • Asian", rating: 4.5, deliveryTime: "20-30 min", deliveryFee: 2.99, minOrder: 12, category: "asian", image: "https://picsum.photos/id/42/400/250", isPromo: true },
-            { id: 7, type: "shop", name: "Boots Pharmacy", subtitle: "Pharmacy • Health", rating: 4.2, deliveryTime: "15-20 min", deliveryFee: 1.99, minOrder: 5, category: "convenience", image: "https://picsum.photos/id/201/400/250", isPromo: false }
+            { id: 1, type: "restaurant", name: "Pizza Express", subtitle: "Italian • Pizza", rating: 4.6, deliveryTime: "15-25 min", deliveryFee: 24.90, minOrder: 100, category: "pizza", image: "https://picsum.photos/id/292/400/250", isPromo: true },
+            { id: 2, type: "restaurant", name: "Sushi & Co", subtitle: "Japanese • Sushi", rating: 4.8, deliveryTime: "20-30 min", deliveryFee: 39.90, minOrder: 150, category: "asian", image: "https://picsum.photos/id/312/400/250", isPromo: false },
+            { id: 3, type: "restaurant", name: "Burger & Co", subtitle: "American • Burgers", rating: 4.4, deliveryTime: "10-20 min", deliveryFee: 19.90, minOrder: 80, category: "burger", image: "https://picsum.photos/id/431/400/250", isPromo: true },
+            { id: 4, type: "shop", name: "Co-op", subtitle: "Convenience • Groceries", rating: 4.3, deliveryTime: "10-15 min", deliveryFee: 14.90, minOrder: 50, category: "convenience", image: "https://picsum.photos/id/160/400/250", isPromo: false },
+            { id: 5, type: "shop", name: "Fresh & Co", subtitle: "Groceries • Produce", rating: 4.7, deliveryTime: "15-25 min", deliveryFee: 29.90, minOrder: 100, category: "grocery", image: "https://picsum.photos/id/1060/400/250", isPromo: false },
+            { id: 6, type: "restaurant", name: "Thai Orchid", subtitle: "Thai • Asian", rating: 4.5, deliveryTime: "20-30 min", deliveryFee: 29.90, minOrder: 120, category: "asian", image: "https://picsum.photos/id/42/400/250", isPromo: true },
+            { id: 7, type: "shop", name: "Boots Pharmacy", subtitle: "Pharmacy • Health", rating: 4.2, deliveryTime: "15-20 min", deliveryFee: 19.90, minOrder: 50, category: "convenience", image: "https://picsum.photos/id/201/400/250", isPromo: false }
         ];
 
         const products = {
-            1: [{ id: 101, name: "Margherita Pizza", price: 9.99, description: "Tomato, mozzarella, fresh basil" }, { id: 102, name: "Pepperoni Pizza", price: 11.99, description: "Pepperoni, mozzarella, tomato sauce" }, { id: 103, name: "Garlic Bread", price: 4.49, description: "With rosemary and sea salt" }],
-            2: [{ id: 201, name: "Salmon Avocado Roll", price: 7.99, description: "6 pieces" }, { id: 202, name: "Spicy Tuna Roll", price: 8.99, description: "6 pieces" }, { id: 203, name: "Chicken Katsu Curry", price: 12.99, description: "With rice" }],
-            3: [{ id: 301, name: "Classic Cheeseburger", price: 7.99, description: "Beef, cheese, pickles, sauce" }, { id: 302, name: "Bacon Burger", price: 9.49, description: "Beef, bacon, cheese" }, { id: 303, name: "Crispy Fries", price: 3.49, description: "Seasoned" }],
-            6: [{ id: 601, name: "Pad Thai", price: 11.99, description: "Chicken, prawns, peanuts" }, { id: 602, name: "Green Curry", price: 12.49, description: "Chicken, aubergine, basil" }],
-            4: [{ id: 401, name: "Whole Milk 1L", price: 1.29, description: "Fresh British milk" }, { id: 402, name: "Bananas (5 pack)", price: 1.49, description: "Ripe bananas" }, { id: 403, name: "White Bread", price: 1.10, description: "Sliced white bread" }, { id: 404, name: "Coca-Cola 500ml", price: 1.69, description: "Classic" }],
-            5: [{ id: 501, name: "Avocados (4 pack)", price: 2.49, description: "Ready to eat" }, { id: 502, name: "Chicken Breast 500g", price: 4.99, description: "Free range" }, { id: 503, name: "Organic Eggs (6)", price: 2.29, description: "Large free range" }, { id: 504, name: "Broccoli", price: 0.99, description: "Fresh" }],
-            7: [{ id: 701, name: "Paracetamol 500mg", price: 2.99, description: "16 tablets" }, { id: 702, name: "Hand Sanitiser 250ml", price: 3.49, description: "Alcohol based" }, { id: 703, name: "Plasters (Pack of 20)", price: 2.49, description: "Assorted sizes" }]
+            1: [{ id: 101, name: "Margherita Pizza", price: 99.90, description: "Tomato, mozzarella, fresh basil" }, { id: 102, name: "Pepperoni Pizza", price: 119.90, description: "Pepperoni, mozzarella, tomato sauce" }, { id: 103, name: "Garlic Bread", price: 44.90, description: "With rosemary and sea salt" }],
+            2: [{ id: 201, name: "Salmon Avocado Roll", price: 79.90, description: "6 pieces" }, { id: 202, name: "Spicy Tuna Roll", price: 89.90, description: "6 pieces" }, { id: 203, name: "Chicken Katsu Curry", price: 129.90, description: "With rice" }],
+            3: [{ id: 301, name: "Classic Cheeseburger", price: 79.90, description: "Beef, cheese, pickles, sauce" }, { id: 302, name: "Bacon Burger", price: 94.90, description: "Beef, bacon, cheese" }, { id: 303, name: "Crispy Fries", price: 34.90, description: "Seasoned" }],
+            6: [{ id: 601, name: "Pad Thai", price: 119.90, description: "Chicken, prawns, peanuts" }, { id: 602, name: "Green Curry", price: 124.90, description: "Chicken, aubergine, basil" }],
+            4: [{ id: 401, name: "Whole Milk 1L", price: 25.90, description: "Fresh British milk" }, { id: 402, name: "Bananas (5 pack)", price: 29.90, description: "Ripe bananas" }, { id: 403, name: "White Bread", price: 18.90, description: "Sliced white bread" }, { id: 404, name: "Coca-Cola 500ml", price: 19.90, description: "Classic" }],
+            5: [{ id: 501, name: "Avocados (4 pack)", price: 49.90, description: "Ready to eat" }, { id: 502, name: "Chicken Breast 500g", price: 69.90, description: "Free range" }, { id: 503, name: "Organic Eggs (6)", price: 35.90, description: "Large free range" }, { id: 504, name: "Broccoli", price: 22.90, description: "Fresh" }],
+            7: [{ id: 701, name: "Paracetamol 500mg", price: 39.90, description: "16 tablets" }, { id: 702, name: "Hand Sanitiser 250ml", price: 45.90, description: "Alcohol based" }, { id: 703, name: "Plasters (Pack of 20)", price: 35.90, description: "Assorted sizes" }]
         };
 
         // ==================== STATE ====================
         let cart = [];
         let currentFilter = 'all';
+        let currentMerchant = null;
 
         // ==================== RENDER UI ====================
         function renderMerchants(filteredMerchants = merchants, isSearching = false) {
@@ -271,7 +322,6 @@
                 return;
             }
 
-            // Hide promo row if searching or using filters
             if (isSearching || currentFilter !== 'all') {
                 promoSection.classList.add('hidden');
                 verticalTitle.textContent = isSearching ? 'Search results' : 'Places near you';
@@ -313,7 +363,7 @@
                             <span>${merchant.rating}</span>
                         </div>
                         <span class="text-zinc-300">•</span>
-                        <span class="text-zinc-500">£${merchant.deliveryFee} delivery</span>
+                        <span class="text-zinc-500">R${merchant.deliveryFee.toFixed(2)} delivery</span>
                     </div>
                 </div>
             `;
@@ -321,7 +371,6 @@
         }
 
         function renderVerticalCard(merchant, container) {
-            const isShop = merchant.type === 'shop';
             const card = document.createElement('div');
             card.className = `merchant-card bg-white rounded-xl overflow-hidden cursor-pointer group`;
             card.onclick = () => openMerchant(merchant);
@@ -334,9 +383,7 @@
                     <div class="flex-1 py-1 pr-2 flex flex-col justify-center">
                         <div class="flex items-start justify-between">
                             <div>
-                                <div class="flex items-center gap-x-2">
-                                    <h4 class="font-bold text-[16px] text-zinc-900">${merchant.name}</h4>
-                                </div>
+                                <h4 class="font-bold text-[16px] text-zinc-900">${merchant.name}</h4>
                                 <p class="text-[13px] text-zinc-500 mt-0.5">${merchant.subtitle}</p>
                             </div>
                         </div>
@@ -351,7 +398,7 @@
                                 <span>${merchant.deliveryTime}</span>
                             </div>
                             <span class="text-zinc-300">•</span>
-                            <span class="text-zinc-500">£${merchant.deliveryFee}</span>
+                            <span class="text-zinc-500">R${merchant.deliveryFee.toFixed(2)}</span>
                         </div>
                     </div>
                 </div>
@@ -362,7 +409,7 @@
         // ==================== FILTERING ====================
         function filterByType(type) {
             currentFilter = type;
-            document.getElementById('search-input').value = ''; // Clear search on filter change
+            document.getElementById('search-input').value = ''; 
             
             document.querySelectorAll('#top-tabs .category-pill').forEach(el => {
                 el.classList.remove('active', 'bg-[#0EA5E9]', 'text-white', 'border-[#0EA5E9]');
@@ -378,9 +425,55 @@
             renderMerchants(filtered, false);
         }
 
+        function quickFilter(category) {
+            document.getElementById('search-input').value = ''; 
+            const filtered = merchants.filter(m => m.category === category);
+            
+            // Reset main tabs to visual default if a quick filter is used
+            document.querySelectorAll('#top-tabs .category-pill').forEach(el => {
+                el.classList.remove('active', 'bg-[#0EA5E9]', 'text-white', 'border-[#0EA5E9]');
+                el.classList.add('border-zinc-200', 'bg-white', 'text-zinc-700');
+                if (el.dataset.type === 'all') {
+                    el.classList.remove('border-zinc-200', 'bg-white', 'text-zinc-700');
+                    el.classList.add('active', 'bg-[#0EA5E9]', 'text-white', 'border-[#0EA5E9]');
+                }
+            });
+            currentFilter = 'all'; 
+
+            renderMerchants(filtered, true); // hide promo when quick filtering
+        }
+
+        // ==================== NAVIGATION ====================
+        function switchTab(tab) {
+            // Hide detail view & header if returning to base tabs
+            document.getElementById('merchant-screen').classList.add('hidden');
+            document.getElementById('main-header').classList.remove('hidden');
+
+            // Reset Nav Colors
+            document.getElementById('nav-home').classList.replace('text-[#0EA5E9]', 'text-zinc-400');
+            document.getElementById('nav-orders').classList.replace('text-[#0EA5E9]', 'text-zinc-400');
+
+            if (tab === 'home') {
+                document.getElementById('home-view').classList.remove('hidden');
+                document.getElementById('orders-view').classList.add('hidden');
+                document.getElementById('nav-home').classList.replace('text-zinc-400', 'text-[#0EA5E9]');
+            } else if (tab === 'orders') {
+                document.getElementById('home-view').classList.add('hidden');
+                document.getElementById('orders-view').classList.remove('hidden');
+                document.getElementById('nav-orders').classList.replace('text-zinc-400', 'text-[#0EA5E9]');
+            }
+        }
+
         // ==================== MERCHANT DETAIL ====================
         function openMerchant(merchant) {
-            document.getElementById('home-screen').classList.add('hidden');
+            currentMerchant = merchant;
+            
+            // Hide all main base screens and header
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('orders-view').classList.add('hidden');
+            document.getElementById('main-header').classList.add('hidden');
+            
+            // Show merchant screen
             document.getElementById('merchant-screen').classList.remove('hidden');
 
             const header = document.getElementById('merchant-header');
@@ -405,16 +498,17 @@
             document.getElementById('merchant-name').textContent = merchant.name;
             document.getElementById('merchant-subtitle').textContent = merchant.subtitle;
             document.getElementById('merchant-rating').textContent = merchant.rating;
-            document.getElementById('merchant-delivery').innerHTML = `£${merchant.deliveryFee} delivery`;
-            document.getElementById('merchant-min-order').innerHTML = `Min. order £${merchant.minOrder}`;
+            document.getElementById('merchant-delivery').innerHTML = `R${merchant.deliveryFee.toFixed(2)} delivery`;
+            document.getElementById('merchant-min-order').innerHTML = `Min. order R${merchant.minOrder.toFixed(2)}`;
             document.getElementById('menu-title').textContent = isShop ? "Products" : "Menu";
 
             renderProducts(merchant.id);
         }
 
         function closeMerchant() {
+            currentMerchant = null;
             document.getElementById('merchant-screen').classList.add('hidden');
-            document.getElementById('home-screen').classList.remove('hidden');
+            switchTab('home'); // Routes back cleanly
         }
 
         // ==================== PRODUCTS ====================
@@ -424,27 +518,51 @@
             const items = products[merchantId] || [];
             
             items.forEach(item => {
+                const cartItem = cart.find(c => c.id === item.id);
+                const quantity = cartItem ? cartItem.quantity : 0;
+                
+                // Toggle Button state based on Cart
+                let buttonHTML = '';
+                if (quantity > 0) {
+                    buttonHTML = `
+                        <div class="flex items-center bg-zinc-100 rounded-full h-[34px] border border-zinc-200">
+                            <button onclick="updateCartItem(${item.id}, ${merchantId}, -1); event.stopImmediatePropagation()" class="w-9 h-full flex items-center justify-center text-zinc-500 hover:text-zinc-900 font-bold active:scale-90">-</button>
+                            <span class="px-1 text-[13px] font-bold min-w-[20px] text-center text-zinc-900">${quantity}</span>
+                            <button onclick="updateCartItem(${item.id}, ${merchantId}, 1); event.stopImmediatePropagation()" class="w-9 h-full flex items-center justify-center text-[#0EA5E9] font-bold active:scale-90">+</button>
+                        </div>
+                    `;
+                } else {
+                    buttonHTML = `
+                        <button onclick="updateCartItem(${item.id}, ${merchantId}, 1); event.stopImmediatePropagation()"
+                                class="w-[34px] h-[34px] rounded-full border border-zinc-200 flex items-center justify-center text-[#0EA5E9] bg-white hover:bg-[#0EA5E9] hover:text-white hover:border-[#0EA5E9] active:scale-90 transition-all shadow-sm">
+                            <i class="fa-solid fa-plus text-sm"></i>
+                        </button>
+                    `;
+                }
+
                 const div = document.createElement('div');
-                div.className = `flex justify-between items-center bg-white border border-zinc-100 rounded-2xl p-4 shadow-sm`;
+                div.className = `flex justify-between items-start bg-white border border-zinc-100 rounded-2xl p-4 shadow-sm gap-x-4`;
                 
                 div.innerHTML = `
-                    <div class="flex-1 pr-4">
+                    <div class="flex-1">
                         <h4 class="font-bold text-[15px] text-zinc-900">${item.name}</h4>
                         <p class="text-[13px] text-zinc-500 mt-1 line-clamp-2 leading-snug">${item.description}</p>
-                        <p class="font-semibold text-zinc-900 mt-2">£${item.price.toFixed(2)}</p>
+                        <p class="font-semibold text-zinc-900 mt-2">R${item.price.toFixed(2)}</p>
                     </div>
                     
-                    <button onclick="addToCart(${item.id}, ${merchantId}); event.stopImmediatePropagation()"
-                            class="w-10 h-10 rounded-full border border-zinc-200 flex items-center justify-center text-[#0EA5E9] hover:bg-[#0EA5E9] hover:text-white hover:border-[#0EA5E9] active:scale-90 transition-all">
-                        <i class="fa-solid fa-plus"></i>
-                    </button>
+                    <div class="flex flex-col items-center gap-y-3">
+                        <div class="w-20 h-20 rounded-xl overflow-hidden bg-zinc-100 flex-shrink-0 relative">
+                            <img src="https://picsum.photos/seed/${item.id}/200/200" class="w-full h-full object-cover">
+                        </div>
+                        ${buttonHTML}
+                    </div>
                 `;
                 container.appendChild(div);
             });
         }
 
         // ==================== CART LOGIC ====================
-        function addToCart(itemId, merchantId) {
+        function updateCartItem(itemId, merchantId, change) {
             const merchant = merchants.find(m => m.id === merchantId);
             const item = products[merchantId].find(i => i.id === itemId);
 
@@ -453,12 +571,26 @@
                 cart = [];
             }
 
-            const existing = cart.find(i => i.id === itemId);
-            if (existing) existing.quantity++;
-            else cart.push({ ...item, quantity: 1, merchantId, merchantName: merchant.name });
+            const existingIndex = cart.findIndex(i => i.id === itemId);
+            if (existingIndex > -1) {
+                cart[existingIndex].quantity += change;
+                if (cart[existingIndex].quantity <= 0) {
+                    cart.splice(existingIndex, 1);
+                }
+            } else if (change > 0) {
+                cart.push({ ...item, quantity: 1, merchantId, merchantName: merchant.name });
+                showToast(`${item.name} added`);
+            }
 
             updateCartBadge();
-            showToast(`${item.name} added`);
+            
+            // Re-render UI components if they are active
+            if (currentMerchant && currentMerchant.id === merchantId) {
+                renderProducts(merchantId); 
+            }
+            if (!document.getElementById('cart-sheet').classList.contains('hidden')) {
+                showCart(); 
+            }
         }
 
         function updateCartBadge() {
@@ -486,42 +618,35 @@
                         <p class="font-medium text-zinc-500">Your basket is empty</p>
                     </div>
                 `;
-                document.getElementById('cart-total').textContent = '£0.00';
-                document.getElementById('cart-total-button').textContent = '£0.00';
+                document.getElementById('cart-total').textContent = 'R0.00';
+                document.getElementById('cart-total-button').textContent = 'R0.00';
                 return;
             }
 
             let total = 0;
-            cart.forEach((item, index) => {
+            cart.forEach((item) => {
                 total += item.price * item.quantity;
                 container.innerHTML += `
                     <div class="flex justify-between items-start border-b border-zinc-100 py-4 last:border-b-0">
                         <div class="flex-1 pr-3">
                             <span class="font-bold text-zinc-900">${item.name}</span>
-                            <div class="text-[13px] text-zinc-500 mt-1">£${item.price.toFixed(2)} each</div>
+                            <div class="text-[13px] text-zinc-500 mt-1">R${item.price.toFixed(2)} each</div>
                         </div>
                         
                         <div class="flex flex-col items-end gap-y-2">
-                            <span class="font-bold text-zinc-900">£${(item.price * item.quantity).toFixed(2)}</span>
+                            <span class="font-bold text-zinc-900">R${(item.price * item.quantity).toFixed(2)}</span>
                             <div class="flex items-center bg-zinc-100 rounded-full h-8">
-                                <button onclick="changeQuantity(${index}, -1)" class="w-8 h-8 text-zinc-500 hover:text-zinc-900 font-bold">-</button>
+                                <button onclick="updateCartItem(${item.id}, ${item.merchantId}, -1)" class="w-8 h-8 text-zinc-500 hover:text-zinc-900 font-bold">-</button>
                                 <span class="px-2 text-[13px] font-bold w-6 text-center">${item.quantity}</span>
-                                <button onclick="changeQuantity(${index}, 1)" class="w-8 h-8 text-[#0EA5E9] hover:text-[#0284c7] font-bold">+</button>
+                                <button onclick="updateCartItem(${item.id}, ${item.merchantId}, 1)" class="w-8 h-8 text-[#0EA5E9] hover:text-[#0284c7] font-bold">+</button>
                             </div>
                         </div>
                     </div>
                 `;
             });
 
-            document.getElementById('cart-total').textContent = `£${total.toFixed(2)}`;
-            document.getElementById('cart-total-button').textContent = `£${total.toFixed(2)}`;
-        }
-
-        function changeQuantity(index, change) {
-            cart[index].quantity += change;
-            if (cart[index].quantity < 1) cart.splice(index, 1);
-            showCart();
-            updateCartBadge();
+            document.getElementById('cart-total').textContent = `R${total.toFixed(2)}`;
+            document.getElementById('cart-total-button').textContent = `R${total.toFixed(2)}`;
         }
 
         function hideCart() {
@@ -531,6 +656,7 @@
         function placeOrder() {
             if (cart.length === 0) return;
             const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            
             document.getElementById('cart-sheet').innerHTML = `
                 <div class="absolute bottom-0 w-full max-w-[420px] bg-white rounded-t-3xl shadow-2xl flex flex-col p-6 text-center" style="height: 70vh;">
                     <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
@@ -546,7 +672,7 @@
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-zinc-500">Total</span>
-                            <span class="font-bold text-lg text-[#0EA5E9]">£${total.toFixed(2)}</span>
+                            <span class="font-bold text-lg text-[#0EA5E9]">R${total.toFixed(2)}</span>
                         </div>
                     </div>
 
@@ -562,62 +688,38 @@
             updateCartBadge();
             document.getElementById('cart-sheet').classList.add('hidden');
             showToast("Order confirmed!", true);
+            
+            // Revert cart DOM 
             setTimeout(() => {
-                showHomeScreen();
                 document.getElementById('cart-sheet').innerHTML = `
-                    <div onclick="event.stopImmediatePropagation()" class="absolute bottom-0 w-full max-w-[420px] bg-white rounded-t-3xl" style="height: 70vh"></div>
-                `;
-            }, 500);
-        }
-
-        // ==================== NAVIGATION ====================
-        function showHomeScreen() {
-            document.getElementById('merchant-screen').classList.add('hidden');
-            document.getElementById('home-screen').classList.remove('hidden');
-            document.getElementById('cart-sheet').classList.add('hidden');
-            
-            // Reset nav colors
-            document.getElementById('nav-home').classList.replace('text-zinc-400', 'text-[#0EA5E9]');
-            document.getElementById('nav-orders').classList.replace('text-[#0EA5E9]', 'text-zinc-400');
-            
-            // Reset main content
-            document.getElementById('main-content').innerHTML = document.getElementById('main-content').innerHTML; 
-            initializeApp();
-        }
-
-        function showOrders() {
-            document.getElementById('merchant-screen').classList.add('hidden');
-            document.getElementById('home-screen').classList.remove('hidden');
-            
-            // Update nav colors
-            document.getElementById('nav-home').classList.replace('text-[#0EA5E9]', 'text-zinc-400');
-            document.getElementById('nav-orders').classList.replace('text-zinc-400', 'text-[#0EA5E9]');
-
-            const main = document.getElementById('home-screen');
-            main.innerHTML = `
-                <div class="px-4 py-6 bg-white min-h-screen">
-                    <h2 class="text-2xl font-bold mb-6 text-zinc-900">Your orders</h2>
-                    <div class="space-y-4">
-                        <div class="border border-zinc-200 rounded-2xl p-4 shadow-sm">
-                            <div class="flex justify-between items-start">
-                                <div class="flex items-center gap-x-3">
-                                    <div class="w-12 h-12 rounded-lg bg-zinc-100 overflow-hidden">
-                                        <img src="https://picsum.photos/id/292/100/100" class="w-full h-full object-cover">
-                                    </div>
-                                    <div>
-                                        <span class="font-bold text-[15px] text-zinc-900">Pizza Express</span>
-                                        <p class="text-[13px] text-zinc-500 mt-0.5">Today • 18:42</p>
-                                    </div>
-                                </div>
+                    <div onclick="event.stopImmediatePropagation()" class="absolute bottom-0 w-full max-w-[420px] bg-white rounded-t-3xl shadow-2xl flex flex-col transition-transform" style="height: 70vh; max-height: 620px;">
+                        <div class="p-4 flex items-center justify-between border-b border-zinc-100">
+                            <h3 class="font-bold text-lg text-zinc-900">Your order</h3>
+                            <button onclick="hideCart()" class="text-zinc-400 hover:text-zinc-600 w-8 h-8 flex items-center justify-center bg-zinc-100 rounded-full">
+                                <i class="fa-solid fa-times text-sm"></i>
+                            </button>
+                        </div>
+                        <div class="flex-1 overflow-y-auto p-4" id="cart-items"></div>
+                        <div class="border-t border-zinc-100 p-4 bg-white">
+                            <div class="flex justify-between items-center mb-4 px-1">
+                                <span class="text-zinc-600 font-medium">Total</span>
+                                <span id="cart-total" class="font-bold text-xl text-zinc-900">R0.00</span>
                             </div>
-                            <div class="mt-4 pt-4 border-t border-zinc-100 flex justify-between items-center text-sm">
-                                <span class="font-semibold text-zinc-900">£23.47 <span class="text-zinc-400 font-normal ml-1">• 4 items</span></span>
-                                <button class="px-4 py-1.5 bg-zinc-100 text-zinc-700 font-semibold rounded-full text-xs hover:bg-zinc-200">Reorder</button>
-                            </div>
+                            <button onclick="placeOrder()" class="w-full bg-[#0EA5E9] hover:bg-[#0284c7] text-white font-bold py-3.5 rounded-xl transition-colors flex justify-between px-6">
+                                <span>Checkout</span>
+                                <span id="cart-total-button">R0.00</span>
+                            </button>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+                
+                // If on merchant screen, reset UI
+                if (currentMerchant) renderProducts(currentMerchant.id);
+                
+                // Route to orders view
+                switchTab('orders');
+                document.getElementById('merchant-screen').classList.add('hidden');
+            }, 500);
         }
 
         // ==================== SEARCH ====================
