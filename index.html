@@ -7,181 +7,153 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { margin: 0; font-family: 'Inter', sans-serif; overflow: hidden; background-color: #e4e4e7; }
+        body { margin: 0; font-family: 'Inter', sans-serif; overflow: hidden; }
+        .map-bg { background: #e4e4e7; height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; position: relative; }
+        #splash { position: fixed; inset: 0; z-index: 100; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
+        .sheet { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: white; border-radius: 24px 24px 0 0; padding: 24px; box-shadow: 0 -10px 30px rgba(0,0,0,0.1); z-index: 40; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
         .package-card.active { border-color: #000000; background-color: #f4f4f5; }
         .package-card.active .icon-box { background-color: #000000; color: #ffffff; }
+
+        /* ── Custom Toast ── */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            pointer-events: none;
+            width: calc(100% - 32px);
+            max-width: 388px;
+        }
+        .toast {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: auto;
+            backdrop-filter: blur(12px);
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.hide { opacity: 0; transform: translateY(-10px); }
+        .toast-success { background: rgba(255,255,255,0.96); border: 1.5px solid #d1fae5; color: #065f46; }
+        .toast-error   { background: rgba(255,255,255,0.96); border: 1.5px solid #fee2e2; color: #991b1b; }
+        .toast-info    { background: rgba(255,255,255,0.96); border: 1.5px solid #e0e7ff; color: #3730a3; }
+        .toast-icon { font-size: 15px; margin-top: 1px; flex-shrink: 0; }
+        .toast-body { display: flex; flex-direction: column; gap: 2px; }
+        .toast-title { font-size: 13px; font-weight: 700; }
+        .toast-msg { font-size: 12px; font-weight: 500; opacity: 0.8; }
     </style>
 </head>
-<body class="select-none text-zinc-900 antialiased">
+<body>
 
-    <div id="splash" class="fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center transition-opacity duration-500">
-        <i class="fa-solid fa-truck-fast text-white text-7xl mb-4 animate-pulse"></i>
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Splash Screen -->
+    <div id="splash">
+        <i class="fa-solid fa-truck-fast text-white text-7xl mb-4"></i>
         <h1 class="text-white text-3xl font-bold tracking-tight">CourierGo</h1>
     </div>
 
-    <div id="toast" class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[250] flex items-center gap-3 px-5 py-3.5 rounded-full shadow-2xl text-sm font-bold transition-all duration-300 -translate-y-24 opacity-0 pointer-events-none max-w-[90vw] text-center">
-        <i id="toast-icon" class="fa-solid text-lg"></i>
-        <span id="toast-msg"></span>
-    </div>
-
-    <div id="auth-overlay" class="fixed inset-0 z-[150] bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 opacity-0 pointer-events-none transition-all duration-300">
-        <div id="auth-panel" class="bg-white w-full max-w-md rounded-t-3xl md:rounded-3xl p-6 md:p-8 shadow-2xl transform translate-y-full md:translate-y-8 transition-transform duration-300">
-            <div class="w-12 h-1 bg-zinc-200 rounded-full mx-auto mb-6 md:hidden"></div>
-            
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-zinc-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
-                    <i class="fa-solid fa-shield-halved text-2xl text-black"></i>
-                </div>
-                <h3 class="text-xl font-bold text-zinc-900">Sign in to Request</h3>
-                <p class="text-xs text-zinc-500 mt-1">We need to securely link this delivery to an account.</p>
-            </div>
-
-            <button onclick="triggerGoogleAuth()" class="w-full bg-black hover:bg-zinc-800 active:scale-[0.98] text-white font-bold text-sm py-4 px-6 rounded-2xl flex items-center justify-center gap-3 shadow-lg transition-all cursor-pointer">
-                <i class="fa-brands fa-google text-amber-400 text-base"></i>
-                <span>Continue with Google</span>
-            </button>
-
-            <button onclick="closeAuthModal()" class="w-full mt-3 text-zinc-400 hover:text-zinc-600 font-semibold text-xs py-3 rounded-xl transition-colors cursor-pointer">
-                Cancel
-            </button>
+    <!-- Floating Pill Header / Search Bar -->
+    <div class="absolute top-4 left-0 right-0 z-50 px-4 flex justify-center pointer-events-none">
+        <div class="bg-white/90 backdrop-blur-md w-full max-w-[388px] flex items-center shadow-lg rounded-full px-4 py-3 border border-zinc-200/80 pointer-events-auto">
+            <i class="fa-solid fa-magnifying-glass text-zinc-400 mr-3"></i>
+            <input type="text" placeholder="Where to send your package?" class="bg-transparent w-full focus:outline-none text-zinc-800 placeholder-zinc-400 text-sm">
+            <div class="w-[1px] h-5 bg-zinc-200 mx-2"></div>
+            <i class="fa-solid fa-sliders text-zinc-600 ml-1 cursor-pointer hover:text-black transition"></i>
         </div>
     </div>
 
+    <!-- Map Background View -->
+    <div class="map-bg">
+        <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&q=80" class="w-full h-full object-cover grayscale opacity-60">
+        <i class="fa-solid fa-location-dot text-black text-4xl absolute mb-12"></i>
+    </div>
 
-    <div class="flex flex-col md:flex-row h-screen w-screen overflow-hidden relative">
+    <!-- Bottom Sheet -->
+    <div class="sheet">
+        <div class="w-12 h-1 bg-zinc-300 rounded-full mx-auto mb-4"></div>
 
-        Desktop Sidebar) -->
-        <div class="absolute bottom-0 left-0 right-0 md:static md:w-[440px] md:h-full md:border-r md:border-zinc-200 bg-white z-40 flex flex-col rounded-t-3xl md:rounded-none shadow-[0_-10px_30px_rgba(0,0,0,0.1)] md:shadow-2xl transition-all duration-300">
-            
-            <div class="p-6 pb-4 flex-1 overflow-y-auto">
-                <div class="w-12 h-1 bg-zinc-300 rounded-full mx-auto mb-4 md:hidden"></div>
-                
-                <div class="hidden md:flex items-center justify-between pb-6 mb-6 border-b border-zinc-100">
-                    <div class="flex items-center gap-2.5">
-                        <i class="fa-solid fa-truck-fast text-black text-xl"></i>
-                        <span class="font-extrabold text-lg tracking-tight">CourierGo</span>
-                    </div>
-                    <div id="desktop-user-badge" class="text-xs font-semibold text-zinc-400">Not signed in</div>
-                </div>
-
-                <div class="bg-zinc-100 p-1.5 rounded-2xl flex gap-1 mb-6">
-                    <button id="tab-btn-send" onclick="switchTab('send')" class="flex-1 py-2.5 text-xs font-bold rounded-xl bg-white shadow-sm text-zinc-900 transition-all cursor-pointer">
-                        Send Package
-                    </button>
-                    <button id="tab-btn-track" onclick="switchTab('track')" class="flex-1 py-2.5 text-xs font-bold rounded-xl text-zinc-400 hover:text-zinc-700 transition-all cursor-pointer">
-                        Activity
-                    </button>
-                </div>
-
-                <div id="view-send" class="block">
-                    <div class="flex justify-between items-baseline mb-3">
-                        <h2 class="text-sm font-bold uppercase tracking-wider text-zinc-400">Select Package Size</h2>
-                        <span class="text-[11px] text-zinc-400 md:hidden">Swipe &rarr;</span>
-                    </div>
-                    
-                    <div class="flex md:grid md:grid-cols-2 gap-3 overflow-x-auto md:overflow-x-visible -mx-6 md:mx-0 px-6 md:px-0 pb-4 pt-1 no-scrollbar items-stretch">
-                        
-                        <div onclick="selectPackage(this, 'Document', 40.00)" class="package-card flex-shrink-0 w-36 md:w-full p-4 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-300 transition-all flex flex-col justify-between text-left">
-                            <div>
-                                <div class="icon-box w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-base text-zinc-700 mb-3 transition-colors">
-                                    <i class="fa-solid fa-envelope"></i>
-                                </div>
-                                <h3 class="font-bold text-sm text-zinc-800">Document</h3>
-                                <p class="text-[11px] font-semibold text-zinc-500 mt-0.5">Up to 1 kg</p>
-                            </div>
-                            <div class="mt-4 pt-2 border-t border-zinc-100 flex items-baseline justify-between">
-                                <span class="text-[10px] text-zinc-400">Base</span>
-                                <span class="font-bold text-sm text-zinc-950">R 40.00</span>
-                            </div>
-                        </div>
-
-                        <div onclick="selectPackage(this, 'Small Parcel', 65.00)" class="package-card flex-shrink-0 w-36 md:w-full p-4 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-300 transition-all flex flex-col justify-between text-left">
-                            <div>
-                                <div class="icon-box w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-base text-zinc-700 mb-3 transition-colors">
-                                    <i class="fa-solid fa-box-open"></i>
-                                </div>
-                                <h3 class="font-bold text-sm text-zinc-800">Small Parcel</h3>
-                                <p class="text-[11px] font-semibold text-zinc-500 mt-0.5">Up to 5 kg</p>
-                            </div>
-                            <div class="mt-4 pt-2 border-t border-zinc-100 flex items-baseline justify-between">
-                                <span class="text-[10px] text-zinc-400">Est.</span>
-                                <span class="font-bold text-sm text-zinc-950">R 65.00</span>
-                            </div>
-                        </div>
-
-                        <div onclick="selectPackage(this, 'Medium Box', 110.00)" class="package-card flex-shrink-0 w-36 md:w-full p-4 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-300 transition-all flex flex-col justify-between text-left">
-                            <div>
-                                <div class="icon-box w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-base text-zinc-700 mb-3 transition-colors">
-                                    <i class="fa-solid fa-box"></i>
-                                </div>
-                                <h3 class="font-bold text-sm text-zinc-800">Medium Box</h3>
-                                <p class="text-[11px] font-semibold text-zinc-500 mt-0.5">Up to 15 kg</p>
-                            </div>
-                            <div class="mt-4 pt-2 border-t border-zinc-100 flex items-baseline justify-between">
-                                <span class="text-[10px] text-zinc-400">Est.</span>
-                                <span class="font-bold text-sm text-zinc-950">R 110.00</span>
-                            </div>
-                        </div>
-
-                        <div onclick="selectPackage(this, 'Heavy Cargo', 220.00)" class="package-card flex-shrink-0 w-36 md:w-full p-4 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-300 transition-all flex flex-col justify-between text-left">
-                            <div>
-                                <div class="icon-box w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-base text-zinc-700 mb-3 transition-colors">
-                                    <i class="fa-solid fa-boxes-stacked"></i>
-                                </div>
-                                <h3 class="font-bold text-sm text-zinc-800">Heavy Cargo</h3>
-                                <p class="text-[11px] font-semibold text-zinc-500 mt-0.5">Up to 30 kg</p>
-                            </div>
-                            <div class="mt-4 pt-2 border-t border-zinc-100 flex items-baseline justify-between">
-                                <span class="text-[10px] text-zinc-400">Est.</span>
-                                <span class="font-bold text-sm text-zinc-950">R 220.00</span>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div id="view-track" class="hidden">
-                    <div id="activity-content" class="py-8 text-center">
-                        </div>
-                </div>
-            </div>
-
-            <div class="p-6 pt-2 bg-white border-t border-zinc-100">
-                <button id="submitBtn" onclick="handleBookingClick()" class="w-full bg-zinc-200 text-zinc-400 p-4 rounded-2xl font-bold text-sm transition-all cursor-not-allowed flex justify-center items-center gap-2 shadow-sm" disabled>
-                    <span>Select a Package Size</span>
-                </button>
-            </div>
-
+        <!-- Segmented Tab Switcher -->
+        <div class="bg-zinc-100 p-1 rounded-xl flex gap-1 mb-5">
+            <button id="tab-btn-send" onclick="switchTab('send')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-zinc-900 transition-all">
+                Send Package
+            </button>
+            <button id="tab-btn-track" onclick="switchTab('track')" class="flex-1 py-2 text-xs font-bold rounded-lg text-zinc-400 hover:text-zinc-700 transition-all">
+                Activity & Tracking
+            </button>
         </div>
 
+        <!-- VIEW 1: SEND PACKAGE -->
+        <div id="view-send" class="block">
+            <div class="flex justify-between items-baseline mb-3">
+                <h2 class="text-base font-bold text-zinc-800">Select package size</h2>
+                <span class="text-[11px] text-zinc-400">Swipe for more &rarr;</span>
+            </div>
 
-        <div class="flex-1 h-full w-full relative bg-zinc-200 overflow-hidden">
-            
-            <div class="absolute top-6 left-1/2 -translate-x-1/2 z-30 w-full max-w-[360px] px-4 pointer-events-none">
-                <div class="bg-white/95 backdrop-blur-md w-full flex items-center shadow-xl rounded-full px-4 py-3.5 border border-zinc-200/80 pointer-events-auto transition-all">
-                    <i class="fa-solid fa-magnifying-glass text-zinc-400 mr-3"></i>
-                    <input type="text" placeholder="Drop-off address?" class="bg-transparent w-full focus:outline-none text-zinc-800 placeholder-zinc-400 text-sm font-medium">
+            <div class="flex gap-3 overflow-x-auto -mx-6 px-6 pb-4 pt-1 no-scrollbar items-stretch">
+                <!-- Document -->
+                <div onclick="selectPackage(this, 'Document', 40.00)" class="package-card flex-shrink-0 w-36 p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-300 transition-all flex flex-col justify-between text-left">
+                    <div>
+                        <div class="icon-box w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-base text-zinc-700 mb-2.5 transition-colors">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        <h3 class="font-bold text-sm text-zinc-800 leading-tight">Document</h3>
+                        <p class="text-[11px] font-semibold text-zinc-600 mt-1">Up to 1 kg</p>
+                    </div>
+                    <div class="mt-4 pt-2 border-t border-zinc-100 flex items-baseline justify-between">
+                        <span class="text-[10px] text-zinc-400">Est.</span>
+                        <span class="font-bold text-sm text-zinc-950">R 40.00</span>
+                    </div>
+                </div>
+
+                <!-- Small Parcel -->
+                <div onclick="selectPackage(this, 'Small Parcel', 65.00)" class="package-card flex-shrink-0 w-36 p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-300 transition-all flex flex-col justify-between text-left">
+                    <div>
+                        <div class="icon-box w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-base text-zinc-700 mb-2.5 transition-colors">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+                        <h3 class="font-bold text-sm text-zinc-800 leading-tight">Small Parcel</h3>
+                        <p class="text-[11px] font-semibold text-zinc-600 mt-1">Up to 5 kg</p>
+                    </div>
+                    <div class="mt-4 pt-2 border-t border-zinc-100 flex items-baseline justify-between">
+                        <span class="text-[10px] text-zinc-400">Est.</span>
+                        <span class="font-bold text-sm text-zinc-950">R 65.00</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="w-full h-full flex items-center justify-center">
-                <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=1200&q=80" class="w-full h-full object-cover grayscale opacity-75">
-                <div class="absolute flex flex-col items-center mb-24 animate-bounce">
-                    <div class="bg-black text-white text-[10px] font-extrabold px-3 py-1.5 rounded-full shadow-lg mb-1 uppercase tracking-wider">Pickup Point</div>
-                    <i class="fa-solid fa-location-dot text-black text-4xl drop-shadow-md"></i>
-                </div>
-            </div>
-
+            <button id="submitBtn" onclick="confirmBooking()" class="w-full bg-zinc-300 text-zinc-500 p-3.5 rounded-xl font-bold text-sm transition-all cursor-not-allowed flex justify-center items-center gap-2" disabled>
+                <span>Select a Package Size</span>
+            </button>
         </div>
 
+        <!-- VIEW 2: TRACKING & HISTORY -->
+        <div id="view-track" class="hidden space-y-4">
+            <div class="text-center text-zinc-500 text-sm py-8">
+                Your tracking history will appear here once an order is placed.
+            </div>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
         const firebaseConfig = {
@@ -198,218 +170,183 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
-        const googleProvider = new GoogleAuthProvider();
 
-        let currentUser = null;
-        let selectedPackageData = null;
-
-        // Custom Toast Engine
-        window.showToast = function(msg, type = 'success') {
-            const toast = document.getElementById('toast');
-            const icon = document.getElementById('toast-icon');
-            const msgSpan = document.getElementById('toast-msg');
-
-            toast.classList.remove('bg-emerald-600', 'bg-red-600', 'bg-zinc-900', 'text-white');
-            icon.className = "fa-solid text-lg ";
-
-            if (type === 'error') {
-                toast.classList.add('bg-red-600', 'text-white');
-                icon.className += "fa-triangle-exclamation";
-            } else if (type === 'info') {
-                toast.classList.add('bg-zinc-900', 'text-white');
-                icon.className += "fa-circle-info text-amber-400";
-            } else {
-                toast.classList.add('bg-emerald-600', 'text-white');
-                icon.className += "fa-circle-check";
-            }
-
-            msgSpan.innerText = msg;
-            toast.style.opacity = '1';
-            toast.style.transform = 'translate(-50%, 0px)';
-            toast.style.pointerEvents = 'auto';
-
+        // ── Toast System ──────────────────────────────────────────
+        function showToast(type, title, message, duration = 4000) {
+            const container = document.getElementById('toast-container');
+            const icons = {
+                success: 'fa-circle-check',
+                error:   'fa-circle-xmark',
+                info:    'fa-circle-info'
+            };
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <i class="fa-solid ${icons[type]} toast-icon"></i>
+                <div class="toast-body">
+                    <div class="toast-title">${title}</div>
+                    ${message ? `<div class="toast-msg">${message}</div>` : ''}
+                </div>
+            `;
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => toast.classList.add('show'));
+            });
             setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translate(-50%, -24px)';
-                toast.style.pointerEvents = 'none';
-            }, 4000);
-        };
+                toast.classList.add('hide');
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, duration);
+        }
 
-        // Splash Hide
+        // ── Auth: attempt silent sign-in on load, but don't block UI ──
+        let currentUser = null;
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                console.log("Auth ready:", user.uid);
+            }
+        });
+
+        // Try signing in on load (best-effort; booking will retry if needed)
+        signInAnonymously(auth).catch((err) => {
+            console.warn("Silent auth failed on load:", err.message);
+        });
+
+        // ── Ensure the user is authenticated before proceeding ──
+        async function ensureAuthenticated() {
+            if (currentUser) return currentUser;
+
+            showToast('info', 'Signing you in…', 'Authenticating your session.');
+            try {
+                const credential = await signInAnonymously(auth);
+                currentUser = credential.user;
+                return currentUser;
+            } catch (err) {
+                throw new Error("Authentication failed: " + err.message);
+            }
+        }
+
+        // ── Splash ─────────────────────────────────────────────────
         window.onload = () => {
             setTimeout(() => {
                 const splash = document.getElementById('splash');
                 splash.style.opacity = '0';
                 setTimeout(() => splash.style.display = 'none', 500);
-            }, 1000);
+            }, 1200);
         };
 
-        // Track Auth state
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            const badge = document.getElementById('desktop-user-badge');
-            
-            if (user) {
-                const firstName = user.displayName ? user.displayName.split(' ')[0] : 'User';
-                badge.innerHTML = `<span class="text-emerald-600 font-bold">●</span> ${firstName} (<span onclick="window.logout()" class="underline cursor-pointer hover:text-black">Logout</span>)`;
-            } else {
-                badge.innerText = "Not signed in";
-            }
-            renderActivityTab();
-        });
+        // ── Package Selection ──────────────────────────────────────
+        let selectedPackageData = null;
 
-        window.logout = function() {
-            signOut(auth);
-            showToast("You have been signed out.", "info");
-        };
-
-        // Package Selection
         window.selectPackage = function(element, name, price) {
-            document.querySelectorAll('.package-card').forEach(card => card.classList.remove('active'));
+            document.querySelectorAll('.package-card').forEach(c => c.classList.remove('active'));
             element.classList.add('active');
             selectedPackageData = { name, price };
 
             const btn = document.getElementById('submitBtn');
             btn.removeAttribute('disabled');
-            btn.className = "w-full bg-black text-white p-4 rounded-2xl font-bold text-sm active:scale-[0.98] hover:bg-zinc-800 transition-all cursor-pointer shadow-xl flex justify-center items-center gap-2";
-            btn.innerHTML = `<span>Request ${name} (R ${price.toFixed(2)})</span>`;
+            btn.className = "w-full bg-black text-white p-3.5 rounded-xl font-bold text-sm active:scale-[0.98] transition-all cursor-pointer shadow-md flex justify-center items-center gap-2";
+            btn.innerHTML = `<span>Request ${name} &nbsp;·&nbsp; R ${price.toFixed(2)}</span>`;
         };
 
-        // Tab routing
+        // ── Tab Switcher ───────────────────────────────────────────
         window.switchTab = function(tab) {
-            const sendView = document.getElementById('view-send');
+            const sendView  = document.getElementById('view-send');
             const trackView = document.getElementById('view-track');
-            const sendBtn = document.getElementById('tab-btn-send');
-            const trackBtn = document.getElementById('tab-btn-track');
+            const sendBtn   = document.getElementById('tab-btn-send');
+            const trackBtn  = document.getElementById('tab-btn-track');
+            const activeClass   = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-zinc-900 transition-all";
+            const inactiveClass = "flex-1 py-2 text-xs font-bold rounded-lg text-zinc-400 hover:text-zinc-700 transition-all";
 
             if (tab === 'send') {
-                sendView.classList.remove('hidden'); trackView.classList.add('hidden');
-                sendBtn.className = "flex-1 py-2.5 text-xs font-bold rounded-xl bg-white shadow-sm text-zinc-900 transition-all cursor-pointer";
-                trackBtn.className = "flex-1 py-2.5 text-xs font-bold rounded-xl text-zinc-400 hover:text-zinc-700 transition-all cursor-pointer";
+                sendView.classList.remove('hidden');
+                trackView.classList.add('hidden');
+                sendBtn.className  = activeClass;
+                trackBtn.className = inactiveClass;
             } else {
-                sendView.classList.add('hidden'); trackView.classList.remove('hidden');
-                trackBtn.className = "flex-1 py-2.5 text-xs font-bold rounded-xl bg-white shadow-sm text-zinc-900 transition-all cursor-pointer";
-                sendBtn.className = "flex-1 py-2.5 text-xs font-bold rounded-xl text-zinc-400 hover:text-zinc-700 transition-all cursor-pointer";
-                renderActivityTab();
+                sendView.classList.add('hidden');
+                trackView.classList.remove('hidden');
+                trackBtn.className = activeClass;
+                sendBtn.className  = inactiveClass;
             }
         };
 
-        function renderActivityTab() {
-            const container = document.getElementById('activity-content');
-            if (!currentUser) {
-                container.innerHTML = `
-                    <div class="max-w-[260px] mx-auto py-6">
-                        <i class="fa-solid fa-user-lock text-4xl text-zinc-300 mb-3"></i>
-                        <h4 class="font-bold text-sm text-zinc-800">Sign in to view history</h4>
-                        <p class="text-xs text-zinc-400 mt-1 mb-6">Track your live driver ETAs and download past waybills.</p>
-                        <button onclick="openAuthModal()" class="bg-black text-white text-xs font-bold px-6 py-3 rounded-xl shadow-md hover:bg-zinc-800 transition">Sign in with Google</button>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = `
-                    <div class="text-left space-y-3">
-                        <div class="p-4 bg-zinc-50 border border-zinc-200/80 rounded-2xl flex justify-between items-center">
-                            <div>
-                                <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block">Active Dispatch</span>
-                                <p class="text-xs font-bold text-zinc-900 mt-0.5">Searching for nearest driver...</p>
-                            </div>
-                            <i class="fa-solid fa-spinner fa-spin text-zinc-400 text-lg"></i>
-                        </div>
-                        <p class="text-[11px] text-zinc-400 text-center pt-4">No completed deliveries on record.</p>
-                    </div>
-                `;
-            }
-        }
-
-        // Auth Modal Triggers
-        window.openAuthModal = function() {
-            const overlay = document.getElementById('auth-overlay');
-            const panel = document.getElementById('auth-panel');
-            overlay.classList.remove('opacity-0', 'pointer-events-none');
-            panel.classList.remove('translate-y-full', 'md:translate-y-8');
-            panel.classList.add('translate-y-0');
-        };
-
-        window.closeAuthModal = function() {
-            const overlay = document.getElementById('auth-overlay');
-            const panel = document.getElementById('auth-panel');
-            panel.classList.remove('translate-y-0');
-            panel.classList.add('translate-y-full', 'md:translate-y-8');
-            setTimeout(() => overlay.classList.add('opacity-0', 'pointer-events-none'), 200);
-        };
-
-        // Google sign-in trigger
-        window.triggerGoogleAuth = async function() {
-            try {
-                closeAuthModal();
-                showToast("Contacting Google Secure Login...", "info");
-                await signInWithPopup(auth, googleProvider);
-                showToast("Signed in successfully!", "success");
-                
-                // If they were trying to book, push it through now!
-                if (selectedPackageData) { processOrderPayload(); }
-
-            } catch (err) {
-                console.error("Auth Exception:", err);
-                showToast("Authentication could not be completed.", "error");
-            }
-        };
-
-        // Master CTA Click Router
-        window.handleBookingClick = function() {
+        // ── Booking ────────────────────────────────────────────────
+        window.confirmBooking = async function() {
             if (!selectedPackageData) return;
 
-            if (!currentUser) {
-                openAuthModal();
-                return;
-            }
-
-            processOrderPayload();
-        };
-
-        // The actual protected backend call
-        async function processOrderPayload() {
             const btn = document.getElementById('submitBtn');
-            const cachedHTML = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Securing Courier...</span>`;
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i><span>Processing…</span>`;
             btn.disabled = true;
 
             try {
-                const orderId = "CG-" + Math.floor(10000 + Math.random() * 90000);
-                const orderData = {
-                    orderId: orderId,
-                    packageType: selectedPackageData.name,
-                    cost: selectedPackageData.price,
-                    userEmail: currentUser.email,
+                // 1. Ensure user is authenticated before doing anything
+                const user = await ensureAuthenticated();
+
+                // 2. Build order payload
+                const orderId = "CG-" + Math.floor(1000 + Math.random() * 9000);
+                const orderPayload = {
+                    orderNumber: orderId,
+                    userId: user.uid,
+                    customerName: "Katlego (App User)",
+                    customerAddress: "Sandton, South Africa",
+                    customerPhoneNumber: "+27601234567",
+                    restaurantName: "CourierGo Dispatch",
+                    restaurantAddress: "Rosebank, South Africa",
+                    orderItem: [{
+                        name: selectedPackageData.name,
+                        unitPrice: selectedPackageData.price,
+                        quantity: 1
+                    }],
+                    totalOrderCost: selectedPackageData.price,
                     timestamp: Date.now()
                 };
 
-                // 1. Try Firebase RTDB Push
-                const ordersRef = ref(database, `orders/${orderId}`);
-                await set(ordersRef, orderData);
+                // 3. Save to Firebase Realtime Database
+                const newOrderRef = push(ref(database, 'orders'));
+                await set(newOrderRef, orderPayload);
+                console.log("Saved to Firebase:", newOrderRef.key);
 
-                // 2. Try Shipday API Push
-                const SHIPDAY_KEY = "dummy_failing_key_to_trigger_safe_catch";
-                const shipdayRes = await fetch("https://api.shipday.com/orders", {
+                // 4. Send to Shipday API
+                /*
+                 * NOTE: Direct fetch will face CORS issues in production.
+                 * Replace the URL below with your proxy backend (e.g. '/api/shipday').
+                 */
+                const SHIPDAY_API_KEY = "YOUR_SHIPDAY_KEY_HERE";
+
+                const shipdayResponse = await fetch("https://api.shipday.com/orders", {
                     method: "POST",
-                    headers: { "Authorization": `Basic ${SHIPDAY_KEY}`, "Content-Type": "application/json" },
-                    body: JSON.stringify(orderData)
+                    headers: {
+                        "Authorization": `Basic ${SHIPDAY_API_KEY}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(orderPayload)
                 });
 
-                if (!shipdayRes.ok) throw new Error("Dispatch Node Rejected Payload");
+                if (!shipdayResponse.ok) {
+                    throw new Error("Shipday responded with status " + shipdayResponse.status);
+                }
 
-                showToast(`Success! Courier dispatched. Waybill #${orderId}`, "success");
-                switchTab('track');
+                showToast('success', `Order ${orderId} confirmed!`, `Your ${selectedPackageData.name} has been dispatched.`);
 
             } catch (error) {
-                // EXPLICIT REQUIREMENT: Hide Firebase/Shipday context from user
-                console.error("SYSTEM_DISPATCH_FAULT:", error); 
-                showToast("A technical error occurred while processing your request. Please try again.", "error");
+                console.error("Booking error:", error);
+
+                if (error.message.startsWith("Authentication failed")) {
+                    showToast('error', 'Sign-in failed', 'Could not authenticate your session. Please try again.');
+                } else if (error.message.includes("Shipday")) {
+                    // Firebase save succeeded but Shipday failed
+                    showToast('info', 'Order saved', 'Dispatch system sync failed — our team will follow up shortly.');
+                } else {
+                    showToast('error', 'Booking failed', error.message || 'Something went wrong. Please try again.');
+                }
             } finally {
-                btn.innerHTML = cachedHTML;
+                btn.innerHTML = originalHTML;
                 btn.disabled = false;
             }
-        }
+        };
     </script>
 </body>
 </html>
