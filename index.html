@@ -3,81 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SwiftCourier</title>
+    <title>Courier Go</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background: #f4f4f5; }
-        .mobile-container { max-width: 420px; margin: 0 auto; background: white; min-height: 100vh; position: relative; overflow: hidden; }
-        .animate-slideUp { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        #splash-screen { position: absolute; inset: 0; z-index: 100; background: #000; display: flex; align-items: center; justify-content: center; }
+        body { margin: 0; font-family: 'Inter', sans-serif; overflow: hidden; }
+        .map-bg { background: #e4e4e7; height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; position: relative; }
+        #splash { position: fixed; inset: 0; z-index: 100; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
+        .sheet { position: absolute; bottom: 0; width: 100%; max-width: 420px; background: white; border-radius: 24px 24px 0 0; padding: 24px; box-shadow: 0 -10px 30px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 
-<div class="mobile-container">
-    <div id="splash-screen">
-        <i class="fa-solid fa-box-open text-white text-6xl animate-bounce"></i>
+    <div id="splash">
+        <i class="fa-solid fa-truck-fast text-white text-7xl mb-4"></i>
+        <h1 class="text-white text-3xl font-bold tracking-tight">CourierGo</h1>
     </div>
 
-    <div id="selection-sheet" class="absolute inset-0 z-50 bg-black/50 flex items-end">
-        <div class="bg-white w-full rounded-t-3xl p-8 animate-slideUp">
-            <h2 class="text-2xl font-bold mb-6">What are you sending?</h2>
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="startFlow('Document')" class="p-6 border rounded-2xl flex flex-col items-center hover:bg-zinc-50 transition">
-                    <i class="fa-solid fa-file-lines text-3xl mb-3 text-blue-600"></i>
-                    <span class="font-semibold">Document</span>
-                </button>
-                <button onclick="startFlow('Parcel')" class="p-6 border rounded-2xl flex flex-col items-center hover:bg-zinc-50 transition">
-                    <i class="fa-solid fa-box text-3xl mb-3 text-orange-500"></i>
-                    <span class="font-semibold">Parcel</span>
-                </button>
-            </div>
+    <div class="map-bg">
+        <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&q=80" class="w-full h-full object-cover grayscale opacity-60">
+        <i class="fa-solid fa-location-dot text-black text-4xl absolute"></i>
+    </div>
+
+    <div class="sheet">
+        <h2 class="text-xl font-bold mb-4">Send a package</h2>
+        <div class="grid grid-cols-2 gap-3 mb-6">
+            <button onclick="selectPackage('Envelope')" class="border-2 border-zinc-200 p-4 rounded-2xl hover:border-black transition">
+                <i class="fa-solid fa-envelope text-2xl mb-2"></i><br>Envelope
+            </button>
+            <button onclick="selectPackage('Box')" class="border-2 border-zinc-200 p-4 rounded-2xl hover:border-black transition">
+                <i class="fa-solid fa-box text-2xl mb-2"></i><br>Package
+            </button>
         </div>
+        <input type="text" placeholder="Where to?" class="w-full bg-zinc-100 p-4 rounded-xl mb-4 focus:outline-none">
+        <button class="w-full bg-black text-white p-4 rounded-xl font-bold text-lg active:scale-95 transition">Request Courier</button>
     </div>
 
-    <div id="app-content" class="p-6 hidden">
-        <header class="flex justify-between items-center mb-8">
-            <h1 class="text-xl font-bold">SwiftCourier</h1>
-            <button onclick="location.reload()" class="text-sm font-semibold text-blue-600">New</button>
-        </header>
+    <script>
+        // Splash animation
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('splash').style.opacity = '0';
+                setTimeout(() => document.getElementById('splash').style.display = 'none', 500);
+            }, 2000);
+        };
 
-        <div class="space-y-4">
-            <div class="p-4 border rounded-2xl flex items-center gap-4">
-                <div class="bg-blue-100 p-3 rounded-full"><i class="fa-solid fa-location-dot text-blue-600"></i></div>
-                <div>
-                    <p class="text-xs text-zinc-500 uppercase font-bold">Pickup</p>
-                    <p class="font-semibold">Current Location</p>
-                </div>
-            </div>
-
-            <div class="p-4 border rounded-2xl flex items-center gap-4">
-                <div class="bg-orange-100 p-3 rounded-full"><i class="fa-solid fa-flag text-orange-500"></i></div>
-                <input type="text" placeholder="Enter destination..." class="w-full focus:outline-none font-semibold">
-            </div>
-        </div>
-
-        <button class="w-full mt-8 bg-black text-white py-4 rounded-2xl font-bold text-lg active:scale-95 transition" onclick="alert('Courier Dispatched!')">
-            Request Courier
-        </button>
-    </div>
-</div>
-
-<script>
-    // Splash logic
-    window.onload = () => {
-        setTimeout(() => {
-            document.getElementById('splash-screen').style.display = 'none';
-        }, 2000);
-    };
-
-    function startFlow(type) {
-        document.getElementById('selection-sheet').classList.add('hidden');
-        document.getElementById('app-content').classList.remove('hidden');
-        console.log("Starting courier flow for:", type);
-    }
-</script>
+        function selectPackage(type) {
+            alert("Ready to send: " + type);
+        }
+    </script>
 </body>
 </html>
