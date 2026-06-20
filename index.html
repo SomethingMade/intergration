@@ -10,46 +10,132 @@
         body { margin: 0; font-family: 'Inter', sans-serif; overflow: hidden; }
         .map-bg { background: #e4e4e7; height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; position: relative; }
         #splash { position: fixed; inset: 0; z-index: 100; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
-        .sheet { position: absolute; bottom: 0; width: 100%; max-width: 420px; background: white; border-radius: 24px 24px 0 0; padding: 24px; box-shadow: 0 -10px 30px rgba(0,0,0,0.1); }
+        .sheet { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: white; border-radius: 24px 24px 0 0; padding: 24px; box-shadow: 0 -10px 30px rgba(0,0,0,0.1); z-index: 40; }
+        .vehicle-card.active { border-color: #000000; background-color: #f4f4f5; }
     </style>
 </head>
 <body>
 
+    <!-- Splash Screen -->
     <div id="splash">
         <i class="fa-solid fa-truck-fast text-white text-7xl mb-4"></i>
         <h1 class="text-white text-3xl font-bold tracking-tight">CourierGo</h1>
     </div>
 
-    <div class="map-bg">
-        <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&q=80" class="w-full h-full object-cover grayscale opacity-60">
-        <i class="fa-solid fa-location-dot text-black text-4xl absolute"></i>
+    <!-- Floating Pill Header / Search Bar -->
+    <div class="absolute top-4 left-0 right-0 z-50 px-4 flex justify-center pointer-events-none">
+        <div class="bg-white/90 backdrop-blur-md w-full max-w-[388px] flex items-center shadow-lg rounded-full px-4 py-3 border border-zinc-200/80 pointer-events-auto">
+            <i class="fa-solid fa-magnifying-glass text-zinc-400 mr-3"></i>
+            <input type="text" placeholder="Where to send your package?" class="bg-transparent w-full focus:outline-none text-zinc-800 placeholder-zinc-400 text-sm">
+            <div class="w-[1px] h-5 bg-zinc-200 mx-2"></div>
+            <i class="fa-solid fa-sliders text-zinc-600 ml-1 cursor-pointer hover:text-black transition"></i>
+        </div>
     </div>
 
+    <!-- Map Background Map View -->
+    <div class="map-bg">
+        <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&q=80" class="w-full h-full object-cover grayscale opacity-60">
+        <i class="fa-solid fa-location-dot text-black text-4xl absolute mb-20 animate-bounce"></i>
+    </div>
+
+    <!-- Bottom Vehicle Sheet -->
     <div class="sheet">
-        <h2 class="text-xl font-bold mb-4">Send a package</h2>
-        <div class="grid grid-cols-2 gap-3 mb-6">
-            <button onclick="selectPackage('Envelope')" class="border-2 border-zinc-200 p-4 rounded-2xl hover:border-black transition">
-                <i class="fa-solid fa-envelope text-2xl mb-2"></i><br>Envelope
-            </button>
-            <button onclick="selectPackage('Box')" class="border-2 border-zinc-200 p-4 rounded-2xl hover:border-black transition">
-                <i class="fa-solid fa-box text-2xl mb-2"></i><br>Package
-            </button>
+        <div class="w-12 h-1 bg-zinc-300 rounded-full mx-auto mb-4"></div>
+        <h2 class="text-lg font-bold mb-3 text-zinc-800">Select delivery option</h2>
+        
+        <!-- Vehicles List Container -->
+        <div class="space-y-2.5 mb-5 max-h-[260px] overflow-y-auto pr-1">
+            
+            <!-- Motorbike -->
+            <div onclick="selectVehicle(this, 'Motorbike', 'R 45.00')" class="vehicle-card flex items-center justify-between p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-400 transition-all">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-11 h-11 bg-zinc-100 rounded-xl flex items-center justify-center text-xl text-zinc-700">
+                        <i class="fa-solid fa-motorcycle"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm text-zinc-800">Motorbike</h3>
+                        <p class="text-xs text-zinc-400">Best for documents & small bags • 1.8 km away</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold text-sm text-zinc-950">R 45.00</p>
+                    <p class="text-[10px] font-medium text-emerald-600">2 mins away</p>
+                </div>
+            </div>
+
+            <!-- Sedan / Car -->
+            <div onclick="selectVehicle(this, 'Standard Sedan', 'R 75.00')" class="vehicle-card flex items-center justify-between p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-400 transition-all">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-11 h-11 bg-zinc-100 rounded-xl flex items-center justify-center text-xl text-zinc-700">
+                        <i class="fa-solid fa-car"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm text-zinc-800">Standard Sedan</h3>
+                        <p class="text-xs text-zinc-400">Fits multiple large boxes • 3.4 km away</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold text-sm text-zinc-950">R 75.00</p>
+                    <p class="text-[10px] font-medium text-zinc-500">5 mins away</p>
+                </div>
+            </div>
+
+            <!-- Bakkie / Van -->
+            <div onclick="selectVehicle(this, 'Cargo Bakkie', 'R 160.00')" class="vehicle-card flex items-center justify-between p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-400 transition-all">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-11 h-11 bg-zinc-100 rounded-xl flex items-center justify-center text-xl text-zinc-700">
+                        <i class="fa-solid fa-truck-ramp-box"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm text-zinc-800">Cargo Bakkie</h3>
+                        <p class="text-xs text-zinc-400">For heavy appliances & furniture • 6.2 km away</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold text-sm text-zinc-950">R 160.00</p>
+                    <p class="text-[10px] font-medium text-zinc-500">9 mins away</p>
+                </div>
+            </div>
+
         </div>
-        <input type="text" placeholder="Where to?" class="w-full bg-zinc-100 p-4 rounded-xl mb-4 focus:outline-none">
-        <button class="w-full bg-black text-white p-4 rounded-xl font-bold text-lg active:scale-95 transition">Request Courier</button>
+
+        <!-- Call to Action Button -->
+        <button id="submitBtn" onclick="confirmBooking()" class="w-full bg-zinc-300 text-zinc-500 p-4 rounded-xl font-bold text-base transition-all cursor-not-allowed" disabled>
+            Select a Courier Option
+        </button>
     </div>
 
     <script>
-        // Splash animation
+        let selectedCourier = null;
+
+        // Splash screen fadeout
         window.onload = () => {
             setTimeout(() => {
-                document.getElementById('splash').style.opacity = '0';
-                setTimeout(() => document.getElementById('splash').style.display = 'none', 500);
-            }, 2000);
+                const splash = document.getElementById('splash');
+                splash.style.opacity = '0';
+                setTimeout(() => splash.style.display = 'none', 500);
+            }, 1200);
         };
 
-        function selectPackage(type) {
-            alert("Ready to send: " + type);
+        // Handle card selection styling and update CTA layout
+        function selectVehicle(element, name, price) {
+            document.querySelectorAll('.vehicle-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            element.classList.add('active');
+            selectedCourier = { name, price };
+
+            const btn = document.getElementById('submitBtn');
+            btn.removeAttribute('disabled');
+            btn.className = "w-full bg-black text-white p-4 rounded-xl font-bold text-base active:scale-[0.98] transition-all cursor-pointer";
+            btn.innerText = `Request ${name} (${price})`;
+        }
+
+        function confirmBooking() {
+            if (selectedCourier) {
+                alert(`Booking confirmed for a ${selectedCourier.name} at ${selectedCourier.price}!`);
+            }
         }
     </script>
 </body>
