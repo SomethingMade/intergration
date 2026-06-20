@@ -366,6 +366,56 @@
             border-radius: 10px; padding: 10px 12px;
             margin-bottom: 10px; font-size: 11.5px; font-weight: 600; color: #92400e;
         }
+
+        /* ── Sign-in trust strip ── */
+        .signin-trust { display: flex; gap: 26px; margin-top: 30px; }
+        .trust-item { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+        .trust-item i { font-size: 15px; color: #fff; }
+        .trust-item span { font-size: 9.5px; font-weight: 600; letter-spacing: 0.3px; color: #71717a; }
+
+        /* ══════════════════════════════════════════
+           ACTIVITY / ORDER TRACKING
+        ══════════════════════════════════════════ */
+        .track-list {
+            display: flex; flex-direction: column; gap: 12px;
+            max-height: 46vh; overflow-y: auto; padding: 2px 1px 4px;
+        }
+        .order-card {
+            border: 1.5px solid #f1f1f4; border-radius: 16px; padding: 14px;
+            background: #fafafa;
+        }
+        .order-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; }
+        .order-id { font-size: 12px; font-weight: 800; color: #18181b; letter-spacing: -0.1px; }
+        .order-badge {
+            font-size: 9.5px; font-weight: 700; letter-spacing: 0.2px;
+            padding: 4px 9px; border-radius: 999px; text-transform: uppercase;
+        }
+        .badge-placed    { background: #f1f5f9; color: #475569; }
+        .badge-assigned  { background: #eff6ff; color: #1d4ed8; }
+        .badge-transit   { background: #fffbeb; color: #b45309; }
+        .badge-delivered { background: #f0fdf4; color: #15803d; }
+        .badge-cancelled { background: #fef2f2; color: #b91c1c; }
+
+        .order-route { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        .order-route-pt { font-size: 11.5px; font-weight: 600; color: #18181b; max-width: 38%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .order-route i { font-size: 9px; color: #c4c4c8; flex-shrink: 0; }
+
+        .order-progress { margin-bottom: 12px; }
+        .progress-track { height: 3px; background: #e4e4e7; border-radius: 3px; overflow: hidden; margin-bottom: 9px; }
+        .progress-fill { height: 100%; background: #18181b; border-radius: 3px; transition: width 0.4s ease; }
+        .progress-steps { display: flex; justify-content: space-between; }
+        .step { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; }
+        .step-dot { width: 7px; height: 7px; border-radius: 50%; background: #d4d4d8; }
+        .step.done .step-dot { background: #18181b; }
+        .step-label { font-size: 8.5px; font-weight: 600; color: #a1a1aa; text-align: center; }
+        .step.done .step-label { color: #52525b; }
+
+        .order-footer {
+            display: flex; align-items: center; justify-content: space-between;
+            padding-top: 10px; border-top: 1px solid #e4e4e7;
+            font-size: 10.5px; color: #71717a; font-weight: 500;
+        }
+        .order-price { font-weight: 800; color: #18181b; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -389,6 +439,11 @@
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
         Continue with Google
     </button>
+    <div class="signin-trust">
+        <div class="trust-item"><i class="fa-solid fa-shield-halved"></i><span>Insured</span></div>
+        <div class="trust-item"><i class="fa-solid fa-location-crosshairs"></i><span>Live tracking</span></div>
+        <div class="trust-item"><i class="fa-solid fa-bolt"></i><span>Same-day</span></div>
+    </div>
     <div class="signin-legal">By continuing you agree to our Terms of Service<br>and Privacy Policy.</div>
 </div>
 
@@ -483,10 +538,11 @@
 
     <!-- Track View -->
     <div id="view-track" style="display:none;">
-        <div class="track-empty">
+        <div id="track-empty" class="track-empty">
             <i class="fa-solid fa-box-open" style="font-size:28px;display:block;margin-bottom:10px;opacity:0.25;"></i>
             No deliveries yet.<br>Your orders will appear here.
         </div>
+        <div id="track-list" class="track-list" style="display:none;"></div>
     </div>
 </div>
 
@@ -555,7 +611,7 @@ import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import {
-    getDatabase, ref, push, set, get, update
+    getDatabase, ref, push, set, get, update, onValue, query, orderByChild, equalTo
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
 /* ══════════════════════════════════════
@@ -669,10 +725,13 @@ onAuthStateChanged(auth, async (user) => {
         renderProfileUI();
         checkPhoneWarning();
         initMap();
+        attachOrdersListener();
 
     } else {
         currentUser = null;
         userProfile = {};
+        ordersListenerAttached = false;
+        renderOrders(null);
         document.getElementById('signin-gate').classList.add('visible');
         document.getElementById('avatar-btn').style.display = 'none';
     }
@@ -729,6 +788,86 @@ function renderProfileUI() {
 function checkPhoneWarning() {
     const warn = document.getElementById('phone-warn');
     warn.style.display = (!userProfile.phone) ? 'flex' : 'none';
+}
+
+/* ══════════════════════════════════════
+   ACTIVITY / ORDER TRACKING
+══════════════════════════════════════ */
+let ordersListenerAttached = false;
+
+function attachOrdersListener() {
+    if (ordersListenerAttached || !currentUser) return;
+    ordersListenerAttached = true;
+    const ordersQuery = query(ref(database, 'orders'), orderByChild('userId'), equalTo(currentUser.uid));
+    onValue(ordersQuery, snap => renderOrders(snap.val()));
+}
+
+const STATUS_META = {
+    placed:     { label: 'Order placed',    badge: 'badge-placed',    step: 0 },
+    assigned:   { label: 'Driver assigned', badge: 'badge-assigned',  step: 1 },
+    picked_up:  { label: 'Picked up',       badge: 'badge-transit',   step: 2 },
+    in_transit: { label: 'In transit',      badge: 'badge-transit',   step: 2 },
+    delivered:  { label: 'Delivered',       badge: 'badge-delivered', step: 3 },
+    cancelled:  { label: 'Cancelled',       badge: 'badge-cancelled', step: -1 }
+};
+const STATUS_STEPS = ['Placed', 'Assigned', 'Picked up', 'Delivered'];
+
+function shortAddr(addr) { return (addr || '').split(',')[0]; }
+
+function formatOrderDate(ts) {
+    const d = new Date(ts);
+    return d.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' }) +
+        ' · ' + d.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' });
+}
+
+function orderCardHTML(o) {
+    const meta = STATUS_META[o.status] || STATUS_META.placed;
+    const pct  = meta.step < 0 ? 0 : (meta.step / (STATUS_STEPS.length - 1)) * 100;
+    const stepsHTML = STATUS_STEPS.map((s, i) =>
+        `<div class="step ${i <= meta.step ? 'done' : ''}"><span class="step-dot"></span><span class="step-label">${s}</span></div>`
+    ).join('');
+    const pkgName = (o.orderItem && o.orderItem[0] && o.orderItem[0].name) || 'Package';
+
+    return `
+        <div class="order-card">
+            <div class="order-card-top">
+                <span class="order-id">${o.orderNumber || ''}</span>
+                <span class="order-badge ${meta.badge}">${meta.label}</span>
+            </div>
+            <div class="order-route">
+                <span class="order-route-pt">${shortAddr(o.restaurantAddress)}</span>
+                <i class="fa-solid fa-arrow-right-long"></i>
+                <span class="order-route-pt">${shortAddr(o.customerAddress)}</span>
+            </div>
+            ${meta.step >= 0 ? `
+            <div class="order-progress">
+                <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+                <div class="progress-steps">${stepsHTML}</div>
+            </div>` : ''}
+            <div class="order-footer">
+                <span>${pkgName}</span>
+                <span>${formatOrderDate(o.timestamp)}</span>
+                <span class="order-price">R${o.totalOrderCost ?? '—'}</span>
+            </div>
+        </div>`;
+}
+
+function renderOrders(ordersObj) {
+    const listEl  = document.getElementById('track-list');
+    const emptyEl = document.getElementById('track-empty');
+    const orders  = ordersObj
+        ? Object.values(ordersObj).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
+        : [];
+
+    if (!orders.length) {
+        listEl.innerHTML = '';
+        listEl.style.display  = 'none';
+        emptyEl.style.display = 'block';
+        return;
+    }
+    emptyEl.style.display = 'none';
+    listEl.style.display  = 'flex';
+    listEl.innerHTML = orders.map(orderCardHTML).join('');
 }
 
 /* ══════════════════════════════════════
@@ -1031,9 +1170,10 @@ window.confirmBooking = async function() {
 
     const btn   = document.getElementById('submitBtn');
     const label = document.getElementById('submitLabel');
-    const orig  = label.textContent;
     label.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
     btn.disabled = true;
+
+    let succeeded = false;
 
     try {
         const orderId = "CG-" + Math.floor(1000 + Math.random() * 9000);
@@ -1056,6 +1196,7 @@ window.confirmBooking = async function() {
             distanceKm:          routeDistKm,
             pickupCoords:        selectedCoords.pickup,
             dropoffCoords:       selectedCoords.dropoff,
+            status:              'placed',
             timestamp:           Date.now()
         };
 
@@ -1076,17 +1217,37 @@ window.confirmBooking = async function() {
             setTimeout(() => showToast('info','Add your phone number','Open your profile to add a contact number for the driver.'), 1500);
         }
 
+        succeeded = true;
+
     } catch(e) {
         console.error(e);
         if (e.message.startsWith('Shipday')) {
             showToast('info', 'Order saved', 'Dispatch sync pending — our team will follow up.');
+            succeeded = true; // order was saved to our DB even though Shipday sync failed
         } else {
             showToast('error', 'Booking failed', e.message || 'Something went wrong.');
         }
     } finally {
-        label.textContent = orig; btn.disabled = false; btn.className = 'ready';
+        if (succeeded) {
+            resetBookingForm();
+        } else {
+            btn.disabled = false;
+            updateSubmitBtn();
+        }
     }
 };
+
+function resetBookingForm() {
+    clearInput('pickup');
+    clearInput('dropoff');
+    document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('active'));
+    selectedPkg   = null;
+    routeDistKm   = 0;
+    document.getElementById('route-dist').textContent  = '—';
+    document.getElementById('route-time').textContent  = '—';
+    document.getElementById('route-price').textContent = '—';
+    updateSubmitBtn();
+}
 
 /* splash: show for min 1.2s then let auth state handle it */
 setTimeout(hideSplash, 3000);
