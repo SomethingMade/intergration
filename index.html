@@ -11,18 +11,23 @@
         .map-bg { background: #e4e4e7; height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; position: relative; }
         #splash { position: fixed; inset: 0; z-index: 100; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
         .sheet { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: white; border-radius: 24px 24px 0 0; padding: 24px; box-shadow: 0 -10px 30px rgba(0,0,0,0.1); z-index: 40; }
+        
+        /* Hide ugly system scrollbars but keep functionality */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Selected Card theme override */
         .package-card.active { border-color: #000000; background-color: #f4f4f5; }
+        .package-card.active .icon-box { background-color: #000000; color: #ffffff; }
     </style>
 </head>
 <body>
 
-    <!-- Splash Screen -->
     <div id="splash">
         <i class="fa-solid fa-truck-fast text-white text-7xl mb-4"></i>
         <h1 class="text-white text-3xl font-bold tracking-tight">CourierGo</h1>
     </div>
 
-    <!-- Floating Pill Header / Search Bar -->
     <div class="absolute top-4 left-0 right-0 z-50 px-4 flex justify-center pointer-events-none">
         <div class="bg-white/90 backdrop-blur-md w-full max-w-[388px] flex items-center shadow-lg rounded-full px-4 py-3 border border-zinc-200/80 pointer-events-auto">
             <i class="fa-solid fa-magnifying-glass text-zinc-400 mr-3"></i>
@@ -32,93 +37,83 @@
         </div>
     </div>
 
-    <!-- Map Background Map View -->
     <div class="map-bg">
         <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&q=80" class="w-full h-full object-cover grayscale opacity-60">
-        <i class="fa-solid fa-location-dot text-black text-4xl absolute mb-20"></i>
+        <i class="fa-solid fa-location-dot text-black text-4xl absolute mb-12"></i>
     </div>
 
-    <!-- Bottom Package Sheet -->
     <div class="sheet">
         <div class="w-12 h-1 bg-zinc-300 rounded-full mx-auto mb-4"></div>
-        <h2 class="text-lg font-bold mb-1 text-zinc-800">Select package size</h2>
-        <p class="text-xs text-zinc-400 mb-4">Prices are calculated based on dimensions and weight limits.</p>
+        <div class="flex justify-between items-baseline mb-3">
+            <h2 class="text-base font-bold text-zinc-800">Select package size</h2>
+            <span class="text-[11px] text-zinc-400">Swipe for more &rarr;</span>
+        </div>
         
-        <!-- Package Type List Container -->
-        <div class="space-y-2.5 mb-5 max-h-[280px] overflow-y-auto pr-1">
+        <div class="flex gap-3 overflow-x-auto -mx-6 px-6 pb-4 pt-1 no-scrollbar items-stretch">
             
-            <!-- Document / Envelope -->
-            <div onclick="selectPackage(this, 'Document', 'R 40.00')" class="package-card flex items-center justify-between p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-400 transition-all">
-                <div class="flex items-center gap-3.5">
-                    <div class="w-11 h-11 bg-zinc-100 rounded-xl flex items-center justify-center text-xl text-zinc-700">
+            <div onclick="selectPackage(this, 'Document', 'R 40.00')" class="package-card flex-shrink-0 w-36 p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-300 transition-all flex flex-col justify-between text-left">
+                <div>
+                    <div class="icon-box w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-base text-zinc-700 mb-2.5 transition-colors">
                         <i class="fa-solid fa-envelope"></i>
                     </div>
-                    <div>
-                        <h3 class="font-bold text-sm text-zinc-800">Document / Envelope</h3>
-                        <p class="text-xs text-zinc-400">Up to 1 kg • Max A4 size</p>
-                    </div>
+                    <h3 class="font-bold text-sm text-zinc-800 leading-tight">Document</h3>
+                    <p class="text-[11px] font-semibold text-zinc-600 mt-1">Up to 1 kg</p>
+                    <p class="text-[10px] text-zinc-400">Max A4 size</p>
                 </div>
-                <div class="text-right">
-                    <p class="font-bold text-sm text-zinc-950">R 40.00</p>
-                    <p class="text-[10px] font-medium text-zinc-400">Base rate</p>
+                <div class="mt-4 pt-2 border-t border-zinc-100 flex items-baseline justify-between">
+                    <span class="text-[10px] text-zinc-400">Est.</span>
+                    <span class="font-bold text-sm text-zinc-950">R 40.00</span>
                 </div>
             </div>
 
-            <!-- Small Box -->
-            <div onclick="selectPackage(this, 'Small Parcel', 'R 65.00')" class="package-card flex items-center justify-between p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-400 transition-all">
-                <div class="flex items-center gap-3.5">
-                    <div class="w-11 h-11 bg-zinc-100 rounded-xl flex items-center justify-center text-xl text-zinc-700">
+            <div onclick="selectPackage(this, 'Small Parcel', 'R 65.00')" class="package-card flex-shrink-0 w-36 p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-300 transition-all flex flex-col justify-between text-left">
+                <div>
+                    <div class="icon-box w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-base text-zinc-700 mb-2.5 transition-colors">
                         <i class="fa-solid fa-box-open"></i>
                     </div>
-                    <div>
-                        <h3 class="font-bold text-sm text-zinc-800">Small Parcel</h3>
-                        <p class="text-xs text-zinc-400">Up to 5 kg • 20 × 20 × 20 cm</p>
-                    </div>
+                    <h3 class="font-bold text-sm text-zinc-800 leading-tight">Small Parcel</h3>
+                    <p class="text-[11px] font-semibold text-zinc-600 mt-1">Up to 5 kg</p>
+                    <p class="text-[10px] text-zinc-400">20×20×20 cm</p>
                 </div>
-                <div class="text-right">
-                    <p class="font-bold text-sm text-zinc-950">R 65.00</p>
-                    <p class="text-[10px] font-medium text-zinc-400">Estimated</p>
+                <div class="mt-4 pt-2 border-t border-zinc-100 flex items-baseline justify-between">
+                    <span class="text-[10px] text-zinc-400">Est.</span>
+                    <span class="font-bold text-sm text-zinc-950">R 65.00</span>
                 </div>
             </div>
 
-            <!-- Medium Box -->
-            <div onclick="selectPackage(this, 'Medium Box', 'R 110.00')" class="package-card flex items-center justify-between p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-400 transition-all">
-                <div class="flex items-center gap-3.5">
-                    <div class="w-11 h-11 bg-zinc-100 rounded-xl flex items-center justify-center text-xl text-zinc-700">
+            <div onclick="selectPackage(this, 'Medium Box', 'R 110.00')" class="package-card flex-shrink-0 w-36 p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-300 transition-all flex flex-col justify-between text-left">
+                <div>
+                    <div class="icon-box w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-base text-zinc-700 mb-2.5 transition-colors">
                         <i class="fa-solid fa-box"></i>
                     </div>
-                    <div>
-                        <h3 class="font-bold text-sm text-zinc-800">Medium Box</h3>
-                        <p class="text-xs text-zinc-400">Up to 15 kg • 40 × 40 × 40 cm</p>
-                    </div>
+                    <h3 class="font-bold text-sm text-zinc-800 leading-tight">Medium Box</h3>
+                    <p class="text-[11px] font-semibold text-zinc-600 mt-1">Up to 15 kg</p>
+                    <p class="text-[10px] text-zinc-400">40×40×40 cm</p>
                 </div>
-                <div class="text-right">
-                    <p class="font-bold text-sm text-zinc-950">R 110.00</p>
-                    <p class="text-[10px] font-medium text-zinc-400">Estimated</p>
+                <div class="mt-4 pt-2 border-t border-zinc-100 flex items-baseline justify-between">
+                    <span class="text-[10px] text-zinc-400">Est.</span>
+                    <span class="font-bold text-sm text-zinc-950">R 110.00</span>
                 </div>
             </div>
 
-            <!-- Large Item -->
-            <div onclick="selectPackage(this, 'Large / Heavy Cargo', 'R 220.00')" class="package-card flex items-center justify-between p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-400 transition-all">
-                <div class="flex items-center gap-3.5">
-                    <div class="w-11 h-11 bg-zinc-100 rounded-xl flex items-center justify-center text-xl text-zinc-700">
+            <div onclick="selectPackage(this, 'Large Cargo', 'R 220.00')" class="package-card flex-shrink-0 w-36 p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-300 transition-all flex flex-col justify-between text-left">
+                <div>
+                    <div class="icon-box w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-base text-zinc-700 mb-2.5 transition-colors">
                         <i class="fa-solid fa-boxes-stacked"></i>
                     </div>
-                    <div>
-                        <h3 class="font-bold text-sm text-zinc-800">Large / Cargo</h3>
-                        <p class="text-xs text-zinc-400">Up to 30 kg • 80 × 60 × 60 cm</p>
-                    </div>
+                    <h3 class="font-bold text-sm text-zinc-800 leading-tight">Large Cargo</h3>
+                    <p class="text-[11px] font-semibold text-zinc-600 mt-1">Up to 30 kg</p>
+                    <p class="text-[10px] text-zinc-400">80×60×60 cm</p>
                 </div>
-                <div class="text-right">
-                    <p class="font-bold text-sm text-zinc-950">R 220.00</p>
-                    <p class="text-[10px] font-medium text-zinc-400">Estimated</p>
+                <div class="mt-4 pt-2 border-t border-zinc-100 flex items-baseline justify-between">
+                    <span class="text-[10px] text-zinc-400">Est.</span>
+                    <span class="font-bold text-sm text-zinc-950">R 220.00</span>
                 </div>
             </div>
 
         </div>
 
-        <!-- Call to Action Button -->
-        <button id="submitBtn" onclick="confirmBooking()" class="w-full bg-zinc-300 text-zinc-500 p-4 rounded-xl font-bold text-base transition-all cursor-not-allowed" disabled>
+        <button id="submitBtn" onclick="confirmBooking()" class="w-full bg-zinc-300 text-zinc-500 p-3.5 rounded-xl font-bold text-sm transition-all cursor-not-allowed" disabled>
             Select a Package Size
         </button>
     </div>
@@ -126,7 +121,6 @@
     <script>
         let selectedPackageData = null;
 
-        // Splash screen fadeout
         window.onload = () => {
             setTimeout(() => {
                 const splash = document.getElementById('splash');
@@ -135,18 +129,15 @@
             }, 1200);
         };
 
-        // Handle card selection styling and update CTA layout
         function selectPackage(element, name, price) {
-            document.querySelectorAll('.package-card').forEach(card => {
-                card.classList.remove('active');
-            });
+            document.querySelectorAll('.package-card').forEach(card => card.classList.remove('active'));
             
             element.classList.add('active');
             selectedPackageData = { name, price };
 
             const btn = document.getElementById('submitBtn');
             btn.removeAttribute('disabled');
-            btn.className = "w-full bg-black text-white p-4 rounded-xl font-bold text-base active:scale-[0.98] transition-all cursor-pointer";
+            btn.className = "w-full bg-black text-white p-3.5 rounded-xl font-bold text-sm active:scale-[0.98] transition-all cursor-pointer shadow-md";
             btn.innerText = `Confirm ${name} (${price})`;
         }
 
