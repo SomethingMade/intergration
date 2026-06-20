@@ -376,7 +376,7 @@
                 </div>
                 <div class="px-4 pt-6 pb-8">
                     <h3 class="font-bold text-lg mb-4 text-zinc-900" id="menu-title">Menu</h3>
-                    <div id="product-list" class="grid grid-cols-2 gap-3"></div>
+                    <div id="product-list" class="space-y-6"></div>
                 </div>
             </div>
             
@@ -530,23 +530,35 @@
             { id: 2, type: "restaurant", name: "Sushi & Co", subtitle: "Japanese • Sushi", rating: 4.8, deliveryTime: "20-30 min", deliveryFee: 39.90, minOrder: 150, category: "asian", image: "https://picsum.photos/id/312/800/600", isPromo: false }
         ];
 
-        // Added Extras and Drinks to products
+        // Added Categories, Extras and Drinks to products
         const products = {
             1: [
-                { id: 101, name: "Margherita Pizza", price: 99.90, description: "Tomato, mozzarella, fresh basil", 
+                { id: 101, name: "Margherita Pizza", price: 99.90, description: "Tomato, mozzarella, fresh basil", menuCategory: "Pizzas",
                   extras: [{name: "Extra Cheese", price: 15.00}, {name: "Olives", price: 10.00}], 
                   drinks: [{name: "Coca-Cola 330ml", price: 18.00}, {name: "Sparkling Water", price: 15.00}] }, 
-                { id: 102, name: "Pepperoni Pizza", price: 119.90, description: "Pepperoni, mozzarella, tomato sauce",
+                { id: 102, name: "Pepperoni Pizza", price: 119.90, description: "Pepperoni, mozzarella, tomato sauce", menuCategory: "Pizzas",
                   extras: [{name: "Extra Pepperoni", price: 20.00}, {name: "Chili Flakes", price: 5.00}],
-                  drinks: [{name: "Fanta Orange", price: 18.00}] }
+                  drinks: [{name: "Fanta Orange", price: 18.00}] },
+                { id: 103, name: "Hawaiian Pizza", price: 109.90, description: "Ham, pineapple, mozzarella", menuCategory: "Pizzas",
+                  extras: [], drinks: [] },
+                { id: 104, name: "Garlic Bread", price: 45.00, description: "Toasted baguette with garlic butter", menuCategory: "Sides",
+                  extras: [{name: "Add Cheese", price: 10.00}], drinks: [] },
+                { id: 105, name: "Caprese Salad", price: 65.00, description: "Fresh tomatoes, mozzarella, balsamic", menuCategory: "Sides",
+                  extras: [], drinks: [] }
             ],
             3: [
-                { id: 301, name: "Classic Cheeseburger", price: 79.90, description: "Beef, cheese, pickles, sauce",
+                { id: 301, name: "Classic Cheeseburger", price: 79.90, description: "Beef, cheese, pickles, sauce", menuCategory: "Burgers",
                   extras: [{name: "Extra Patty", price: 35.00}, {name: "Bacon", price: 20.00}, {name: "Avocado", price: 15.00}],
-                  drinks: [{name: "Milkshake (Vanilla)", price: 35.00}, {name: "Coke Zero", price: 18.00}] }
+                  drinks: [{name: "Milkshake (Vanilla)", price: 35.00}, {name: "Coke Zero", price: 18.00}] },
+                { id: 302, name: "Crispy Chicken Burger", price: 85.00, description: "Fried chicken breast, mayo, lettuce", menuCategory: "Burgers",
+                  extras: [{name: "Extra Cheese", price: 12.00}], drinks: [] },
+                { id: 303, name: "Large Fries", price: 35.00, description: "Crispy golden potato fries", menuCategory: "Sides",
+                  extras: [], drinks: [] }
             ],
             2: [
-                { id: 201, name: "Salmon Avocado Roll", price: 79.90, description: "6 pieces", extras: [{name: "Extra Wasabi", price: 5.00}], drinks: [{name: "Green Tea", price: 25.00}] }
+                { id: 201, name: "Salmon Avocado Roll", price: 79.90, description: "6 pieces", menuCategory: "Sushi", extras: [{name: "Extra Wasabi", price: 5.00}], drinks: [{name: "Green Tea", price: 25.00}] },
+                { id: 202, name: "Tuna Sashimi", price: 95.00, description: "4 pieces of fresh tuna", menuCategory: "Sushi", extras: [], drinks: [] },
+                { id: 203, name: "Miso Soup", price: 30.00, description: "Traditional Japanese soup", menuCategory: "Starters", extras: [], drinks: [] }
             ]
         };
 
@@ -695,21 +707,51 @@
         function closeMerchant() { currentMerchant = null; document.getElementById('merchant-screen').classList.add('hidden'); switchTab('home'); }
 
         function renderProducts() {
-            const container = document.getElementById('product-list'); container.innerHTML = '';
-            (products[currentMerchant.id] || []).forEach(item => {
-                container.innerHTML += `
-                    <div class="flex flex-col bg-white border border-zinc-100 rounded-2xl overflow-hidden shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onclick="openItemSheet(${item.id})">
-                        <div class="h-32 w-full bg-zinc-100 relative"><img src="https://picsum.photos/seed/${item.id}/400/300" class="w-full h-full object-cover"></div>
-                        <div class="p-3 flex flex-col flex-1">
-                            <h4 class="font-bold text-[14px] text-zinc-900 mb-1">${item.name}</h4>
-                            <p class="text-[12px] text-zinc-500 line-clamp-2 flex-1">${item.description}</p>
-                            <div class="mt-3 flex items-center justify-between">
-                                <span class="font-bold text-[13px] text-zinc-900">R${item.price.toFixed(2)}</span>
-                                <div class="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-[#0EA5E9]"><i class="fa-solid fa-plus text-xs"></i></div>
-                            </div>
-                        </div>
-                    </div>`;
+            const container = document.getElementById('product-list'); 
+            container.innerHTML = '';
+            
+            const merchantProducts = products[currentMerchant.id] || [];
+            
+            // 1. Group products by their menuCategory
+            const groupedProducts = {};
+            merchantProducts.forEach(item => {
+                const category = item.menuCategory || 'Other';
+                if (!groupedProducts[category]) {
+                    groupedProducts[category] = [];
+                }
+                groupedProducts[category].push(item);
             });
+
+            // 2. Render each category
+            for (const [categoryName, items] of Object.entries(groupedProducts)) {
+                let itemsHtml = '';
+                
+                // Build the HTML for the items inside this category
+                items.forEach(item => {
+                    itemsHtml += `
+                        <div class="flex flex-col bg-white border border-zinc-100 rounded-2xl overflow-hidden shadow-sm cursor-pointer active:scale-[0.98] transition-transform w-[160px] flex-shrink-0 snap-start" onclick="openItemSheet(${item.id})">
+                            <div class="h-28 w-full bg-zinc-100 relative"><img src="https://picsum.photos/seed/${item.id}/400/300" class="w-full h-full object-cover"></div>
+                            <div class="p-3 flex flex-col flex-1">
+                                <h4 class="font-bold text-[14px] text-zinc-900 mb-1 truncate">${item.name}</h4>
+                                <p class="text-[12px] text-zinc-500 line-clamp-2 flex-1">${item.description}</p>
+                                <div class="mt-3 flex items-center justify-between">
+                                    <span class="font-bold text-[13px] text-zinc-900">R${item.price.toFixed(2)}</span>
+                                    <div class="w-7 h-7 rounded-full bg-zinc-100 flex items-center justify-center text-[#0EA5E9]"><i class="fa-solid fa-plus text-[10px]"></i></div>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+
+                // Append the category wrapper (vertical) and the items container (horizontal scroll)
+                container.innerHTML += `
+                    <div class="mb-2">
+                        <h4 class="font-bold text-lg text-zinc-900 mb-3">${categoryName}</h4>
+                        <div class="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x">
+                            ${itemsHtml}
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         // ==================== ITEM CUSTOMIZATION SHEET ====================
