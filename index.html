@@ -11,7 +11,7 @@
         .map-bg { background: #e4e4e7; height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; position: relative; }
         #splash { position: fixed; inset: 0; z-index: 100; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
         .sheet { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: white; border-radius: 24px 24px 0 0; padding: 24px; box-shadow: 0 -10px 30px rgba(0,0,0,0.1); z-index: 40; }
-        .vehicle-card.active { border-color: #000000; background-color: #f4f4f5; }
+        .package-card.active { border-color: #000000; background-color: #f4f4f5; }
     </style>
 </head>
 <body>
@@ -35,65 +35,83 @@
     <!-- Map Background Map View -->
     <div class="map-bg">
         <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&q=80" class="w-full h-full object-cover grayscale opacity-60">
-        <i class="fa-solid fa-location-dot text-black text-4xl absolute mb-20 animate-bounce"></i>
+        <i class="fa-solid fa-location-dot text-black text-4xl absolute mb-20"></i>
     </div>
 
-    <!-- Bottom Vehicle Sheet -->
+    <!-- Bottom Package Sheet -->
     <div class="sheet">
         <div class="w-12 h-1 bg-zinc-300 rounded-full mx-auto mb-4"></div>
-        <h2 class="text-lg font-bold mb-3 text-zinc-800">Select delivery option</h2>
+        <h2 class="text-lg font-bold mb-1 text-zinc-800">Select package size</h2>
+        <p class="text-xs text-zinc-400 mb-4">Prices are calculated based on dimensions and weight limits.</p>
         
-        <!-- Vehicles List Container -->
-        <div class="space-y-2.5 mb-5 max-h-[260px] overflow-y-auto pr-1">
+        <!-- Package Type List Container -->
+        <div class="space-y-2.5 mb-5 max-h-[280px] overflow-y-auto pr-1">
             
-            <!-- Motorbike -->
-            <div onclick="selectVehicle(this, 'Motorbike', 'R 45.00')" class="vehicle-card flex items-center justify-between p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-400 transition-all">
+            <!-- Document / Envelope -->
+            <div onclick="selectPackage(this, 'Document', 'R 40.00')" class="package-card flex items-center justify-between p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-400 transition-all">
                 <div class="flex items-center gap-3.5">
                     <div class="w-11 h-11 bg-zinc-100 rounded-xl flex items-center justify-center text-xl text-zinc-700">
-                        <i class="fa-solid fa-motorcycle"></i>
+                        <i class="fa-solid fa-envelope"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-sm text-zinc-800">Motorbike</h3>
-                        <p class="text-xs text-zinc-400">Best for documents & small bags • 1.8 km away</p>
+                        <h3 class="font-bold text-sm text-zinc-800">Document / Envelope</h3>
+                        <p class="text-xs text-zinc-400">Up to 1 kg • Max A4 size</p>
                     </div>
                 </div>
                 <div class="text-right">
-                    <p class="font-bold text-sm text-zinc-950">R 45.00</p>
-                    <p class="text-[10px] font-medium text-emerald-600">2 mins away</p>
+                    <p class="font-bold text-sm text-zinc-950">R 40.00</p>
+                    <p class="text-[10px] font-medium text-zinc-400">Base rate</p>
                 </div>
             </div>
 
-            <!-- Sedan / Car -->
-            <div onclick="selectVehicle(this, 'Standard Sedan', 'R 75.00')" class="vehicle-card flex items-center justify-between p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-400 transition-all">
+            <!-- Small Box -->
+            <div onclick="selectPackage(this, 'Small Parcel', 'R 65.00')" class="package-card flex items-center justify-between p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-400 transition-all">
                 <div class="flex items-center gap-3.5">
                     <div class="w-11 h-11 bg-zinc-100 rounded-xl flex items-center justify-center text-xl text-zinc-700">
-                        <i class="fa-solid fa-car"></i>
+                        <i class="fa-solid fa-box-open"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-sm text-zinc-800">Standard Sedan</h3>
-                        <p class="text-xs text-zinc-400">Fits multiple large boxes • 3.4 km away</p>
+                        <h3 class="font-bold text-sm text-zinc-800">Small Parcel</h3>
+                        <p class="text-xs text-zinc-400">Up to 5 kg • 20 × 20 × 20 cm</p>
                     </div>
                 </div>
                 <div class="text-right">
-                    <p class="font-bold text-sm text-zinc-950">R 75.00</p>
-                    <p class="text-[10px] font-medium text-zinc-500">5 mins away</p>
+                    <p class="font-bold text-sm text-zinc-950">R 65.00</p>
+                    <p class="text-[10px] font-medium text-zinc-400">Estimated</p>
                 </div>
             </div>
 
-            <!-- Bakkie / Van -->
-            <div onclick="selectVehicle(this, 'Cargo Bakkie', 'R 160.00')" class="vehicle-card flex items-center justify-between p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-400 transition-all">
+            <!-- Medium Box -->
+            <div onclick="selectPackage(this, 'Medium Box', 'R 110.00')" class="package-card flex items-center justify-between p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-400 transition-all">
                 <div class="flex items-center gap-3.5">
                     <div class="w-11 h-11 bg-zinc-100 rounded-xl flex items-center justify-center text-xl text-zinc-700">
-                        <i class="fa-solid fa-truck-ramp-box"></i>
+                        <i class="fa-solid fa-box"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-sm text-zinc-800">Cargo Bakkie</h3>
-                        <p class="text-xs text-zinc-400">For heavy appliances & furniture • 6.2 km away</p>
+                        <h3 class="font-bold text-sm text-zinc-800">Medium Box</h3>
+                        <p class="text-xs text-zinc-400">Up to 15 kg • 40 × 40 × 40 cm</p>
                     </div>
                 </div>
                 <div class="text-right">
-                    <p class="font-bold text-sm text-zinc-950">R 160.00</p>
-                    <p class="text-[10px] font-medium text-zinc-500">9 mins away</p>
+                    <p class="font-bold text-sm text-zinc-950">R 110.00</p>
+                    <p class="text-[10px] font-medium text-zinc-400">Estimated</p>
+                </div>
+            </div>
+
+            <!-- Large Item -->
+            <div onclick="selectPackage(this, 'Large / Heavy Cargo', 'R 220.00')" class="package-card flex items-center justify-between p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-400 transition-all">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-11 h-11 bg-zinc-100 rounded-xl flex items-center justify-center text-xl text-zinc-700">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm text-zinc-800">Large / Cargo</h3>
+                        <p class="text-xs text-zinc-400">Up to 30 kg • 80 × 60 × 60 cm</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold text-sm text-zinc-950">R 220.00</p>
+                    <p class="text-[10px] font-medium text-zinc-400">Estimated</p>
                 </div>
             </div>
 
@@ -101,12 +119,12 @@
 
         <!-- Call to Action Button -->
         <button id="submitBtn" onclick="confirmBooking()" class="w-full bg-zinc-300 text-zinc-500 p-4 rounded-xl font-bold text-base transition-all cursor-not-allowed" disabled>
-            Select a Courier Option
+            Select a Package Size
         </button>
     </div>
 
     <script>
-        let selectedCourier = null;
+        let selectedPackageData = null;
 
         // Splash screen fadeout
         window.onload = () => {
@@ -118,23 +136,23 @@
         };
 
         // Handle card selection styling and update CTA layout
-        function selectVehicle(element, name, price) {
-            document.querySelectorAll('.vehicle-card').forEach(card => {
+        function selectPackage(element, name, price) {
+            document.querySelectorAll('.package-card').forEach(card => {
                 card.classList.remove('active');
             });
             
             element.classList.add('active');
-            selectedCourier = { name, price };
+            selectedPackageData = { name, price };
 
             const btn = document.getElementById('submitBtn');
             btn.removeAttribute('disabled');
             btn.className = "w-full bg-black text-white p-4 rounded-xl font-bold text-base active:scale-[0.98] transition-all cursor-pointer";
-            btn.innerText = `Request ${name} (${price})`;
+            btn.innerText = `Confirm ${name} (${price})`;
         }
 
         function confirmBooking() {
-            if (selectedCourier) {
-                alert(`Booking confirmed for a ${selectedCourier.name} at ${selectedCourier.price}!`);
+            if (selectedPackageData) {
+                alert(`Size confirmed: Delivery request generated for a ${selectedPackageData.name} tier.`);
             }
         }
     </script>
