@@ -12,11 +12,9 @@
         #splash { position: fixed; inset: 0; z-index: 100; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
         .sheet { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: white; border-radius: 24px 24px 0 0; padding: 24px; box-shadow: 0 -10px 30px rgba(0,0,0,0.1); z-index: 40; }
         
-        /* Hide ugly system scrollbars but keep functionality */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Selected Card theme override */
         .package-card.active { border-color: #000000; background-color: #f4f4f5; }
         .package-card.active .icon-box { background-color: #000000; color: #ffffff; }
     </style>
@@ -44,78 +42,154 @@
 
     <div class="sheet">
         <div class="w-12 h-1 bg-zinc-300 rounded-full mx-auto mb-4"></div>
-        <div class="flex justify-between items-baseline mb-3">
-            <h2 class="text-base font-bold text-zinc-800">Select package size</h2>
-            <span class="text-[11px] text-zinc-400">Swipe for more &rarr;</span>
-        </div>
         
-        <div class="flex gap-3 overflow-x-auto -mx-6 px-6 pb-4 pt-1 no-scrollbar items-stretch">
+        <div class="bg-zinc-100 p-1 rounded-xl flex gap-1 mb-5">
+            <button id="tab-btn-send" onclick="switchTab('send')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-zinc-900 transition-all">
+                Send Package
+            </button>
+            <button id="tab-btn-track" onclick="switchTab('track')" class="flex-1 py-2 text-xs font-bold rounded-lg text-zinc-400 hover:text-zinc-700 transition-all">
+                Activity & Tracking
+            </button>
+        </div>
+
+        <div id="view-send" class="block">
+            <div class="flex justify-between items-baseline mb-3">
+                <h2 class="text-base font-bold text-zinc-800">Select package size</h2>
+                <span class="text-[11px] text-zinc-400">Swipe for more &rarr;</span>
+            </div>
             
-            <div onclick="selectPackage(this, 'Document', 'R 40.00')" class="package-card flex-shrink-0 w-36 p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-300 transition-all flex flex-col justify-between text-left">
-                <div>
-                    <div class="icon-box w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-base text-zinc-700 mb-2.5 transition-colors">
-                        <i class="fa-solid fa-envelope"></i>
+            <div class="flex gap-3 overflow-x-auto -mx-6 px-6 pb-4 pt-1 no-scrollbar items-stretch">
+                <div onclick="selectPackage(this, 'Document', 'R 40.00')" class="package-card flex-shrink-0 w-36 p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-300 transition-all flex flex-col justify-between text-left">
+                    <div>
+                        <div class="icon-box w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-base text-zinc-700 mb-2.5 transition-colors">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        <h3 class="font-bold text-sm text-zinc-800 leading-tight">Document</h3>
+                        <p class="text-[11px] font-semibold text-zinc-600 mt-1">Up to 1 kg</p>
+                        <p class="text-[10px] text-zinc-400">Max A4 size</p>
                     </div>
-                    <h3 class="font-bold text-sm text-zinc-800 leading-tight">Document</h3>
-                    <p class="text-[11px] font-semibold text-zinc-600 mt-1">Up to 1 kg</p>
-                    <p class="text-[10px] text-zinc-400">Max A4 size</p>
+                    <div class="mt-4 pt-2 border-t border-zinc-100 flex items-baseline justify-between">
+                        <span class="text-[10px] text-zinc-400">Est.</span>
+                        <span class="font-bold text-sm text-zinc-950">R 40.00</span>
+                    </div>
                 </div>
-                <div class="mt-4 pt-2 border-t border-zinc-100 flex items-baseline justify-between">
-                    <span class="text-[10px] text-zinc-400">Est.</span>
-                    <span class="font-bold text-sm text-zinc-950">R 40.00</span>
+
+                <div onclick="selectPackage(this, 'Small Parcel', 'R 65.00')" class="package-card flex-shrink-0 w-36 p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-300 transition-all flex flex-col justify-between text-left">
+                    <div>
+                        <div class="icon-box w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-base text-zinc-700 mb-2.5 transition-colors">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+                        <h3 class="font-bold text-sm text-zinc-800 leading-tight">Small Parcel</h3>
+                        <p class="text-[11px] font-semibold text-zinc-600 mt-1">Up to 5 kg</p>
+                        <p class="text-[10px] text-zinc-400">20×20×20 cm</p>
+                    </div>
+                    <div class="mt-4 pt-2 border-t border-zinc-100 flex items-baseline justify-between">
+                        <span class="text-[10px] text-zinc-400">Est.</span>
+                        <span class="font-bold text-sm text-zinc-950">R 65.00</span>
+                    </div>
+                </div>
+
+                <div onclick="selectPackage(this, 'Medium Box', 'R 110.00')" class="package-card flex-shrink-0 w-36 p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-300 transition-all flex flex-col justify-between text-left">
+                    <div>
+                        <div class="icon-box w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-base text-zinc-700 mb-2.5 transition-colors">
+                            <i class="fa-solid fa-box"></i>
+                        </div>
+                        <h3 class="font-bold text-sm text-zinc-800 leading-tight">Medium Box</h3>
+                        <p class="text-[11px] font-semibold text-zinc-600 mt-1">Up to 15 kg</p>
+                        <p class="text-[10px] text-zinc-400">40×40×40 cm</p>
+                    </div>
+                    <div class="mt-4 pt-2 border-t border-zinc-100 flex items-baseline justify-between">
+                        <span class="text-[10px] text-zinc-400">Est.</span>
+                        <span class="font-bold text-sm text-zinc-950">R 110.00</span>
+                    </div>
+                </div>
+
+                <div onclick="selectPackage(this, 'Large Cargo', 'R 220.00')" class="package-card flex-shrink-0 w-36 p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-300 transition-all flex flex-col justify-between text-left">
+                    <div>
+                        <div class="icon-box w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-base text-zinc-700 mb-2.5 transition-colors">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </div>
+                        <h3 class="font-bold text-sm text-zinc-800 leading-tight">Large Cargo</h3>
+                        <p class="text-[11px] font-semibold text-zinc-600 mt-1">Up to 30 kg</p>
+                        <p class="text-[10px] text-zinc-400">80×60×60 cm</p>
+                    </div>
+                    <div class="mt-4 pt-2 border-t border-zinc-100 flex items-baseline justify-between">
+                        <span class="text-[10px] text-zinc-400">Est.</span>
+                        <span class="font-bold text-sm text-zinc-950">R 220.00</span>
+                    </div>
                 </div>
             </div>
 
-            <div onclick="selectPackage(this, 'Small Parcel', 'R 65.00')" class="package-card flex-shrink-0 w-36 p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-300 transition-all flex flex-col justify-between text-left">
-                <div>
-                    <div class="icon-box w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-base text-zinc-700 mb-2.5 transition-colors">
-                        <i class="fa-solid fa-box-open"></i>
+            <button id="submitBtn" onclick="confirmBooking()" class="w-full bg-zinc-300 text-zinc-500 p-3.5 rounded-xl font-bold text-sm transition-all cursor-not-allowed" disabled>
+                Select a Package Size
+            </button>
+        </div>
+
+        <div id="view-track" class="hidden space-y-4">
+            
+            <div>
+                <span class="text-[11px] font-bold tracking-wider text-zinc-400 uppercase">In Transit right now</span>
+                <div class="mt-1.5 p-4 border border-emerald-500/30 bg-emerald-50/40 rounded-2xl">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="relative flex h-2.5 w-2.5">
+                              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                            </span>
+                            <span class="text-xs font-bold text-emerald-800">Heading to drop-off</span>
+                        </div>
+                        <span class="text-xs font-mono font-bold text-zinc-600">#CG-9841</span>
                     </div>
-                    <h3 class="font-bold text-sm text-zinc-800 leading-tight">Small Parcel</h3>
-                    <p class="text-[11px] font-semibold text-zinc-600 mt-1">Up to 5 kg</p>
-                    <p class="text-[10px] text-zinc-400">20×20×20 cm</p>
-                </div>
-                <div class="mt-4 pt-2 border-t border-zinc-100 flex items-baseline justify-between">
-                    <span class="text-[10px] text-zinc-400">Est.</span>
-                    <span class="font-bold text-sm text-zinc-950">R 65.00</span>
+
+                    <p class="text-sm font-bold text-zinc-900">Small Parcel • <span class="font-normal text-zinc-600">Rivonia Blvd, Sandton</span></p>
+                    
+                    <div class="mt-3 pt-3 border-t border-emerald-500/15 flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-7 h-7 rounded-full bg-emerald-200/60 flex items-center justify-center text-xs text-emerald-800 font-bold">S</div>
+                            <div class="text-xs">
+                                <p class="font-bold text-zinc-800 leading-none">Sipho M.</p>
+                                <span class="text-[10px] text-zinc-500">Yamaha Motorbike</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="block text-[10px] text-zinc-400 uppercase font-semibold">Est. Arrival</span>
+                            <span class="text-xs font-bold text-emerald-700 font-mono">14:25 PM</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div onclick="selectPackage(this, 'Medium Box', 'R 110.00')" class="package-card flex-shrink-0 w-36 p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-300 transition-all flex flex-col justify-between text-left">
-                <div>
-                    <div class="icon-box w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-base text-zinc-700 mb-2.5 transition-colors">
-                        <i class="fa-solid fa-box"></i>
+            <div>
+                <span class="text-[11px] font-bold tracking-wider text-zinc-400 uppercase">Recent History</span>
+                <div class="mt-1.5 space-y-2 max-h-[140px] overflow-y-auto pr-1">
+                    
+                    <div class="p-3 bg-zinc-50 rounded-xl flex items-center justify-between text-xs border border-zinc-100">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-box text-zinc-400 text-sm"></i>
+                            <div>
+                                <p class="font-bold text-zinc-800">Medium Box</p>
+                                <p class="text-[10px] text-zinc-400">Delivered May 14 • De Waterkant</p>
+                            </div>
+                        </div>
+                        <span class="font-bold text-zinc-700">R 110.00</span>
                     </div>
-                    <h3 class="font-bold text-sm text-zinc-800 leading-tight">Medium Box</h3>
-                    <p class="text-[11px] font-semibold text-zinc-600 mt-1">Up to 15 kg</p>
-                    <p class="text-[10px] text-zinc-400">40×40×40 cm</p>
-                </div>
-                <div class="mt-4 pt-2 border-t border-zinc-100 flex items-baseline justify-between">
-                    <span class="text-[10px] text-zinc-400">Est.</span>
-                    <span class="font-bold text-sm text-zinc-950">R 110.00</span>
-                </div>
-            </div>
 
-            <div onclick="selectPackage(this, 'Large Cargo', 'R 220.00')" class="package-card flex-shrink-0 w-36 p-3.5 border-2 border-zinc-100 rounded-2xl cursor-pointer hover:border-zinc-300 transition-all flex flex-col justify-between text-left">
-                <div>
-                    <div class="icon-box w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-base text-zinc-700 mb-2.5 transition-colors">
-                        <i class="fa-solid fa-boxes-stacked"></i>
+                    <div class="p-3 bg-zinc-50 rounded-xl flex items-center justify-between text-xs border border-zinc-100">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-envelope text-zinc-400 text-sm"></i>
+                            <div>
+                                <p class="font-bold text-zinc-800">Document</p>
+                                <p class="text-[10px] text-zinc-400">Delivered April 28 • Rosebank</p>
+                            </div>
+                        </div>
+                        <span class="font-bold text-zinc-700">R 40.00</span>
                     </div>
-                    <h3 class="font-bold text-sm text-zinc-800 leading-tight">Large Cargo</h3>
-                    <p class="text-[11px] font-semibold text-zinc-600 mt-1">Up to 30 kg</p>
-                    <p class="text-[10px] text-zinc-400">80×60×60 cm</p>
-                </div>
-                <div class="mt-4 pt-2 border-t border-zinc-100 flex items-baseline justify-between">
-                    <span class="text-[10px] text-zinc-400">Est.</span>
-                    <span class="font-bold text-sm text-zinc-950">R 220.00</span>
+
                 </div>
             </div>
 
         </div>
 
-        <button id="submitBtn" onclick="confirmBooking()" class="w-full bg-zinc-300 text-zinc-500 p-3.5 rounded-xl font-bold text-sm transition-all cursor-not-allowed" disabled>
-            Select a Package Size
-        </button>
     </div>
 
     <script>
@@ -144,6 +218,28 @@
         function confirmBooking() {
             if (selectedPackageData) {
                 alert(`Size confirmed: Delivery request generated for a ${selectedPackageData.name} tier.`);
+            }
+        }
+
+        // Tab Switcher logic
+        function switchTab(tab) {
+            const sendView = document.getElementById('view-send');
+            const trackView = document.getElementById('view-track');
+            const sendBtn = document.getElementById('tab-btn-send');
+            const trackBtn = document.getElementById('tab-btn-track');
+
+            if (tab === 'send') {
+                sendView.classList.remove('hidden');
+                trackView.classList.add('hidden');
+                
+                sendBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-zinc-900 transition-all";
+                trackBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg text-zinc-400 hover:text-zinc-700 transition-all";
+            } else {
+                sendView.classList.add('hidden');
+                trackView.classList.remove('hidden');
+
+                trackBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-zinc-900 transition-all";
+                sendBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg text-zinc-400 hover:text-zinc-700 transition-all";
             }
         }
     </script>
