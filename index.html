@@ -11,107 +11,121 @@
 
     <!-- Icons & Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { height: 100%; font-family: 'Inter', sans-serif; overflow: hidden; background: #111; }
+        html, body { height: 100%; font-family: 'Inter', sans-serif; overflow: hidden; background: #0a0a0a; }
 
-        /* ── Map ───────────────────────────────────────────── */
-        #map { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
+        /* ── Map ── */
+        #map { position: fixed; inset: 0; z-index: 0; }
         .mapboxgl-ctrl-logo, .mapboxgl-ctrl-attrib { display: none !important; }
 
-        /* ── Splash ────────────────────────────────────────── */
+        /* ── Splash ── */
         #splash {
-            position: fixed; inset: 0; z-index: 200;
-            background: #000;
+            position: fixed; inset: 0; z-index: 300;
+            background: #0a0a0a;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.6s ease;
+            transition: opacity 0.55s ease;
         }
         #splash.hide { opacity: 0; pointer-events: none; }
 
-        /* ── User Avatar Marker ────────────────────────────── */
-        .user-marker-wrap {
-            position: relative;
-            width: 52px; height: 52px;
-            cursor: default;
+        /* ── Sign-in Gate ── */
+        #signin-gate {
+            position: fixed; inset: 0; z-index: 250;
+            background: linear-gradient(180deg, #0a0a0a 0%, #111 100%);
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            padding: 32px;
         }
+        #signin-gate.visible { display: flex; }
+        .signin-logo { font-size: 56px; color: #fff; margin-bottom: 20px; }
+        .signin-title { font-size: 26px; font-weight: 900; color: #fff; letter-spacing: -0.6px; margin-bottom: 8px; }
+        .signin-sub { font-size: 13.5px; color: #71717a; text-align: center; line-height: 1.6; max-width: 280px; margin-bottom: 40px; }
+        .google-btn {
+            display: flex; align-items: center; gap: 12px;
+            background: #fff; color: #18181b;
+            padding: 14px 24px; border-radius: 14px;
+            font-size: 14px; font-weight: 700;
+            border: none; cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            transition: transform 0.15s, box-shadow 0.15s;
+            width: 100%; max-width: 300px; justify-content: center;
+        }
+        .google-btn:active { transform: scale(0.97); }
+        .google-btn img { width: 20px; height: 20px; }
+        .signin-legal { font-size: 11px; color: #52525b; margin-top: 20px; text-align: center; line-height: 1.6; }
+
+        /* ── User Map Marker ── */
+        .user-marker-wrap { position: relative; width: 54px; height: 54px; }
         .user-marker-pulse {
-            position: absolute; inset: 0;
-            border-radius: 50%;
-            background: rgba(0,0,0,0.12);
-            animation: pulse 2.2s ease-out infinite;
+            position: absolute; inset: 0; border-radius: 50%;
+            background: rgba(59,130,246,0.25);
+            animation: mpulse 2.4s ease-out infinite;
         }
         .user-marker-avatar {
-            position: absolute; inset: 6px;
-            border-radius: 50%;
+            position: absolute; inset: 6px; border-radius: 50%;
             border: 2.5px solid #fff;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.35);
-            overflow: hidden;
-            background: #18181b;
+            box-shadow: 0 2px 14px rgba(0,0,0,0.4);
+            overflow: hidden; background: #18181b;
             display: flex; align-items: center; justify-content: center;
         }
-        .user-marker-avatar img {
-            width: 100%; height: 100%; object-fit: cover;
-        }
-        .user-marker-avatar .avatar-initials {
-            color: #fff; font-size: 13px; font-weight: 700; letter-spacing: -0.3px;
-        }
+        .user-marker-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-marker-avatar .av-init { color: #fff; font-size: 13px; font-weight: 800; }
         .user-marker-caret {
-            position: absolute; bottom: -7px; left: 50%;
-            transform: translateX(-50%);
+            position: absolute; bottom: -7px; left: 50%; transform: translateX(-50%);
             width: 0; height: 0;
-            border-left: 7px solid transparent;
-            border-right: 7px solid transparent;
+            border-left: 7px solid transparent; border-right: 7px solid transparent;
             border-top: 9px solid #fff;
-            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));
         }
-        @keyframes pulse {
-            0%   { transform: scale(0.85); opacity: 0.6; }
-            60%  { transform: scale(1.5);  opacity: 0; }
-            100% { transform: scale(1.5);  opacity: 0; }
+        @keyframes mpulse {
+            0%   { transform: scale(0.8);  opacity: 0.7; }
+            70%  { transform: scale(1.6);  opacity: 0; }
+            100% { transform: scale(1.6);  opacity: 0; }
         }
 
-        /* ── Destination Markers ───────────────────────────── */
+        /* ── Dest Markers ── */
         .dest-marker {
-            width: 34px; height: 34px; border-radius: 50% 50% 50% 0;
-            transform: rotate(-45deg);
-            border: 2.5px solid #fff;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            width: 36px; height: 36px; border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg); border: 2.5px solid #fff;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.3);
             display: flex; align-items: center; justify-content: center;
         }
         .dest-marker i { transform: rotate(45deg); font-size: 13px; color: #fff; }
         .dest-marker.pickup  { background: #18181b; }
         .dest-marker.dropoff { background: #3b82f6; }
 
-        /* ── Top Search Panel ──────────────────────────────── */
-        #search-panel {
+        /* ── Top Bar ── */
+        #top-bar {
             position: fixed; top: 0; left: 50%; transform: translateX(-50%);
-            width: 100%; max-width: 420px;
-            z-index: 50;
-            padding: 52px 16px 12px;
+            width: 100%; max-width: 420px; z-index: 60;
+            padding: 52px 16px 0;
         }
+
+        /* Avatar button top-right */
+        #avatar-btn {
+            position: fixed; top: 54px; right: calc(50% - 194px);
+            z-index: 70; width: 40px; height: 40px;
+            border-radius: 50%; overflow: hidden;
+            border: 2.5px solid #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            cursor: pointer; background: #18181b;
+            display: flex; align-items: center; justify-content: center;
+        }
+        #avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
+        #avatar-btn .av-init { color: #fff; font-size: 13px; font-weight: 800; }
+
+        /* Search card */
         .search-card {
-            background: rgba(255,255,255,0.97);
-            backdrop-filter: blur(16px);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            background: rgba(255,255,255,0.97); backdrop-filter: blur(20px);
+            border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.18);
             overflow: visible;
         }
-        .search-row {
-            display: flex; align-items: center;
-            padding: 13px 16px;
-            gap: 10px;
-            position: relative;
-        }
-        .search-row + .search-row {
-            border-top: 1px solid #f1f1f4;
-        }
-        .search-dot {
-            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
-        }
-        .search-dot.pickup  { background: #18181b; border: 2px solid #18181b; }
-        .search-dot.dropoff { background: #3b82f6; border: 2px solid #3b82f6; }
+        .search-row { display: flex; align-items: center; padding: 13px 16px; gap: 10px; position: relative; }
+        .search-row + .search-row { border-top: 1px solid #f1f1f4; }
+        .search-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .search-dot.pickup  { background: #18181b; }
+        .search-dot.dropoff { background: #3b82f6; }
         .search-input {
             flex: 1; border: none; background: transparent;
             font-size: 13px; font-weight: 500; color: #18181b;
@@ -121,57 +135,37 @@
         .search-clear {
             width: 20px; height: 20px; border-radius: 50%; background: #e4e4e7;
             display: none; align-items: center; justify-content: center;
-            cursor: pointer; flex-shrink: 0;
-            font-size: 9px; color: #71717a;
-            border: none;
+            cursor: pointer; font-size: 9px; color: #71717a; border: none;
         }
         .search-clear.visible { display: flex; }
-        .search-divider-line {
-            position: absolute; left: 23px; top: 100%; width: 1px; height: 1px;
-            background: #d4d4d8;
-        }
-
-        /* Autocomplete Dropdown */
         .suggestions-box {
             position: absolute; top: calc(100% + 6px); left: 0; right: 0;
-            background: #fff;
-            border-radius: 14px;
+            background: #fff; border-radius: 14px;
             box-shadow: 0 8px 28px rgba(0,0,0,0.14);
-            overflow: hidden;
-            z-index: 100;
-            max-height: 240px;
-            overflow-y: auto;
+            z-index: 100; max-height: 240px; overflow-y: auto; display: none;
         }
         .suggestion-item {
             display: flex; align-items: center; gap: 10px;
-            padding: 11px 14px;
-            cursor: pointer;
-            transition: background 0.12s;
+            padding: 11px 14px; cursor: pointer; transition: background 0.12s;
         }
         .suggestion-item:hover { background: #f4f4f5; }
         .suggestion-item + .suggestion-item { border-top: 1px solid #f4f4f5; }
         .sugg-icon { width: 30px; height: 30px; border-radius: 8px; background: #f4f4f5; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; color: #52525b; }
-        .sugg-text-main { font-size: 12px; font-weight: 600; color: #18181b; line-height: 1.3; }
+        .sugg-text-main { font-size: 12px; font-weight: 600; color: #18181b; }
         .sugg-text-sub  { font-size: 11px; color: #a1a1aa; margin-top: 1px; }
 
-        /* ── Bottom Sheet ──────────────────────────────────── */
+        /* ── Bottom Sheet ── */
         #sheet {
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
             width: 100%; max-width: 420px;
-            background: #fff;
-            border-radius: 24px 24px 0 0;
-            padding: 0 20px 32px;
-            box-shadow: 0 -8px 40px rgba(0,0,0,0.12);
-            z-index: 50;
+            background: #fff; border-radius: 24px 24px 0 0;
+            padding: 0 20px 36px;
+            box-shadow: 0 -8px 40px rgba(0,0,0,0.13);
+            z-index: 60;
             transition: transform 0.35s cubic-bezier(0.32,0,0.67,0);
         }
         #sheet.collapsed { transform: translateX(-50%) translateY(calc(100% - 72px)); }
-
-        .sheet-handle-wrap {
-            padding: 12px 0 8px;
-            display: flex; flex-direction: column; align-items: center; gap: 8px;
-            cursor: pointer;
-        }
+        .sheet-handle-wrap { padding: 12px 0 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .sheet-handle { width: 36px; height: 4px; border-radius: 4px; background: #d4d4d8; }
 
         /* Tabs */
@@ -183,12 +177,23 @@
         }
         .tab-btn.active { background: #fff; color: #18181b; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
 
+        /* Route Bar */
+        #route-bar {
+            display: none; background: #f4f4f5; border-radius: 12px;
+            padding: 10px 14px; margin-bottom: 12px;
+            gap: 12px; align-items: center;
+        }
+        #route-bar.visible { display: flex; }
+        .route-stat { display: flex; flex-direction: column; align-items: center; flex: 1; }
+        .route-stat-val { font-size: 14px; font-weight: 800; color: #18181b; }
+        .route-stat-lbl { font-size: 10px; color: #71717a; font-weight: 500; margin-top: 1px; }
+        .route-divider  { width: 1px; height: 28px; background: #d4d4d8; }
+
         /* Package Cards */
         .pkg-scroll { display: flex; gap: 10px; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; margin: 0 -20px; padding: 2px 20px 12px; }
         .pkg-scroll::-webkit-scrollbar { display: none; }
-
         .pkg-card {
-            flex-shrink: 0; width: 128px;
+            flex-shrink: 0; width: 126px;
             border: 2px solid #e4e4e7; border-radius: 18px;
             padding: 12px; cursor: pointer;
             transition: border-color 0.15s, background 0.15s;
@@ -203,111 +208,215 @@
             transition: background 0.15s, color 0.15s;
         }
         .pkg-card.active .pkg-icon { background: #18181b; color: #fff; }
-        .pkg-name { font-size: 12px; font-weight: 700; color: #18181b; }
+        .pkg-name   { font-size: 12px; font-weight: 700; color: #18181b; }
         .pkg-weight { font-size: 10.5px; color: #71717a; margin-top: 2px; font-weight: 500; }
         .pkg-price-row { display: flex; align-items: baseline; justify-content: space-between; margin-top: 10px; padding-top: 8px; border-top: 1px solid #e4e4e7; }
         .pkg-price-label { font-size: 9.5px; color: #a1a1aa; }
-        .pkg-price-val { font-size: 13px; font-weight: 800; color: #18181b; }
+        .pkg-price-val   { font-size: 13px; font-weight: 800; color: #18181b; }
 
-        /* Submit Button */
+        /* Submit */
         #submitBtn {
-            width: 100%; padding: 15px;
-            border-radius: 14px; border: none;
-            font-size: 13.5px; font-weight: 700;
-            cursor: not-allowed;
+            width: 100%; padding: 15px; border-radius: 14px; border: none;
+            font-size: 13.5px; font-weight: 700; cursor: not-allowed;
             display: flex; align-items: center; justify-content: center; gap: 8px;
             transition: all 0.2s; margin-top: 4px;
             background: #e4e4e7; color: #a1a1aa;
         }
         #submitBtn.ready {
-            background: #18181b; color: #fff;
-            cursor: pointer;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+            background: #18181b; color: #fff; cursor: pointer;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.28);
         }
         #submitBtn.ready:active { transform: scale(0.98); }
 
-        /* Route Summary Bar (shown when both pins placed) */
-        #route-bar {
-            display: none;
-            background: #f4f4f5; border-radius: 12px;
-            padding: 10px 14px;
-            margin-bottom: 12px;
-            gap: 12px; align-items: center;
-        }
-        #route-bar.visible { display: flex; }
-        .route-stat { display: flex; flex-direction: column; align-items: center; flex: 1; }
-        .route-stat-val { font-size: 14px; font-weight: 800; color: #18181b; }
-        .route-stat-lbl { font-size: 10px; color: #71717a; font-weight: 500; margin-top: 1px; }
-        .route-divider { width: 1px; height: 28px; background: #d4d4d8; }
-
-        /* Tracking empty */
+        /* Tracking Empty */
         .track-empty { text-align: center; padding: 28px 0 8px; color: #a1a1aa; font-size: 13px; }
 
-        /* ── Toasts ────────────────────────────────────────── */
+        /* ══════════════════════════════════════════
+           PROFILE DRAWER
+        ══════════════════════════════════════════ */
+        #profile-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            z-index: 150; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s;
+            backdrop-filter: blur(3px);
+        }
+        #profile-overlay.open { opacity: 1; pointer-events: auto; }
+
+        #profile-drawer {
+            position: fixed; top: 0; right: -100%; bottom: 0;
+            width: min(340px, 90vw);
+            background: #fff; z-index: 160;
+            transition: right 0.35s cubic-bezier(0.32,0,0.67,0);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+        #profile-drawer.open { right: 0; }
+
+        .drawer-header {
+            background: #0a0a0a;
+            padding: 56px 24px 24px;
+            position: relative;
+        }
+        .drawer-close {
+            position: absolute; top: 56px; right: 20px;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 13px;
+            transition: background 0.15s;
+        }
+        .drawer-close:hover { background: rgba(255,255,255,0.2); }
+
+        .drawer-avatar-wrap {
+            width: 72px; height: 72px; border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.2);
+            overflow: hidden; margin-bottom: 14px;
+            background: #27272a;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .drawer-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .drawer-avatar-wrap .av-init-lg { color: #fff; font-size: 24px; font-weight: 800; }
+        .drawer-name  { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: -0.3px; }
+        .drawer-email { font-size: 12px; color: #71717a; margin-top: 3px; }
+
+        .drawer-body { flex: 1; overflow-y: auto; padding: 24px; }
+
+        .drawer-section-title {
+            font-size: 10.5px; font-weight: 700; color: #a1a1aa;
+            letter-spacing: 0.6px; text-transform: uppercase;
+            margin-bottom: 12px; margin-top: 20px;
+        }
+        .drawer-section-title:first-child { margin-top: 0; }
+
+        /* Phone field */
+        .phone-field-wrap { position: relative; }
+        .phone-field {
+            width: 100%; padding: 13px 16px 13px 44px;
+            border: 2px solid #e4e4e7; border-radius: 13px;
+            font-size: 14px; font-weight: 600; color: #18181b;
+            outline: none; font-family: 'Inter', sans-serif;
+            transition: border-color 0.15s;
+        }
+        .phone-field:focus { border-color: #18181b; }
+        .phone-field::placeholder { font-weight: 400; color: #a1a1aa; }
+        .phone-field-icon {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            font-size: 14px; color: #a1a1aa;
+        }
+        .phone-save-btn {
+            width: 100%; margin-top: 10px; padding: 12px;
+            background: #18181b; color: #fff;
+            border: none; border-radius: 12px;
+            font-size: 13px; font-weight: 700;
+            cursor: pointer; transition: opacity 0.15s;
+        }
+        .phone-save-btn:active { opacity: 0.8; }
+        .phone-hint { font-size: 11px; color: #a1a1aa; margin-top: 8px; line-height: 1.5; }
+
+        /* Info rows */
+        .info-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 0; border-bottom: 1px solid #f4f4f5;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-row-icon { width: 34px; height: 34px; border-radius: 9px; background: #f4f4f5; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #52525b; flex-shrink: 0; }
+        .info-row-text .ir-label { font-size: 10.5px; color: #a1a1aa; font-weight: 500; }
+        .info-row-text .ir-value { font-size: 13px; font-weight: 600; color: #18181b; margin-top: 1px; }
+
+        /* Logout */
+        .logout-btn {
+            width: 100%; margin-top: 24px; padding: 13px;
+            background: #fef2f2; color: #dc2626;
+            border: 1.5px solid #fecaca; border-radius: 13px;
+            font-size: 13px; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: background 0.15s;
+        }
+        .logout-btn:hover { background: #fee2e2; }
+
+        /* ── Toasts ── */
         #toast-container {
-            position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
             width: calc(100% - 32px); max-width: 388px;
             z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 8px;
             pointer-events: none;
         }
         .toast {
             width: 100%; padding: 13px 15px; border-radius: 14px;
-            font-size: 12.5px; font-weight: 600;
-            display: flex; align-items: flex-start; gap: 10px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.13);
-            opacity: 0; transform: translateY(-8px);
-            transition: opacity 0.28s ease, transform 0.28s ease;
-            pointer-events: auto; backdrop-filter: blur(12px);
+            font-size: 12.5px; display: flex; align-items: flex-start; gap: 10px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.14);
+            opacity: 0; transform: translateY(8px);
+            transition: opacity 0.28s, transform 0.28s;
+            pointer-events: auto;
         }
         .toast.show { opacity: 1; transform: translateY(0); }
-        .toast.hide { opacity: 0; transform: translateY(-8px); }
-        .toast-success { background: rgba(255,255,255,0.97); border: 1.5px solid #bbf7d0; color: #15803d; }
-        .toast-error   { background: rgba(255,255,255,0.97); border: 1.5px solid #fecaca; color: #b91c1c; }
-        .toast-info    { background: rgba(255,255,255,0.97); border: 1.5px solid #bfdbfe; color: #1d4ed8; }
+        .toast.hide { opacity: 0; transform: translateY(8px); }
+        .toast-success { background: #fff; border: 1.5px solid #bbf7d0; color: #15803d; }
+        .toast-error   { background: #fff; border: 1.5px solid #fecaca; color: #b91c1c; }
+        .toast-info    { background: #fff; border: 1.5px solid #bfdbfe; color: #1d4ed8; }
         .toast-icon { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
         .toast-title { font-size: 12.5px; font-weight: 700; }
-        .toast-msg  { font-size: 11.5px; opacity: 0.8; margin-top: 2px; }
+        .toast-msg   { font-size: 11.5px; opacity: 0.8; margin-top: 2px; }
+
+        /* phone missing warning on booking */
+        .phone-warn {
+            display: flex; align-items: center; gap: 8px;
+            background: #fffbeb; border: 1.5px solid #fde68a;
+            border-radius: 10px; padding: 10px 12px;
+            margin-bottom: 10px; font-size: 11.5px; font-weight: 600; color: #92400e;
+        }
     </style>
 </head>
 <body>
 
-<!-- Toast Container -->
+<!-- Toasts -->
 <div id="toast-container"></div>
 
 <!-- Splash -->
 <div id="splash">
-    <i class="fa-solid fa-truck-fast" style="color:#fff;font-size:64px;margin-bottom:16px;"></i>
-    <h1 style="color:#fff;font-size:28px;font-weight:800;letter-spacing:-0.5px;">CourierGo</h1>
-    <p style="color:#52525b;font-size:13px;margin-top:8px;font-weight:500;">Fast. Reliable. Tracked.</p>
+    <i class="fa-solid fa-truck-fast" style="color:#fff;font-size:64px;margin-bottom:18px;"></i>
+    <h1 style="color:#fff;font-size:28px;font-weight:900;letter-spacing:-0.6px;">CourierGo</h1>
+    <p style="color:#52525b;font-size:13px;margin-top:6px;">Fast. Reliable. Tracked.</p>
+</div>
+
+<!-- Sign-in Gate -->
+<div id="signin-gate">
+    <div class="signin-logo"><i class="fa-solid fa-truck-fast"></i></div>
+    <div class="signin-title">CourierGo</div>
+    <div class="signin-sub">Sign in to send packages, track deliveries, and manage your profile.</div>
+    <button class="google-btn" onclick="signInWithGoogle()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+        Continue with Google
+    </button>
+    <div class="signin-legal">By continuing you agree to our Terms of Service<br>and Privacy Policy.</div>
 </div>
 
 <!-- Map -->
 <div id="map"></div>
 
+<!-- Avatar button (top-right) -->
+<button id="avatar-btn" onclick="openProfile()" style="display:none;">
+    <span class="av-init" id="avatar-btn-init">?</span>
+</button>
+
 <!-- Search Panel -->
-<div id="search-panel">
+<div id="top-bar">
     <div class="search-card" id="search-card">
-        <!-- Pickup -->
         <div class="search-row" style="border-radius:20px 20px 0 0; position:relative;">
             <span class="search-dot pickup"></span>
             <input id="input-pickup" class="search-input" placeholder="Pickup location" autocomplete="off">
-            <button id="clear-pickup" class="search-clear" onclick="clearInput('pickup')">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div id="sugg-pickup" class="suggestions-box" style="display:none;"></div>
+            <button id="clear-pickup" class="search-clear" onclick="clearInput('pickup')"><i class="fa-solid fa-xmark"></i></button>
+            <div id="sugg-pickup" class="suggestions-box"></div>
         </div>
-        <!-- Connector line visual -->
         <div style="height:1px;background:#f1f1f4;position:relative;">
-            <div style="position:absolute;left:23px;top:-6px;width:1.5px;height:12px;background:#d4d4d8;"></div>
+            <div style="position:absolute;left:23px;top:-5px;width:1.5px;height:11px;background:#d4d4d8;"></div>
         </div>
-        <!-- Dropoff -->
         <div class="search-row" style="border-radius:0 0 20px 20px; position:relative;">
             <span class="search-dot dropoff"></span>
             <input id="input-dropoff" class="search-input" placeholder="Delivery destination" autocomplete="off">
-            <button id="clear-dropoff" class="search-clear" onclick="clearInput('dropoff')">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div id="sugg-dropoff" class="suggestions-box" style="display:none;"></div>
+            <button id="clear-dropoff" class="search-clear" onclick="clearInput('dropoff')"><i class="fa-solid fa-xmark"></i></button>
+            <div id="sugg-dropoff" class="suggestions-box"></div>
         </div>
     </div>
 </div>
@@ -318,30 +427,25 @@
         <div class="sheet-handle"></div>
     </div>
 
-    <!-- Tabs -->
     <div class="tabs">
-        <button id="tab-send" class="tab-btn active" onclick="switchTab('send')">Send Package</button>
-        <button id="tab-track" class="tab-btn" onclick="switchTab('track')">Activity</button>
+        <button id="tab-send"  class="tab-btn active" onclick="switchTab('send')">Send Package</button>
+        <button id="tab-track" class="tab-btn"        onclick="switchTab('track')">Activity</button>
     </div>
 
     <!-- Send View -->
     <div id="view-send">
-        <!-- Route summary -->
+        <!-- phone missing warning -->
+        <div id="phone-warn" class="phone-warn" style="display:none;">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>Add a mobile number in your profile so the driver can reach you.</span>
+        </div>
+
         <div id="route-bar">
-            <div class="route-stat">
-                <span class="route-stat-val" id="route-dist">—</span>
-                <span class="route-stat-lbl">Distance</span>
-            </div>
+            <div class="route-stat"><span class="route-stat-val" id="route-dist">—</span><span class="route-stat-lbl">Distance</span></div>
             <div class="route-divider"></div>
-            <div class="route-stat">
-                <span class="route-stat-val" id="route-time">—</span>
-                <span class="route-stat-lbl">Est. time</span>
-            </div>
+            <div class="route-stat"><span class="route-stat-val" id="route-time">—</span><span class="route-stat-lbl">Est. time</span></div>
             <div class="route-divider"></div>
-            <div class="route-stat">
-                <span class="route-stat-val" id="route-price">—</span>
-                <span class="route-stat-lbl">Base fare</span>
-            </div>
+            <div class="route-stat"><span class="route-stat-val" id="route-price">—</span><span class="route-stat-lbl">Base fare</span></div>
         </div>
 
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
@@ -351,113 +455,139 @@
 
         <div class="pkg-scroll">
             <div class="pkg-card" onclick="selectPackage(this,'Document',40)">
-                <div>
-                    <div class="pkg-icon"><i class="fa-solid fa-envelope"></i></div>
-                    <div class="pkg-name">Document</div>
-                    <div class="pkg-weight">Up to 1 kg</div>
-                </div>
-                <div class="pkg-price-row">
-                    <span class="pkg-price-label">from</span>
-                    <span class="pkg-price-val">R40</span>
-                </div>
+                <div><div class="pkg-icon"><i class="fa-solid fa-envelope"></i></div>
+                <div class="pkg-name">Document</div><div class="pkg-weight">Up to 1 kg</div></div>
+                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R40</span></div>
             </div>
             <div class="pkg-card" onclick="selectPackage(this,'Small Parcel',65)">
-                <div>
-                    <div class="pkg-icon"><i class="fa-solid fa-box-open"></i></div>
-                    <div class="pkg-name">Small Parcel</div>
-                    <div class="pkg-weight">Up to 5 kg</div>
-                </div>
-                <div class="pkg-price-row">
-                    <span class="pkg-price-label">from</span>
-                    <span class="pkg-price-val">R65</span>
-                </div>
+                <div><div class="pkg-icon"><i class="fa-solid fa-box-open"></i></div>
+                <div class="pkg-name">Small Parcel</div><div class="pkg-weight">Up to 5 kg</div></div>
+                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R65</span></div>
             </div>
             <div class="pkg-card" onclick="selectPackage(this,'Medium Box',110)">
-                <div>
-                    <div class="pkg-icon"><i class="fa-solid fa-box"></i></div>
-                    <div class="pkg-name">Medium Box</div>
-                    <div class="pkg-weight">Up to 15 kg</div>
-                </div>
-                <div class="pkg-price-row">
-                    <span class="pkg-price-label">from</span>
-                    <span class="pkg-price-val">R110</span>
-                </div>
+                <div><div class="pkg-icon"><i class="fa-solid fa-box"></i></div>
+                <div class="pkg-name">Medium Box</div><div class="pkg-weight">Up to 15 kg</div></div>
+                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R110</span></div>
             </div>
             <div class="pkg-card" onclick="selectPackage(this,'Large Freight',180)">
-                <div>
-                    <div class="pkg-icon"><i class="fa-solid fa-pallet"></i></div>
-                    <div class="pkg-name">Large Freight</div>
-                    <div class="pkg-weight">Up to 30 kg</div>
-                </div>
-                <div class="pkg-price-row">
-                    <span class="pkg-price-label">from</span>
-                    <span class="pkg-price-val">R180</span>
-                </div>
+                <div><div class="pkg-icon"><i class="fa-solid fa-pallet"></i></div>
+                <div class="pkg-name">Large Freight</div><div class="pkg-weight">Up to 30 kg</div></div>
+                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R180</span></div>
             </div>
         </div>
 
         <button id="submitBtn" onclick="confirmBooking()">
-            <span id="submitLabel">Select pickup &amp; destination</span>
+            <span id="submitLabel">Set pickup &amp; destination</span>
         </button>
     </div>
 
     <!-- Track View -->
     <div id="view-track" style="display:none;">
         <div class="track-empty">
-            <i class="fa-solid fa-box-open" style="font-size:28px;display:block;margin-bottom:10px;opacity:0.3;"></i>
+            <i class="fa-solid fa-box-open" style="font-size:28px;display:block;margin-bottom:10px;opacity:0.25;"></i>
             No deliveries yet.<br>Your orders will appear here.
         </div>
     </div>
 </div>
 
+<!-- Profile Overlay -->
+<div id="profile-overlay" onclick="closeProfile()"></div>
+
+<!-- Profile Drawer -->
+<div id="profile-drawer">
+    <div class="drawer-header">
+        <button class="drawer-close" onclick="closeProfile()"><i class="fa-solid fa-xmark"></i></button>
+        <div class="drawer-avatar-wrap" id="drawer-avatar-wrap">
+            <span class="av-init-lg" id="drawer-avatar-init">?</span>
+        </div>
+        <div class="drawer-name"  id="drawer-name">—</div>
+        <div class="drawer-email" id="drawer-email">—</div>
+    </div>
+
+    <div class="drawer-body">
+        <div class="drawer-section-title">Mobile number for deliveries</div>
+        <div class="phone-field-wrap">
+            <i class="fa-solid fa-phone phone-field-icon"></i>
+            <input id="phone-input" class="phone-field" type="tel"
+                   placeholder="+27 60 123 4567"
+                   inputmode="tel">
+        </div>
+        <button class="phone-save-btn" onclick="savePhone()">Save number</button>
+        <p class="phone-hint">This number is shared with the driver so they can contact you about your delivery.</p>
+
+        <div class="drawer-section-title">Account</div>
+        <div class="info-row">
+            <div class="info-row-icon"><i class="fa-solid fa-user"></i></div>
+            <div class="info-row-text">
+                <div class="ir-label">Full name</div>
+                <div class="ir-value" id="info-name">—</div>
+            </div>
+        </div>
+        <div class="info-row">
+            <div class="info-row-icon"><i class="fa-solid fa-envelope"></i></div>
+            <div class="info-row-text">
+                <div class="ir-label">Email</div>
+                <div class="ir-value" id="info-email">—</div>
+            </div>
+        </div>
+        <div class="info-row">
+            <div class="info-row-icon"><i class="fa-solid fa-phone"></i></div>
+            <div class="info-row-text">
+                <div class="ir-label">Mobile</div>
+                <div class="ir-value" id="info-phone">Not set</div>
+            </div>
+        </div>
+
+        <button class="logout-btn" onclick="signOut()">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out
+        </button>
+    </div>
+</div>
+
 <!-- Firebase -->
 <script type="module">
-import { initializeApp }       from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signOut as fbSignOut,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import {
+    getDatabase, ref, push, set, get, update
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-/* ═══════════════════════════════════════════════════
-   CONFIG
-═══════════════════════════════════════════════════ */
-const MAPBOX_TOKEN = "pk.eyJ1Ijoia2F0bGVnb3BoYXNoYSIsImEiOiJjbTlpOTdzbmYwMGNsMmpzYWJtZzN4d3pqIn0.Zt-aSMEoahrV3zkiVVHbOw"; 
-// ↑ Replace with your real Mapbox token
+/* ══════════════════════════════════════
+   CONFIG — replace tokens before deploy
+══════════════════════════════════════ */
+const MAPBOX_TOKEN   = "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw";
+const SHIPDAY_KEY    = "YOUR_SHIPDAY_KEY_HERE";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBQSPwpVbGrdCuOoyitAeWQHIeipj2MgIY",
-    authDomain: "newstart-64c43.firebaseapp.com",
-    databaseURL: "https://newstart-64c43-default-rtdb.firebaseio.com",
-    projectId: "newstart-64c43",
-    storageBucket: "newstart-64c43.firebasestorage.app",
+    apiKey:            "AIzaSyBQSPwpVbGrdCuOoyitAeWQHIeipj2MgIY",
+    authDomain:        "newstart-64c43.firebaseapp.com",
+    databaseURL:       "https://newstart-64c43-default-rtdb.firebaseio.com",
+    projectId:         "newstart-64c43",
+    storageBucket:     "newstart-64c43.firebasestorage.app",
     messagingSenderId: "941619830061",
-    appId: "1:941619830061:web:de9e0f791eb8f6eacf87a4"
+    appId:             "1:941619830061:web:de9e0f791eb8f6eacf87a4"
 };
 
-const SHIPDAY_API_KEY = "K5a8wQJF3f.az2zfrhgzwxK9JONI2y8";
-
-/* ═══════════════════════════════════════════════════
+/* ══════════════════════════════════════
    FIREBASE INIT
-═══════════════════════════════════════════════════ */
-const fbApp   = initializeApp(firebaseConfig);
-const auth    = getAuth(fbApp);
+══════════════════════════════════════ */
+const fbApp    = initializeApp(firebaseConfig);
+const auth     = getAuth(fbApp);
 const database = getDatabase(fbApp);
+const provider = new GoogleAuthProvider();
 
-let currentUser = null;
-onAuthStateChanged(auth, u => { if (u) currentUser = u; });
-signInAnonymously(auth).catch(e => console.warn("Silent auth:", e.message));
+let currentUser   = null;
+let userProfile   = {};  // { name, email, phone, photoURL }
 
-async function ensureAuth() {
-    if (currentUser) return currentUser;
-    showToast('info', 'Signing you in…', 'Authenticating your session.');
-    try {
-        const cred = await signInAnonymously(auth);
-        currentUser = cred.user;
-        return currentUser;
-    } catch (e) { throw new Error("Authentication failed: " + e.message); }
-}
-
-/* ═══════════════════════════════════════════════════
+/* ══════════════════════════════════════
    TOAST
-═══════════════════════════════════════════════════ */
+══════════════════════════════════════ */
 function showToast(type, title, msg, duration = 4200) {
     const icons = { success:'fa-circle-check', error:'fa-circle-xmark', info:'fa-circle-info' };
     const t = document.createElement('div');
@@ -466,94 +596,245 @@ function showToast(type, title, msg, duration = 4200) {
         <div><div class="toast-title">${title}</div>${msg ? `<div class="toast-msg">${msg}</div>` : ''}</div>`;
     document.getElementById('toast-container').appendChild(t);
     requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
-    setTimeout(() => { t.classList.add('hide'); t.addEventListener('transitionend', () => t.remove()); }, duration);
+    setTimeout(() => { t.classList.add('hide'); t.addEventListener('transitionend', () => t.remove(), { once:true }); }, duration);
+}
+window.showToast = showToast;
+
+/* ══════════════════════════════════════
+   AUTH FLOWS
+══════════════════════════════════════ */
+window.signInWithGoogle = async function() {
+    try {
+        await signInWithPopup(auth, provider);
+        // onAuthStateChanged handles everything after
+    } catch(e) {
+        if (e.code !== 'auth/popup-closed-by-user') {
+            showToast('error', 'Sign-in failed', e.message);
+        }
+    }
+};
+
+window.signOut = async function() {
+    await fbSignOut(auth);
+    showToast('info', 'Signed out', 'See you next time.');
+    closeProfile();
+};
+
+/* Load or create user profile in DB */
+async function loadUserProfile(user) {
+    const snap = await get(ref(database, `users/${user.uid}`));
+    if (snap.exists()) {
+        userProfile = snap.val();
+    } else {
+        // First time — seed from Google account
+        userProfile = {
+            name:     user.displayName || '',
+            email:    user.email || '',
+            phone:    '',
+            photoURL: user.photoURL || ''
+        };
+        await set(ref(database, `users/${user.uid}`), userProfile);
+    }
+    // Always keep name/email/photo fresh from Google
+    userProfile.name     = user.displayName || userProfile.name;
+    userProfile.email    = user.email       || userProfile.email;
+    userProfile.photoURL = user.photoURL    || userProfile.photoURL;
 }
 
-/* ═══════════════════════════════════════════════════
-   MAP SETUP
-═══════════════════════════════════════════════════ */
-mapboxgl.accessToken = MAPBOX_TOKEN;
+/* ── Save phone ── */
+window.savePhone = async function() {
+    const val = document.getElementById('phone-input').value.trim();
+    if (!val) { showToast('error', 'Enter a number', 'Phone number cannot be empty.'); return; }
+    if (!currentUser) return;
+    await update(ref(database, `users/${currentUser.uid}`), { phone: val });
+    userProfile.phone = val;
+    renderProfileUI();
+    showToast('success', 'Number saved', 'Your driver will use this to contact you.');
+    document.getElementById('phone-warn').style.display = 'none';
+};
 
-const map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/light-v11',
-    center: [28.0473, -26.2041], // Johannesburg default
-    zoom: 12,
-    attributionControl: false
+/* ══════════════════════════════════════
+   UI: AUTH STATE LISTENER
+══════════════════════════════════════ */
+onAuthStateChanged(auth, async (user) => {
+    hideSplash();
+
+    if (user) {
+        currentUser = user;
+        await loadUserProfile(user);
+
+        document.getElementById('signin-gate').classList.remove('visible');
+        document.getElementById('avatar-btn').style.display = 'flex';
+        renderAvatarBtn();
+        renderProfileUI();
+        checkPhoneWarning();
+        initMap();
+
+    } else {
+        currentUser = null;
+        userProfile = {};
+        document.getElementById('signin-gate').classList.add('visible');
+        document.getElementById('avatar-btn').style.display = 'none';
+    }
 });
 
-// Adjust map padding so content isn't hidden behind panels
-map.setPadding({ top: 160, bottom: 320, left: 16, right: 16 });
+function hideSplash() {
+    const s = document.getElementById('splash');
+    if (s) {
+        s.classList.add('hide');
+        setTimeout(() => s.remove(), 650);
+    }
+}
 
-/* ── User Location Avatar Marker ── */
-let userMarker = null;
+/* ══════════════════════════════════════
+   UI HELPERS
+══════════════════════════════════════ */
+function initials(name) {
+    if (!name) return '?';
+    return name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+}
 
-function buildAvatarMarker() {
-    const wrap = document.createElement('div');
+function renderAvatarBtn() {
+    const btn  = document.getElementById('avatar-btn');
+    const init = document.getElementById('avatar-btn-init');
+    if (userProfile.photoURL) {
+        btn.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar" onerror="this.style.display='none'">`;
+    } else {
+        init.textContent = initials(userProfile.name);
+    }
+}
+
+function renderProfileUI() {
+    // Header avatar
+    const wrap = document.getElementById('drawer-avatar-wrap');
+    const ini  = document.getElementById('drawer-avatar-init');
+    if (userProfile.photoURL) {
+        wrap.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
+    } else {
+        ini.textContent = initials(userProfile.name);
+    }
+
+    // Map marker avatar
+    if (userMarker) refreshMapMarker();
+
+    // Drawer fields
+    document.getElementById('drawer-name').textContent  = userProfile.name  || '—';
+    document.getElementById('drawer-email').textContent = userProfile.email || '—';
+    document.getElementById('info-name').textContent    = userProfile.name  || '—';
+    document.getElementById('info-email').textContent   = userProfile.email || '—';
+    document.getElementById('info-phone').textContent   = userProfile.phone || 'Not set';
+    document.getElementById('phone-input').value        = userProfile.phone || '';
+}
+
+function checkPhoneWarning() {
+    const warn = document.getElementById('phone-warn');
+    warn.style.display = (!userProfile.phone) ? 'flex' : 'none';
+}
+
+/* ══════════════════════════════════════
+   PROFILE DRAWER
+══════════════════════════════════════ */
+window.openProfile  = function() {
+    document.getElementById('profile-overlay').classList.add('open');
+    document.getElementById('profile-drawer').classList.add('open');
+};
+window.closeProfile = function() {
+    document.getElementById('profile-overlay').classList.remove('open');
+    document.getElementById('profile-drawer').classList.remove('open');
+};
+
+/* ══════════════════════════════════════
+   MAPBOX
+══════════════════════════════════════ */
+mapboxgl.accessToken = MAPBOX_TOKEN;
+let map, userMarker, pickupMarker, dropoffMarker;
+let mapInitialised = false;
+
+function initMap() {
+    if (mapInitialised) return;
+    mapInitialised = true;
+
+    map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/light-v11',
+        center: [28.0473, -26.2041],
+        zoom: 12,
+        attributionControl: false
+    });
+    map.setPadding({ top: 170, bottom: 340, left: 16, right: 16 });
+
+    map.on('load', () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                pos => {
+                    const { longitude: lng, latitude: lat } = pos.coords;
+                    map.flyTo({ center: [lng, lat], zoom: 13, duration: 1400 });
+                    placeUserMarker(lng, lat);
+                },
+                () => placeUserMarker(28.0473, -26.2041)
+            );
+        } else {
+            placeUserMarker(28.0473, -26.2041);
+        }
+    });
+
+    setupSearch('pickup');
+    setupSearch('dropoff');
+    updateSubmitBtn();
+}
+
+/* ── Avatar marker builder ── */
+function buildAvatarEl() {
+    const wrap  = document.createElement('div');
     wrap.className = 'user-marker-wrap';
 
     const pulse = document.createElement('div');
     pulse.className = 'user-marker-pulse';
 
-    const avatar = document.createElement('div');
-    avatar.className = 'user-marker-avatar';
+    const av = document.createElement('div');
+    av.className = 'user-marker-avatar';
 
-    // Try to load a placeholder avatar; fall back to initials
-    const img = document.createElement('img');
-    img.src = 'https://api.dicebear.com/7.x/thumbs/svg?seed=courier&backgroundColor=18181b&shapeColor=ffffff';
-    img.onerror = () => {
-        img.remove();
-        const ini = document.createElement('span');
-        ini.className = 'avatar-initials';
-        ini.textContent = 'K';
-        avatar.appendChild(ini);
-    };
-    avatar.appendChild(img);
+    if (userProfile.photoURL) {
+        const img = document.createElement('img');
+        img.src = userProfile.photoURL;
+        img.onerror = () => {
+            img.remove();
+            const sp = document.createElement('span');
+            sp.className = 'av-init';
+            sp.textContent = initials(userProfile.name);
+            av.appendChild(sp);
+        };
+        av.appendChild(img);
+    } else {
+        const sp = document.createElement('span');
+        sp.className = 'av-init';
+        sp.textContent = initials(userProfile.name);
+        av.appendChild(sp);
+    }
 
     const caret = document.createElement('div');
     caret.className = 'user-marker-caret';
 
     wrap.appendChild(pulse);
-    wrap.appendChild(avatar);
+    wrap.appendChild(av);
     wrap.appendChild(caret);
-
     return wrap;
 }
 
 function placeUserMarker(lng, lat) {
     if (userMarker) userMarker.remove();
-    userMarker = new mapboxgl.Marker({ element: buildAvatarMarker(), anchor: 'bottom' })
-        .setLngLat([lng, lat])
-        .addTo(map);
+    userMarker = new mapboxgl.Marker({ element: buildAvatarEl(), anchor: 'bottom' })
+        .setLngLat([lng, lat]).addTo(map);
 }
 
-// Get device location
-map.on('load', () => {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            pos => {
-                const { longitude, latitude } = pos.coords;
-                map.flyTo({ center: [longitude, latitude], zoom: 13, duration: 1400 });
-                placeUserMarker(longitude, latitude);
-            },
-            () => {
-                // Permission denied — stay on Joburg default, still show avatar marker
-                placeUserMarker(28.0473, -26.2041);
-            }
-        );
-    } else {
-        placeUserMarker(28.0473, -26.2041);
-    }
-});
+function refreshMapMarker() {
+    if (!userMarker) return;
+    const lnglat = userMarker.getLngLat();
+    placeUserMarker(lnglat.lng, lnglat.lat);
+}
 
-/* ═══════════════════════════════════════════════════
-   DESTINATION MARKERS & ROUTE
-═══════════════════════════════════════════════════ */
-let pickupMarker  = null;
-let dropoffMarker = null;
-let routeLayerAdded = false;
-
-function buildDestMarker(type) {
+/* ── Dest markers ── */
+function buildDestEl(type) {
     const el = document.createElement('div');
     el.className = `dest-marker ${type}`;
     el.innerHTML = type === 'pickup'
@@ -565,85 +846,71 @@ function buildDestMarker(type) {
 function placeDestMarker(type, lng, lat) {
     if (type === 'pickup') {
         if (pickupMarker) pickupMarker.remove();
-        pickupMarker = new mapboxgl.Marker({ element: buildDestMarker('pickup'), anchor: 'bottom' })
+        pickupMarker = new mapboxgl.Marker({ element: buildDestEl('pickup'), anchor: 'bottom' })
             .setLngLat([lng, lat]).addTo(map);
     } else {
         if (dropoffMarker) dropoffMarker.remove();
-        dropoffMarker = new mapboxgl.Marker({ element: buildDestMarker('dropoff'), anchor: 'bottom' })
+        dropoffMarker = new mapboxgl.Marker({ element: buildDestEl('dropoff'), anchor: 'bottom' })
             .setLngLat([lng, lat]).addTo(map);
     }
-    if (pickupMarker && dropoffMarker) {
-        drawRoute();
-        fitBothMarkers();
-    }
+    if (pickupMarker && dropoffMarker) { drawRoute(); fitBothMarkers(); }
 }
+
+/* ── Route ── */
+let routeDistKm = 0;
 
 async function drawRoute() {
     const p = pickupMarker.getLngLat();
     const d = dropoffMarker.getLngLat();
     try {
-        const res = await fetch(
-            `https://api.mapbox.com/directions/v5/mapbox/driving/${p.lng},${p.lat};${d.lng},${d.lat}?geometries=geojson&access_token=${MAPBOX_TOKEN}`
-        );
+        const res  = await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${p.lng},${p.lat};${d.lng},${d.lat}?geometries=geojson&access_token=${MAPBOX_TOKEN}`);
         const data = await res.json();
-        if (!data.routes || !data.routes[0]) return;
+        if (!data.routes?.[0]) return;
 
-        const route = data.routes[0];
-        const distKm = (route.distance / 1000).toFixed(1);
-        const mins   = Math.ceil(route.duration / 60);
+        const route   = data.routes[0];
+        routeDistKm   = parseFloat((route.distance / 1000).toFixed(1));
+        const mins    = Math.ceil(route.duration / 60);
         const timeStr = mins >= 60 ? `${Math.floor(mins/60)}h ${mins%60}m` : `${mins} min`;
 
-        // Update route bar
-        document.getElementById('route-dist').textContent  = distKm + ' km';
-        document.getElementById('route-time').textContent  = timeStr;
-
-        // Update price based on distance
-        updateRoutePrice(parseFloat(distKm));
-
+        document.getElementById('route-dist').textContent = routeDistKm + ' km';
+        document.getElementById('route-time').textContent = timeStr;
+        updateRoutePrice();
         document.getElementById('route-bar').classList.add('visible');
 
-        // Draw line on map
         const geojson = { type: 'Feature', geometry: route.geometry };
         if (map.getSource('route')) {
             map.getSource('route').setData(geojson);
         } else {
             map.addSource('route', { type: 'geojson', data: geojson });
-            map.addLayer({
-                id: 'route',
-                type: 'line',
-                source: 'route',
+            map.addLayer({ id: 'route', type: 'line', source: 'route',
                 layout: { 'line-join': 'round', 'line-cap': 'round' },
                 paint: { 'line-color': '#18181b', 'line-width': 4, 'line-opacity': 0.85 }
             });
-            routeLayerAdded = true;
         }
         updateSubmitBtn();
-    } catch(e) { console.error('Route error:', e); }
+    } catch(e) { console.error('Route error', e); }
 }
 
 function fitBothMarkers() {
     const p = pickupMarker.getLngLat();
     const d = dropoffMarker.getLngLat();
-    const bounds = new mapboxgl.LngLatBounds([p.lng, p.lat], [d.lng, d.lat]);
-    map.fitBounds(bounds, { padding: { top:190, bottom:340, left:40, right:40 }, duration: 900 });
+    map.fitBounds(new mapboxgl.LngLatBounds([p.lng,p.lat],[d.lng,d.lat]),
+        { padding: { top:200, bottom:360, left:40, right:40 }, duration: 900 });
 }
 
-let routeDistKm = 0;
-function updateRoutePrice(km) {
-    routeDistKm = km;
+function updateRoutePrice() {
     if (selectedPkg) {
-        const total = Math.round(selectedPkg.base + km * 3.5);
+        const total = Math.round(selectedPkg.base + routeDistKm * 3.5);
         document.getElementById('route-price').textContent = `R${total}`;
-    } else {
-        document.getElementById('route-price').textContent = '—';
     }
 }
 
-/* ═══════════════════════════════════════════════════
-   GEOCODING / SEARCH
-═══════════════════════════════════════════════════ */
-let debounceTimers = {};
-let selectedCoords = { pickup: null, dropoff: null };
+/* ══════════════════════════════════════
+   SEARCH / GEOCODING
+══════════════════════════════════════ */
+let debounceTimers   = {};
+let selectedCoords   = { pickup: null, dropoff: null };
+let suggFeatures     = { pickup: [], dropoff: [] };
 
 function setupSearch(type) {
     const input = document.getElementById(`input-${type}`);
@@ -653,62 +920,46 @@ function setupSearch(type) {
     input.addEventListener('input', () => {
         const q = input.value.trim();
         clear.classList.toggle('visible', q.length > 0);
-
         if (q.length < 2) { sugg.style.display = 'none'; return; }
-
         clearTimeout(debounceTimers[type]);
         debounceTimers[type] = setTimeout(() => fetchSuggestions(type, q), 300);
     });
 
-    input.addEventListener('focus', () => {
-        if (input.value.trim().length > 1) sugg.style.display = 'block';
-    });
-
-    // Close dropdown when clicking outside
     document.addEventListener('click', e => {
         if (!input.contains(e.target) && !sugg.contains(e.target)) sugg.style.display = 'none';
     });
 }
 
-async function fetchSuggestions(type, query) {
-    const sugg = document.getElementById(`sugg-${type}`);
+async function fetchSuggestions(type, q) {
     try {
-        const res = await fetch(
-            `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${MAPBOX_TOKEN}&autocomplete=true&limit=5&country=ZA`
-        );
+        const res  = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?access_token=${MAPBOX_TOKEN}&autocomplete=true&limit=5&country=ZA`);
         const data = await res.json();
-        renderSuggestions(type, data.features || []);
-    } catch(e) { sugg.style.display = 'none'; }
+        suggFeatures[type] = data.features || [];
+        renderSuggestions(type);
+    } catch(e) { /* silently fail */ }
 }
 
-function renderSuggestions(type, features) {
+function renderSuggestions(type) {
     const sugg = document.getElementById(`sugg-${type}`);
-    if (!features.length) { sugg.style.display = 'none'; return; }
-
-    sugg.innerHTML = features.map((f, i) => {
+    const feats = suggFeatures[type];
+    if (!feats.length) { sugg.style.display = 'none'; return; }
+    sugg.innerHTML = feats.map((f, i) => {
         const name = f.text || f.place_name.split(',')[0];
-        const sub  = f.place_name.replace(name + ', ', '').slice(0, 48);
-        return `<div class="suggestion-item" onclick="selectSuggestion('${type}', ${i})">
+        const sub  = f.place_name.replace(name + ', ', '').slice(0, 52);
+        return `<div class="suggestion-item" onclick="selectSuggestion('${type}',${i})">
             <div class="sugg-icon"><i class="fa-solid fa-location-dot"></i></div>
-            <div>
-                <div class="sugg-text-main">${name}</div>
-                <div class="sugg-text-sub">${sub}</div>
-            </div>
+            <div><div class="sugg-text-main">${name}</div><div class="sugg-text-sub">${sub}</div></div>
         </div>`;
     }).join('');
-
-    sugg._features = features;
     sugg.style.display = 'block';
 }
 
 window.selectSuggestion = function(type, idx) {
-    const sugg = document.getElementById(`sugg-${type}`);
-    const f    = sugg._features[idx];
+    const f     = suggFeatures[type][idx];
     const [lng, lat] = f.center;
-    const input = document.getElementById(`input-${type}`);
-    input.value = f.place_name;
+    document.getElementById(`input-${type}`).value = f.place_name;
     document.getElementById(`clear-${type}`).classList.add('visible');
-    sugg.style.display = 'none';
+    document.getElementById(`sugg-${type}`).style.display = 'none';
     selectedCoords[type] = [lng, lat];
     placeDestMarker(type, lng, lat);
     updateSubmitBtn();
@@ -719,71 +970,64 @@ window.clearInput = function(type) {
     document.getElementById(`clear-${type}`).classList.remove('visible');
     document.getElementById(`sugg-${type}`).style.display = 'none';
     selectedCoords[type] = null;
-
-    if (type === 'pickup' && pickupMarker)  { pickupMarker.remove();  pickupMarker  = null; }
-    if (type === 'dropoff' && dropoffMarker){ dropoffMarker.remove(); dropoffMarker = null; }
-
-    if (map.getSource('route')) map.getSource('route').setData({ type:'Feature', geometry:{ type:'LineString', coordinates:[] }});
+    if (type === 'pickup'  && pickupMarker)  { pickupMarker.remove();  pickupMarker  = null; }
+    if (type === 'dropoff' && dropoffMarker) { dropoffMarker.remove(); dropoffMarker = null; }
+    if (map?.getSource('route')) map.getSource('route').setData({ type:'Feature', geometry:{ type:'LineString', coordinates:[] }});
     document.getElementById('route-bar').classList.remove('visible');
     updateSubmitBtn();
 };
 
-/* ═══════════════════════════════════════════════════
-   PACKAGE SELECTION
-═══════════════════════════════════════════════════ */
+/* ══════════════════════════════════════
+   PACKAGE & SUBMIT
+══════════════════════════════════════ */
 let selectedPkg = null;
 
 window.selectPackage = function(el, name, base) {
     document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
     selectedPkg = { name, base };
-    updateRoutePrice(routeDistKm);
+    updateRoutePrice();
     updateSubmitBtn();
 };
 
 function updateSubmitBtn() {
     const btn   = document.getElementById('submitBtn');
     const label = document.getElementById('submitLabel');
-    const hasPickup  = !!selectedCoords.pickup;
-    const hasDropoff = !!selectedCoords.dropoff;
-    const hasPkg     = !!selectedPkg;
+    const hp = !!selectedCoords.pickup;
+    const hd = !!selectedCoords.dropoff;
+    const hk = !!selectedPkg;
 
-    if (!hasPickup || !hasDropoff) {
-        btn.className = ''; label.textContent = 'Set pickup & destination';
-        btn.disabled = true; return;
-    }
-    if (!hasPkg) {
-        btn.className = ''; label.textContent = 'Select a package size';
-        btn.disabled = true; return;
-    }
+    if (!hp || !hd) { btn.className=''; label.textContent='Set pickup & destination'; btn.disabled=true; return; }
+    if (!hk)         { btn.className=''; label.textContent='Select a package size';    btn.disabled=true; return; }
+
     const total = Math.round(selectedPkg.base + routeDistKm * 3.5);
     btn.className = 'ready';
     label.textContent = `Book ${selectedPkg.name} · R${total}`;
     btn.disabled = false;
 }
 
-/* ═══════════════════════════════════════════════════
+/* ══════════════════════════════════════
    TABS & SHEET
-═══════════════════════════════════════════════════ */
+══════════════════════════════════════ */
 let sheetCollapsed = false;
-window.toggleSheet = function() {
+window.toggleSheet = () => {
     sheetCollapsed = !sheetCollapsed;
     document.getElementById('sheet').classList.toggle('collapsed', sheetCollapsed);
 };
-
-window.switchTab = function(tab) {
+window.switchTab = (tab) => {
     const isSend = tab === 'send';
     document.getElementById('view-send').style.display  = isSend ? 'block' : 'none';
     document.getElementById('view-track').style.display = isSend ? 'none'  : 'block';
-    document.getElementById('tab-send').classList.toggle('active',  isSend);
+    document.getElementById('tab-send').classList.toggle('active', isSend);
     document.getElementById('tab-track').classList.toggle('active', !isSend);
 };
 
-/* ═══════════════════════════════════════════════════
+/* ══════════════════════════════════════
    BOOKING
-═══════════════════════════════════════════════════ */
+══════════════════════════════════════ */
 window.confirmBooking = async function() {
     if (!selectedPkg || !selectedCoords.pickup || !selectedCoords.dropoff) return;
+    if (!currentUser) { showToast('error','Not signed in','Please sign in first.'); return; }
 
     const btn   = document.getElementById('submitBtn');
     const label = document.getElementById('submitLabel');
@@ -792,72 +1036,60 @@ window.confirmBooking = async function() {
     btn.disabled = true;
 
     try {
-        const user    = await ensureAuth();
         const orderId = "CG-" + Math.floor(1000 + Math.random() * 9000);
         const total   = Math.round(selectedPkg.base + routeDistKm * 3.5);
-
         const pickup  = document.getElementById('input-pickup').value;
         const dropoff = document.getElementById('input-dropoff').value;
+        const phone   = userProfile.phone || 'Not provided';
 
         const payload = {
-            orderNumber: orderId,
-            userId: user.uid,
-            customerName: "Katlego (App User)",
-            customerAddress: dropoff,
-            customerPhoneNumber: "+27601234567",
-            restaurantName: "CourierGo Dispatch",
-            restaurantAddress: pickup,
-            orderItem: [{ name: selectedPkg.name, unitPrice: total, quantity: 1 }],
-            totalOrderCost: total,
-            distanceKm: routeDistKm,
-            pickupCoords: selectedCoords.pickup,
-            dropoffCoords: selectedCoords.dropoff,
-            timestamp: Date.now()
+            orderNumber:         orderId,
+            userId:              currentUser.uid,
+            customerName:        userProfile.name  || currentUser.displayName || 'User',
+            customerEmail:       userProfile.email || currentUser.email || '',
+            customerPhoneNumber: phone,
+            customerAddress:     dropoff,
+            restaurantName:      "CourierGo Dispatch",
+            restaurantAddress:   pickup,
+            orderItem:           [{ name: selectedPkg.name, unitPrice: total, quantity: 1 }],
+            totalOrderCost:      total,
+            distanceKm:          routeDistKm,
+            pickupCoords:        selectedCoords.pickup,
+            dropoffCoords:       selectedCoords.dropoff,
+            timestamp:           Date.now()
         };
 
-        // Save to Firebase
         await set(push(ref(database, 'orders')), payload);
 
         // Shipday
         const sdRes = await fetch("https://api.shipday.com/orders", {
             method: "POST",
-            headers: { "Authorization": `Basic ${SHIPDAY_API_KEY}`, "Content-Type": "application/json" },
+            headers: { "Authorization": `Basic ${SHIPDAY_KEY}`, "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
         if (!sdRes.ok) throw new Error("Shipday:" + sdRes.status);
 
-        showToast('success', `Order ${orderId} booked!`, `${selectedPkg.name} from ${pickup.split(',')[0]} → ${dropoff.split(',')[0]}`);
+        showToast('success', `Order ${orderId} confirmed!`,
+            `${selectedPkg.name} · ${pickup.split(',')[0]} → ${dropoff.split(',')[0]}`);
+
+        if (!userProfile.phone) {
+            setTimeout(() => showToast('info','Add your phone number','Open your profile to add a contact number for the driver.'), 1500);
+        }
 
     } catch(e) {
         console.error(e);
-        if (e.message.startsWith('Authentication')) {
-            showToast('error', 'Sign-in failed', 'Could not authenticate. Please try again.');
-        } else if (e.message.startsWith('Shipday')) {
+        if (e.message.startsWith('Shipday')) {
             showToast('info', 'Order saved', 'Dispatch sync pending — our team will follow up.');
         } else {
             showToast('error', 'Booking failed', e.message || 'Something went wrong.');
         }
     } finally {
-        label.textContent = orig;
-        btn.disabled = false;
-        btn.className = 'ready';
+        label.textContent = orig; btn.disabled = false; btn.className = 'ready';
     }
 };
 
-/* ═══════════════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════════════ */
-window.addEventListener('load', () => {
-    setTimeout(() => {
-        const s = document.getElementById('splash');
-        s.classList.add('hide');
-        setTimeout(() => s.remove(), 650);
-    }, 1400);
-
-    setupSearch('pickup');
-    setupSearch('dropoff');
-    updateSubmitBtn();
-});
+/* splash: show for min 1.2s then let auth state handle it */
+setTimeout(hideSplash, 3000);
 </script>
 </body>
 </html>
