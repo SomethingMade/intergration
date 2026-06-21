@@ -31,70 +31,46 @@
         #splash.hide { opacity: 0; pointer-events: none; }
         #splash-logo { width: 96px; height: 96px; border-radius: 22px; margin-bottom: 18px; object-fit: contain; }
 
-        /* ── Onboarding (first-time intro) ── */
-        #onboarding {
-            position: fixed; inset: 0; z-index: 290;
-            background: #fff;
-            display: none; flex-direction: column;
-        }
-        #onboarding.visible { display: flex; }
-        .onb-skip {
-            position: absolute; top: 18px; right: 18px; z-index: 2;
-            background: none; border: none; color: #a1a1aa;
-            font-size: 13px; font-weight: 700; padding: 10px; cursor: pointer;
-        }
-        .onb-slides { position: relative; flex: 1; overflow: hidden; }
-        .onb-slide {
-            position: absolute; inset: 0;
-            display: flex; flex-direction: column;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.35s ease;
-        }
-        .onb-slide.active { opacity: 1; pointer-events: auto; }
-        .onb-img {
-            width: 100%; height: 55vh; flex-shrink: 0;
-            background-size: cover; background-position: center; background-repeat: no-repeat;
-            background-color: #fafafa;
-        }
-        .onb-content { flex: 1; padding: 28px 30px 10px; text-align: center; }
-        .onb-title { font-size: 23px; font-weight: 900; color: #18181b; letter-spacing: -0.4px; margin-bottom: 10px; }
-        .onb-text { font-size: 14px; color: #71717a; line-height: 1.6; max-width: 300px; margin: 0 auto; }
-        .onb-bottom { padding: 14px 24px 28px; }
-        .onb-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 18px; }
-        .onb-dots .dot { width: 8px; height: 8px; border-radius: 50%; background: #e4e4e7; transition: all 0.25s; }
-        .onb-dots .dot.active { width: 20px; border-radius: 4px; background: #18181b; }
-        .onb-next-btn {
-            width: 100%; background: #18181b; color: #fff;
-            border: none; border-radius: 14px; padding: 16px;
-            font-size: 14.5px; font-weight: 700; cursor: pointer;
-        }
-        .onb-next-btn:active { transform: scale(0.98); }
-
         /* ── Sign-in Gate ── */
         #signin-gate {
             position: fixed; inset: 0; z-index: 250;
-            background: linear-gradient(180deg, #0a0a0a 0%, #111 100%);
+            background: #ffffff;
             display: none; flex-direction: column; align-items: center; justify-content: center;
             padding: 32px;
         }
         #signin-gate.visible { display: flex; }
-        #signin-image { width: 100%; max-width: 280px; height: 170px; object-fit: cover; border-radius: 18px; margin-bottom: 24px; }
-        .signin-logo { font-size: 56px; color: #fff; margin-bottom: 20px; }
-        .signin-title { font-size: 26px; font-weight: 900; color: #fff; letter-spacing: -0.6px; margin-bottom: 8px; }
-        .signin-sub { font-size: 13.5px; color: #71717a; text-align: center; line-height: 1.6; max-width: 280px; margin-bottom: 40px; }
+
+        /* Logo area */
+        .signin-logo-wrap {
+            width: 88px; height: 88px; border-radius: 22px;
+            background: #18181b;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        }
+        .signin-logo-wrap i { font-size: 36px; color: #fff; }
+
+        .signin-title { font-size: 28px; font-weight: 900; color: #18181b; letter-spacing: -0.6px; margin-bottom: 8px; }
+        .signin-sub { font-size: 14px; color: #71717a; text-align: center; line-height: 1.6; max-width: 280px; margin-bottom: 40px; }
         .google-btn {
             display: flex; align-items: center; gap: 12px;
-            background: #fff; color: #18181b;
-            padding: 14px 24px; border-radius: 14px;
+            background: #18181b; color: #fff;
+            padding: 15px 24px; border-radius: 14px;
             font-size: 14px; font-weight: 700;
             border: none; cursor: pointer;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+            transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
             width: 100%; max-width: 300px; justify-content: center;
         }
         .google-btn:active { transform: scale(0.97); }
-        .google-btn img { width: 20px; height: 20px; }
-        .signin-legal { font-size: 11px; color: #52525b; margin-top: 20px; text-align: center; line-height: 1.6; }
+        .google-btn img { width: 20px; height: 20px; filter: brightness(0) invert(1); }
+        .signin-legal { font-size: 11px; color: #a1a1aa; margin-top: 20px; text-align: center; line-height: 1.6; }
+
+        /* ── Sign-in trust strip ── */
+        .signin-trust { display: flex; gap: 32px; margin-top: 36px; }
+        .trust-item { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+        .trust-item i { font-size: 16px; color: #18181b; }
+        .trust-item span { font-size: 9.5px; font-weight: 600; letter-spacing: 0.3px; color: #a1a1aa; }
 
         /* ── User Map Marker ── */
         .user-marker-wrap { position: relative; width: 54px; height: 54px; }
@@ -411,12 +387,6 @@
             margin-bottom: 10px; font-size: 11.5px; font-weight: 600; color: #92400e;
         }
 
-        /* ── Sign-in trust strip ── */
-        .signin-trust { display: flex; gap: 26px; margin-top: 30px; }
-        .trust-item { display: flex; flex-direction: column; align-items: center; gap: 7px; }
-        .trust-item i { font-size: 15px; color: #fff; }
-        .trust-item span { font-size: 9.5px; font-weight: 600; letter-spacing: 0.3px; color: #71717a; }
-
         /* ══════════════════════════════════════════
            ACTIVITY / ORDER TRACKING
         ══════════════════════════════════════════ */
@@ -473,7 +443,6 @@
         .pay-pill i { font-size: 13px; }
         .pay-pill.active { border-color: #18181b; background: #fafafa; color: #18181b; }
         
-        /* UPDATED: Google Pay container minimum width safety net */
         #gpay-button-container { 
             margin-bottom: 8px; 
             width: 100%; 
@@ -496,52 +465,17 @@
 <div id="toast-container"></div>
 
 <div id="splash">
-    <!-- Replace the src below with your logo image (PNG/SVG) -->
     <img id="splash-logo" src="logo.png" alt="CourierGo logo">
     <h1 style="color:#18181b;font-size:28px;font-weight:900;letter-spacing:-0.6px;">CourierGo</h1>
     <p style="color:#71717a;font-size:13px;margin-top:6px;">Fast. Reliable. Tracked.</p>
 </div>
 
-<div id="onboarding">
-    <button class="onb-skip" onclick="onbFinish()">Skip</button>
-    <div class="onb-slides" id="onb-slides">
-        <div class="onb-slide active" data-i="0">
-            <!-- Replace background-image url with your own artwork -->
-            <div class="onb-img" style="background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+CiAgPHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9IiNmYWZhZmEiLz4KICA8cmVjdCB4PSIxMjAiIHk9IjE0MCIgd2lkdGg9IjE2MCIgaGVpZ2h0PSIxMzAiIHJ4PSIxNCIgZmlsbD0iI2U0ZTRlNyIgc3Ryb2tlPSIjYTFhMWFhIiBzdHJva2Utd2lkdGg9IjMiLz4KICA8cmVjdCB4PSIxNTAiIHk9IjExMCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSI0MCIgcng9IjgiIGZpbGw9IiNkNGQ0ZDgiIHN0cm9rZT0iI2ExYTFhYSIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgPHRleHQgeD0iMjAwIiB5PSIzNDUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iI2ExYTFhYSI+UkVQTEFDRSBXSVRIIElNQUdFPC90ZXh0Pgo8L3N2Zz4K');"></div>
-            <div class="onb-content">
-                <div class="onb-title">Send Anything, Anywhere</div>
-                <div class="onb-text">Documents, parcels, and freight — booked in seconds and delivered fast.</div>
-            </div>
-        </div>
-        <div class="onb-slide" data-i="1">
-            <div class="onb-img" style="background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+CiAgPHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9IiNmYWZhZmEiLz4KICA8Y2lyY2xlIGN4PSIyMDAiIGN5PSIxODAiIHI9IjkwIiBmaWxsPSJub25lIiBzdHJva2U9IiNhMWExYWEiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxwYXRoIGQ9Ik0yMDAgMTIwIEMxNzAgMTIwIDE0NSAxNDUgMTQ1IDE3NSBDMTQ1IDIxNSAyMDAgMjYwIDIwMCAyNjAgQzIwMCAyNjAgMjU1IDIxNSAyNTUgMTc1IEMyNTUgMTQ1IDIzMCAxMjAgMjAwIDEyMCBaIiBmaWxsPSIjZTRlNGU3IiBzdHJva2U9IiNhMWExYWEiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxjaXJjbGUgY3g9IjIwMCIgY3k9IjE3NSIgcj0iMTgiIGZpbGw9IiNmYWZhZmEiIHN0cm9rZT0iI2ExYTFhYSIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgPHRleHQgeD0iMjAwIiB5PSIzNDUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iI2ExYTFhYSI+UkVQTEFDRSBXSVRIIElNQUdFPC90ZXh0Pgo8L3N2Zz4K');"></div>
-            <div class="onb-content">
-                <div class="onb-title">Live GPS Tracking</div>
-                <div class="onb-text">Watch your delivery move in real time, from pickup to your door.</div>
-            </div>
-        </div>
-        <div class="onb-slide" data-i="2">
-            <div class="onb-img" style="background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+CiAgPHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9IiNmYWZhZmEiLz4KICA8Y2lyY2xlIGN4PSIyMDAiIGN5PSIxODAiIHI9IjkwIiBmaWxsPSIjZTRlNGU3IiBzdHJva2U9IiNhMWExYWEiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxwYXRoIGQ9Ik0xNjUgMTUwIHY2MCBNMTY1IDE1MCBhMTAgMTAgMCAwIDEgMjAgMCB2MjUgTTIxMCAxNTAgYzIwIDAgMzAgMjAgMzAgNDUgYzAgOCAtNiAxNSAtMTUgMTUgaDAgYzAgLTIwIDAgLTQwIC0xNSAtNjAgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYTFhMWFhIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDx0ZXh0IHg9IjIwMCIgeT0iMzQ1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiNhMWExYWEiPlJFUExBQ0UgV0lUSCBJTUFHRTwvdGV4dD4KPC9zdmc+Cg==');"></div>
-            <div class="onb-content">
-                <div class="onb-title">Now: Food Delivery</div>
-                <div class="onb-text">Order from your favorite restaurants and get it delivered hot and fast.</div>
-            </div>
-        </div>
-    </div>
-    <div class="onb-bottom">
-        <div class="onb-dots" id="onb-dots">
-            <span class="dot active"></span><span class="dot"></span><span class="dot"></span>
-        </div>
-        <button class="onb-next-btn" id="onb-next-btn" onclick="onbNext()">Next</button>
-    </div>
-</div>
-
 <div id="signin-gate">
-    <!-- Replace src below with your own illustration/photo -->
-    <img id="signin-image" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMjgwIiB2aWV3Qm94PSIwIDAgNDAwIDI4MCI+CiAgPHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyODAiIGZpbGw9IiNmYWZhZmEiLz4KICA8Y2lyY2xlIGN4PSIyMDAiIGN5PSIxMjAiIHI9IjcwIiBmaWxsPSIjZTRlNGU3IiBzdHJva2U9IiNhMWExYWEiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxjaXJjbGUgY3g9IjIwMCIgY3k9IjEwMCIgcj0iMjIiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ExYTFhYSIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgPHBhdGggZD0iTTE2MCAxNjUgcTQwIC0zNSA4MCAwIiBmaWxsPSJub25lIiBzdHJva2U9IiNhMWExYWEiIHN0cm9rZS13aWR0aD0iMyIvPgogIDx0ZXh0IHg9IjIwMCIgeT0iMjQ1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiNhMWExYWEiPlJFUExBQ0UgV0lUSCBJTUFHRTwvdGV4dD4KPC9zdmc+Cg==" alt="Welcome">
-    <div class="signin-logo"><i class="fa-solid fa-truck-fast"></i></div>
+    <div class="signin-logo-wrap">
+        <i class="fa-solid fa-truck-fast"></i>
+    </div>
     <div class="signin-title">CourierGo</div>
-    <div class="signin-sub">Sign in to send packages, track deliveries, and manage your profile.</div>
+    <div class="signin-sub">Send packages, track deliveries, and manage your profile — all in one place.</div>
     <button class="google-btn" onclick="signInWithGoogle()">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
         Continue with Google
@@ -733,9 +667,6 @@ import {
     getDatabase, ref, push, set, get, update, onValue, query, orderByChild, equalTo
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-/* ══════════════════════════════════════
-   CONFIG — replace tokens before deploy
-══════════════════════════════════════ */
 const MAPBOX_TOKEN   = "pk.eyJ1Ijoia2F0bGVnb3BoYXNoYSIsImEiOiJjbTlpOTdzbmYwMGNsMmpzYWJtZzN4d3pqIn0.Zt-aSMEoahrV3zkiVVHbOw";
 const SHIPDAY_KEY    = "K5a8wQJF3f.az2zfrhgzwxK9JONI2y8";
 
@@ -749,20 +680,14 @@ const firebaseConfig = {
     appId:             "1:941619830061:web:de9e0f791eb8f6eacf87a4"
 };
 
-/* ══════════════════════════════════════
-   FIREBASE INIT
-══════════════════════════════════════ */
 const fbApp    = initializeApp(firebaseConfig);
 const auth     = getAuth(fbApp);
 const database = getDatabase(fbApp);
 const provider = new GoogleAuthProvider();
 
 let currentUser   = null;
-let userProfile   = {};  // { name, email, phone, photoURL }
+let userProfile   = {};
 
-/* ══════════════════════════════════════
-   TOAST
-══════════════════════════════════════ */
 function showToast(type, title, msg, duration = 4200) {
     const icons = { success:'fa-circle-check', error:'fa-circle-xmark', info:'fa-circle-info' };
     const t = document.createElement('div');
@@ -775,13 +700,9 @@ function showToast(type, title, msg, duration = 4200) {
 }
 window.showToast = showToast;
 
-/* ══════════════════════════════════════
-   AUTH FLOWS
-══════════════════════════════════════ */
 window.signInWithGoogle = async function() {
     try {
         await signInWithPopup(auth, provider);
-        // onAuthStateChanged handles everything after
     } catch(e) {
         if (e.code !== 'auth/popup-closed-by-user') {
             showToast('error', 'Sign-in failed', e.message);
@@ -795,13 +716,11 @@ window.signOut = async function() {
     closeProfile();
 };
 
-/* Load or create user profile in DB */
 async function loadUserProfile(user) {
     const snap = await get(ref(database, `users/${user.uid}`));
     if (snap.exists()) {
         userProfile = snap.val();
     } else {
-        // First time — seed from Google account
         userProfile = {
             name:     user.displayName || '',
             email:    user.email || '',
@@ -810,13 +729,11 @@ async function loadUserProfile(user) {
         };
         await set(ref(database, `users/${user.uid}`), userProfile);
     }
-    // Always keep name/email/photo fresh from Google
     userProfile.name     = user.displayName || userProfile.name;
     userProfile.email    = user.email       || userProfile.email;
     userProfile.photoURL = user.photoURL    || userProfile.photoURL;
 }
 
-/* ── Save phone ── */
 window.savePhone = async function() {
     const val = document.getElementById('phone-input').value.trim();
     if (!val) { showToast('error', 'Enter a number', 'Phone number cannot be empty.'); return; }
@@ -828,9 +745,6 @@ window.savePhone = async function() {
     document.getElementById('phone-warn').style.display = 'none';
 };
 
-/* ══════════════════════════════════════
-   UI: AUTH STATE LISTENER
-══════════════════════════════════════ */
 onAuthStateChanged(auth, async (user) => {
     hideSplash();
 
@@ -852,30 +766,9 @@ onAuthStateChanged(auth, async (user) => {
         ordersListenerAttached = false;
         renderOrders(null);
         document.getElementById('avatar-btn').style.display = 'none';
-        if (!localStorage.getItem('cg_onboarded')) {
-            document.getElementById('onboarding').classList.add('visible');
-        } else {
-            document.getElementById('signin-gate').classList.add('visible');
-        }
+        document.getElementById('signin-gate').classList.add('visible');
     }
 });
-
-/* ── Onboarding (first-time intro) ── */
-let onbIndex = 0;
-window.onbNext = function() {
-    const slides = document.querySelectorAll('.onb-slide');
-    if (onbIndex >= slides.length - 1) { onbFinish(); return; }
-    slides[onbIndex].classList.remove('active');
-    onbIndex++;
-    slides[onbIndex].classList.add('active');
-    document.querySelectorAll('#onb-dots .dot').forEach((d, i) => d.classList.toggle('active', i === onbIndex));
-    document.getElementById('onb-next-btn').textContent = (onbIndex === slides.length - 1) ? 'Get Started' : 'Next';
-};
-window.onbFinish = function() {
-    localStorage.setItem('cg_onboarded', '1');
-    document.getElementById('onboarding').classList.remove('visible');
-    document.getElementById('signin-gate').classList.add('visible');
-};
 
 function hideSplash() {
     const s = document.getElementById('splash');
@@ -885,9 +778,6 @@ function hideSplash() {
     }
 }
 
-/* ══════════════════════════════════════
-   UI HELPERS
-══════════════════════════════════════ */
 function initials(name) {
     if (!name) return '?';
     return name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
@@ -904,7 +794,6 @@ function renderAvatarBtn() {
 }
 
 function renderProfileUI() {
-    // Header avatar
     const wrap = document.getElementById('drawer-avatar-wrap');
     const ini  = document.getElementById('drawer-avatar-init');
     if (userProfile.photoURL) {
@@ -913,10 +802,8 @@ function renderProfileUI() {
         ini.textContent = initials(userProfile.name);
     }
 
-    // Map marker avatar
     if (userMarker) refreshMapMarker();
 
-    // Drawer fields
     document.getElementById('drawer-name').textContent  = userProfile.name  || '—';
     document.getElementById('drawer-email').textContent = userProfile.email || '—';
     document.getElementById('info-name').textContent    = userProfile.name  || '—';
@@ -930,9 +817,6 @@ function checkPhoneWarning() {
     warn.style.display = (!userProfile.phone) ? 'flex' : 'none';
 }
 
-/* ══════════════════════════════════════
-   ACTIVITY / ORDER TRACKING
-══════════════════════════════════════ */
 let ordersListenerAttached = false;
 
 function attachOrdersListener() {
@@ -1010,9 +894,6 @@ function renderOrders(ordersObj) {
     listEl.innerHTML = orders.map(orderCardHTML).join('');
 }
 
-/* ══════════════════════════════════════
-   PROFILE DRAWER
-══════════════════════════════════════ */
 window.openProfile  = function() {
     document.getElementById('profile-overlay').classList.add('open');
     document.getElementById('profile-drawer').classList.add('open');
@@ -1022,9 +903,6 @@ window.closeProfile = function() {
     document.getElementById('profile-drawer').classList.remove('open');
 };
 
-/* ══════════════════════════════════════
-   MAPBOX
-══════════════════════════════════════ */
 mapboxgl.accessToken = MAPBOX_TOKEN;
 let map, userMarker, pickupMarker, dropoffMarker;
 let mapInitialised = false;
@@ -1062,7 +940,6 @@ function initMap() {
     updateSubmitBtn();
 }
 
-/* ── Avatar marker builder ── */
 function buildAvatarEl() {
     const wrap  = document.createElement('div');
     wrap.className = 'user-marker-wrap';
@@ -1112,7 +989,6 @@ function refreshMapMarker() {
     placeUserMarker(lnglat.lng, lnglat.lat);
 }
 
-/* ── Dest markers ── */
 function buildDestEl(type) {
     const el = document.createElement('div');
     el.className = `dest-marker ${type}`;
@@ -1135,7 +1011,6 @@ function placeDestMarker(type, lng, lat) {
     if (pickupMarker && dropoffMarker) { drawRoute(); fitBothMarkers(); }
 }
 
-/* ── Route ── */
 let routeDistKm = 0;
 
 async function drawRoute() {
@@ -1185,9 +1060,6 @@ function updateRoutePrice() {
     }
 }
 
-/* ══════════════════════════════════════
-   SEARCH / GEOCODING
-══════════════════════════════════════ */
 let debounceTimers   = {};
 let selectedCoords   = { pickup: null, dropoff: null };
 let suggFeatures     = { pickup: [], dropoff: [] };
@@ -1216,7 +1088,7 @@ async function fetchSuggestions(type, q) {
         const data = await res.json();
         suggFeatures[type] = data.features || [];
         renderSuggestions(type);
-    } catch(e) { /* silently fail */ }
+    } catch(e) { }
 }
 
 function renderSuggestions(type) {
@@ -1259,9 +1131,6 @@ window.clearInput = function(type) {
     updateSubmitBtn();
 };
 
-/* ══════════════════════════════════════
-   PACKAGE & SUBMIT
-══════════════════════════════════════ */
 let selectedPkg = null;
 let selectedPayment = 'cash';
 
@@ -1294,7 +1163,6 @@ function updateFoodPackageAvailability() {
     }
 }
 
-/* UPDATED: Forces DOM repaint before iframe width measurement */
 window.selectPaymentMethod = function(type) {
     selectedPayment = type;
     document.getElementById('pay-pill-cash').classList.toggle('active', type === 'cash');
@@ -1306,11 +1174,8 @@ window.selectPaymentMethod = function(type) {
     if (type === 'google_pay') {
         gpayContainer.style.display = 'block';
         gpayNote.style.display      = 'flex';
-        
         requestAnimationFrame(() => {
-            setTimeout(() => {
-                ensureGooglePayButton(); 
-            }, 50);
+            setTimeout(() => { ensureGooglePayButton(); }, 50);
         });
     } else {
         gpayContainer.style.display = 'none';
@@ -1338,9 +1203,6 @@ function updateSubmitBtn() {
     btn.style.display = (selectedPayment === 'google_pay') ? 'none' : 'flex';
 }
 
-/* ══════════════════════════════════════
-   TABS & SHEET
-══════════════════════════════════════ */
 let sheetCollapsed = false;
 window.toggleSheet = () => {
     sheetCollapsed = !sheetCollapsed;
@@ -1354,12 +1216,8 @@ window.switchTab = (tab) => {
     document.getElementById('tab-track').classList.toggle('active', !isSend);
 };
 
-/* ══════════════════════════════════════
-   BOOKING
-══════════════════════════════════════ */
 async function doBookOrder(paymentMeta) {
     const btn = document.getElementById('submitBtn');
-
     let succeeded = false;
 
     try {
@@ -1384,14 +1242,13 @@ async function doBookOrder(paymentMeta) {
             pickupCoords:        selectedCoords.pickup,
             dropoffCoords:       selectedCoords.dropoff,
             status:              'placed',
-            paymentMethod:       paymentMeta.method,         // 'cash' | 'google_pay'
+            paymentMethod:       paymentMeta.method,
             paymentTestMode:     !!paymentMeta.testMode,
             timestamp:           Date.now()
         };
 
         await set(push(ref(database, 'orders')), payload);
 
-        // Shipday
         const sdRes = await fetch("https://api.shipday.com/orders", {
             method: "POST",
             headers: { "Authorization": `Basic ${SHIPDAY_KEY}`, "Content-Type": "application/json" },
@@ -1412,7 +1269,7 @@ async function doBookOrder(paymentMeta) {
         console.error(e);
         if (e.message.startsWith('Shipday')) {
             showToast('info', 'Order saved', 'Dispatch sync pending — our team will follow up.');
-            succeeded = true; // order was saved to our DB even though Shipday sync failed
+            succeeded = true;
         } else {
             showToast('error', 'Booking failed', e.message || 'Something went wrong.');
         }
@@ -1452,9 +1309,6 @@ function resetBookingForm() {
     updateSubmitBtn();
 }
 
-/* ══════════════════════════════════════
-   GOOGLE PAY (TEST / SANDBOX INTEGRATION)
-══════════════════════════════════════ */
 let googlePayClient = null;
 let gpayAvailable    = false;
 
@@ -1470,7 +1324,7 @@ const gpayCardMethod = {
     tokenizationSpecification: {
         type: 'PAYMENT_GATEWAY',
         parameters: {
-            gateway: 'example',                       
+            gateway: 'example',
             gatewayMerchantId: 'exampleGatewayMerchantId'
         }
     }
@@ -1554,7 +1408,7 @@ async function onGooglePayButtonClicked() {
         await doBookOrder({ method: 'google_pay', testMode: true });
 
     } catch (err) {
-        if (err && err.statusCode === 'CANCELED') return; 
+        if (err && err.statusCode === 'CANCELED') return;
         console.error('Google Pay error', err);
         showToast('error', 'Google Pay failed', 'Could not complete the test payment.');
     }
@@ -1562,7 +1416,6 @@ async function onGooglePayButtonClicked() {
 
 initGooglePay();
 
-/* splash: show for min 1.2s then let auth state handle it */
 setTimeout(hideSplash, 3000);
 </script>
 </body>
