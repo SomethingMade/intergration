@@ -31,6 +31,45 @@
         #splash.hide { opacity: 0; pointer-events: none; }
         #splash-logo { width: 96px; height: 96px; border-radius: 22px; margin-bottom: 18px; object-fit: contain; }
 
+        /* ── Onboarding (first-time intro) ── */
+        #onboarding {
+            position: fixed; inset: 0; z-index: 290;
+            background: #fff;
+            display: none; flex-direction: column;
+        }
+        #onboarding.visible { display: flex; }
+        .onb-skip {
+            position: absolute; top: 18px; right: 18px; z-index: 2;
+            background: none; border: none; color: #a1a1aa;
+            font-size: 13px; font-weight: 700; padding: 10px; cursor: pointer;
+        }
+        .onb-slides { position: relative; flex: 1; overflow: hidden; }
+        .onb-slide {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.35s ease;
+        }
+        .onb-slide.active { opacity: 1; pointer-events: auto; }
+        .onb-img {
+            width: 100%; height: 55vh; flex-shrink: 0;
+            background-size: cover; background-position: center; background-repeat: no-repeat;
+            background-color: #fafafa;
+        }
+        .onb-content { flex: 1; padding: 28px 30px 10px; text-align: center; }
+        .onb-title { font-size: 23px; font-weight: 900; color: #18181b; letter-spacing: -0.4px; margin-bottom: 10px; }
+        .onb-text { font-size: 14px; color: #71717a; line-height: 1.6; max-width: 300px; margin: 0 auto; }
+        .onb-bottom { padding: 14px 24px 28px; }
+        .onb-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 18px; }
+        .onb-dots .dot { width: 8px; height: 8px; border-radius: 50%; background: #e4e4e7; transition: all 0.25s; }
+        .onb-dots .dot.active { width: 20px; border-radius: 4px; background: #18181b; }
+        .onb-next-btn {
+            width: 100%; background: #18181b; color: #fff;
+            border: none; border-radius: 14px; padding: 16px;
+            font-size: 14.5px; font-weight: 700; cursor: pointer;
+        }
+        .onb-next-btn:active { transform: scale(0.98); }
+
         /* ── Sign-in Gate ── */
         #signin-gate {
             position: fixed; inset: 0; z-index: 250;
@@ -39,6 +78,7 @@
             padding: 32px;
         }
         #signin-gate.visible { display: flex; }
+        #signin-image { width: 100%; max-width: 280px; height: 170px; object-fit: cover; border-radius: 18px; margin-bottom: 24px; }
         .signin-logo { font-size: 56px; color: #fff; margin-bottom: 20px; }
         .signin-title { font-size: 26px; font-weight: 900; color: #fff; letter-spacing: -0.6px; margin-bottom: 8px; }
         .signin-sub { font-size: 13.5px; color: #71717a; text-align: center; line-height: 1.6; max-width: 280px; margin-bottom: 40px; }
@@ -462,7 +502,43 @@
     <p style="color:#71717a;font-size:13px;margin-top:6px;">Fast. Reliable. Tracked.</p>
 </div>
 
+<div id="onboarding">
+    <button class="onb-skip" onclick="onbFinish()">Skip</button>
+    <div class="onb-slides" id="onb-slides">
+        <div class="onb-slide active" data-i="0">
+            <!-- Replace background-image url with your own artwork -->
+            <div class="onb-img" style="background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+CiAgPHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9IiNmYWZhZmEiLz4KICA8cmVjdCB4PSIxMjAiIHk9IjE0MCIgd2lkdGg9IjE2MCIgaGVpZ2h0PSIxMzAiIHJ4PSIxNCIgZmlsbD0iI2U0ZTRlNyIgc3Ryb2tlPSIjYTFhMWFhIiBzdHJva2Utd2lkdGg9IjMiLz4KICA8cmVjdCB4PSIxNTAiIHk9IjExMCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSI0MCIgcng9IjgiIGZpbGw9IiNkNGQ0ZDgiIHN0cm9rZT0iI2ExYTFhYSIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgPHRleHQgeD0iMjAwIiB5PSIzNDUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iI2ExYTFhYSI+UkVQTEFDRSBXSVRIIElNQUdFPC90ZXh0Pgo8L3N2Zz4K');"></div>
+            <div class="onb-content">
+                <div class="onb-title">Send Anything, Anywhere</div>
+                <div class="onb-text">Documents, parcels, and freight — booked in seconds and delivered fast.</div>
+            </div>
+        </div>
+        <div class="onb-slide" data-i="1">
+            <div class="onb-img" style="background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+CiAgPHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9IiNmYWZhZmEiLz4KICA8Y2lyY2xlIGN4PSIyMDAiIGN5PSIxODAiIHI9IjkwIiBmaWxsPSJub25lIiBzdHJva2U9IiNhMWExYWEiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxwYXRoIGQ9Ik0yMDAgMTIwIEMxNzAgMTIwIDE0NSAxNDUgMTQ1IDE3NSBDMTQ1IDIxNSAyMDAgMjYwIDIwMCAyNjAgQzIwMCAyNjAgMjU1IDIxNSAyNTUgMTc1IEMyNTUgMTQ1IDIzMCAxMjAgMjAwIDEyMCBaIiBmaWxsPSIjZTRlNGU3IiBzdHJva2U9IiNhMWExYWEiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxjaXJjbGUgY3g9IjIwMCIgY3k9IjE3NSIgcj0iMTgiIGZpbGw9IiNmYWZhZmEiIHN0cm9rZT0iI2ExYTFhYSIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgPHRleHQgeD0iMjAwIiB5PSIzNDUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iI2ExYTFhYSI+UkVQTEFDRSBXSVRIIElNQUdFPC90ZXh0Pgo8L3N2Zz4K');"></div>
+            <div class="onb-content">
+                <div class="onb-title">Live GPS Tracking</div>
+                <div class="onb-text">Watch your delivery move in real time, from pickup to your door.</div>
+            </div>
+        </div>
+        <div class="onb-slide" data-i="2">
+            <div class="onb-img" style="background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+CiAgPHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9IiNmYWZhZmEiLz4KICA8Y2lyY2xlIGN4PSIyMDAiIGN5PSIxODAiIHI9IjkwIiBmaWxsPSIjZTRlNGU3IiBzdHJva2U9IiNhMWExYWEiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxwYXRoIGQ9Ik0xNjUgMTUwIHY2MCBNMTY1IDE1MCBhMTAgMTAgMCAwIDEgMjAgMCB2MjUgTTIxMCAxNTAgYzIwIDAgMzAgMjAgMzAgNDUgYzAgOCAtNiAxNSAtMTUgMTUgaDAgYzAgLTIwIDAgLTQwIC0xNSAtNjAgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYTFhMWFhIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDx0ZXh0IHg9IjIwMCIgeT0iMzQ1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiNhMWExYWEiPlJFUExBQ0UgV0lUSCBJTUFHRTwvdGV4dD4KPC9zdmc+Cg==');"></div>
+            <div class="onb-content">
+                <div class="onb-title">Now: Food Delivery</div>
+                <div class="onb-text">Order from your favorite restaurants and get it delivered hot and fast.</div>
+            </div>
+        </div>
+    </div>
+    <div class="onb-bottom">
+        <div class="onb-dots" id="onb-dots">
+            <span class="dot active"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+        <button class="onb-next-btn" id="onb-next-btn" onclick="onbNext()">Next</button>
+    </div>
+</div>
+
 <div id="signin-gate">
+    <!-- Replace src below with your own illustration/photo -->
+    <img id="signin-image" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMjgwIiB2aWV3Qm94PSIwIDAgNDAwIDI4MCI+CiAgPHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyODAiIGZpbGw9IiNmYWZhZmEiLz4KICA8Y2lyY2xlIGN4PSIyMDAiIGN5PSIxMjAiIHI9IjcwIiBmaWxsPSIjZTRlNGU3IiBzdHJva2U9IiNhMWExYWEiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxjaXJjbGUgY3g9IjIwMCIgY3k9IjEwMCIgcj0iMjIiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ExYTFhYSIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgPHBhdGggZD0iTTE2MCAxNjUgcTQwIC0zNSA4MCAwIiBmaWxsPSJub25lIiBzdHJva2U9IiNhMWExYWEiIHN0cm9rZS13aWR0aD0iMyIvPgogIDx0ZXh0IHg9IjIwMCIgeT0iMjQ1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiNhMWExYWEiPlJFUExBQ0UgV0lUSCBJTUFHRTwvdGV4dD4KPC9zdmc+Cg==" alt="Welcome">
     <div class="signin-logo"><i class="fa-solid fa-truck-fast"></i></div>
     <div class="signin-title">CourierGo</div>
     <div class="signin-sub">Sign in to send packages, track deliveries, and manage your profile.</div>
@@ -775,10 +851,31 @@ onAuthStateChanged(auth, async (user) => {
         userProfile = {};
         ordersListenerAttached = false;
         renderOrders(null);
-        document.getElementById('signin-gate').classList.add('visible');
         document.getElementById('avatar-btn').style.display = 'none';
+        if (!localStorage.getItem('cg_onboarded')) {
+            document.getElementById('onboarding').classList.add('visible');
+        } else {
+            document.getElementById('signin-gate').classList.add('visible');
+        }
     }
 });
+
+/* ── Onboarding (first-time intro) ── */
+let onbIndex = 0;
+window.onbNext = function() {
+    const slides = document.querySelectorAll('.onb-slide');
+    if (onbIndex >= slides.length - 1) { onbFinish(); return; }
+    slides[onbIndex].classList.remove('active');
+    onbIndex++;
+    slides[onbIndex].classList.add('active');
+    document.querySelectorAll('#onb-dots .dot').forEach((d, i) => d.classList.toggle('active', i === onbIndex));
+    document.getElementById('onb-next-btn').textContent = (onbIndex === slides.length - 1) ? 'Get Started' : 'Next';
+};
+window.onbFinish = function() {
+    localStorage.setItem('cg_onboarded', '1');
+    document.getElementById('onboarding').classList.remove('visible');
+    document.getElementById('signin-gate').classList.add('visible');
+};
 
 function hideSplash() {
     const s = document.getElementById('splash');
