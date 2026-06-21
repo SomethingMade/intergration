@@ -9,6 +9,9 @@
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
 
+    <!-- Google Pay -->
+    <script async src="https://pay.google.com/gp/p/js/pay.js" onload="window.dispatchEvent(new Event('gpayready'))"></script>
+
     <!-- Icons & Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -416,6 +419,29 @@
             font-size: 10.5px; color: #71717a; font-weight: 500;
         }
         .order-price { font-weight: 800; color: #18181b; font-size: 12px; }
+
+        /* ── Payment method ── */
+        .pay-method-row { display: flex; gap: 8px; margin-bottom: 12px; }
+        .pay-pill {
+            flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+            padding: 11px; border: 2px solid #e4e4e7; border-radius: 12px;
+            background: #fff; font-size: 11.5px; font-weight: 700; color: #52525b;
+            cursor: pointer; transition: border-color 0.15s, background 0.15s, color 0.15s;
+            font-family: 'Inter', sans-serif;
+        }
+        .pay-pill i { font-size: 13px; }
+        .pay-pill.active { border-color: #18181b; background: #fafafa; color: #18181b; }
+        #gpay-button-container { margin-bottom: 8px; }
+        #gpay-button-container > div { width: 100% !important; }
+        .gpay-test-note {
+            display: flex; align-items: center; gap: 7px;
+            font-size: 10.5px; color: #a1a1aa; font-weight: 500;
+            margin: -2px 0 10px; padding-left: 1px;
+        }
+        .gpay-test-note .test-tag {
+            font-size: 8.5px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase;
+            background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -530,6 +556,22 @@
                 <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R180</span></div>
             </div>
         </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
+            <h2 style="font-size:14px;font-weight:700;color:#18181b;">Payment method</h2>
+        </div>
+        <div class="pay-method-row">
+            <button class="pay-pill active" id="pay-pill-cash" onclick="selectPaymentMethod('cash')">
+                <i class="fa-solid fa-money-bill-wave"></i> Cash on delivery
+            </button>
+            <button class="pay-pill" id="pay-pill-gpay" onclick="selectPaymentMethod('google_pay')" style="display:none;">
+                <i class="fa-brands fa-google-pay"></i> Google Pay
+            </button>
+        </div>
+        <div class="gpay-test-note" id="gpay-test-note" style="display:none;">
+            <span class="test-tag">Test mode</span> Sandbox payment — no real charge will be made.
+        </div>
+        <div id="gpay-button-container" style="display:none;"></div>
 
         <button id="submitBtn" onclick="confirmBooking()">
             <span id="submitLabel">Set pickup &amp; destination</span>
@@ -1120,12 +1162,22 @@ window.clearInput = function(type) {
    PACKAGE & SUBMIT
 ══════════════════════════════════════ */
 let selectedPkg = null;
+let selectedPayment = 'cash';
 
 window.selectPackage = function(el, name, base) {
     document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
     selectedPkg = { name, base };
     updateRoutePrice();
+    updateSubmitBtn();
+};
+
+window.selectPaymentMethod = function(type) {
+    selectedPayment = type;
+    document.getElementById('pay-pill-cash').classList.toggle('active', type === 'cash');
+    document.getElementById('pay-pill-gpay').classList.toggle('active', type === 'google_pay');
+    document.getElementById('gpay-button-container').style.display = (type === 'google_pay') ? 'block' : 'none';
+    document.getElementById('gpay-test-note').style.display        = (type === 'google_pay') ? 'flex'  : 'none';
     updateSubmitBtn();
 };
 
@@ -1136,13 +1188,16 @@ function updateSubmitBtn() {
     const hd = !!selectedCoords.dropoff;
     const hk = !!selectedPkg;
 
-    if (!hp || !hd) { btn.className=''; label.textContent='Set pickup & destination'; btn.disabled=true; return; }
-    if (!hk)         { btn.className=''; label.textContent='Select a package size';    btn.disabled=true; return; }
+    if (!hp || !hd) { btn.className=''; label.textContent='Set pickup & destination'; btn.disabled=true; }
+    else if (!hk)    { btn.className=''; label.textContent='Select a package size';    btn.disabled=true; }
+    else {
+        const total = Math.round(selectedPkg.base + routeDistKm * 3.5);
+        btn.className = 'ready';
+        label.textContent = `Book ${selectedPkg.name} · R${total}`;
+        btn.disabled = false;
+    }
 
-    const total = Math.round(selectedPkg.base + routeDistKm * 3.5);
-    btn.className = 'ready';
-    label.textContent = `Book ${selectedPkg.name} · R${total}`;
-    btn.disabled = false;
+    btn.style.display = (selectedPayment === 'google_pay') ? 'none' : 'flex';
 }
 
 /* ══════════════════════════════════════
@@ -1164,14 +1219,8 @@ window.switchTab = (tab) => {
 /* ══════════════════════════════════════
    BOOKING
 ══════════════════════════════════════ */
-window.confirmBooking = async function() {
-    if (!selectedPkg || !selectedCoords.pickup || !selectedCoords.dropoff) return;
-    if (!currentUser) { showToast('error','Not signed in','Please sign in first.'); return; }
-
-    const btn   = document.getElementById('submitBtn');
-    const label = document.getElementById('submitLabel');
-    label.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
-    btn.disabled = true;
+async function doBookOrder(paymentMeta) {
+    const btn = document.getElementById('submitBtn');
 
     let succeeded = false;
 
@@ -1197,6 +1246,8 @@ window.confirmBooking = async function() {
             pickupCoords:        selectedCoords.pickup,
             dropoffCoords:       selectedCoords.dropoff,
             status:              'placed',
+            paymentMethod:       paymentMeta.method,         // 'cash' | 'google_pay'
+            paymentTestMode:     !!paymentMeta.testMode,
             timestamp:           Date.now()
         };
 
@@ -1235,6 +1286,19 @@ window.confirmBooking = async function() {
             updateSubmitBtn();
         }
     }
+    return succeeded;
+}
+
+window.confirmBooking = async function() {
+    if (!selectedPkg || !selectedCoords.pickup || !selectedCoords.dropoff) return;
+    if (!currentUser) { showToast('error','Not signed in','Please sign in first.'); return; }
+
+    const btn   = document.getElementById('submitBtn');
+    const label = document.getElementById('submitLabel');
+    label.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
+    btn.disabled = true;
+
+    await doBookOrder({ method: 'cash', testMode: false });
 };
 
 function resetBookingForm() {
@@ -1246,8 +1310,117 @@ function resetBookingForm() {
     document.getElementById('route-dist').textContent  = '—';
     document.getElementById('route-time').textContent  = '—';
     document.getElementById('route-price').textContent = '—';
+    selectPaymentMethod('cash');
     updateSubmitBtn();
 }
+
+/* ══════════════════════════════════════
+   GOOGLE PAY (TEST / SANDBOX INTEGRATION)
+   environment: 'TEST' — uses Google's sandbox, no real
+   card is charged and no live merchant account is required.
+   Swap environment to 'PRODUCTION' + a real merchantId/
+   gateway only once a live payment processor is wired up.
+══════════════════════════════════════ */
+let googlePayClient = null;
+let gpayAvailable    = false;
+
+const gpayBaseCardMethod = {
+    type: 'CARD',
+    parameters: {
+        allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+        allowedCardNetworks: ['VISA', 'MASTERCARD']
+    }
+};
+const gpayCardMethod = {
+    ...gpayBaseCardMethod,
+    tokenizationSpecification: {
+        type: 'PAYMENT_GATEWAY',
+        parameters: {
+            gateway: 'example',                       // Google's public test gateway
+            gatewayMerchantId: 'exampleGatewayMerchantId'
+        }
+    }
+};
+
+function gpayPaymentDataRequest(amountZAR) {
+    return {
+        apiVersion: 2,
+        apiVersionMinor: 0,
+        allowedPaymentMethods: [gpayCardMethod],
+        merchantInfo: { merchantName: 'CourierGo (Test)' },
+        transactionInfo: {
+            countryCode: 'ZA',
+            currencyCode: 'ZAR',
+            totalPriceStatus: 'FINAL',
+            totalPrice: amountZAR.toFixed(2)
+        }
+    };
+}
+
+function waitForGooglePayScript() {
+    return new Promise(resolve => {
+        if (window.google && window.google.payments) return resolve();
+        window.addEventListener('gpayready', () => resolve(), { once: true });
+        // fallback in case the script already fired before we attached the listener
+        setTimeout(() => { if (window.google && window.google.payments) resolve(); }, 1500);
+    });
+}
+
+async function initGooglePay() {
+    await waitForGooglePayScript();
+    if (!window.google || !window.google.payments) return;
+
+    googlePayClient = new google.payments.api.PaymentsClient({ environment: 'TEST' });
+
+    try {
+        const resp = await googlePayClient.isReadyToPay({
+            apiVersion: 2, apiVersionMinor: 0,
+            allowedPaymentMethods: [gpayBaseCardMethod]
+        });
+        gpayAvailable = !!resp.result;
+    } catch(e) {
+        gpayAvailable = false;
+    }
+
+    if (!gpayAvailable) return;
+
+    document.getElementById('pay-pill-gpay').style.display = 'flex';
+
+    const button = googlePayClient.createButton({
+        onClick: onGooglePayButtonClicked,
+        buttonColor: 'black',
+        buttonType: 'pay',
+        buttonSizeMode: 'fill'
+    });
+    document.getElementById('gpay-button-container').appendChild(button);
+}
+
+async function onGooglePayButtonClicked() {
+    if (!currentUser) { showToast('error', 'Not signed in', 'Please sign in first.'); return; }
+    if (!selectedPkg || !selectedCoords.pickup || !selectedCoords.dropoff) {
+        showToast('error', 'Trip details missing', 'Set pickup, destination and package size first.');
+        return;
+    }
+
+    const total = Math.round(selectedPkg.base + routeDistKm * 3.5);
+
+    try {
+        const paymentData = await googlePayClient.loadPaymentData(gpayPaymentDataRequest(total));
+        // In TEST environment this token is sandbox-only and is never charged.
+        const testToken = paymentData?.paymentMethodData?.tokenizationData?.token;
+        console.log('Google Pay sandbox token (test mode, not chargeable):', testToken);
+
+        showToast('success', 'Test payment captured', 'Google Pay sandbox — no real charge was made.');
+        await doBookOrder({ method: 'google_pay', testMode: true });
+
+    } catch (err) {
+        if (err && err.statusCode === 'CANCELED') return; // user closed the sheet
+        console.error('Google Pay error', err);
+        showToast('error', 'Google Pay failed', 'Could not complete the test payment.');
+    }
+}
+
+initGooglePay();
 
 /* splash: show for min 1.2s then let auth state handle it */
 setTimeout(hideSplash, 3000);
