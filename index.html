@@ -431,8 +431,7 @@
         }
         .pay-pill i { font-size: 13px; }
         .pay-pill.active { border-color: #18181b; background: #fafafa; color: #18181b; }
-        #gpay-button-container { margin-bottom: 8px; }
-        #gpay-button-container > div { width: 100% !important; }
+        #gpay-button-container { margin-bottom: 8px; width: 100%; }
         .gpay-test-note {
             display: flex; align-items: center; gap: 7px;
             font-size: 10.5px; color: #a1a1aa; font-weight: 500;
@@ -1176,8 +1175,18 @@ window.selectPaymentMethod = function(type) {
     selectedPayment = type;
     document.getElementById('pay-pill-cash').classList.toggle('active', type === 'cash');
     document.getElementById('pay-pill-gpay').classList.toggle('active', type === 'google_pay');
-    document.getElementById('gpay-button-container').style.display = (type === 'google_pay') ? 'block' : 'none';
-    document.getElementById('gpay-test-note').style.display        = (type === 'google_pay') ? 'flex'  : 'none';
+
+    const gpayContainer = document.getElementById('gpay-button-container');
+    const gpayNote       = document.getElementById('gpay-test-note');
+
+    if (type === 'google_pay') {
+        gpayContainer.style.display = 'block';
+        gpayNote.style.display      = 'flex';
+        ensureGooglePayButton(); // container is visible now, safe to measure & render
+    } else {
+        gpayContainer.style.display = 'none';
+        gpayNote.style.display      = 'none';
+    }
     updateSubmitBtn();
 };
 
@@ -1382,15 +1391,27 @@ async function initGooglePay() {
         gpayAvailable = false;
     }
 
-    if (!gpayAvailable) return;
+    if (gpayAvailable) {
+        document.getElementById('pay-pill-gpay').style.display = 'flex';
+    }
+}
 
-    document.getElementById('pay-pill-gpay').style.display = 'flex';
+let gpayButtonCreated = false;
+
+/* Creates the official Google Pay button. Must only run once the
+   container is visible (display:block) — building it while hidden
+   makes Google's widget measure a 0px-wide box and fall back to a
+   stripped-down render (missing the '+' and the mark's border). */
+function ensureGooglePayButton() {
+    if (gpayButtonCreated || !gpayAvailable || !googlePayClient) return;
+    gpayButtonCreated = true;
 
     const button = googlePayClient.createButton({
         onClick: onGooglePayButtonClicked,
         buttonColor: 'black',
         buttonType: 'pay',
-        buttonSizeMode: 'fill'
+        buttonSizeMode: 'fill',
+        buttonRadius: 14
     });
     document.getElementById('gpay-button-container').appendChild(button);
 }
