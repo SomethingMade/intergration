@@ -201,6 +201,9 @@
         }
         .pkg-card:hover { border-color: #a1a1aa; }
         .pkg-card.active { border-color: #18181b; background: #fafafa; }
+        .pkg-card.disabled { cursor: not-allowed; opacity: 0.4; pointer-events: none; }
+        .pkg-card.disabled:hover { border-color: #e4e4e7; }
+        .pkg-unavailable-note { font-size: 9.5px; color: #ef4444; margin-top: 2px; font-weight: 600; }
         .pkg-icon {
             width: 36px; height: 36px; border-radius: 10px;
             background: #f4f4f5; display: flex; align-items: center; justify-content: center;
@@ -529,9 +532,10 @@
         </div>
 
         <div class="pkg-scroll">
-            <div class="pkg-card" onclick="selectPackage(this,'Food Delivery',45)">
+            <div class="pkg-card" id="pkg-food" onclick="selectPackage(this,'Food Delivery',45)">
                 <div><div class="pkg-icon"><i class="fa-solid fa-utensils"></i></div>
-                <div class="pkg-name">Food Delivery</div><div class="pkg-weight">Restaurant orders</div></div>
+                <div class="pkg-name">Food Delivery</div>
+                <div class="pkg-weight" id="pkg-food-weight">Restaurant orders</div></div>
                 <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R45</span></div>
             </div>
             <div class="pkg-card" onclick="selectPackage(this,'Document',40)">
@@ -1051,6 +1055,7 @@ async function drawRoute() {
         document.getElementById('route-dist').textContent = routeDistKm + ' km';
         document.getElementById('route-time').textContent = timeStr;
         updateRoutePrice();
+        updateFoodPackageAvailability();
         document.getElementById('route-bar').classList.add('visible');
 
         const geojson = { type: 'Feature', geometry: route.geometry };
@@ -1150,6 +1155,8 @@ window.clearInput = function(type) {
     if (type === 'dropoff' && dropoffMarker) { dropoffMarker.remove(); dropoffMarker = null; }
     if (map?.getSource('route')) map.getSource('route').setData({ type:'Feature', geometry:{ type:'LineString', coordinates:[] }});
     document.getElementById('route-bar').classList.remove('visible');
+    routeDistKm = 0;
+    updateFoodPackageAvailability();
     updateSubmitBtn();
 };
 
@@ -1160,12 +1167,33 @@ let selectedPkg = null;
 let selectedPayment = 'cash';
 
 window.selectPackage = function(el, name, base) {
+    if (el.classList.contains('disabled')) return;
     document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
     selectedPkg = { name, base };
     updateRoutePrice();
     updateSubmitBtn();
 };
+
+const FOOD_DELIVERY_MAX_KM = 10;
+function updateFoodPackageAvailability() {
+    const card   = document.getElementById('pkg-food');
+    const weight = document.getElementById('pkg-food-weight');
+    if (!card) return;
+
+    const tooFar = routeDistKm > FOOD_DELIVERY_MAX_KM;
+    card.classList.toggle('disabled', tooFar);
+    weight.textContent = tooFar
+        ? `Over ${FOOD_DELIVERY_MAX_KM}km away`
+        : 'Restaurant orders';
+
+    if (tooFar && selectedPkg && selectedPkg.name === 'Food Delivery') {
+        card.classList.remove('active');
+        selectedPkg = null;
+        updateSubmitBtn();
+        showToast('info', 'Food delivery unavailable', `Pickup and dropoff must be within ${FOOD_DELIVERY_MAX_KM}km for food delivery.`);
+    }
+}
 
 /* UPDATED: Forces DOM repaint before iframe width measurement */
 window.selectPaymentMethod = function(type) {
