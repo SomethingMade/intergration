@@ -5,14 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CourierGo</title>
 
-    <!-- Mapbox -->
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
 
-    <!-- Google Pay -->
     <script async src="https://pay.google.com/gp/p/js/pay.js" onload="window.dispatchEvent(new Event('gpayready'))"></script>
 
-    <!-- Icons & Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
@@ -431,7 +428,14 @@
         }
         .pay-pill i { font-size: 13px; }
         .pay-pill.active { border-color: #18181b; background: #fafafa; color: #18181b; }
-        #gpay-button-container { margin-bottom: 8px; width: 100%; }
+        
+        /* UPDATED: Google Pay container minimum width safety net */
+        #gpay-button-container { 
+            margin-bottom: 8px; 
+            width: 100%; 
+            min-width: 250px; 
+        }
+        
         .gpay-test-note {
             display: flex; align-items: center; gap: 7px;
             font-size: 10.5px; color: #a1a1aa; font-weight: 500;
@@ -445,17 +449,14 @@
 </head>
 <body>
 
-<!-- Toasts -->
 <div id="toast-container"></div>
 
-<!-- Splash -->
 <div id="splash">
     <i class="fa-solid fa-truck-fast" style="color:#fff;font-size:64px;margin-bottom:18px;"></i>
     <h1 style="color:#fff;font-size:28px;font-weight:900;letter-spacing:-0.6px;">CourierGo</h1>
     <p style="color:#52525b;font-size:13px;margin-top:6px;">Fast. Reliable. Tracked.</p>
 </div>
 
-<!-- Sign-in Gate -->
 <div id="signin-gate">
     <div class="signin-logo"><i class="fa-solid fa-truck-fast"></i></div>
     <div class="signin-title">CourierGo</div>
@@ -472,15 +473,12 @@
     <div class="signin-legal">By continuing you agree to our Terms of Service<br>and Privacy Policy.</div>
 </div>
 
-<!-- Map -->
 <div id="map"></div>
 
-<!-- Avatar button (top-right) -->
 <button id="avatar-btn" onclick="openProfile()" style="display:none;">
     <span class="av-init" id="avatar-btn-init">?</span>
 </button>
 
-<!-- Search Panel -->
 <div id="top-bar">
     <div class="search-card" id="search-card">
         <div class="search-row" style="border-radius:20px 20px 0 0; position:relative;">
@@ -501,7 +499,6 @@
     </div>
 </div>
 
-<!-- Bottom Sheet -->
 <div id="sheet">
     <div class="sheet-handle-wrap" onclick="toggleSheet()">
         <div class="sheet-handle"></div>
@@ -512,9 +509,7 @@
         <button id="tab-track" class="tab-btn"        onclick="switchTab('track')">Activity</button>
     </div>
 
-    <!-- Send View -->
     <div id="view-send">
-        <!-- phone missing warning -->
         <div id="phone-warn" class="phone-warn" style="display:none;">
             <i class="fa-solid fa-triangle-exclamation"></i>
             <span>Add a mobile number in your profile so the driver can reach you.</span>
@@ -577,7 +572,6 @@
         </button>
     </div>
 
-    <!-- Track View -->
     <div id="view-track" style="display:none;">
         <div id="track-empty" class="track-empty">
             <i class="fa-solid fa-box-open" style="font-size:28px;display:block;margin-bottom:10px;opacity:0.25;"></i>
@@ -587,10 +581,8 @@
     </div>
 </div>
 
-<!-- Profile Overlay -->
 <div id="profile-overlay" onclick="closeProfile()"></div>
 
-<!-- Profile Drawer -->
 <div id="profile-drawer">
     <div class="drawer-header">
         <button class="drawer-close" onclick="closeProfile()"><i class="fa-solid fa-xmark"></i></button>
@@ -641,7 +633,6 @@
     </div>
 </div>
 
-<!-- Firebase -->
 <script type="module">
 import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import {
@@ -1171,6 +1162,7 @@ window.selectPackage = function(el, name, base) {
     updateSubmitBtn();
 };
 
+/* UPDATED: Forces DOM repaint before iframe width measurement */
 window.selectPaymentMethod = function(type) {
     selectedPayment = type;
     document.getElementById('pay-pill-cash').classList.toggle('active', type === 'cash');
@@ -1182,7 +1174,12 @@ window.selectPaymentMethod = function(type) {
     if (type === 'google_pay') {
         gpayContainer.style.display = 'block';
         gpayNote.style.display      = 'flex';
-        ensureGooglePayButton(); // container is visible now, safe to measure & render
+        
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                ensureGooglePayButton(); 
+            }, 50);
+        });
     } else {
         gpayContainer.style.display = 'none';
         gpayNote.style.display      = 'none';
@@ -1325,10 +1322,6 @@ function resetBookingForm() {
 
 /* ══════════════════════════════════════
    GOOGLE PAY (TEST / SANDBOX INTEGRATION)
-   environment: 'TEST' — uses Google's sandbox, no real
-   card is charged and no live merchant account is required.
-   Swap environment to 'PRODUCTION' + a real merchantId/
-   gateway only once a live payment processor is wired up.
 ══════════════════════════════════════ */
 let googlePayClient = null;
 let gpayAvailable    = false;
@@ -1345,7 +1338,7 @@ const gpayCardMethod = {
     tokenizationSpecification: {
         type: 'PAYMENT_GATEWAY',
         parameters: {
-            gateway: 'example',                       // Google's public test gateway
+            gateway: 'example',                       
             gatewayMerchantId: 'exampleGatewayMerchantId'
         }
     }
@@ -1370,7 +1363,6 @@ function waitForGooglePayScript() {
     return new Promise(resolve => {
         if (window.google && window.google.payments) return resolve();
         window.addEventListener('gpayready', () => resolve(), { once: true });
-        // fallback in case the script already fired before we attached the listener
         setTimeout(() => { if (window.google && window.google.payments) resolve(); }, 1500);
     });
 }
@@ -1398,10 +1390,6 @@ async function initGooglePay() {
 
 let gpayButtonCreated = false;
 
-/* Creates the official Google Pay button. Must only run once the
-   container is visible (display:block) — building it while hidden
-   makes Google's widget measure a 0px-wide box and fall back to a
-   stripped-down render (missing the '+' and the mark's border). */
 function ensureGooglePayButton() {
     if (gpayButtonCreated || !gpayAvailable || !googlePayClient) return;
     gpayButtonCreated = true;
@@ -1427,7 +1415,6 @@ async function onGooglePayButtonClicked() {
 
     try {
         const paymentData = await googlePayClient.loadPaymentData(gpayPaymentDataRequest(total));
-        // In TEST environment this token is sandbox-only and is never charged.
         const testToken = paymentData?.paymentMethodData?.tokenizationData?.token;
         console.log('Google Pay sandbox token (test mode, not chargeable):', testToken);
 
@@ -1435,7 +1422,7 @@ async function onGooglePayButtonClicked() {
         await doBookOrder({ method: 'google_pay', testMode: true });
 
     } catch (err) {
-        if (err && err.statusCode === 'CANCELED') return; // user closed the sheet
+        if (err && err.statusCode === 'CANCELED') return; 
         console.error('Google Pay error', err);
         showToast('error', 'Google Pay failed', 'Could not complete the test payment.');
     }
