@@ -355,6 +355,115 @@
         }
         .logout-btn:hover { background: #fee2e2; }
 
+        /* ══════════════════════════════════════════
+           DRIVE WITH COURIERGO (drawer CTA + status)
+        ══════════════════════════════════════════ */
+        .driver-cta {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px; border: 1.5px solid #e4e4e7; border-radius: 14px;
+            cursor: pointer; transition: border-color 0.15s, background 0.15s;
+        }
+        .driver-cta:hover { border-color: #18181b; background: #fafafa; }
+        .driver-cta-icon {
+            width: 40px; height: 40px; border-radius: 11px;
+            background: #18181b; color: #fff;
+            display: flex; align-items: center; justify-content: center; font-size: 15px;
+            flex-shrink: 0;
+        }
+        .driver-cta-text { flex: 1; min-width: 0; }
+        .driver-cta-title { font-size: 13px; font-weight: 700; color: #18181b; }
+        .driver-cta-sub   { font-size: 11px; color: #a1a1aa; margin-top: 1px; }
+        .driver-cta-arrow { font-size: 11px; color: #d4d4d8; flex-shrink: 0; }
+
+        .driver-status-card {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px; border-radius: 14px; border: 1.5px solid #e4e4e7;
+        }
+        .driver-status-icon {
+            width: 40px; height: 40px; border-radius: 11px;
+            display: flex; align-items: center; justify-content: center; font-size: 15px;
+            flex-shrink: 0;
+        }
+        .driver-status-text { flex: 1; min-width: 0; }
+        .driver-status-title { font-size: 13px; font-weight: 700; color: #18181b; }
+        .driver-status-sub   { font-size: 11px; color: #a1a1aa; margin-top: 1px; }
+        .driver-status-card.pending  .driver-status-icon { background: #fffbeb; color: #b45309; }
+        .driver-status-card.approved .driver-status-icon { background: #f0fdf4; color: #15803d; }
+        .driver-status-card.rejected .driver-status-icon { background: #fef2f2; color: #b91c1c; }
+
+        /* ══════════════════════════════════════════
+           DRIVER APPLICATION MODAL
+        ══════════════════════════════════════════ */
+        #driver-modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+            z-index: 200; opacity: 0; pointer-events: none;
+            transition: opacity 0.25s; backdrop-filter: blur(3px);
+            display: flex; align-items: flex-end; justify-content: center;
+        }
+        #driver-modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+        #driver-modal {
+            width: 100%; max-width: 420px; max-height: 88vh;
+            background: #fff; border-radius: 24px 24px 0 0;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.32,0,0.67,0);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+        #driver-modal-overlay.open #driver-modal { transform: translateY(0); }
+
+        .dm-header {
+            padding: 20px 20px 14px;
+            border-bottom: 1px solid #f1f1f4;
+            display: flex; align-items: flex-start; justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .dm-title { font-size: 17px; font-weight: 800; color: #18181b; letter-spacing: -0.3px; }
+        .dm-sub   { font-size: 12px; color: #71717a; margin-top: 4px; line-height: 1.5; max-width: 300px; }
+        .dm-close {
+            width: 30px; height: 30px; border-radius: 50%; background: #f4f4f5;
+            border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: #52525b; font-size: 12px; flex-shrink: 0; margin-left: 12px;
+        }
+
+        .dm-body { padding: 18px 20px; overflow-y: auto; flex: 1; }
+        .dm-field { margin-bottom: 14px; }
+        .dm-label { font-size: 11px; font-weight: 700; color: #52525b; margin-bottom: 6px; display: block; }
+        .dm-input {
+            width: 100%; padding: 12px 14px; border: 2px solid #e4e4e7; border-radius: 12px;
+            font-size: 13px; font-weight: 500; color: #18181b; outline: none;
+            font-family: 'Inter', sans-serif; transition: border-color 0.15s;
+            background: #fff;
+        }
+        .dm-input:focus { border-color: #18181b; }
+        .dm-input::placeholder { color: #a1a1aa; font-weight: 400; }
+
+        .vehicle-type-row { display: flex; gap: 8px; }
+        .vehicle-pill {
+            flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;
+            padding: 14px 8px; border: 2px solid #e4e4e7; border-radius: 13px;
+            cursor: pointer; transition: border-color 0.15s, background 0.15s;
+            background: #fff;
+        }
+        .vehicle-pill i { font-size: 17px; color: #71717a; transition: color 0.15s; }
+        .vehicle-pill span { font-size: 11.5px; font-weight: 700; color: #52525b; }
+        .vehicle-pill.active { border-color: #18181b; background: #fafafa; }
+        .vehicle-pill.active i { color: #18181b; }
+        .vehicle-pill.active span { color: #18181b; }
+
+        .dm-footer { padding: 14px 20px 28px; border-top: 1px solid #f1f1f4; flex-shrink: 0; }
+        .dm-submit {
+            width: 100%; padding: 15px; border-radius: 14px; border: none;
+            font-size: 13.5px; font-weight: 700; cursor: pointer;
+            background: #18181b; color: #fff;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+            transition: transform 0.15s, opacity 0.15s;
+            font-family: 'Inter', sans-serif;
+        }
+        .dm-submit:active { transform: scale(0.98); }
+        .dm-submit:disabled { background: #e4e4e7; color: #a1a1aa; box-shadow: none; cursor: not-allowed; }
+        .dm-legal { font-size: 10.5px; color: #a1a1aa; text-align: center; margin-top: 10px; line-height: 1.5; }
+
         /* ── Toasts ── */
         #toast-container {
             position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
@@ -442,13 +551,13 @@
         }
         .pay-pill i { font-size: 13px; }
         .pay-pill.active { border-color: #18181b; background: #fafafa; color: #18181b; }
-        
-        #gpay-button-container { 
-            margin-bottom: 8px; 
-            width: 100%; 
-            min-width: 250px; 
+
+        #gpay-button-container {
+            margin-bottom: 8px;
+            width: 100%;
+            min-width: 250px;
         }
-        
+
         .gpay-test-note {
             display: flex; align-items: center; gap: 7px;
             font-size: 10.5px; color: #a1a1aa; font-weight: 500;
@@ -648,9 +757,77 @@
             </div>
         </div>
 
+        <div class="drawer-section-title">Drive with CourierGo</div>
+        <div class="driver-cta" id="driver-cta-default" onclick="openDriverModal()">
+            <div class="driver-cta-icon"><i class="fa-solid fa-truck-pickup"></i></div>
+            <div class="driver-cta-text">
+                <div class="driver-cta-title">Become a driver</div>
+                <div class="driver-cta-sub">Earn with your bakkie or motorbike</div>
+            </div>
+            <i class="fa-solid fa-chevron-right driver-cta-arrow"></i>
+        </div>
+        <div class="driver-status-card" id="driver-status-card" style="display:none;"></div>
+
         <button class="logout-btn" onclick="signOut()">
             <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out
         </button>
+    </div>
+</div>
+
+<div id="driver-modal-overlay" onclick="closeDriverModalOnOverlay(event)">
+    <div id="driver-modal" onclick="event.stopPropagation()">
+        <div class="dm-header">
+            <div>
+                <div class="dm-title">Become a Driver</div>
+                <div class="dm-sub">Join CourierGo with your bakkie or motorbike and start earning on your own schedule.</div>
+            </div>
+            <button class="dm-close" onclick="closeDriverModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="dm-body">
+            <div class="dm-field">
+                <label class="dm-label">Vehicle type</label>
+                <div class="vehicle-type-row">
+                    <div class="vehicle-pill" id="vt-bakkie" onclick="selectVehicleType('Bakkie')">
+                        <i class="fa-solid fa-truck-pickup"></i><span>Bakkie</span>
+                    </div>
+                    <div class="vehicle-pill" id="vt-motorbike" onclick="selectVehicleType('Motorbike')">
+                        <i class="fa-solid fa-motorcycle"></i><span>Motorbike</span>
+                    </div>
+                </div>
+            </div>
+            <div class="dm-field">
+                <label class="dm-label">Full name</label>
+                <input id="dm-name" class="dm-input" type="text" placeholder="As on your ID">
+            </div>
+            <div class="dm-field">
+                <label class="dm-label">Mobile number</label>
+                <input id="dm-phone" class="dm-input" type="tel" placeholder="+27 60 123 4567" inputmode="tel">
+            </div>
+            <div class="dm-field">
+                <label class="dm-label">ID number</label>
+                <input id="dm-id" class="dm-input" type="text" placeholder="13-digit SA ID number" inputmode="numeric">
+            </div>
+            <div class="dm-field">
+                <label class="dm-label">Driver's license number</label>
+                <input id="dm-license" class="dm-input" type="text" placeholder="License number">
+            </div>
+            <div class="dm-field">
+                <label class="dm-label">Vehicle make &amp; model</label>
+                <input id="dm-vehicle-model" class="dm-input" type="text" placeholder="e.g. Toyota Hilux 2019">
+            </div>
+            <div class="dm-field">
+                <label class="dm-label">License plate</label>
+                <input id="dm-plate" class="dm-input" type="text" placeholder="e.g. CA 123-456">
+            </div>
+            <div class="dm-field" style="margin-bottom:0;">
+                <label class="dm-label">City / area of operation</label>
+                <input id="dm-city" class="dm-input" type="text" placeholder="e.g. Johannesburg">
+            </div>
+        </div>
+        <div class="dm-footer">
+            <button class="dm-submit" id="dm-submit-btn" onclick="submitDriverApplication()">Submit application</button>
+            <div class="dm-legal">We'll review your details and contact you on the number provided.</div>
+        </div>
     </div>
 </div>
 
@@ -759,12 +936,16 @@ onAuthStateChanged(auth, async (user) => {
         checkPhoneWarning();
         initMap();
         attachOrdersListener();
+        loadDriverApplication();
 
     } else {
         currentUser = null;
         userProfile = {};
         ordersListenerAttached = false;
+        selectedVehicleType = null;
         renderOrders(null);
+        renderDriverStatus(null);
+        closeDriverModal();
         document.getElementById('avatar-btn').style.display = 'none';
         document.getElementById('signin-gate').classList.add('visible');
     }
@@ -902,6 +1083,118 @@ window.closeProfile = function() {
     document.getElementById('profile-overlay').classList.remove('open');
     document.getElementById('profile-drawer').classList.remove('open');
 };
+
+/* ══════════════════════════════════════════
+   DRIVE WITH COURIERGO
+══════════════════════════════════════════ */
+let selectedVehicleType = null;
+
+window.openDriverModal = function() {
+    if (!currentUser) { showToast('error', 'Not signed in', 'Please sign in first.'); return; }
+    document.getElementById('dm-name').value  = userProfile.name  || '';
+    document.getElementById('dm-phone').value = userProfile.phone || '';
+    document.getElementById('driver-modal-overlay').classList.add('open');
+};
+window.closeDriverModal = function() {
+    document.getElementById('driver-modal-overlay').classList.remove('open');
+};
+window.closeDriverModalOnOverlay = function(e) {
+    if (e.target.id === 'driver-modal-overlay') closeDriverModal();
+};
+
+window.selectVehicleType = function(type) {
+    selectedVehicleType = type;
+    document.getElementById('vt-bakkie').classList.toggle('active', type === 'Bakkie');
+    document.getElementById('vt-motorbike').classList.toggle('active', type === 'Motorbike');
+};
+
+window.submitDriverApplication = async function() {
+    if (!currentUser) { showToast('error', 'Not signed in', 'Please sign in first.'); return; }
+
+    const name     = document.getElementById('dm-name').value.trim();
+    const phone    = document.getElementById('dm-phone').value.trim();
+    const idNumber = document.getElementById('dm-id').value.trim();
+    const license  = document.getElementById('dm-license').value.trim();
+    const vehicle  = document.getElementById('dm-vehicle-model').value.trim();
+    const plate    = document.getElementById('dm-plate').value.trim();
+    const city     = document.getElementById('dm-city').value.trim();
+
+    if (!selectedVehicleType) { showToast('error', 'Select a vehicle type', 'Choose Bakkie or Motorbike.'); return; }
+    if (!name || !phone || !idNumber || !license || !vehicle || !plate || !city) {
+        showToast('error', 'Missing details', 'Please fill in every field.');
+        return;
+    }
+
+    const btn = document.getElementById('dm-submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    try {
+        const application = {
+            uid:           currentUser.uid,
+            name, phone, idNumber, license,
+            vehicleType:   selectedVehicleType,
+            vehicleModel:  vehicle,
+            licensePlate:  plate,
+            city,
+            email:         userProfile.email || currentUser.email || '',
+            status:        'pending',
+            timestamp:     Date.now()
+        };
+        await set(ref(database, `driverApplications/${currentUser.uid}`), application);
+
+        showToast('success', 'Application submitted', "We'll be in touch on your provided number soon.");
+        closeDriverModal();
+        renderDriverStatus(application);
+
+    } catch(e) {
+        console.error(e);
+        showToast('error', 'Submission failed', e.message || 'Something went wrong.');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Submit application';
+    }
+};
+
+const DRIVER_STATUS_META = {
+    pending:  { icon: 'fa-clock',        title: 'Application pending',         sub: () => "We're reviewing your details." },
+    approved: { icon: 'fa-circle-check', title: 'You\'re an approved driver',  sub: (a) => `${a.vehicleType} · ${a.licensePlate}` },
+    rejected: { icon: 'fa-circle-xmark', title: 'Application not approved',    sub: () => 'Contact support for details.' }
+};
+
+function renderDriverStatus(app) {
+    const cta    = document.getElementById('driver-cta-default');
+    const status = document.getElementById('driver-status-card');
+    if (!cta || !status) return;
+
+    if (!app) {
+        cta.style.display = 'flex';
+        status.style.display = 'none';
+        return;
+    }
+
+    cta.style.display = 'none';
+    status.style.display = 'flex';
+    status.className = `driver-status-card ${app.status || 'pending'}`;
+
+    const meta = DRIVER_STATUS_META[app.status] || DRIVER_STATUS_META.pending;
+    status.innerHTML = `
+        <div class="driver-status-icon"><i class="fa-solid ${meta.icon}"></i></div>
+        <div class="driver-status-text">
+            <div class="driver-status-title">${meta.title}</div>
+            <div class="driver-status-sub">${meta.sub(app)}</div>
+        </div>`;
+}
+
+async function loadDriverApplication() {
+    if (!currentUser) return;
+    try {
+        const snap = await get(ref(database, `driverApplications/${currentUser.uid}`));
+        renderDriverStatus(snap.exists() ? snap.val() : null);
+    } catch(e) {
+        renderDriverStatus(null);
+    }
+}
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 let map, userMarker, pickupMarker, dropoffMarker;
