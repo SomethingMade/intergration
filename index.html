@@ -24,11 +24,12 @@
         /* ── Splash ── */
         #splash {
             position: fixed; inset: 0; z-index: 300;
-            background: #0a0a0a;
+            background: #ffffff;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: opacity 0.55s ease;
         }
         #splash.hide { opacity: 0; pointer-events: none; }
+        #splash-logo { width: 96px; height: 96px; border-radius: 22px; margin-bottom: 18px; object-fit: contain; }
 
         /* ── Sign-in Gate ── */
         #signin-gate {
@@ -455,9 +456,10 @@
 <div id="toast-container"></div>
 
 <div id="splash">
-    <i class="fa-solid fa-truck-fast" style="color:#fff;font-size:64px;margin-bottom:18px;"></i>
-    <h1 style="color:#fff;font-size:28px;font-weight:900;letter-spacing:-0.6px;">CourierGo</h1>
-    <p style="color:#52525b;font-size:13px;margin-top:6px;">Fast. Reliable. Tracked.</p>
+    <!-- Replace the src below with your logo image (PNG/SVG) -->
+    <img id="splash-logo" src="https://ibb.co/r20D1g3H" alt="CourierGo logo">
+    <h1 style="color:#18181b;font-size:28px;font-weight:900;letter-spacing:-0.6px;">CourierGo</h1>
+    <p style="color:#71717a;font-size:13px;margin-top:6px;">Fast. Reliable. Tracked.</p>
 </div>
 
 <div id="signin-gate">
