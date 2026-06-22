@@ -219,6 +219,36 @@
         }
         #driver-modal-overlay.open #driver-modal { transform: translateY(0); }
 
+        /* ── Yoco Payment Bottom Sheet ── */
+        #yoco-modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+            z-index: 250; /* Above the driver modal */
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.25s; backdrop-filter: blur(3px);
+            display: flex; align-items: flex-end; justify-content: center;
+        }
+        #yoco-modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+        #yoco-modal {
+            width: 100%; max-width: 420px; max-height: 88vh;
+            background: #fff; border-radius: 24px 24px 0 0;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.32,0,0.67,0);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        #yoco-modal-overlay.open #yoco-modal { transform: translateY(0); }
+
+        #yoco-card-frame {
+            min-height: 140px; margin-bottom: 24px;
+            background: #fff; border: 2px solid #e4e4e7;
+            border-radius: 12px; padding: 14px;
+            transition: border-color 0.15s;
+        }
+        #yoco-card-frame:focus-within { border-color: #18181b; }
+
+
         /* ════════════════════════════════════════
            DESKTOP LAYOUT (≥ 768px)
         ════════════════════════════════════════ */
@@ -886,6 +916,22 @@
         <div class="dm-footer">
             <button class="dm-submit" id="dm-submit-btn-mobile" onclick="submitDriverApplication('mobile')">Submit application</button>
             <div class="dm-legal">We'll review your details and contact you on the number provided.</div>
+        </div>
+    </div>
+</div>
+
+<div id="yoco-modal-overlay" onclick="if(event.target.id==='yoco-modal-overlay') document.getElementById('yoco-close-btn').click();">
+    <div id="yoco-modal" onclick="event.stopPropagation()">
+        <div class="dm-header">
+            <div>
+                <div class="dm-title">Complete Payment</div>
+                <div class="dm-sub">Enter your card details securely via Yoco.</div>
+            </div>
+            <button class="dm-close" id="yoco-close-btn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="dm-body">
+            <div id="yoco-card-frame"></div>
+            <button id="yoco-pay-btn" class="dm-submit">Pay</button>
         </div>
     </div>
 </div>
@@ -1753,27 +1799,73 @@ window.toggleSheet = ()=>{ sheetCollapsed=!sheetCollapsed; document.getElementBy
 window.switchTab = tab=>{ const s=tab==='send'; document.getElementById('view-send').style.display=s?'block':'none'; document.getElementById('view-track').style.display=s?'none':'block'; document.getElementById('tab-send').classList.toggle('active',s); document.getElementById('tab-track').classList.toggle('active',!s); };
 window.sbSwitchTab = tab=>{ const s=tab==='send'; document.getElementById('sb-view-send').style.display=s?'block':'none'; document.getElementById('sb-view-track').style.display=s?'none':'block'; document.getElementById('sb-tab-send').classList.toggle('active',s); document.getElementById('sb-tab-track').classList.toggle('active',!s); };
 
-/* ─── Yoco SDK ─── */
-let yocoSDK=null;
+/* ─── Yoco Inline SDK logic ─── */
+let yocoInlineInstance = null;
+
 function getYocoSDK() {
     if(!YOCO_PUBLIC_KEY) { showToast('error','Yoco not configured','Payment key not loaded yet. Please try again.'); return null; }
-    if(yocoSDK&&yocoSDK._publicKey===YOCO_PUBLIC_KEY) return yocoSDK;
     if(typeof window.YocoSDK==='undefined') { showToast('error','Yoco not loaded','Please check your connection and refresh.'); return null; }
-    yocoSDK=new window.YocoSDK({publicKey:YOCO_PUBLIC_KEY}); yocoSDK._publicKey=YOCO_PUBLIC_KEY; return yocoSDK;
+    return new window.YocoSDK({ publicKey: YOCO_PUBLIC_KEY });
 }
-async function processYocoPayment(amountRands) {
-    return new Promise((resolve,reject)=>{
-        const sdk=getYocoSDK(); if(!sdk){reject(new Error('Yoco SDK not loaded.')); return;}
-        sdk.showPopup({
-            amountInCents:amountRands*100, currency:'ZAR', name:'CourierGo',
-            description:`${selectedPkg?selectedPkg.name:'Delivery'}`,
-            callback:function(result){
-                if(result.error){
-                    if(result.error.message&&result.error.message.toLowerCase().includes('cancel')) reject({cancelled:true});
-                    else reject(new Error(result.error.message||'Yoco payment failed'));
-                } else resolve({token:result.id,testMode:YOCO_PUBLIC_KEY.startsWith('pk_test_')});
-            }
+
+function openYocoPaymentSheet(amountRands) {
+    return new Promise((resolve, reject) => {
+        const sdk = getYocoSDK();
+        if (!sdk) { reject(new Error('Yoco SDK not loaded.')); return; }
+
+        const overlay = document.getElementById('yoco-modal-overlay');
+        overlay.classList.add('open');
+        
+        const amountCents = Math.round(amountRands * 100);
+        document.getElementById('yoco-pay-btn').textContent = 'Pay R' + amountRands.toFixed(2);
+
+        // Clear out any previously generated frame contents
+        const frame = document.getElementById('yoco-card-frame');
+        frame.innerHTML = ''; 
+
+        // Generate inline frame
+        yocoInlineInstance = sdk.inline({
+            layout: 'field',
+            amountInCents: amountCents,
+            currency: 'ZAR'
         });
+        yocoInlineInstance.mount('#yoco-card-frame');
+
+        const payBtn = document.getElementById('yoco-pay-btn');
+        const closeBtn = document.getElementById('yoco-close-btn');
+
+        // Cleanup function for listeners
+        const cleanup = () => {
+            overlay.classList.remove('open');
+            payBtn.onclick = null;
+            closeBtn.onclick = null;
+        };
+
+        closeBtn.onclick = () => {
+            cleanup();
+            reject({ cancelled: true });
+        };
+
+        payBtn.onclick = () => {
+            payBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
+            payBtn.disabled = true;
+
+            sdk.createToken(yocoInlineInstance).then((result) => {
+                payBtn.textContent = 'Pay R' + amountRands.toFixed(2);
+                payBtn.disabled = false;
+
+                if (result.error) {
+                    showToast('error', 'Payment error', result.error.message);
+                } else {
+                    cleanup();
+                    resolve({ token: result.id, testMode: YOCO_PUBLIC_KEY.startsWith('pk_test_') });
+                }
+            }).catch((err) => {
+                payBtn.textContent = 'Pay R' + amountRands.toFixed(2);
+                payBtn.disabled = false;
+                showToast('error', 'Payment failed', err.message);
+            });
+        };
     });
 }
 
@@ -1821,34 +1913,30 @@ async function doBookOrder(paymentMeta) {
 window.confirmBooking = async function() {
     if(!selectedPkg||!selectedCoords.pickup||!selectedCoords.dropoff) return;
     if(!currentUser) { showToast('error','Not signed in','Please sign in first.'); return; }
-    const ctx=isDesktop()?'sb':'mobile';
+    
+    const ctx = isDesktop() ? 'sb' : 'mobile';
     const btn   = document.getElementById(ctx==='sb'?'submitBtn-sb':'submitBtn');
     const label = document.getElementById(ctx==='sb'?'submitLabel-sb':'submitLabel');
-    if(selectedPayment[ctx]==='yoco') {
-    const total=Math.round(selectedPkg.base+routeDistKm*3.5);
-    const topBar = document.getElementById('top-bar');
-    
-    // Hide top bar on mobile before Yoco popup
-    if (topBar && ctx === 'mobile') topBar.style.display = 'none';
+    const total = Math.round(selectedPkg.base + routeDistKm * 3.5);
 
-    const restoreTopBar = () => {
-        if (topBar && ctx === 'mobile') topBar.style.display = '';
-    };
-
-    try {
-        const payResult = await processYocoPayment(total);
-        label.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
-        btn.disabled = true;
-        showToast('success', 'Card authorised', 'Completing your booking…');
-        await doBookOrder({ method: 'yoco', token: payResult.token, testMode: payResult.testMode });
-    } catch(err) {
-        if (err && err.cancelled) { restoreTopBar(); return; }
-        showToast('error', 'Payment failed', err.message || 'Could not complete Yoco payment.');
-    } finally {
-        restoreTopBar();
+    if(selectedPayment[ctx] === 'yoco') {
+        try {
+            const payResult = await openYocoPaymentSheet(total);
+            
+            // At this point, the token was successfully generated from the bottom sheet
+            label.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
+            btn.disabled = true;
+            showToast('success', 'Card authorised', 'Completing your booking…');
+            
+            await doBookOrder({ method: 'yoco', token: payResult.token, testMode: payResult.testMode });
+        } catch(err) {
+            // User hit close button or failed repeatedly
+            if (err && err.cancelled) return;
+            showToast('error', 'Payment failed', err.message || 'Could not complete Yoco payment.');
+        }
+        return;
     }
-    return;
-}
+    
     label.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
     btn.disabled=true;
     await doBookOrder({method:'cash',testMode:false});
