@@ -1817,13 +1817,15 @@ function openYocoPaymentSheet(amountRands) {
         overlay.classList.add('open');
         
         const amountCents = Math.round(amountRands * 100);
-        document.getElementById('yoco-pay-btn').textContent = 'Pay R' + amountRands.toFixed(2);
+        const payBtn  = document.getElementById('yoco-pay-btn');
+        const closeBtn = document.getElementById('yoco-close-btn');
+        payBtn.textContent = 'Pay R' + amountRands.toFixed(2);
+        payBtn.disabled = false;
 
-        // Clear out any previously generated frame contents
+        // Clear any previous frame
         const frame = document.getElementById('yoco-card-frame');
-        frame.innerHTML = ''; 
+        frame.innerHTML = '';
 
-        // Generate inline frame
         yocoInlineInstance = sdk.inline({
             layout: 'field',
             amountInCents: amountCents,
@@ -1831,13 +1833,9 @@ function openYocoPaymentSheet(amountRands) {
         });
         yocoInlineInstance.mount('#yoco-card-frame');
 
-        const payBtn = document.getElementById('yoco-pay-btn');
-        const closeBtn = document.getElementById('yoco-close-btn');
-
-        // Cleanup function for listeners
         const cleanup = () => {
             overlay.classList.remove('open');
-            payBtn.onclick = null;
+            payBtn.onclick  = null;
             closeBtn.onclick = null;
         };
 
@@ -1848,13 +1846,13 @@ function openYocoPaymentSheet(amountRands) {
 
         payBtn.onclick = () => {
             payBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
-            payBtn.disabled = true;
+            payBtn.disabled  = true;
 
-            sdk.createToken(yocoInlineInstance).then((result) => {
-                payBtn.textContent = 'Pay R' + amountRands.toFixed(2);
-                payBtn.disabled = false;
-
+            // ✅ FIXED: call createToken on the INSTANCE, not sdk.createToken()
+            yocoInlineInstance.createToken().then((result) => {
                 if (result.error) {
+                    payBtn.textContent = 'Pay R' + amountRands.toFixed(2);
+                    payBtn.disabled = false;
                     showToast('error', 'Payment error', result.error.message);
                 } else {
                     cleanup();
@@ -1863,7 +1861,7 @@ function openYocoPaymentSheet(amountRands) {
             }).catch((err) => {
                 payBtn.textContent = 'Pay R' + amountRands.toFixed(2);
                 payBtn.disabled = false;
-                showToast('error', 'Payment failed', err.message);
+                showToast('error', 'Payment failed', err.message || 'Card tokenisation failed.');
             });
         };
     });
