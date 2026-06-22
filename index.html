@@ -10,6 +10,9 @@
 
     <script async src="https://pay.google.com/gp/p/js/pay.js" onload="window.dispatchEvent(new Event('gpayready'))"></script>
 
+    <!-- Yoco SDK -->
+    <script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
@@ -40,7 +43,6 @@
         }
         #signin-gate.visible { display: flex; }
 
-        /* Logo area */
         .signin-logo-wrap {
             width: 88px; height: 88px; border-radius: 22px;
             background: #18181b;
@@ -66,7 +68,6 @@
         .google-btn img { width: 20px; height: 20px; filter: brightness(0) invert(1); }
         .signin-legal { font-size: 11px; color: #a1a1aa; margin-top: 20px; text-align: center; line-height: 1.6; }
 
-        /* ── Sign-in trust strip ── */
         .signin-trust { display: flex; gap: 32px; margin-top: 36px; }
         .trust-item { display: flex; flex-direction: column; align-items: center; gap: 7px; }
         .trust-item i { font-size: 16px; color: #18181b; }
@@ -119,7 +120,6 @@
             padding: 52px 16px 0;
         }
 
-        /* Avatar button top-right */
         #avatar-btn {
             position: fixed; top: 54px; right: calc(50% - 194px);
             z-index: 70; width: 40px; height: 40px;
@@ -132,7 +132,6 @@
         #avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
         #avatar-btn .av-init { color: #fff; font-size: 13px; font-weight: 800; }
 
-        /* Search card */
         .search-card {
             background: rgba(255,255,255,0.97); backdrop-filter: blur(20px);
             border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.18);
@@ -185,7 +184,6 @@
         .sheet-handle-wrap { padding: 12px 0 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .sheet-handle { width: 36px; height: 4px; border-radius: 4px; background: #d4d4d8; }
 
-        /* Tabs */
         .tabs { background: #f4f4f5; padding: 3px; border-radius: 12px; display: flex; gap: 2px; margin-bottom: 16px; }
         .tab-btn {
             flex: 1; padding: 8px; font-size: 11.5px; font-weight: 700; border: none;
@@ -194,7 +192,6 @@
         }
         .tab-btn.active { background: #fff; color: #18181b; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
 
-        /* Route Bar */
         #route-bar {
             display: none; background: #f4f4f5; border-radius: 12px;
             padding: 10px 14px; margin-bottom: 12px;
@@ -206,7 +203,6 @@
         .route-stat-lbl { font-size: 10px; color: #71717a; font-weight: 500; margin-top: 1px; }
         .route-divider  { width: 1px; height: 28px; background: #d4d4d8; }
 
-        /* Package Cards */
         .pkg-scroll { display: flex; gap: 10px; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; margin: 0 -20px; padding: 2px 20px 12px; }
         .pkg-scroll::-webkit-scrollbar { display: none; }
         .pkg-card {
@@ -234,7 +230,6 @@
         .pkg-price-label { font-size: 9.5px; color: #a1a1aa; }
         .pkg-price-val   { font-size: 13px; font-weight: 800; color: #18181b; }
 
-        /* Submit */
         #submitBtn {
             width: 100%; padding: 15px; border-radius: 14px; border: none;
             font-size: 13.5px; font-weight: 700; cursor: not-allowed;
@@ -248,12 +243,9 @@
         }
         #submitBtn.ready:active { transform: scale(0.98); }
 
-        /* Tracking Empty */
         .track-empty { text-align: center; padding: 28px 0 8px; color: #a1a1aa; font-size: 13px; }
 
-        /* ══════════════════════════════════════════
-           PROFILE DRAWER
-        ══════════════════════════════════════════ */
+        /* ══ PROFILE DRAWER ══ */
         #profile-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.5);
             z-index: 150; opacity: 0; pointer-events: none;
@@ -309,7 +301,6 @@
         }
         .drawer-section-title:first-child { margin-top: 0; }
 
-        /* Phone field */
         .phone-field-wrap { position: relative; }
         .phone-field {
             width: 100%; padding: 13px 16px 13px 44px;
@@ -334,7 +325,6 @@
         .phone-save-btn:active { opacity: 0.8; }
         .phone-hint { font-size: 11px; color: #a1a1aa; margin-top: 8px; line-height: 1.5; }
 
-        /* Info rows */
         .info-row {
             display: flex; align-items: center; gap: 12px;
             padding: 12px 0; border-bottom: 1px solid #f4f4f5;
@@ -344,7 +334,6 @@
         .info-row-text .ir-label { font-size: 10.5px; color: #a1a1aa; font-weight: 500; }
         .info-row-text .ir-value { font-size: 13px; font-weight: 600; color: #18181b; margin-top: 1px; }
 
-        /* Logout */
         .logout-btn {
             width: 100%; margin-top: 24px; padding: 13px;
             background: #fef2f2; color: #dc2626;
@@ -355,9 +344,6 @@
         }
         .logout-btn:hover { background: #fee2e2; }
 
-        /* ══════════════════════════════════════════
-           DRIVE WITH COURIERGO (drawer CTA + status)
-        ══════════════════════════════════════════ */
         .driver-cta {
             display: flex; align-items: center; gap: 12px;
             padding: 14px; border: 1.5px solid #e4e4e7; border-radius: 14px;
@@ -391,9 +377,7 @@
         .driver-status-card.approved .driver-status-icon { background: #f0fdf4; color: #15803d; }
         .driver-status-card.rejected .driver-status-icon { background: #fef2f2; color: #b91c1c; }
 
-        /* ══════════════════════════════════════════
-           DRIVER APPLICATION MODAL
-        ══════════════════════════════════════════ */
+        /* ══ DRIVER APPLICATION MODAL ══ */
         #driver-modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.55);
             z-index: 200; opacity: 0; pointer-events: none;
@@ -488,7 +472,6 @@
         .toast-title { font-size: 12.5px; font-weight: 700; }
         .toast-msg   { font-size: 11.5px; opacity: 0.8; margin-top: 2px; }
 
-        /* phone missing warning on booking */
         .phone-warn {
             display: flex; align-items: center; gap: 8px;
             background: #fffbeb; border: 1.5px solid #fde68a;
@@ -496,9 +479,7 @@
             margin-bottom: 10px; font-size: 11.5px; font-weight: 600; color: #92400e;
         }
 
-        /* ══════════════════════════════════════════
-           ACTIVITY / ORDER TRACKING
-        ══════════════════════════════════════════ */
+        /* ══ ACTIVITY / ORDER TRACKING ══ */
         .track-list {
             display: flex; flex-direction: column; gap: 12px;
             max-height: 46vh; overflow-y: auto; padding: 2px 1px 4px;
@@ -541,16 +522,33 @@
         .order-price { font-weight: 800; color: #18181b; font-size: 12px; }
 
         /* ── Payment method ── */
-        .pay-method-row { display: flex; gap: 8px; margin-bottom: 12px; }
-        .pay-pill {
-            flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
-            padding: 11px; border: 2px solid #e4e4e7; border-radius: 12px;
-            background: #fff; font-size: 11.5px; font-weight: 700; color: #52525b;
-            cursor: pointer; transition: border-color 0.15s, background 0.15s, color 0.15s;
-            font-family: 'Inter', sans-serif;
+        .pay-method-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
         }
-        .pay-pill i { font-size: 13px; }
+        .pay-pill {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+            padding: 10px 6px; border: 2px solid #e4e4e7; border-radius: 12px;
+            background: #fff; font-size: 10.5px; font-weight: 700; color: #52525b;
+            cursor: pointer; transition: border-color 0.15s, background 0.15s, color 0.15s;
+            font-family: 'Inter', sans-serif; text-align: center;
+        }
+        .pay-pill i { font-size: 15px; }
         .pay-pill.active { border-color: #18181b; background: #fafafa; color: #18181b; }
+        .pay-pill.hidden { display: none; }
+
+        /* Yoco */
+        .yoco-test-note {
+            display: flex; align-items: center; gap: 7px;
+            font-size: 10.5px; color: #a1a1aa; font-weight: 500;
+            margin: -2px 0 10px; padding-left: 1px;
+        }
+        .yoco-test-note .test-tag {
+            font-size: 8.5px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase;
+            background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 5px;
+        }
 
         #gpay-button-container {
             margin-bottom: 8px;
@@ -684,17 +682,37 @@
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
             <h2 style="font-size:14px;font-weight:700;color:#18181b;">Payment method</h2>
         </div>
+
+        <!-- 3-column payment pills -->
         <div class="pay-method-row">
             <button class="pay-pill active" id="pay-pill-cash" onclick="selectPaymentMethod('cash')">
-                <i class="fa-solid fa-money-bill-wave"></i> Cash on delivery
+                <i class="fa-solid fa-money-bill-wave"></i>
+                Cash
             </button>
-            <button class="pay-pill" id="pay-pill-gpay" onclick="selectPaymentMethod('google_pay')" style="display:none;">
-                <i class="fa-brands fa-google-pay"></i> Google Pay
+            <button class="pay-pill hidden" id="pay-pill-gpay" onclick="selectPaymentMethod('google_pay')">
+                <i class="fa-brands fa-google-pay"></i>
+                Google Pay
+            </button>
+            <button class="pay-pill" id="pay-pill-yoco" onclick="selectPaymentMethod('yoco')">
+                <!-- Yoco logo as inline SVG -->
+                <svg width="36" height="14" viewBox="0 0 120 46" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:1px;">
+                    <path d="M0 0h120v46H0z" fill="none"/>
+                    <text x="4" y="36" font-family="Arial Black,Arial" font-weight="900" font-size="40" fill="currentColor">Yoco</text>
+                </svg>
+                Card
             </button>
         </div>
+
+        <!-- Yoco test note -->
+        <div class="yoco-test-note" id="yoco-test-note" style="display:none;">
+            <span class="test-tag">Test mode</span> Sandbox payment — no real charge will be made.
+        </div>
+
+        <!-- Google Pay test note -->
         <div class="gpay-test-note" id="gpay-test-note" style="display:none;">
             <span class="test-tag">Test mode</span> Sandbox payment — no real charge will be made.
         </div>
+
         <div id="gpay-button-container" style="display:none;"></div>
 
         <button id="submitBtn" onclick="confirmBooking()">
@@ -843,9 +861,19 @@ import {
 import {
     getDatabase, ref, push, set, get, update, onValue, query, orderByChild, equalTo
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+import {
+    getRemoteConfig,
+    fetchAndActivate,
+    getValue
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-remote-config.js";
 
-const MAPBOX_TOKEN   = "pk.eyJ1Ijoia2F0bGVnb3BoYXNoYSIsImEiOiJjbTlpOTdzbmYwMGNsMmpzYWJtZzN4d3pqIn0.Zt-aSMEoahrV3zkiVVHbOw";
-const SHIPDAY_KEY    = "K5a8wQJF3f.az2zfrhgzwxK9JONI2y8";
+const MAPBOX_TOKEN = "pk.eyJ1Ijoia2F0bGVnb3BoYXNoYSIsImEiOiJjbTlpOTdzbmYwMGNsMmpzYWJtZzN4d3pqIn0.Zt-aSMEoahrV3zkiVVHbOw";
+const SHIPDAY_KEY  = "K5a8wQJF3f.az2zfrhgzwxK9JONI2y8";
+
+// Yoco public key — fetched from Firebase Remote Config at runtime.
+// Set the parameter "yoco_public_key" in your Firebase console under
+// Remote Config, with your pk_test_... or pk_live_... value.
+let YOCO_PUBLIC_KEY = null;
 
 const firebaseConfig = {
     apiKey:            "AIzaSyBQSPwpVbGrdCuOoyitAeWQHIeipj2MgIY",
@@ -862,8 +890,38 @@ const auth     = getAuth(fbApp);
 const database = getDatabase(fbApp);
 const provider = new GoogleAuthProvider();
 
-let currentUser   = null;
-let userProfile   = {};
+// ── Remote Config ─────────────────────────────────────────────────────────────
+const remoteConfig = getRemoteConfig(fbApp);
+
+// Cache for 1 hour in production; set to 0 during development for instant updates
+remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
+
+// Fallback value in case Remote Config is unreachable (e.g. offline)
+remoteConfig.defaultConfig = {
+    yoco_public_key: ""
+};
+
+async function initRemoteConfig() {
+    try {
+        await fetchAndActivate(remoteConfig);
+        const key = getValue(remoteConfig, "yoco_public_key").asString();
+        if (key) {
+            YOCO_PUBLIC_KEY = key;
+            console.log("Yoco public key loaded from Remote Config.");
+        } else {
+            console.warn("yoco_public_key not set in Remote Config. Yoco payments disabled.");
+        }
+    } catch (e) {
+        console.warn("Remote Config fetch failed:", e.message);
+    }
+}
+
+// Kick off Remote Config fetch immediately — parallel to auth init
+initRemoteConfig();
+// ─────────────────────────────────────────────────────────────────────────────
+
+let currentUser = null;
+let userProfile = {};
 
 function showToast(type, title, msg, duration = 4200) {
     const icons = { success:'fa-circle-check', error:'fa-circle-xmark', info:'fa-circle-info' };
@@ -898,12 +956,7 @@ async function loadUserProfile(user) {
     if (snap.exists()) {
         userProfile = snap.val();
     } else {
-        userProfile = {
-            name:     user.displayName || '',
-            email:    user.email || '',
-            phone:    '',
-            photoURL: user.photoURL || ''
-        };
+        userProfile = { name: user.displayName || '', email: user.email || '', phone: '', photoURL: user.photoURL || '' };
         await set(ref(database, `users/${user.uid}`), userProfile);
     }
     userProfile.name     = user.displayName || userProfile.name;
@@ -924,11 +977,9 @@ window.savePhone = async function() {
 
 onAuthStateChanged(auth, async (user) => {
     hideSplash();
-
     if (user) {
         currentUser = user;
         await loadUserProfile(user);
-
         document.getElementById('signin-gate').classList.remove('visible');
         document.getElementById('avatar-btn').style.display = 'flex';
         renderAvatarBtn();
@@ -937,7 +988,6 @@ onAuthStateChanged(auth, async (user) => {
         initMap();
         attachOrdersListener();
         loadDriverApplication();
-
     } else {
         currentUser = null;
         userProfile = {};
@@ -953,10 +1003,7 @@ onAuthStateChanged(auth, async (user) => {
 
 function hideSplash() {
     const s = document.getElementById('splash');
-    if (s) {
-        s.classList.add('hide');
-        setTimeout(() => s.remove(), 650);
-    }
+    if (s) { s.classList.add('hide'); setTimeout(() => s.remove(), 650); }
 }
 
 function initials(name) {
@@ -976,15 +1023,12 @@ function renderAvatarBtn() {
 
 function renderProfileUI() {
     const wrap = document.getElementById('drawer-avatar-wrap');
-    const ini  = document.getElementById('drawer-avatar-init');
     if (userProfile.photoURL) {
         wrap.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
     } else {
-        ini.textContent = initials(userProfile.name);
+        document.getElementById('drawer-avatar-init').textContent = initials(userProfile.name);
     }
-
     if (userMarker) refreshMapMarker();
-
     document.getElementById('drawer-name').textContent  = userProfile.name  || '—';
     document.getElementById('drawer-email').textContent = userProfile.email || '—';
     document.getElementById('info-name').textContent    = userProfile.name  || '—';
@@ -994,8 +1038,7 @@ function renderProfileUI() {
 }
 
 function checkPhoneWarning() {
-    const warn = document.getElementById('phone-warn');
-    warn.style.display = (!userProfile.phone) ? 'flex' : 'none';
+    document.getElementById('phone-warn').style.display = (!userProfile.phone) ? 'flex' : 'none';
 }
 
 let ordersListenerAttached = false;
@@ -1018,7 +1061,6 @@ const STATUS_META = {
 const STATUS_STEPS = ['Placed', 'Assigned', 'Picked up', 'Delivered'];
 
 function shortAddr(addr) { return (addr || '').split(',')[0]; }
-
 function formatOrderDate(ts) {
     const d = new Date(ts);
     return d.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' }) +
@@ -1032,7 +1074,6 @@ function orderCardHTML(o) {
         `<div class="step ${i <= meta.step ? 'done' : ''}"><span class="step-dot"></span><span class="step-label">${s}</span></div>`
     ).join('');
     const pkgName = (o.orderItem && o.orderItem[0] && o.orderItem[0].name) || 'Package';
-
     return `
         <div class="order-card">
             <div class="order-card-top">
@@ -1063,7 +1104,6 @@ function renderOrders(ordersObj) {
     const orders  = ordersObj
         ? Object.values(ordersObj).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
         : [];
-
     if (!orders.length) {
         listEl.innerHTML = '';
         listEl.style.display  = 'none';
@@ -1084,9 +1124,7 @@ window.closeProfile = function() {
     document.getElementById('profile-drawer').classList.remove('open');
 };
 
-/* ══════════════════════════════════════════
-   DRIVE WITH COURIERGO
-══════════════════════════════════════════ */
+/* ══ DRIVER APPLICATION ══ */
 let selectedVehicleType = null;
 
 window.openDriverModal = function() {
@@ -1110,73 +1148,51 @@ window.selectVehicleType = function(type) {
 
 window.submitDriverApplication = async function() {
     if (!currentUser) { showToast('error', 'Not signed in', 'Please sign in first.'); return; }
-
-    const name     = document.getElementById('dm-name').value.trim();
-    const phone    = document.getElementById('dm-phone').value.trim();
+    const name = document.getElementById('dm-name').value.trim();
+    const phone = document.getElementById('dm-phone').value.trim();
     const idNumber = document.getElementById('dm-id').value.trim();
-    const license  = document.getElementById('dm-license').value.trim();
-    const vehicle  = document.getElementById('dm-vehicle-model').value.trim();
-    const plate    = document.getElementById('dm-plate').value.trim();
-    const city     = document.getElementById('dm-city').value.trim();
-
+    const license = document.getElementById('dm-license').value.trim();
+    const vehicle = document.getElementById('dm-vehicle-model').value.trim();
+    const plate = document.getElementById('dm-plate').value.trim();
+    const city = document.getElementById('dm-city').value.trim();
     if (!selectedVehicleType) { showToast('error', 'Select a vehicle type', 'Choose Bakkie or Motorbike.'); return; }
     if (!name || !phone || !idNumber || !license || !vehicle || !plate || !city) {
-        showToast('error', 'Missing details', 'Please fill in every field.');
-        return;
+        showToast('error', 'Missing details', 'Please fill in every field.'); return;
     }
-
     const btn = document.getElementById('dm-submit-btn');
-    btn.disabled = true;
-    btn.textContent = 'Submitting…';
-
+    btn.disabled = true; btn.textContent = 'Submitting…';
     try {
         const application = {
-            uid:           currentUser.uid,
-            name, phone, idNumber, license,
-            vehicleType:   selectedVehicleType,
-            vehicleModel:  vehicle,
-            licensePlate:  plate,
-            city,
-            email:         userProfile.email || currentUser.email || '',
-            status:        'pending',
-            timestamp:     Date.now()
+            uid: currentUser.uid, name, phone, idNumber, license,
+            vehicleType: selectedVehicleType, vehicleModel: vehicle,
+            licensePlate: plate, city, email: userProfile.email || currentUser.email || '',
+            status: 'pending', timestamp: Date.now()
         };
         await set(ref(database, `driverApplications/${currentUser.uid}`), application);
-
         showToast('success', 'Application submitted', "We'll be in touch on your provided number soon.");
         closeDriverModal();
         renderDriverStatus(application);
-
     } catch(e) {
         console.error(e);
         showToast('error', 'Submission failed', e.message || 'Something went wrong.');
     } finally {
-        btn.disabled = false;
-        btn.textContent = 'Submit application';
+        btn.disabled = false; btn.textContent = 'Submit application';
     }
 };
 
 const DRIVER_STATUS_META = {
-    pending:  { icon: 'fa-clock',        title: 'Application pending',         sub: () => "We're reviewing your details." },
-    approved: { icon: 'fa-circle-check', title: 'You\'re an approved driver',  sub: (a) => `${a.vehicleType} · ${a.licensePlate}` },
-    rejected: { icon: 'fa-circle-xmark', title: 'Application not approved',    sub: () => 'Contact support for details.' }
+    pending:  { icon: 'fa-clock',        title: 'Application pending',        sub: () => "We're reviewing your details." },
+    approved: { icon: 'fa-circle-check', title: "You're an approved driver",  sub: (a) => `${a.vehicleType} · ${a.licensePlate}` },
+    rejected: { icon: 'fa-circle-xmark', title: 'Application not approved',   sub: () => 'Contact support for details.' }
 };
 
 function renderDriverStatus(app) {
     const cta    = document.getElementById('driver-cta-default');
     const status = document.getElementById('driver-status-card');
     if (!cta || !status) return;
-
-    if (!app) {
-        cta.style.display = 'flex';
-        status.style.display = 'none';
-        return;
-    }
-
-    cta.style.display = 'none';
-    status.style.display = 'flex';
+    if (!app) { cta.style.display = 'flex'; status.style.display = 'none'; return; }
+    cta.style.display = 'none'; status.style.display = 'flex';
     status.className = `driver-status-card ${app.status || 'pending'}`;
-
     const meta = DRIVER_STATUS_META[app.status] || DRIVER_STATUS_META.pending;
     status.innerHTML = `
         <div class="driver-status-icon"><i class="fa-solid ${meta.icon}"></i></div>
@@ -1191,11 +1207,10 @@ async function loadDriverApplication() {
     try {
         const snap = await get(ref(database, `driverApplications/${currentUser.uid}`));
         renderDriverStatus(snap.exists() ? snap.val() : null);
-    } catch(e) {
-        renderDriverStatus(null);
-    }
+    } catch(e) { renderDriverStatus(null); }
 }
 
+/* ══ MAP ══ */
 mapboxgl.accessToken = MAPBOX_TOKEN;
 let map, userMarker, pickupMarker, dropoffMarker;
 let mapInitialised = false;
@@ -1203,16 +1218,11 @@ let mapInitialised = false;
 function initMap() {
     if (mapInitialised) return;
     mapInitialised = true;
-
     map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/light-v11',
-        center: [28.0473, -26.2041],
-        zoom: 12,
-        attributionControl: false
+        container: 'map', style: 'mapbox://styles/mapbox/light-v11',
+        center: [28.0473, -26.2041], zoom: 12, attributionControl: false
     });
     map.setPadding({ top: 170, bottom: 340, left: 16, right: 16 });
-
     map.on('load', () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -1223,83 +1233,53 @@ function initMap() {
                 },
                 () => placeUserMarker(28.0473, -26.2041)
             );
-        } else {
-            placeUserMarker(28.0473, -26.2041);
-        }
+        } else { placeUserMarker(28.0473, -26.2041); }
     });
-
     setupSearch('pickup');
     setupSearch('dropoff');
     updateSubmitBtn();
 }
 
 function buildAvatarEl() {
-    const wrap  = document.createElement('div');
-    wrap.className = 'user-marker-wrap';
-
-    const pulse = document.createElement('div');
-    pulse.className = 'user-marker-pulse';
-
-    const av = document.createElement('div');
-    av.className = 'user-marker-avatar';
-
+    const wrap  = document.createElement('div'); wrap.className = 'user-marker-wrap';
+    const pulse = document.createElement('div'); pulse.className = 'user-marker-pulse';
+    const av    = document.createElement('div'); av.className = 'user-marker-avatar';
     if (userProfile.photoURL) {
-        const img = document.createElement('img');
-        img.src = userProfile.photoURL;
-        img.onerror = () => {
-            img.remove();
-            const sp = document.createElement('span');
-            sp.className = 'av-init';
-            sp.textContent = initials(userProfile.name);
-            av.appendChild(sp);
-        };
+        const img = document.createElement('img'); img.src = userProfile.photoURL;
+        img.onerror = () => { img.remove(); const sp = document.createElement('span'); sp.className = 'av-init'; sp.textContent = initials(userProfile.name); av.appendChild(sp); };
         av.appendChild(img);
     } else {
-        const sp = document.createElement('span');
-        sp.className = 'av-init';
-        sp.textContent = initials(userProfile.name);
-        av.appendChild(sp);
+        const sp = document.createElement('span'); sp.className = 'av-init'; sp.textContent = initials(userProfile.name); av.appendChild(sp);
     }
-
-    const caret = document.createElement('div');
-    caret.className = 'user-marker-caret';
-
-    wrap.appendChild(pulse);
-    wrap.appendChild(av);
-    wrap.appendChild(caret);
+    const caret = document.createElement('div'); caret.className = 'user-marker-caret';
+    wrap.appendChild(pulse); wrap.appendChild(av); wrap.appendChild(caret);
     return wrap;
 }
 
 function placeUserMarker(lng, lat) {
     if (userMarker) userMarker.remove();
-    userMarker = new mapboxgl.Marker({ element: buildAvatarEl(), anchor: 'bottom' })
-        .setLngLat([lng, lat]).addTo(map);
+    userMarker = new mapboxgl.Marker({ element: buildAvatarEl(), anchor: 'bottom' }).setLngLat([lng, lat]).addTo(map);
 }
 
 function refreshMapMarker() {
     if (!userMarker) return;
-    const lnglat = userMarker.getLngLat();
-    placeUserMarker(lnglat.lng, lnglat.lat);
+    const ll = userMarker.getLngLat();
+    placeUserMarker(ll.lng, ll.lat);
 }
 
 function buildDestEl(type) {
-    const el = document.createElement('div');
-    el.className = `dest-marker ${type}`;
-    el.innerHTML = type === 'pickup'
-        ? '<i class="fa-solid fa-location-dot"></i>'
-        : '<i class="fa-solid fa-flag-checkered"></i>';
+    const el = document.createElement('div'); el.className = `dest-marker ${type}`;
+    el.innerHTML = type === 'pickup' ? '<i class="fa-solid fa-location-dot"></i>' : '<i class="fa-solid fa-flag-checkered"></i>';
     return el;
 }
 
 function placeDestMarker(type, lng, lat) {
     if (type === 'pickup') {
         if (pickupMarker) pickupMarker.remove();
-        pickupMarker = new mapboxgl.Marker({ element: buildDestEl('pickup'), anchor: 'bottom' })
-            .setLngLat([lng, lat]).addTo(map);
+        pickupMarker = new mapboxgl.Marker({ element: buildDestEl('pickup'), anchor: 'bottom' }).setLngLat([lng, lat]).addTo(map);
     } else {
         if (dropoffMarker) dropoffMarker.remove();
-        dropoffMarker = new mapboxgl.Marker({ element: buildDestEl('dropoff'), anchor: 'bottom' })
-            .setLngLat([lng, lat]).addTo(map);
+        dropoffMarker = new mapboxgl.Marker({ element: buildDestEl('dropoff'), anchor: 'bottom' }).setLngLat([lng, lat]).addTo(map);
     }
     if (pickupMarker && dropoffMarker) { drawRoute(); fitBothMarkers(); }
 }
@@ -1307,28 +1287,23 @@ function placeDestMarker(type, lng, lat) {
 let routeDistKm = 0;
 
 async function drawRoute() {
-    const p = pickupMarker.getLngLat();
-    const d = dropoffMarker.getLngLat();
+    const p = pickupMarker.getLngLat(), d = dropoffMarker.getLngLat();
     try {
         const res  = await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${p.lng},${p.lat};${d.lng},${d.lat}?geometries=geojson&access_token=${MAPBOX_TOKEN}`);
         const data = await res.json();
         if (!data.routes?.[0]) return;
-
-        const route   = data.routes[0];
-        routeDistKm   = parseFloat((route.distance / 1000).toFixed(1));
-        const mins    = Math.ceil(route.duration / 60);
+        const route = data.routes[0];
+        routeDistKm = parseFloat((route.distance / 1000).toFixed(1));
+        const mins = Math.ceil(route.duration / 60);
         const timeStr = mins >= 60 ? `${Math.floor(mins/60)}h ${mins%60}m` : `${mins} min`;
-
         document.getElementById('route-dist').textContent = routeDistKm + ' km';
         document.getElementById('route-time').textContent = timeStr;
         updateRoutePrice();
         updateFoodPackageAvailability();
         document.getElementById('route-bar').classList.add('visible');
-
         const geojson = { type: 'Feature', geometry: route.geometry };
-        if (map.getSource('route')) {
-            map.getSource('route').setData(geojson);
-        } else {
+        if (map.getSource('route')) { map.getSource('route').setData(geojson); }
+        else {
             map.addSource('route', { type: 'geojson', data: geojson });
             map.addLayer({ id: 'route', type: 'line', source: 'route',
                 layout: { 'line-join': 'round', 'line-cap': 'round' },
@@ -1340,8 +1315,7 @@ async function drawRoute() {
 }
 
 function fitBothMarkers() {
-    const p = pickupMarker.getLngLat();
-    const d = dropoffMarker.getLngLat();
+    const p = pickupMarker.getLngLat(), d = dropoffMarker.getLngLat();
     map.fitBounds(new mapboxgl.LngLatBounds([p.lng,p.lat],[d.lng,d.lat]),
         { padding: { top:200, bottom:360, left:40, right:40 }, duration: 900 });
 }
@@ -1353,15 +1327,14 @@ function updateRoutePrice() {
     }
 }
 
-let debounceTimers   = {};
-let selectedCoords   = { pickup: null, dropoff: null };
-let suggFeatures     = { pickup: [], dropoff: [] };
+let debounceTimers = {};
+let selectedCoords = { pickup: null, dropoff: null };
+let suggFeatures   = { pickup: [], dropoff: [] };
 
 function setupSearch(type) {
     const input = document.getElementById(`input-${type}`);
     const sugg  = document.getElementById(`sugg-${type}`);
     const clear = document.getElementById(`clear-${type}`);
-
     input.addEventListener('input', () => {
         const q = input.value.trim();
         clear.classList.toggle('visible', q.length > 0);
@@ -1369,7 +1342,6 @@ function setupSearch(type) {
         clearTimeout(debounceTimers[type]);
         debounceTimers[type] = setTimeout(() => fetchSuggestions(type, q), 300);
     });
-
     document.addEventListener('click', e => {
         if (!input.contains(e.target) && !sugg.contains(e.target)) sugg.style.display = 'none';
     });
@@ -1381,11 +1353,11 @@ async function fetchSuggestions(type, q) {
         const data = await res.json();
         suggFeatures[type] = data.features || [];
         renderSuggestions(type);
-    } catch(e) { }
+    } catch(e) {}
 }
 
 function renderSuggestions(type) {
-    const sugg = document.getElementById(`sugg-${type}`);
+    const sugg  = document.getElementById(`sugg-${type}`);
     const feats = suggFeatures[type];
     if (!feats.length) { sugg.style.display = 'none'; return; }
     sugg.innerHTML = feats.map((f, i) => {
@@ -1400,7 +1372,7 @@ function renderSuggestions(type) {
 }
 
 window.selectSuggestion = function(type, idx) {
-    const f     = suggFeatures[type][idx];
+    const f = suggFeatures[type][idx];
     const [lng, lat] = f.center;
     document.getElementById(`input-${type}`).value = f.place_name;
     document.getElementById(`clear-${type}`).classList.add('visible');
@@ -1424,7 +1396,7 @@ window.clearInput = function(type) {
     updateSubmitBtn();
 };
 
-let selectedPkg = null;
+let selectedPkg     = null;
 let selectedPayment = 'cash';
 
 window.selectPackage = function(el, name, base) {
@@ -1441,17 +1413,11 @@ function updateFoodPackageAvailability() {
     const card   = document.getElementById('pkg-food');
     const weight = document.getElementById('pkg-food-weight');
     if (!card) return;
-
     const tooFar = routeDistKm > FOOD_DELIVERY_MAX_KM;
     card.classList.toggle('disabled', tooFar);
-    weight.textContent = tooFar
-        ? `Over ${FOOD_DELIVERY_MAX_KM}km away`
-        : 'Restaurant orders';
-
+    weight.textContent = tooFar ? `Over ${FOOD_DELIVERY_MAX_KM}km away` : 'Restaurant orders';
     if (tooFar && selectedPkg && selectedPkg.name === 'Food Delivery') {
-        card.classList.remove('active');
-        selectedPkg = null;
-        updateSubmitBtn();
+        card.classList.remove('active'); selectedPkg = null; updateSubmitBtn();
         showToast('info', 'Food delivery unavailable', `Pickup and dropoff must be within ${FOOD_DELIVERY_MAX_KM}km for food delivery.`);
     }
 }
@@ -1460,19 +1426,18 @@ window.selectPaymentMethod = function(type) {
     selectedPayment = type;
     document.getElementById('pay-pill-cash').classList.toggle('active', type === 'cash');
     document.getElementById('pay-pill-gpay').classList.toggle('active', type === 'google_pay');
+    document.getElementById('pay-pill-yoco').classList.toggle('active', type === 'yoco');
 
     const gpayContainer = document.getElementById('gpay-button-container');
-    const gpayNote       = document.getElementById('gpay-test-note');
+    const gpayNote      = document.getElementById('gpay-test-note');
+    const yocoNote      = document.getElementById('yoco-test-note');
+
+    gpayContainer.style.display = (type === 'google_pay') ? 'block' : 'none';
+    gpayNote.style.display      = (type === 'google_pay') ? 'flex'  : 'none';
+    yocoNote.style.display      = (type === 'yoco')       ? 'flex'  : 'none';
 
     if (type === 'google_pay') {
-        gpayContainer.style.display = 'block';
-        gpayNote.style.display      = 'flex';
-        requestAnimationFrame(() => {
-            setTimeout(() => { ensureGooglePayButton(); }, 50);
-        });
-    } else {
-        gpayContainer.style.display = 'none';
-        gpayNote.style.display      = 'none';
+        requestAnimationFrame(() => setTimeout(() => ensureGooglePayButton(), 50));
     }
     updateSubmitBtn();
 };
@@ -1484,15 +1449,20 @@ function updateSubmitBtn() {
     const hd = !!selectedCoords.dropoff;
     const hk = !!selectedPkg;
 
-    if (!hp || !hd) { btn.className=''; label.textContent='Set pickup & destination'; btn.disabled=true; }
+    if (!hp || !hd)  { btn.className=''; label.textContent='Set pickup & destination'; btn.disabled=true; }
     else if (!hk)    { btn.className=''; label.textContent='Select a package size';    btn.disabled=true; }
     else {
         const total = Math.round(selectedPkg.base + routeDistKm * 3.5);
         btn.className = 'ready';
-        label.textContent = `Book ${selectedPkg.name} · R${total}`;
+        if (selectedPayment === 'yoco') {
+            label.innerHTML = `<i class="fa-solid fa-credit-card"></i> Pay R${total} with Yoco`;
+        } else {
+            label.textContent = `Book ${selectedPkg.name} · R${total}`;
+        }
         btn.disabled = false;
     }
 
+    // Hide cash/yoco button when Google Pay is selected (GPay shows its own button)
     btn.style.display = (selectedPayment === 'google_pay') ? 'none' : 'flex';
 }
 
@@ -1509,10 +1479,66 @@ window.switchTab = (tab) => {
     document.getElementById('tab-track').classList.toggle('active', !isSend);
 };
 
+/* ══════════════════════════════════════════
+   YOCO PAYMENT
+══════════════════════════════════════════ */
+let yocoSDK = null;
+
+function getYocoSDK() {
+    if (!YOCO_PUBLIC_KEY) {
+        showToast('error', 'Yoco not configured', 'Payment key not loaded yet. Please try again in a moment.');
+        return null;
+    }
+    // Re-initialise if the key changed (e.g. Remote Config updated live→test)
+    if (yocoSDK && yocoSDK._publicKey === YOCO_PUBLIC_KEY) return yocoSDK;
+    if (typeof window.YocoSDK === 'undefined') {
+        showToast('error', 'Yoco not loaded', 'Please check your connection and refresh.');
+        return null;
+    }
+    yocoSDK = new window.YocoSDK({ publicKey: YOCO_PUBLIC_KEY });
+    yocoSDK._publicKey = YOCO_PUBLIC_KEY; // track which key this instance uses
+    return yocoSDK;
+}
+
+async function processYocoPayment(amountRands) {
+    return new Promise((resolve, reject) => {
+        const sdk = getYocoSDK();
+        if (!sdk) {
+            reject(new Error('Yoco SDK not loaded. Please refresh and try again.'));
+            return;
+        }
+
+        // Amount in cents (Yoco requires cents)
+        const amountCents = amountRands * 100;
+
+        sdk.showPopup({
+            amountInCents: amountCents,
+            currency: 'ZAR',
+            name: 'CourierGo',
+            description: `${selectedPkg ? selectedPkg.name : 'Delivery'} — ${document.getElementById('input-pickup').value.split(',')[0]} → ${document.getElementById('input-dropoff').value.split(',')[0]}`,
+            callback: function(result) {
+                if (result.error) {
+                    // User cancelled or error
+                    if (result.error.message && result.error.message.toLowerCase().includes('cancel')) {
+                        reject({ cancelled: true });
+                    } else {
+                        reject(new Error(result.error.message || 'Yoco payment failed'));
+                    }
+                } else {
+                    // result.id is the charge token — send this to your backend to complete charge
+                    resolve({ token: result.id, testMode: true });
+                }
+            }
+        });
+    });
+}
+
+/* ══════════════════════════════════════════
+   CORE ORDER BOOKING
+══════════════════════════════════════════ */
 async function doBookOrder(paymentMeta) {
     const btn = document.getElementById('submitBtn');
     let succeeded = false;
-
     try {
         const orderId = "CG-" + Math.floor(1000 + Math.random() * 9000);
         const total   = Math.round(selectedPkg.base + routeDistKm * 3.5);
@@ -1536,6 +1562,7 @@ async function doBookOrder(paymentMeta) {
             dropoffCoords:       selectedCoords.dropoff,
             status:              'placed',
             paymentMethod:       paymentMeta.method,
+            paymentToken:        paymentMeta.token || null,
             paymentTestMode:     !!paymentMeta.testMode,
             timestamp:           Date.now()
         };
@@ -1557,10 +1584,9 @@ async function doBookOrder(paymentMeta) {
         }
 
         succeeded = true;
-
     } catch(e) {
         console.error(e);
-        if (e.message.startsWith('Shipday')) {
+        if (e.message && e.message.startsWith('Shipday')) {
             showToast('info', 'Order saved', 'Dispatch sync pending — our team will follow up.');
             succeeded = true;
         } else {
@@ -1583,9 +1609,30 @@ window.confirmBooking = async function() {
 
     const btn   = document.getElementById('submitBtn');
     const label = document.getElementById('submitLabel');
+
+    if (selectedPayment === 'yoco') {
+        // ── Yoco flow ────────────────────────────────────────────────────────
+        const total = Math.round(selectedPkg.base + routeDistKm * 3.5);
+        try {
+            const payResult = await processYocoPayment(total);
+            // Payment popup succeeded — now book the order with the token
+            label.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
+            btn.disabled = true;
+            showToast('success', 'Card authorised', 'Completing your booking…');
+            await doBookOrder({ method: 'yoco', token: payResult.token, testMode: payResult.testMode });
+        } catch(err) {
+            if (err && err.cancelled) {
+                // User closed popup — do nothing
+                return;
+            }
+            showToast('error', 'Payment failed', err.message || 'Could not complete Yoco payment.');
+        }
+        return;
+    }
+
+    // ── Cash flow ─────────────────────────────────────────────────────────────
     label.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
     btn.disabled = true;
-
     await doBookOrder({ method: 'cash', testMode: false });
 };
 
@@ -1593,8 +1640,7 @@ function resetBookingForm() {
     clearInput('pickup');
     clearInput('dropoff');
     document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('active'));
-    selectedPkg   = null;
-    routeDistKm   = 0;
+    selectedPkg = null; routeDistKm = 0;
     document.getElementById('route-dist').textContent  = '—';
     document.getElementById('route-time').textContent  = '—';
     document.getElementById('route-price').textContent = '—';
@@ -1602,39 +1648,30 @@ function resetBookingForm() {
     updateSubmitBtn();
 }
 
-let googlePayClient = null;
+/* ══════════════════════════════════════════
+   GOOGLE PAY
+══════════════════════════════════════════ */
+let googlePayClient  = null;
 let gpayAvailable    = false;
 
 const gpayBaseCardMethod = {
     type: 'CARD',
-    parameters: {
-        allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
-        allowedCardNetworks: ['VISA', 'MASTERCARD']
-    }
+    parameters: { allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'], allowedCardNetworks: ['VISA', 'MASTERCARD'] }
 };
 const gpayCardMethod = {
     ...gpayBaseCardMethod,
     tokenizationSpecification: {
         type: 'PAYMENT_GATEWAY',
-        parameters: {
-            gateway: 'example',
-            gatewayMerchantId: 'exampleGatewayMerchantId'
-        }
+        parameters: { gateway: 'example', gatewayMerchantId: 'exampleGatewayMerchantId' }
     }
 };
 
 function gpayPaymentDataRequest(amountZAR) {
     return {
-        apiVersion: 2,
-        apiVersionMinor: 0,
+        apiVersion: 2, apiVersionMinor: 0,
         allowedPaymentMethods: [gpayCardMethod],
         merchantInfo: { merchantName: 'CourierGo (Test)' },
-        transactionInfo: {
-            countryCode: 'ZA',
-            currencyCode: 'ZAR',
-            totalPriceStatus: 'FINAL',
-            totalPrice: amountZAR.toFixed(2)
-        }
+        transactionInfo: { countryCode: 'ZA', currencyCode: 'ZAR', totalPriceStatus: 'FINAL', totalPrice: amountZAR.toFixed(2) }
     };
 }
 
@@ -1649,22 +1686,12 @@ function waitForGooglePayScript() {
 async function initGooglePay() {
     await waitForGooglePayScript();
     if (!window.google || !window.google.payments) return;
-
     googlePayClient = new google.payments.api.PaymentsClient({ environment: 'TEST' });
-
     try {
-        const resp = await googlePayClient.isReadyToPay({
-            apiVersion: 2, apiVersionMinor: 0,
-            allowedPaymentMethods: [gpayBaseCardMethod]
-        });
+        const resp = await googlePayClient.isReadyToPay({ apiVersion: 2, apiVersionMinor: 0, allowedPaymentMethods: [gpayBaseCardMethod] });
         gpayAvailable = !!resp.result;
-    } catch(e) {
-        gpayAvailable = false;
-    }
-
-    if (gpayAvailable) {
-        document.getElementById('pay-pill-gpay').style.display = 'flex';
-    }
+    } catch(e) { gpayAvailable = false; }
+    if (gpayAvailable) { document.getElementById('pay-pill-gpay').classList.remove('hidden'); }
 }
 
 let gpayButtonCreated = false;
@@ -1672,13 +1699,9 @@ let gpayButtonCreated = false;
 function ensureGooglePayButton() {
     if (gpayButtonCreated || !gpayAvailable || !googlePayClient) return;
     gpayButtonCreated = true;
-
     const button = googlePayClient.createButton({
         onClick: onGooglePayButtonClicked,
-        buttonColor: 'black',
-        buttonType: 'pay',
-        buttonSizeMode: 'fill',
-        buttonRadius: 14
+        buttonColor: 'black', buttonType: 'pay', buttonSizeMode: 'fill', buttonRadius: 14
     });
     document.getElementById('gpay-button-container').appendChild(button);
 }
@@ -1686,20 +1709,15 @@ function ensureGooglePayButton() {
 async function onGooglePayButtonClicked() {
     if (!currentUser) { showToast('error', 'Not signed in', 'Please sign in first.'); return; }
     if (!selectedPkg || !selectedCoords.pickup || !selectedCoords.dropoff) {
-        showToast('error', 'Trip details missing', 'Set pickup, destination and package size first.');
-        return;
+        showToast('error', 'Trip details missing', 'Set pickup, destination and package size first.'); return;
     }
-
     const total = Math.round(selectedPkg.base + routeDistKm * 3.5);
-
     try {
         const paymentData = await googlePayClient.loadPaymentData(gpayPaymentDataRequest(total));
         const testToken = paymentData?.paymentMethodData?.tokenizationData?.token;
-        console.log('Google Pay sandbox token (test mode, not chargeable):', testToken);
-
+        console.log('Google Pay sandbox token:', testToken);
         showToast('success', 'Test payment captured', 'Google Pay sandbox — no real charge was made.');
         await doBookOrder({ method: 'google_pay', testMode: true });
-
     } catch (err) {
         if (err && err.statusCode === 'CANCELED') return;
         console.error('Google Pay error', err);
@@ -1708,7 +1726,6 @@ async function onGooglePayButtonClicked() {
 }
 
 initGooglePay();
-
 setTimeout(hideSplash, 3000);
 </script>
 </body>
