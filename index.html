@@ -539,9 +539,14 @@
         .pay-pill.active { border-color: #18181b; background: #fafafa; color: #18181b; }
         .pay-pill.hidden { display: none; }
 
-        /* Yoco */
+        /*
+         * Yoco test note — hidden by default.
+         * Shown only AFTER Remote Config resolves and confirms a pk_test_ key.
+         * Live keys (pk_live_) never show this banner.
+         */
         .yoco-test-note {
-            display: flex; align-items: center; gap: 7px;
+            display: none;
+            align-items: center; gap: 7px;
             font-size: 10.5px; color: #a1a1aa; font-weight: 500;
             margin: -2px 0 10px; padding-left: 1px;
         }
@@ -683,7 +688,6 @@
             <h2 style="font-size:14px;font-weight:700;color:#18181b;">Payment method</h2>
         </div>
 
-        <!-- 3-column payment pills -->
         <div class="pay-method-row">
             <button class="pay-pill active" id="pay-pill-cash" onclick="selectPaymentMethod('cash')">
                 <i class="fa-solid fa-money-bill-wave"></i>
@@ -694,7 +698,6 @@
                 Google Pay
             </button>
             <button class="pay-pill" id="pay-pill-yoco" onclick="selectPaymentMethod('yoco')">
-                <!-- Yoco logo as inline SVG -->
                 <svg width="36" height="14" viewBox="0 0 120 46" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:1px;">
                     <path d="M0 0h120v46H0z" fill="none"/>
                     <text x="4" y="36" font-family="Arial Black,Arial" font-weight="900" font-size="40" fill="currentColor">Yoco</text>
@@ -703,9 +706,15 @@
             </button>
         </div>
 
-        <!-- Yoco test note -->
-        <div class="yoco-test-note" id="yoco-test-note" style="display:none;">
-            <span class="test-tag">Test mode</span> Sandbox payment — no real charge will be made.
+        <!--
+            Yoco test-mode note.
+            Hidden by default — display is set to 'flex' by updateYocoTestNote()
+            ONLY when: (1) Yoco pill is active AND (2) Remote Config returned a pk_test_ key.
+            Live keys never show this banner.
+        -->
+        <div class="yoco-test-note" id="yoco-test-note">
+            <span class="test-tag" id="yoco-test-tag">Test mode</span>
+            <span id="yoco-test-msg">Sandbox payment — no real charge will be made.</span>
         </div>
 
         <!-- Google Pay test note -->
@@ -870,9 +879,15 @@ import {
 const MAPBOX_TOKEN = "pk.eyJ1Ijoia2F0bGVnb3BoYXNoYSIsImEiOiJjbTlpOTdzbmYwMGNsMmpzYWJtZzN4d3pqIn0.Zt-aSMEoahrV3zkiVVHbOw";
 const SHIPDAY_KEY  = "K5a8wQJF3f.az2zfrhgzwxK9JONI2y8";
 
-// Yoco public key — fetched from Firebase Remote Config at runtime.
-// Set the parameter "yoco_public_key" in your Firebase console under
-// Remote Config, with your pk_test_... or pk_live_... value.
+/*
+ * YOCO_PUBLIC_KEY is always null on boot.
+ * It is populated exclusively by initRemoteConfig() after Firebase Remote Config
+ * resolves the "yoco_public_key" parameter you set in the Firebase console.
+ *
+ * pk_test_... → test mode banner shown when Yoco pill is selected
+ * pk_live_... → no banner (live, real charges)
+ * ""          → Yoco payment option remains but shows an error on tap
+ */
 let YOCO_PUBLIC_KEY = null;
 
 const firebaseConfig = {
@@ -890,16 +905,13 @@ const auth     = getAuth(fbApp);
 const database = getDatabase(fbApp);
 const provider = new GoogleAuthProvider();
 
-// ── Remote Config ─────────────────────────────────────────────────────────────
+/* ── Remote Config ──────────────────────────────────────────────────────────
+ * Sets YOCO_PUBLIC_KEY from the "yoco_public_key" Remote Config parameter,
+ * then calls updateYocoTestNote() so the banner reflects the actual key type.
+ * ───────────────────────────────────────────────────────────────────────── */
 const remoteConfig = getRemoteConfig(fbApp);
-
-// Cache for 1 hour in production; set to 0 during development for instant updates
-remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
-
-// Fallback value in case Remote Config is unreachable (e.g. offline)
-remoteConfig.defaultConfig = {
-    yoco_public_key: ""
-};
+remoteConfig.settings.minimumFetchIntervalMillis = 3600000; // 1 h in production
+remoteConfig.defaultConfig = { yoco_public_key: "" };      // safe offline fallback
 
 async function initRemoteConfig() {
     try {
@@ -907,22 +919,25 @@ async function initRemoteConfig() {
         const key = getValue(remoteConfig, "yoco_public_key").asString();
         if (key) {
             YOCO_PUBLIC_KEY = key;
+            // Banner visibility is now driven by the real key — update it
+            updateYocoTestNote();
             console.log("Yoco public key loaded from Remote Config.");
         } else {
-            console.warn("yoco_public_key not set in Remote Config. Yoco payments disabled.");
+            console.warn("yoco_public_key not set in Remote Config — Yoco payments disabled.");
         }
     } catch (e) {
         console.warn("Remote Config fetch failed:", e.message);
     }
 }
 
-// Kick off Remote Config fetch immediately — parallel to auth init
+// Fire in parallel with auth — whichever finishes first is fine
 initRemoteConfig();
-// ─────────────────────────────────────────────────────────────────────────────
 
+/* ── State ── */
 let currentUser = null;
 let userProfile = {};
 
+/* ── Toast ── */
 function showToast(type, title, msg, duration = 4200) {
     const icons = { success:'fa-circle-check', error:'fa-circle-xmark', info:'fa-circle-info' };
     const t = document.createElement('div');
@@ -935,13 +950,12 @@ function showToast(type, title, msg, duration = 4200) {
 }
 window.showToast = showToast;
 
+/* ── Auth ── */
 window.signInWithGoogle = async function() {
     try {
         await signInWithPopup(auth, provider);
     } catch(e) {
-        if (e.code !== 'auth/popup-closed-by-user') {
-            showToast('error', 'Sign-in failed', e.message);
-        }
+        if (e.code !== 'auth/popup-closed-by-user') showToast('error', 'Sign-in failed', e.message);
     }
 };
 
@@ -1041,6 +1055,7 @@ function checkPhoneWarning() {
     document.getElementById('phone-warn').style.display = (!userProfile.phone) ? 'flex' : 'none';
 }
 
+/* ── Orders ── */
 let ordersListenerAttached = false;
 
 function attachOrdersListener() {
@@ -1115,6 +1130,7 @@ function renderOrders(ordersObj) {
     listEl.innerHTML = orders.map(orderCardHTML).join('');
 }
 
+/* ── Profile drawer ── */
 window.openProfile  = function() {
     document.getElementById('profile-overlay').classList.add('open');
     document.getElementById('profile-drawer').classList.add('open');
@@ -1148,13 +1164,13 @@ window.selectVehicleType = function(type) {
 
 window.submitDriverApplication = async function() {
     if (!currentUser) { showToast('error', 'Not signed in', 'Please sign in first.'); return; }
-    const name = document.getElementById('dm-name').value.trim();
-    const phone = document.getElementById('dm-phone').value.trim();
+    const name    = document.getElementById('dm-name').value.trim();
+    const phone   = document.getElementById('dm-phone').value.trim();
     const idNumber = document.getElementById('dm-id').value.trim();
     const license = document.getElementById('dm-license').value.trim();
     const vehicle = document.getElementById('dm-vehicle-model').value.trim();
-    const plate = document.getElementById('dm-plate').value.trim();
-    const city = document.getElementById('dm-city').value.trim();
+    const plate   = document.getElementById('dm-plate').value.trim();
+    const city    = document.getElementById('dm-city').value.trim();
     if (!selectedVehicleType) { showToast('error', 'Select a vehicle type', 'Choose Bakkie or Motorbike.'); return; }
     if (!name || !phone || !idNumber || !license || !vehicle || !plate || !city) {
         showToast('error', 'Missing details', 'Please fill in every field.'); return;
@@ -1181,9 +1197,9 @@ window.submitDriverApplication = async function() {
 };
 
 const DRIVER_STATUS_META = {
-    pending:  { icon: 'fa-clock',        title: 'Application pending',        sub: () => "We're reviewing your details." },
-    approved: { icon: 'fa-circle-check', title: "You're an approved driver",  sub: (a) => `${a.vehicleType} · ${a.licensePlate}` },
-    rejected: { icon: 'fa-circle-xmark', title: 'Application not approved',   sub: () => 'Contact support for details.' }
+    pending:  { icon: 'fa-clock',        title: 'Application pending',       sub: () => "We're reviewing your details." },
+    approved: { icon: 'fa-circle-check', title: "You're an approved driver", sub: (a) => `${a.vehicleType} · ${a.licensePlate}` },
+    rejected: { icon: 'fa-circle-xmark', title: 'Application not approved',  sub: () => 'Contact support for details.' }
 };
 
 function renderDriverStatus(app) {
@@ -1422,6 +1438,36 @@ function updateFoodPackageAvailability() {
     }
 }
 
+/* ══════════════════════════════════════════
+   YOCO — Remote Config-driven test banner
+   ─────────────────────────────────────────
+   Rules:
+     • YOCO_PUBLIC_KEY not yet loaded  → banner hidden
+     • starts with pk_test_            → banner shown (amber "Test mode" tag)
+     • starts with pk_live_            → banner hidden (no warning needed)
+     • Yoco pill not selected          → banner hidden regardless
+══════════════════════════════════════════ */
+function updateYocoTestNote() {
+    const note = document.getElementById('yoco-test-note');
+    if (!note) return;
+
+    // Only relevant when the Yoco pill is the active payment method
+    if (selectedPayment !== 'yoco' || !YOCO_PUBLIC_KEY) {
+        note.style.display = 'none';
+        return;
+    }
+
+    if (YOCO_PUBLIC_KEY.startsWith('pk_test_')) {
+        document.getElementById('yoco-test-tag').textContent = 'Test mode';
+        document.getElementById('yoco-test-msg').textContent = 'Sandbox payment — no real charge will be made.';
+        note.style.display = 'flex';
+    } else {
+        // Live key — suppress the banner entirely
+        note.style.display = 'none';
+    }
+}
+
+/* ── Payment method selector ── */
 window.selectPaymentMethod = function(type) {
     selectedPayment = type;
     document.getElementById('pay-pill-cash').classList.toggle('active', type === 'cash');
@@ -1430,11 +1476,12 @@ window.selectPaymentMethod = function(type) {
 
     const gpayContainer = document.getElementById('gpay-button-container');
     const gpayNote      = document.getElementById('gpay-test-note');
-    const yocoNote      = document.getElementById('yoco-test-note');
 
     gpayContainer.style.display = (type === 'google_pay') ? 'block' : 'none';
     gpayNote.style.display      = (type === 'google_pay') ? 'flex'  : 'none';
-    yocoNote.style.display      = (type === 'yoco')       ? 'flex'  : 'none';
+
+    // Yoco banner is controlled entirely by Remote Config key type — never hardcoded
+    updateYocoTestNote();
 
     if (type === 'google_pay') {
         requestAnimationFrame(() => setTimeout(() => ensureGooglePayButton(), 50));
@@ -1462,7 +1509,6 @@ function updateSubmitBtn() {
         btn.disabled = false;
     }
 
-    // Hide cash/yoco button when Google Pay is selected (GPay shows its own button)
     btn.style.display = (selectedPayment === 'google_pay') ? 'none' : 'flex';
 }
 
@@ -1489,7 +1535,6 @@ function getYocoSDK() {
         showToast('error', 'Yoco not configured', 'Payment key not loaded yet. Please try again in a moment.');
         return null;
     }
-    // Re-initialise if the key changed (e.g. Remote Config updated live→test)
     if (yocoSDK && yocoSDK._publicKey === YOCO_PUBLIC_KEY) return yocoSDK;
     if (typeof window.YocoSDK === 'undefined') {
         showToast('error', 'Yoco not loaded', 'Please check your connection and refresh.');
@@ -1503,30 +1548,23 @@ function getYocoSDK() {
 async function processYocoPayment(amountRands) {
     return new Promise((resolve, reject) => {
         const sdk = getYocoSDK();
-        if (!sdk) {
-            reject(new Error('Yoco SDK not loaded. Please refresh and try again.'));
-            return;
-        }
-
-        // Amount in cents (Yoco requires cents)
-        const amountCents = amountRands * 100;
+        if (!sdk) { reject(new Error('Yoco SDK not loaded.')); return; }
 
         sdk.showPopup({
-            amountInCents: amountCents,
+            amountInCents: amountRands * 100,
             currency: 'ZAR',
             name: 'CourierGo',
             description: `${selectedPkg ? selectedPkg.name : 'Delivery'} — ${document.getElementById('input-pickup').value.split(',')[0]} → ${document.getElementById('input-dropoff').value.split(',')[0]}`,
             callback: function(result) {
                 if (result.error) {
-                    // User cancelled or error
                     if (result.error.message && result.error.message.toLowerCase().includes('cancel')) {
                         reject({ cancelled: true });
                     } else {
                         reject(new Error(result.error.message || 'Yoco payment failed'));
                     }
                 } else {
-                    // result.id is the charge token — send this to your backend to complete charge
-                    resolve({ token: result.id, testMode: true });
+                    // Derive testMode from the actual key so the order record is accurate
+                    resolve({ token: result.id, testMode: YOCO_PUBLIC_KEY.startsWith('pk_test_') });
                 }
             }
         });
@@ -1611,26 +1649,21 @@ window.confirmBooking = async function() {
     const label = document.getElementById('submitLabel');
 
     if (selectedPayment === 'yoco') {
-        // ── Yoco flow ────────────────────────────────────────────────────────
         const total = Math.round(selectedPkg.base + routeDistKm * 3.5);
         try {
             const payResult = await processYocoPayment(total);
-            // Payment popup succeeded — now book the order with the token
             label.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
             btn.disabled = true;
             showToast('success', 'Card authorised', 'Completing your booking…');
             await doBookOrder({ method: 'yoco', token: payResult.token, testMode: payResult.testMode });
         } catch(err) {
-            if (err && err.cancelled) {
-                // User closed popup — do nothing
-                return;
-            }
+            if (err && err.cancelled) return;
             showToast('error', 'Payment failed', err.message || 'Could not complete Yoco payment.');
         }
         return;
     }
 
-    // ── Cash flow ─────────────────────────────────────────────────────────────
+    // Cash flow
     label.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
     btn.disabled = true;
     await doBookOrder({ method: 'cash', testMode: false });
@@ -1651,8 +1684,8 @@ function resetBookingForm() {
 /* ══════════════════════════════════════════
    GOOGLE PAY
 ══════════════════════════════════════════ */
-let googlePayClient  = null;
-let gpayAvailable    = false;
+let googlePayClient = null;
+let gpayAvailable   = false;
 
 const gpayBaseCardMethod = {
     type: 'CARD',
