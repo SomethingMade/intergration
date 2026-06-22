@@ -7,12 +7,8 @@
 
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
-
     <script async src="https://pay.google.com/gp/p/js/pay.js" onload="window.dispatchEvent(new Event('gpayready'))"></script>
-
-    <!-- Yoco SDK -->
     <script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
@@ -21,7 +17,7 @@
         html, body { height: 100%; font-family: 'Inter', sans-serif; overflow: hidden; background: #0a0a0a; }
 
         /* ── Map ── */
-        #map { position: fixed; inset: 0; z-index: 0; }
+        #map { position: fixed; inset: 0; z-index: 0; transition: left 0.35s cubic-bezier(0.32,0,0.67,0); }
         .mapboxgl-ctrl-logo, .mapboxgl-ctrl-attrib { display: none !important; }
 
         /* ── Splash ── */
@@ -32,7 +28,6 @@
             transition: opacity 0.55s ease;
         }
         #splash.hide { opacity: 0; pointer-events: none; }
-        #splash-logo { width: 96px; height: 96px; border-radius: 22px; margin-bottom: 18px; object-fit: contain; }
 
         /* ── Sign-in Gate ── */
         #signin-gate {
@@ -51,7 +46,6 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.12);
         }
         .signin-logo-wrap i { font-size: 36px; color: #fff; }
-
         .signin-title { font-size: 28px; font-weight: 900; color: #18181b; letter-spacing: -0.6px; margin-bottom: 8px; }
         .signin-sub { font-size: 14px; color: #71717a; text-align: center; line-height: 1.6; max-width: 280px; margin-bottom: 40px; }
         .google-btn {
@@ -61,13 +55,12 @@
             font-size: 14px; font-weight: 700;
             border: none; cursor: pointer;
             box-shadow: 0 4px 20px rgba(0,0,0,0.18);
-            transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+            transition: transform 0.15s, box-shadow 0.15s;
             width: 100%; max-width: 300px; justify-content: center;
         }
         .google-btn:active { transform: scale(0.97); }
         .google-btn img { width: 20px; height: 20px; filter: brightness(0) invert(1); }
         .signin-legal { font-size: 11px; color: #a1a1aa; margin-top: 20px; text-align: center; line-height: 1.6; }
-
         .signin-trust { display: flex; gap: 32px; margin-top: 36px; }
         .trust-item { display: flex; flex-direction: column; align-items: center; gap: 7px; }
         .trust-item i { font-size: 16px; color: #18181b; }
@@ -113,7 +106,11 @@
         .dest-marker.pickup  { background: #18181b; }
         .dest-marker.dropoff { background: #3b82f6; }
 
-        /* ── Top Bar ── */
+        /* ════════════════════════════════════════
+           MOBILE LAYOUT (default)
+        ════════════════════════════════════════ */
+
+        /* ── Mobile: Top Bar ── */
         #top-bar {
             position: fixed; top: 0; left: 50%; transform: translateX(-50%);
             width: 100%; max-width: 420px; z-index: 60;
@@ -127,7 +124,7 @@
             border: 2.5px solid #fff;
             box-shadow: 0 2px 10px rgba(0,0,0,0.3);
             cursor: pointer; background: #18181b;
-            display: flex; align-items: center; justify-content: center;
+            display: none; align-items: center; justify-content: center;
         }
         #avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
         #avatar-btn .av-init { color: #fff; font-size: 13px; font-weight: 800; }
@@ -170,7 +167,7 @@
         .sugg-text-main { font-size: 12px; font-weight: 600; color: #18181b; }
         .sugg-text-sub  { font-size: 11px; color: #a1a1aa; margin-top: 1px; }
 
-        /* ── Bottom Sheet ── */
+        /* ── Mobile: Bottom Sheet ── */
         #sheet {
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
             width: 100%; max-width: 420px;
@@ -184,68 +181,7 @@
         .sheet-handle-wrap { padding: 12px 0 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .sheet-handle { width: 36px; height: 4px; border-radius: 4px; background: #d4d4d8; }
 
-        .tabs { background: #f4f4f5; padding: 3px; border-radius: 12px; display: flex; gap: 2px; margin-bottom: 16px; }
-        .tab-btn {
-            flex: 1; padding: 8px; font-size: 11.5px; font-weight: 700; border: none;
-            border-radius: 9px; cursor: pointer; transition: all 0.18s;
-            background: transparent; color: #71717a;
-        }
-        .tab-btn.active { background: #fff; color: #18181b; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-
-        #route-bar {
-            display: none; background: #f4f4f5; border-radius: 12px;
-            padding: 10px 14px; margin-bottom: 12px;
-            gap: 12px; align-items: center;
-        }
-        #route-bar.visible { display: flex; }
-        .route-stat { display: flex; flex-direction: column; align-items: center; flex: 1; }
-        .route-stat-val { font-size: 14px; font-weight: 800; color: #18181b; }
-        .route-stat-lbl { font-size: 10px; color: #71717a; font-weight: 500; margin-top: 1px; }
-        .route-divider  { width: 1px; height: 28px; background: #d4d4d8; }
-
-        .pkg-scroll { display: flex; gap: 10px; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; margin: 0 -20px; padding: 2px 20px 12px; }
-        .pkg-scroll::-webkit-scrollbar { display: none; }
-        .pkg-card {
-            flex-shrink: 0; width: 126px;
-            border: 2px solid #e4e4e7; border-radius: 18px;
-            padding: 12px; cursor: pointer;
-            transition: border-color 0.15s, background 0.15s;
-            display: flex; flex-direction: column; justify-content: space-between;
-        }
-        .pkg-card:hover { border-color: #a1a1aa; }
-        .pkg-card.active { border-color: #18181b; background: #fafafa; }
-        .pkg-card.disabled { cursor: not-allowed; opacity: 0.4; pointer-events: none; }
-        .pkg-card.disabled:hover { border-color: #e4e4e7; }
-        .pkg-unavailable-note { font-size: 9.5px; color: #ef4444; margin-top: 2px; font-weight: 600; }
-        .pkg-icon {
-            width: 36px; height: 36px; border-radius: 10px;
-            background: #f4f4f5; display: flex; align-items: center; justify-content: center;
-            font-size: 14px; color: #52525b; margin-bottom: 10px;
-            transition: background 0.15s, color 0.15s;
-        }
-        .pkg-card.active .pkg-icon { background: #18181b; color: #fff; }
-        .pkg-name   { font-size: 12px; font-weight: 700; color: #18181b; }
-        .pkg-weight { font-size: 10.5px; color: #71717a; margin-top: 2px; font-weight: 500; }
-        .pkg-price-row { display: flex; align-items: baseline; justify-content: space-between; margin-top: 10px; padding-top: 8px; border-top: 1px solid #e4e4e7; }
-        .pkg-price-label { font-size: 9.5px; color: #a1a1aa; }
-        .pkg-price-val   { font-size: 13px; font-weight: 800; color: #18181b; }
-
-        #submitBtn {
-            width: 100%; padding: 15px; border-radius: 14px; border: none;
-            font-size: 13.5px; font-weight: 700; cursor: not-allowed;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: all 0.2s; margin-top: 4px;
-            background: #e4e4e7; color: #a1a1aa;
-        }
-        #submitBtn.ready {
-            background: #18181b; color: #fff; cursor: pointer;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.28);
-        }
-        #submitBtn.ready:active { transform: scale(0.98); }
-
-        .track-empty { text-align: center; padding: 28px 0 8px; color: #a1a1aa; font-size: 13px; }
-
-        /* ══ PROFILE DRAWER ══ */
+        /* ── Mobile: Profile Drawer ── */
         #profile-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.5);
             z-index: 150; opacity: 0; pointer-events: none;
@@ -264,120 +200,7 @@
         }
         #profile-drawer.open { right: 0; }
 
-        .drawer-header {
-            background: #0a0a0a;
-            padding: 56px 24px 24px;
-            position: relative;
-        }
-        .drawer-close {
-            position: absolute; top: 56px; right: 20px;
-            width: 32px; height: 32px; border-radius: 50%;
-            background: rgba(255,255,255,0.1);
-            border: none; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            color: #fff; font-size: 13px;
-            transition: background 0.15s;
-        }
-        .drawer-close:hover { background: rgba(255,255,255,0.2); }
-
-        .drawer-avatar-wrap {
-            width: 72px; height: 72px; border-radius: 50%;
-            border: 3px solid rgba(255,255,255,0.2);
-            overflow: hidden; margin-bottom: 14px;
-            background: #27272a;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .drawer-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
-        .drawer-avatar-wrap .av-init-lg { color: #fff; font-size: 24px; font-weight: 800; }
-        .drawer-name  { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: -0.3px; }
-        .drawer-email { font-size: 12px; color: #71717a; margin-top: 3px; }
-
-        .drawer-body { flex: 1; overflow-y: auto; padding: 24px; }
-
-        .drawer-section-title {
-            font-size: 10.5px; font-weight: 700; color: #a1a1aa;
-            letter-spacing: 0.6px; text-transform: uppercase;
-            margin-bottom: 12px; margin-top: 20px;
-        }
-        .drawer-section-title:first-child { margin-top: 0; }
-
-        .phone-field-wrap { position: relative; }
-        .phone-field {
-            width: 100%; padding: 13px 16px 13px 44px;
-            border: 2px solid #e4e4e7; border-radius: 13px;
-            font-size: 14px; font-weight: 600; color: #18181b;
-            outline: none; font-family: 'Inter', sans-serif;
-            transition: border-color 0.15s;
-        }
-        .phone-field:focus { border-color: #18181b; }
-        .phone-field::placeholder { font-weight: 400; color: #a1a1aa; }
-        .phone-field-icon {
-            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-            font-size: 14px; color: #a1a1aa;
-        }
-        .phone-save-btn {
-            width: 100%; margin-top: 10px; padding: 12px;
-            background: #18181b; color: #fff;
-            border: none; border-radius: 12px;
-            font-size: 13px; font-weight: 700;
-            cursor: pointer; transition: opacity 0.15s;
-        }
-        .phone-save-btn:active { opacity: 0.8; }
-        .phone-hint { font-size: 11px; color: #a1a1aa; margin-top: 8px; line-height: 1.5; }
-
-        .info-row {
-            display: flex; align-items: center; gap: 12px;
-            padding: 12px 0; border-bottom: 1px solid #f4f4f5;
-        }
-        .info-row:last-child { border-bottom: none; }
-        .info-row-icon { width: 34px; height: 34px; border-radius: 9px; background: #f4f4f5; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #52525b; flex-shrink: 0; }
-        .info-row-text .ir-label { font-size: 10.5px; color: #a1a1aa; font-weight: 500; }
-        .info-row-text .ir-value { font-size: 13px; font-weight: 600; color: #18181b; margin-top: 1px; }
-
-        .logout-btn {
-            width: 100%; margin-top: 24px; padding: 13px;
-            background: #fef2f2; color: #dc2626;
-            border: 1.5px solid #fecaca; border-radius: 13px;
-            font-size: 13px; font-weight: 700;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: background 0.15s;
-        }
-        .logout-btn:hover { background: #fee2e2; }
-
-        .driver-cta {
-            display: flex; align-items: center; gap: 12px;
-            padding: 14px; border: 1.5px solid #e4e4e7; border-radius: 14px;
-            cursor: pointer; transition: border-color 0.15s, background 0.15s;
-        }
-        .driver-cta:hover { border-color: #18181b; background: #fafafa; }
-        .driver-cta-icon {
-            width: 40px; height: 40px; border-radius: 11px;
-            background: #18181b; color: #fff;
-            display: flex; align-items: center; justify-content: center; font-size: 15px;
-            flex-shrink: 0;
-        }
-        .driver-cta-text { flex: 1; min-width: 0; }
-        .driver-cta-title { font-size: 13px; font-weight: 700; color: #18181b; }
-        .driver-cta-sub   { font-size: 11px; color: #a1a1aa; margin-top: 1px; }
-        .driver-cta-arrow { font-size: 11px; color: #d4d4d8; flex-shrink: 0; }
-
-        .driver-status-card {
-            display: flex; align-items: center; gap: 12px;
-            padding: 14px; border-radius: 14px; border: 1.5px solid #e4e4e7;
-        }
-        .driver-status-icon {
-            width: 40px; height: 40px; border-radius: 11px;
-            display: flex; align-items: center; justify-content: center; font-size: 15px;
-            flex-shrink: 0;
-        }
-        .driver-status-text { flex: 1; min-width: 0; }
-        .driver-status-title { font-size: 13px; font-weight: 700; color: #18181b; }
-        .driver-status-sub   { font-size: 11px; color: #a1a1aa; margin-top: 1px; }
-        .driver-status-card.pending  .driver-status-icon { background: #fffbeb; color: #b45309; }
-        .driver-status-card.approved .driver-status-icon { background: #f0fdf4; color: #15803d; }
-        .driver-status-card.rejected .driver-status-icon { background: #fef2f2; color: #b91c1c; }
-
-        /* ══ DRIVER APPLICATION MODAL ══ */
+        /* ── Mobile: Driver Modal ── */
         #driver-modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.55);
             z-index: 200; opacity: 0; pointer-events: none;
@@ -396,6 +219,295 @@
         }
         #driver-modal-overlay.open #driver-modal { transform: translateY(0); }
 
+        /* ════════════════════════════════════════
+           DESKTOP LAYOUT (≥ 768px)
+        ════════════════════════════════════════ */
+        @media (min-width: 768px) {
+
+            /* Map offset to make room for sidebar */
+            #map { left: 380px; }
+
+            /* ── Desktop Sidebar ── */
+            #desktop-sidebar {
+                position: fixed; top: 0; left: 0; bottom: 0;
+                width: 380px; z-index: 80;
+                background: #fff;
+                display: flex; flex-direction: column;
+                box-shadow: 4px 0 32px rgba(0,0,0,0.10);
+                overflow: hidden;
+            }
+
+            /* Sidebar header */
+            .sb-header {
+                background: #0a0a0a;
+                padding: 28px 24px 20px;
+                display: flex; align-items: center; gap: 14px;
+                flex-shrink: 0;
+            }
+            .sb-logo-icon {
+                width: 42px; height: 42px; border-radius: 12px;
+                background: rgba(255,255,255,0.12);
+                display: flex; align-items: center; justify-content: center;
+                font-size: 18px; color: #fff; flex-shrink: 0;
+            }
+            .sb-logo-text { flex: 1; min-width: 0; }
+            .sb-logo-name { font-size: 18px; font-weight: 900; color: #fff; letter-spacing: -0.4px; }
+            .sb-logo-tag  { font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 500; margin-top: 1px; }
+
+            /* Sidebar avatar button */
+            .sb-avatar-btn {
+                width: 38px; height: 38px; border-radius: 50%;
+                border: 2px solid rgba(255,255,255,0.2);
+                overflow: hidden; cursor: pointer; background: #27272a;
+                display: flex; align-items: center; justify-content: center;
+                flex-shrink: 0; transition: border-color 0.15s;
+            }
+            .sb-avatar-btn:hover { border-color: rgba(255,255,255,0.5); }
+            .sb-avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
+            .sb-avatar-btn .av-init { color: #fff; font-size: 12px; font-weight: 800; }
+
+            /* Search inside sidebar */
+            .sb-search-section {
+                padding: 16px 20px 0;
+                flex-shrink: 0;
+            }
+            .sb-search-label {
+                font-size: 10px; font-weight: 700; color: #a1a1aa;
+                letter-spacing: 0.6px; text-transform: uppercase;
+                margin-bottom: 8px;
+            }
+
+            /* Sidebar content body (scrollable) */
+            .sb-body {
+                flex: 1; overflow-y: auto; overflow-x: hidden;
+                padding: 16px 20px 32px;
+            }
+            .sb-body::-webkit-scrollbar { width: 4px; }
+            .sb-body::-webkit-scrollbar-thumb { background: #e4e4e7; border-radius: 4px; }
+
+            /* Sidebar tabs */
+            .sb-tabs {
+                background: #f4f4f5; padding: 3px; border-radius: 12px;
+                display: flex; gap: 2px; margin-bottom: 16px;
+            }
+            .sb-tab-btn {
+                flex: 1; padding: 8px; font-size: 11.5px; font-weight: 700;
+                border: none; border-radius: 9px; cursor: pointer;
+                transition: all 0.18s; background: transparent; color: #71717a;
+                font-family: 'Inter', sans-serif;
+            }
+            .sb-tab-btn.active { background: #fff; color: #18181b; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+            /* Hide mobile elements on desktop */
+            #top-bar  { display: none !important; }
+            #avatar-btn { display: none !important; }
+            #sheet    { display: none !important; }
+            #profile-overlay { display: none !important; }
+            #profile-drawer  { display: none !important; }
+            #driver-modal-overlay { display: none !important; }
+
+            /* Desktop sidebar panels */
+            #sb-panel-main    { display: block; }
+            #sb-panel-profile { display: none; }
+            #sb-panel-driver  { display: none; }
+
+            /* Panel transitions */
+            .sb-panel {
+                animation: panelIn 0.22s ease;
+            }
+            @keyframes panelIn {
+                from { opacity: 0; transform: translateX(12px); }
+                to   { opacity: 1; transform: translateX(0); }
+            }
+
+            /* Back button */
+            .sb-back-btn {
+                display: flex; align-items: center; gap: 8px;
+                background: none; border: none; cursor: pointer;
+                font-size: 12px; font-weight: 700; color: #71717a;
+                padding: 0; margin-bottom: 18px;
+                transition: color 0.15s; font-family: 'Inter', sans-serif;
+            }
+            .sb-back-btn:hover { color: #18181b; }
+            .sb-back-btn i { font-size: 10px; }
+        }
+
+        /* Hide desktop sidebar on mobile */
+        #desktop-sidebar { display: none; }
+        @media (min-width: 768px) {
+            #desktop-sidebar { display: flex; }
+        }
+
+        /* ════════════════════════════════════════
+           SHARED COMPONENT STYLES
+           (used in both mobile & desktop)
+        ════════════════════════════════════════ */
+
+        .tabs { background: #f4f4f5; padding: 3px; border-radius: 12px; display: flex; gap: 2px; margin-bottom: 16px; }
+        .tab-btn {
+            flex: 1; padding: 8px; font-size: 11.5px; font-weight: 700; border: none;
+            border-radius: 9px; cursor: pointer; transition: all 0.18s;
+            background: transparent; color: #71717a; font-family: 'Inter', sans-serif;
+        }
+        .tab-btn.active { background: #fff; color: #18181b; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+        #route-bar, .route-bar-el {
+            display: none; background: #f4f4f5; border-radius: 12px;
+            padding: 10px 14px; margin-bottom: 12px;
+            gap: 12px; align-items: center;
+        }
+        #route-bar.visible, .route-bar-el.visible { display: flex; }
+        .route-stat { display: flex; flex-direction: column; align-items: center; flex: 1; }
+        .route-stat-val { font-size: 14px; font-weight: 800; color: #18181b; }
+        .route-stat-lbl { font-size: 10px; color: #71717a; font-weight: 500; margin-top: 1px; }
+        .route-divider  { width: 1px; height: 28px; background: #d4d4d8; }
+
+        .pkg-scroll { display: flex; gap: 10px; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; margin: 0 -20px; padding: 2px 20px 12px; }
+        .pkg-scroll::-webkit-scrollbar { display: none; }
+        .pkg-card {
+            flex-shrink: 0; width: 126px;
+            border: 2px solid #e4e4e7; border-radius: 18px;
+            padding: 12px; cursor: pointer;
+            transition: border-color 0.15s, background 0.15s;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .pkg-card:hover { border-color: #a1a1aa; }
+        .pkg-card.active { border-color: #18181b; background: #fafafa; }
+        .pkg-card.disabled { cursor: not-allowed; opacity: 0.4; pointer-events: none; }
+        .pkg-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: #f4f4f5; display: flex; align-items: center; justify-content: center;
+            font-size: 14px; color: #52525b; margin-bottom: 10px;
+            transition: background 0.15s, color 0.15s;
+        }
+        .pkg-card.active .pkg-icon { background: #18181b; color: #fff; }
+        .pkg-name   { font-size: 12px; font-weight: 700; color: #18181b; }
+        .pkg-weight { font-size: 10.5px; color: #71717a; margin-top: 2px; font-weight: 500; }
+        .pkg-price-row { display: flex; align-items: baseline; justify-content: space-between; margin-top: 10px; padding-top: 8px; border-top: 1px solid #e4e4e7; }
+        .pkg-price-label { font-size: 9.5px; color: #a1a1aa; }
+        .pkg-price-val   { font-size: 13px; font-weight: 800; color: #18181b; }
+
+        #submitBtn, .submit-btn-el {
+            width: 100%; padding: 15px; border-radius: 14px; border: none;
+            font-size: 13.5px; font-weight: 700; cursor: not-allowed;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: all 0.2s; margin-top: 4px;
+            background: #e4e4e7; color: #a1a1aa;
+            font-family: 'Inter', sans-serif;
+        }
+        #submitBtn.ready, .submit-btn-el.ready {
+            background: #18181b; color: #fff; cursor: pointer;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+        }
+        #submitBtn.ready:active, .submit-btn-el.ready:active { transform: scale(0.98); }
+
+        .track-empty { text-align: center; padding: 28px 0 8px; color: #a1a1aa; font-size: 13px; }
+        .track-list  { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding: 2px 1px 4px; }
+
+        /* ── Drawer / Profile shared styles ── */
+        .drawer-header {
+            background: #0a0a0a;
+            padding: 56px 24px 24px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        /* Desktop profile header has less top padding (no need for safe area) */
+        .drawer-header.desktop-header { padding-top: 28px; }
+
+        .drawer-close {
+            position: absolute; top: 56px; right: 20px;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 13px; transition: background 0.15s;
+        }
+        .drawer-close.desktop-close { top: 20px; }
+        .drawer-close:hover { background: rgba(255,255,255,0.2); }
+
+        .drawer-avatar-wrap {
+            width: 72px; height: 72px; border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.2);
+            overflow: hidden; margin-bottom: 14px;
+            background: #27272a;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .drawer-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .drawer-avatar-wrap .av-init-lg { color: #fff; font-size: 24px; font-weight: 800; }
+        .drawer-name  { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: -0.3px; }
+        .drawer-email { font-size: 12px; color: #71717a; margin-top: 3px; }
+
+        .drawer-body { flex: 1; overflow-y: auto; padding: 24px; }
+        .drawer-body::-webkit-scrollbar { width: 4px; }
+        .drawer-body::-webkit-scrollbar-thumb { background: #e4e4e7; border-radius: 4px; }
+
+        .drawer-section-title {
+            font-size: 10.5px; font-weight: 700; color: #a1a1aa;
+            letter-spacing: 0.6px; text-transform: uppercase;
+            margin-bottom: 12px; margin-top: 20px;
+        }
+        .drawer-section-title:first-child { margin-top: 0; }
+
+        .phone-field-wrap { position: relative; }
+        .phone-field {
+            width: 100%; padding: 13px 16px 13px 44px;
+            border: 2px solid #e4e4e7; border-radius: 13px;
+            font-size: 14px; font-weight: 600; color: #18181b;
+            outline: none; font-family: 'Inter', sans-serif;
+            transition: border-color 0.15s;
+        }
+        .phone-field:focus { border-color: #18181b; }
+        .phone-field::placeholder { font-weight: 400; color: #a1a1aa; }
+        .phone-field-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #a1a1aa; }
+        .phone-save-btn {
+            width: 100%; margin-top: 10px; padding: 12px;
+            background: #18181b; color: #fff;
+            border: none; border-radius: 12px;
+            font-size: 13px; font-weight: 700;
+            cursor: pointer; transition: opacity 0.15s;
+            font-family: 'Inter', sans-serif;
+        }
+        .phone-save-btn:active { opacity: 0.8; }
+        .phone-hint { font-size: 11px; color: #a1a1aa; margin-top: 8px; line-height: 1.5; }
+
+        .info-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f4f4f5; }
+        .info-row:last-child { border-bottom: none; }
+        .info-row-icon { width: 34px; height: 34px; border-radius: 9px; background: #f4f4f5; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #52525b; flex-shrink: 0; }
+        .info-row-text .ir-label { font-size: 10.5px; color: #a1a1aa; font-weight: 500; }
+        .info-row-text .ir-value { font-size: 13px; font-weight: 600; color: #18181b; margin-top: 1px; }
+
+        .logout-btn {
+            width: 100%; margin-top: 24px; padding: 13px;
+            background: #fef2f2; color: #dc2626;
+            border: 1.5px solid #fecaca; border-radius: 13px;
+            font-size: 13px; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: background 0.15s; font-family: 'Inter', sans-serif;
+        }
+        .logout-btn:hover { background: #fee2e2; }
+
+        .driver-cta {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px; border: 1.5px solid #e4e4e7; border-radius: 14px;
+            cursor: pointer; transition: border-color 0.15s, background 0.15s;
+        }
+        .driver-cta:hover { border-color: #18181b; background: #fafafa; }
+        .driver-cta-icon { width: 40px; height: 40px; border-radius: 11px; background: #18181b; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+        .driver-cta-text { flex: 1; min-width: 0; }
+        .driver-cta-title { font-size: 13px; font-weight: 700; color: #18181b; }
+        .driver-cta-sub   { font-size: 11px; color: #a1a1aa; margin-top: 1px; }
+        .driver-cta-arrow { font-size: 11px; color: #d4d4d8; flex-shrink: 0; }
+
+        .driver-status-card { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 14px; border: 1.5px solid #e4e4e7; }
+        .driver-status-icon { width: 40px; height: 40px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+        .driver-status-text { flex: 1; min-width: 0; }
+        .driver-status-title { font-size: 13px; font-weight: 700; color: #18181b; }
+        .driver-status-sub   { font-size: 11px; color: #a1a1aa; margin-top: 1px; }
+        .driver-status-card.pending  .driver-status-icon { background: #fffbeb; color: #b45309; }
+        .driver-status-card.approved .driver-status-icon { background: #f0fdf4; color: #15803d; }
+        .driver-status-card.rejected .driver-status-icon { background: #fef2f2; color: #b91c1c; }
+
+        /* ── Driver modal shared ── */
         .dm-header {
             padding: 20px 20px 14px;
             border-bottom: 1px solid #f1f1f4;
@@ -409,15 +521,15 @@
             border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
             color: #52525b; font-size: 12px; flex-shrink: 0; margin-left: 12px;
         }
-
         .dm-body { padding: 18px 20px; overflow-y: auto; flex: 1; }
+        .dm-body::-webkit-scrollbar { width: 4px; }
+        .dm-body::-webkit-scrollbar-thumb { background: #e4e4e7; border-radius: 4px; }
         .dm-field { margin-bottom: 14px; }
         .dm-label { font-size: 11px; font-weight: 700; color: #52525b; margin-bottom: 6px; display: block; }
         .dm-input {
             width: 100%; padding: 12px 14px; border: 2px solid #e4e4e7; border-radius: 12px;
             font-size: 13px; font-weight: 500; color: #18181b; outline: none;
-            font-family: 'Inter', sans-serif; transition: border-color 0.15s;
-            background: #fff;
+            font-family: 'Inter', sans-serif; transition: border-color 0.15s; background: #fff;
         }
         .dm-input:focus { border-color: #18181b; }
         .dm-input::placeholder { color: #a1a1aa; font-weight: 400; }
@@ -426,14 +538,59 @@
         .vehicle-pill {
             flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;
             padding: 14px 8px; border: 2px solid #e4e4e7; border-radius: 13px;
-            cursor: pointer; transition: border-color 0.15s, background 0.15s;
-            background: #fff;
+            cursor: pointer; transition: border-color 0.15s, background 0.15s; background: #fff;
         }
         .vehicle-pill i { font-size: 17px; color: #71717a; transition: color 0.15s; }
         .vehicle-pill span { font-size: 11.5px; font-weight: 700; color: #52525b; }
         .vehicle-pill.active { border-color: #18181b; background: #fafafa; }
         .vehicle-pill.active i { color: #18181b; }
         .vehicle-pill.active span { color: #18181b; }
+
+        /* ── POPIA / Disclaimer Checkbox ── */
+        .dm-disclaimer {
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 13px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+        .dm-disclaimer-title {
+            font-size: 11px; font-weight: 800; color: #18181b;
+            letter-spacing: 0.2px; margin-bottom: 8px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .dm-disclaimer-title i { font-size: 11px; color: #64748b; }
+        .dm-disclaimer p {
+            font-size: 10.5px; color: #64748b; line-height: 1.65;
+            margin-bottom: 12px;
+        }
+        .dm-disclaimer p:last-of-type { margin-bottom: 10px; }
+        .dm-checkbox-label {
+            display: flex; align-items: flex-start; gap: 10px;
+            cursor: pointer;
+        }
+        .dm-checkbox-label input[type="checkbox"] {
+            appearance: none; -webkit-appearance: none;
+            width: 18px; height: 18px; border-radius: 5px;
+            border: 2px solid #d4d4d8; background: #fff;
+            flex-shrink: 0; margin-top: 1px;
+            cursor: pointer; transition: border-color 0.15s, background 0.15s;
+            position: relative;
+        }
+        .dm-checkbox-label input[type="checkbox"]:checked {
+            background: #18181b; border-color: #18181b;
+        }
+        .dm-checkbox-label input[type="checkbox"]:checked::after {
+            content: ''; position: absolute;
+            top: 2px; left: 5px;
+            width: 5px; height: 9px;
+            border: 2px solid #fff; border-top: none; border-left: none;
+            transform: rotate(45deg);
+        }
+        .dm-checkbox-text {
+            font-size: 11px; color: #18181b; font-weight: 600; line-height: 1.55;
+        }
+        .dm-checkbox-text span { color: #64748b; font-weight: 400; }
 
         .dm-footer { padding: 14px 20px 28px; border-top: 1px solid #f1f1f4; flex-shrink: 0; }
         .dm-submit {
@@ -455,6 +612,9 @@
             z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 8px;
             pointer-events: none;
         }
+        @media (min-width: 768px) {
+            #toast-container { left: calc(380px + 50% * (1 - 380px / 100vw + 380px / 100vw)); left: calc(380px + (100vw - 380px) / 2); transform: translateX(-50%); max-width: 360px; }
+        }
         .toast {
             width: 100%; padding: 13px 15px; border-radius: 14px;
             font-size: 12.5px; display: flex; align-items: flex-start; gap: 10px;
@@ -468,7 +628,7 @@
         .toast-success { background: #fff; border: 1.5px solid #bbf7d0; color: #15803d; }
         .toast-error   { background: #fff; border: 1.5px solid #fecaca; color: #b91c1c; }
         .toast-info    { background: #fff; border: 1.5px solid #bfdbfe; color: #1d4ed8; }
-        .toast-icon { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+        .toast-icon  { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
         .toast-title { font-size: 12.5px; font-weight: 700; }
         .toast-msg   { font-size: 11.5px; opacity: 0.8; margin-top: 2px; }
 
@@ -479,31 +639,19 @@
             margin-bottom: 10px; font-size: 11.5px; font-weight: 600; color: #92400e;
         }
 
-        /* ══ ACTIVITY / ORDER TRACKING ══ */
-        .track-list {
-            display: flex; flex-direction: column; gap: 12px;
-            max-height: 46vh; overflow-y: auto; padding: 2px 1px 4px;
-        }
-        .order-card {
-            border: 1.5px solid #f1f1f4; border-radius: 16px; padding: 14px;
-            background: #fafafa;
-        }
+        /* ── Order cards ── */
+        .order-card { border: 1.5px solid #f1f1f4; border-radius: 16px; padding: 14px; background: #fafafa; }
         .order-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; }
         .order-id { font-size: 12px; font-weight: 800; color: #18181b; letter-spacing: -0.1px; }
-        .order-badge {
-            font-size: 9.5px; font-weight: 700; letter-spacing: 0.2px;
-            padding: 4px 9px; border-radius: 999px; text-transform: uppercase;
-        }
+        .order-badge { font-size: 9.5px; font-weight: 700; letter-spacing: 0.2px; padding: 4px 9px; border-radius: 999px; text-transform: uppercase; }
         .badge-placed    { background: #f1f5f9; color: #475569; }
         .badge-assigned  { background: #eff6ff; color: #1d4ed8; }
         .badge-transit   { background: #fffbeb; color: #b45309; }
         .badge-delivered { background: #f0fdf4; color: #15803d; }
         .badge-cancelled { background: #fef2f2; color: #b91c1c; }
-
         .order-route { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
         .order-route-pt { font-size: 11.5px; font-weight: 600; color: #18181b; max-width: 38%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .order-route i { font-size: 9px; color: #c4c4c8; flex-shrink: 0; }
-
         .order-progress { margin-bottom: 12px; }
         .progress-track { height: 3px; background: #e4e4e7; border-radius: 3px; overflow: hidden; margin-bottom: 9px; }
         .progress-fill { height: 100%; background: #18181b; border-radius: 3px; transition: width 0.4s ease; }
@@ -513,21 +661,11 @@
         .step.done .step-dot { background: #18181b; }
         .step-label { font-size: 8.5px; font-weight: 600; color: #a1a1aa; text-align: center; }
         .step.done .step-label { color: #52525b; }
-
-        .order-footer {
-            display: flex; align-items: center; justify-content: space-between;
-            padding-top: 10px; border-top: 1px solid #e4e4e7;
-            font-size: 10.5px; color: #71717a; font-weight: 500;
-        }
+        .order-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid #e4e4e7; font-size: 10.5px; color: #71717a; font-weight: 500; }
         .order-price { font-weight: 800; color: #18181b; font-size: 12px; }
 
         /* ── Payment method ── */
-        .pay-method-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
+        .pay-method-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
         .pay-pill {
             display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
             padding: 10px 6px; border: 2px solid #e4e4e7; border-radius: 12px;
@@ -539,14 +677,8 @@
         .pay-pill.active { border-color: #18181b; background: #fafafa; color: #18181b; }
         .pay-pill.hidden { display: none; }
 
-        /*
-         * Yoco test note — hidden by default.
-         * Shown only AFTER Remote Config resolves and confirms a pk_test_ key.
-         * Live keys (pk_live_) never show this banner.
-         */
         .yoco-test-note {
-            display: none;
-            align-items: center; gap: 7px;
+            display: none; align-items: center; gap: 7px;
             font-size: 10.5px; color: #a1a1aa; font-weight: 500;
             margin: -2px 0 10px; padding-left: 1px;
         }
@@ -554,13 +686,6 @@
             font-size: 8.5px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase;
             background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 5px;
         }
-
-        #gpay-button-container {
-            margin-bottom: 8px;
-            width: 100%;
-            min-width: 250px;
-        }
-
         .gpay-test-note {
             display: flex; align-items: center; gap: 7px;
             font-size: 10.5px; color: #a1a1aa; font-weight: 500;
@@ -570,6 +695,18 @@
             font-size: 8.5px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase;
             background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 5px;
         }
+        #gpay-button-container, .gpay-btn-container-el { margin-bottom: 8px; width: 100%; min-width: 250px; }
+
+        /* Sidebar divider */
+        .sb-divider { height: 1px; background: #f1f1f4; margin: 16px -20px; }
+
+        /* Section heading row */
+        .section-hd {
+            display: flex; justify-content: space-between; align-items: baseline;
+            margin-bottom: 10px;
+        }
+        .section-hd h2 { font-size: 14px; font-weight: 700; color: #18181b; }
+        .section-hd span { font-size: 10.5px; color: #a1a1aa; }
     </style>
 </head>
 <body>
@@ -577,15 +714,15 @@
 <div id="toast-container"></div>
 
 <div id="splash">
-    <img id="splash-logo" src="logo.png" alt="CourierGo logo">
+    <div style="width:80px;height:80px;border-radius:20px;background:#18181b;display:flex;align-items:center;justify-content:center;margin-bottom:18px;box-shadow:0 8px 32px rgba(0,0,0,0.12);">
+        <i class="fa-solid fa-truck-fast" style="font-size:32px;color:#fff;"></i>
+    </div>
     <h1 style="color:#18181b;font-size:28px;font-weight:900;letter-spacing:-0.6px;">CourierGo</h1>
     <p style="color:#71717a;font-size:13px;margin-top:6px;">Fast. Reliable. Tracked.</p>
 </div>
 
 <div id="signin-gate">
-    <div class="signin-logo-wrap">
-        <i class="fa-solid fa-truck-fast"></i>
-    </div>
+    <div class="signin-logo-wrap"><i class="fa-solid fa-truck-fast"></i></div>
     <div class="signin-title">CourierGo</div>
     <div class="signin-sub">Send packages, track deliveries, and manage your profile — all in one place.</div>
     <button class="google-btn" onclick="signInWithGoogle()">
@@ -602,7 +739,10 @@
 
 <div id="map"></div>
 
-<button id="avatar-btn" onclick="openProfile()" style="display:none;">
+<!-- ════════════════════════════════════════
+     MOBILE ELEMENTS
+════════════════════════════════════════ -->
+<button id="avatar-btn" onclick="openProfile()">
     <span class="av-init" id="avatar-btn-init">?</span>
 </button>
 
@@ -630,18 +770,15 @@
     <div class="sheet-handle-wrap" onclick="toggleSheet()">
         <div class="sheet-handle"></div>
     </div>
-
     <div class="tabs">
         <button id="tab-send"  class="tab-btn active" onclick="switchTab('send')">Send Package</button>
         <button id="tab-track" class="tab-btn"        onclick="switchTab('track')">Activity</button>
     </div>
-
     <div id="view-send">
         <div id="phone-warn" class="phone-warn" style="display:none;">
             <i class="fa-solid fa-triangle-exclamation"></i>
             <span>Add a mobile number in your profile so the driver can reach you.</span>
         </div>
-
         <div id="route-bar">
             <div class="route-stat"><span class="route-stat-val" id="route-dist">—</span><span class="route-stat-lbl">Distance</span></div>
             <div class="route-divider"></div>
@@ -649,158 +786,86 @@
             <div class="route-divider"></div>
             <div class="route-stat"><span class="route-stat-val" id="route-price">—</span><span class="route-stat-lbl">Base fare</span></div>
         </div>
-
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
-            <h2 style="font-size:14px;font-weight:700;color:#18181b;">Package size</h2>
-            <span style="font-size:10.5px;color:#a1a1aa;">Swipe →</span>
+        <div class="section-hd" style="margin-bottom:10px;">
+            <h2>Package size</h2><span>Swipe →</span>
         </div>
-
-        <div class="pkg-scroll">
-            <div class="pkg-card" id="pkg-food" onclick="selectPackage(this,'Food Delivery',45)">
+        <div class="pkg-scroll" id="mobile-pkg-scroll">
+            <div class="pkg-card" id="pkg-food-mobile" onclick="selectPackage(this,'Food Delivery',45,'mobile')">
                 <div><div class="pkg-icon"><i class="fa-solid fa-utensils"></i></div>
                 <div class="pkg-name">Food Delivery</div>
-                <div class="pkg-weight" id="pkg-food-weight">Restaurant orders</div></div>
+                <div class="pkg-weight" id="pkg-food-weight-mobile">Restaurant orders</div></div>
                 <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R45</span></div>
             </div>
-            <div class="pkg-card" onclick="selectPackage(this,'Document',40)">
+            <div class="pkg-card" onclick="selectPackage(this,'Document',40,'mobile')">
                 <div><div class="pkg-icon"><i class="fa-solid fa-envelope"></i></div>
                 <div class="pkg-name">Document</div><div class="pkg-weight">Up to 1 kg</div></div>
                 <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R40</span></div>
             </div>
-            <div class="pkg-card" onclick="selectPackage(this,'Small Parcel',65)">
+            <div class="pkg-card" onclick="selectPackage(this,'Small Parcel',65,'mobile')">
                 <div><div class="pkg-icon"><i class="fa-solid fa-box-open"></i></div>
                 <div class="pkg-name">Small Parcel</div><div class="pkg-weight">Up to 5 kg</div></div>
                 <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R65</span></div>
             </div>
-            <div class="pkg-card" onclick="selectPackage(this,'Medium Box',110)">
+            <div class="pkg-card" onclick="selectPackage(this,'Medium Box',110,'mobile')">
                 <div><div class="pkg-icon"><i class="fa-solid fa-box"></i></div>
                 <div class="pkg-name">Medium Box</div><div class="pkg-weight">Up to 15 kg</div></div>
                 <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R110</span></div>
             </div>
-            <div class="pkg-card" onclick="selectPackage(this,'Large Freight',180)">
+            <div class="pkg-card" onclick="selectPackage(this,'Large Freight',180,'mobile')">
                 <div><div class="pkg-icon"><i class="fa-solid fa-pallet"></i></div>
                 <div class="pkg-name">Large Freight</div><div class="pkg-weight">Up to 30 kg</div></div>
                 <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R180</span></div>
             </div>
         </div>
-
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
-            <h2 style="font-size:14px;font-weight:700;color:#18181b;">Payment method</h2>
-        </div>
-
+        <div class="section-hd" style="margin-bottom:10px;"><h2>Payment method</h2></div>
         <div class="pay-method-row">
-            <button class="pay-pill active" id="pay-pill-cash" onclick="selectPaymentMethod('cash')">
-                <i class="fa-solid fa-money-bill-wave"></i>
-                Cash
+            <button class="pay-pill active" id="pay-pill-cash-mobile" onclick="selectPaymentMethod('cash','mobile')">
+                <i class="fa-solid fa-money-bill-wave"></i>Cash
             </button>
-            <button class="pay-pill hidden" id="pay-pill-gpay" onclick="selectPaymentMethod('google_pay')">
-                <i class="fa-brands fa-google-pay"></i>
-                Google Pay
+            <button class="pay-pill hidden" id="pay-pill-gpay-mobile" onclick="selectPaymentMethod('google_pay','mobile')">
+                <i class="fa-brands fa-google-pay"></i>Google Pay
             </button>
-            <button class="pay-pill" id="pay-pill-yoco" onclick="selectPaymentMethod('yoco')">
-                <svg width="36" height="14" viewBox="0 0 120 46" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:1px;">
-                    <path d="M0 0h120v46H0z" fill="none"/>
-                    <text x="4" y="36" font-family="Arial Black,Arial" font-weight="900" font-size="40" fill="currentColor">Yoco</text>
-                </svg>
+            <button class="pay-pill" id="pay-pill-yoco-mobile" onclick="selectPaymentMethod('yoco','mobile')">
+                <svg width="36" height="14" viewBox="0 0 120 46" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="4" y="36" font-family="Arial Black,Arial" font-weight="900" font-size="40" fill="currentColor">Yoco</text></svg>
                 Card
             </button>
         </div>
-
-        <!--
-            Yoco test-mode note.
-            Hidden by default — display is set to 'flex' by updateYocoTestNote()
-            ONLY when: (1) Yoco pill is active AND (2) Remote Config returned a pk_test_ key.
-            Live keys never show this banner.
-        -->
-        <div class="yoco-test-note" id="yoco-test-note">
-            <span class="test-tag" id="yoco-test-tag">Test mode</span>
-            <span id="yoco-test-msg">Sandbox payment — no real charge will be made.</span>
+        <div class="yoco-test-note" id="yoco-test-note-mobile">
+            <span class="test-tag" id="yoco-test-tag-mobile">Test mode</span>
+            <span id="yoco-test-msg-mobile">Sandbox payment — no real charge will be made.</span>
         </div>
-
-        <!-- Google Pay test note -->
-        <div class="gpay-test-note" id="gpay-test-note" style="display:none;">
+        <div class="gpay-test-note" id="gpay-test-note-mobile" style="display:none;">
             <span class="test-tag">Test mode</span> Sandbox payment — no real charge will be made.
         </div>
-
-        <div id="gpay-button-container" style="display:none;"></div>
-
+        <div id="gpay-button-container-mobile" style="display:none;"></div>
         <button id="submitBtn" onclick="confirmBooking()">
             <span id="submitLabel">Set pickup &amp; destination</span>
         </button>
     </div>
-
     <div id="view-track" style="display:none;">
-        <div id="track-empty" class="track-empty">
+        <div id="track-empty-mobile" class="track-empty">
             <i class="fa-solid fa-box-open" style="font-size:28px;display:block;margin-bottom:10px;opacity:0.25;"></i>
             No deliveries yet.<br>Your orders will appear here.
         </div>
-        <div id="track-list" class="track-list" style="display:none;"></div>
+        <div id="track-list-mobile" class="track-list" style="display:none;max-height:46vh;"></div>
     </div>
 </div>
 
+<!-- Mobile profile drawer -->
 <div id="profile-overlay" onclick="closeProfile()"></div>
-
 <div id="profile-drawer">
     <div class="drawer-header">
         <button class="drawer-close" onclick="closeProfile()"><i class="fa-solid fa-xmark"></i></button>
-        <div class="drawer-avatar-wrap" id="drawer-avatar-wrap">
-            <span class="av-init-lg" id="drawer-avatar-init">?</span>
-        </div>
-        <div class="drawer-name"  id="drawer-name">—</div>
-        <div class="drawer-email" id="drawer-email">—</div>
+        <div class="drawer-avatar-wrap" id="drawer-avatar-wrap-mobile"><span class="av-init-lg" id="drawer-avatar-init-mobile">?</span></div>
+        <div class="drawer-name"  id="drawer-name-mobile">—</div>
+        <div class="drawer-email" id="drawer-email-mobile">—</div>
     </div>
-
-    <div class="drawer-body">
-        <div class="drawer-section-title">Mobile number for deliveries</div>
-        <div class="phone-field-wrap">
-            <i class="fa-solid fa-phone phone-field-icon"></i>
-            <input id="phone-input" class="phone-field" type="tel"
-                   placeholder="+27 60 123 4567"
-                   inputmode="tel">
-        </div>
-        <button class="phone-save-btn" onclick="savePhone()">Save number</button>
-        <p class="phone-hint">This number is shared with the driver so they can contact you about your delivery.</p>
-
-        <div class="drawer-section-title">Account</div>
-        <div class="info-row">
-            <div class="info-row-icon"><i class="fa-solid fa-user"></i></div>
-            <div class="info-row-text">
-                <div class="ir-label">Full name</div>
-                <div class="ir-value" id="info-name">—</div>
-            </div>
-        </div>
-        <div class="info-row">
-            <div class="info-row-icon"><i class="fa-solid fa-envelope"></i></div>
-            <div class="info-row-text">
-                <div class="ir-label">Email</div>
-                <div class="ir-value" id="info-email">—</div>
-            </div>
-        </div>
-        <div class="info-row">
-            <div class="info-row-icon"><i class="fa-solid fa-phone"></i></div>
-            <div class="info-row-text">
-                <div class="ir-label">Mobile</div>
-                <div class="ir-value" id="info-phone">Not set</div>
-            </div>
-        </div>
-
-        <div class="drawer-section-title">Drive with CourierGo</div>
-        <div class="driver-cta" id="driver-cta-default" onclick="openDriverModal()">
-            <div class="driver-cta-icon"><i class="fa-solid fa-truck-pickup"></i></div>
-            <div class="driver-cta-text">
-                <div class="driver-cta-title">Become a driver</div>
-                <div class="driver-cta-sub">Earn with your bakkie or motorbike</div>
-            </div>
-            <i class="fa-solid fa-chevron-right driver-cta-arrow"></i>
-        </div>
-        <div class="driver-status-card" id="driver-status-card" style="display:none;"></div>
-
-        <button class="logout-btn" onclick="signOut()">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out
-        </button>
+    <div class="drawer-body" id="profile-body-mobile">
+        <!-- populated by renderProfileBody() -->
     </div>
 </div>
 
+<!-- Mobile driver modal -->
 <div id="driver-modal-overlay" onclick="closeDriverModalOnOverlay(event)">
     <div id="driver-modal" onclick="event.stopPropagation()">
         <div class="dm-header">
@@ -810,94 +875,192 @@
             </div>
             <button class="dm-close" onclick="closeDriverModal()"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div class="dm-body">
-            <div class="dm-field">
-                <label class="dm-label">Vehicle type</label>
-                <div class="vehicle-type-row">
-                    <div class="vehicle-pill" id="vt-bakkie" onclick="selectVehicleType('Bakkie')">
-                        <i class="fa-solid fa-truck-pickup"></i><span>Bakkie</span>
-                    </div>
-                    <div class="vehicle-pill" id="vt-motorbike" onclick="selectVehicleType('Motorbike')">
-                        <i class="fa-solid fa-motorcycle"></i><span>Motorbike</span>
-                    </div>
-                </div>
-            </div>
-            <div class="dm-field">
-                <label class="dm-label">Full name</label>
-                <input id="dm-name" class="dm-input" type="text" placeholder="As on your ID">
-            </div>
-            <div class="dm-field">
-                <label class="dm-label">Mobile number</label>
-                <input id="dm-phone" class="dm-input" type="tel" placeholder="+27 60 123 4567" inputmode="tel">
-            </div>
-            <div class="dm-field">
-                <label class="dm-label">ID number</label>
-                <input id="dm-id" class="dm-input" type="text" placeholder="13-digit SA ID number" inputmode="numeric">
-            </div>
-            <div class="dm-field">
-                <label class="dm-label">Driver's license number</label>
-                <input id="dm-license" class="dm-input" type="text" placeholder="License number">
-            </div>
-            <div class="dm-field">
-                <label class="dm-label">Vehicle make &amp; model</label>
-                <input id="dm-vehicle-model" class="dm-input" type="text" placeholder="e.g. Toyota Hilux 2019">
-            </div>
-            <div class="dm-field">
-                <label class="dm-label">License plate</label>
-                <input id="dm-plate" class="dm-input" type="text" placeholder="e.g. CA 123-456">
-            </div>
-            <div class="dm-field" style="margin-bottom:0;">
-                <label class="dm-label">City / area of operation</label>
-                <input id="dm-city" class="dm-input" type="text" placeholder="e.g. Johannesburg">
-            </div>
+        <div class="dm-body" id="driver-form-body-mobile">
+            <!-- populated by renderDriverFormBody() -->
         </div>
         <div class="dm-footer">
-            <button class="dm-submit" id="dm-submit-btn" onclick="submitDriverApplication()">Submit application</button>
+            <button class="dm-submit" id="dm-submit-btn-mobile" onclick="submitDriverApplication('mobile')">Submit application</button>
             <div class="dm-legal">We'll review your details and contact you on the number provided.</div>
         </div>
     </div>
 </div>
 
+<!-- ════════════════════════════════════════
+     DESKTOP SIDEBAR
+════════════════════════════════════════ -->
+<div id="desktop-sidebar">
+    <!-- Sidebar Header -->
+    <div class="sb-header">
+        <div class="sb-logo-icon"><i class="fa-solid fa-truck-fast"></i></div>
+        <div class="sb-logo-text">
+            <div class="sb-logo-name">CourierGo</div>
+            <div class="sb-logo-tag">Fast · Reliable · Tracked</div>
+        </div>
+        <div class="sb-avatar-btn" id="sb-avatar-btn" onclick="desktopShowProfile()">
+            <span class="av-init" id="sb-avatar-init">?</span>
+        </div>
+    </div>
+
+    <!-- Search bar (always visible in sidebar) -->
+    <div class="sb-search-section">
+        <div class="sb-search-label">Route</div>
+        <div class="search-card" id="sb-search-card">
+            <div class="search-row" style="border-radius:20px 20px 0 0; position:relative;">
+                <span class="search-dot pickup"></span>
+                <input id="input-pickup-sb" class="search-input" placeholder="Pickup location" autocomplete="off">
+                <button id="clear-pickup-sb" class="search-clear" onclick="clearInput('pickup','sb')"><i class="fa-solid fa-xmark"></i></button>
+                <div id="sugg-pickup-sb" class="suggestions-box"></div>
+            </div>
+            <div style="height:1px;background:#f1f1f4;position:relative;">
+                <div style="position:absolute;left:23px;top:-5px;width:1.5px;height:11px;background:#d4d4d8;"></div>
+            </div>
+            <div class="search-row" style="border-radius:0 0 20px 20px; position:relative;">
+                <span class="search-dot dropoff"></span>
+                <input id="input-dropoff-sb" class="search-input" placeholder="Delivery destination" autocomplete="off">
+                <button id="clear-dropoff-sb" class="search-clear" onclick="clearInput('dropoff','sb')"><i class="fa-solid fa-xmark"></i></button>
+                <div id="sugg-dropoff-sb" class="suggestions-box"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main panel -->
+    <div id="sb-panel-main" class="sb-body sb-panel">
+        <div class="sb-divider" style="margin-top:16px;"></div>
+
+        <!-- Tabs -->
+        <div class="sb-tabs">
+            <button id="sb-tab-send"  class="sb-tab-btn active" onclick="sbSwitchTab('send')">Send Package</button>
+            <button id="sb-tab-track" class="sb-tab-btn"        onclick="sbSwitchTab('track')">Activity</button>
+        </div>
+
+        <!-- Send view -->
+        <div id="sb-view-send">
+            <div id="sb-phone-warn" class="phone-warn" style="display:none;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Add a mobile number in your profile so the driver can reach you.</span>
+            </div>
+            <div class="route-bar-el" id="sb-route-bar">
+                <div class="route-stat"><span class="route-stat-val" id="sb-route-dist">—</span><span class="route-stat-lbl">Distance</span></div>
+                <div class="route-divider"></div>
+                <div class="route-stat"><span class="route-stat-val" id="sb-route-time">—</span><span class="route-stat-lbl">Est. time</span></div>
+                <div class="route-divider"></div>
+                <div class="route-stat"><span class="route-stat-val" id="sb-route-price">—</span><span class="route-stat-lbl">Base fare</span></div>
+            </div>
+            <div class="section-hd" style="margin-bottom:10px;"><h2>Package size</h2><span>Scroll →</span></div>
+            <div class="pkg-scroll" id="sb-pkg-scroll">
+                <div class="pkg-card" id="pkg-food-sb" onclick="selectPackage(this,'Food Delivery',45,'sb')">
+                    <div><div class="pkg-icon"><i class="fa-solid fa-utensils"></i></div>
+                    <div class="pkg-name">Food Delivery</div>
+                    <div class="pkg-weight" id="pkg-food-weight-sb">Restaurant orders</div></div>
+                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R45</span></div>
+                </div>
+                <div class="pkg-card" onclick="selectPackage(this,'Document',40,'sb')">
+                    <div><div class="pkg-icon"><i class="fa-solid fa-envelope"></i></div>
+                    <div class="pkg-name">Document</div><div class="pkg-weight">Up to 1 kg</div></div>
+                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R40</span></div>
+                </div>
+                <div class="pkg-card" onclick="selectPackage(this,'Small Parcel',65,'sb')">
+                    <div><div class="pkg-icon"><i class="fa-solid fa-box-open"></i></div>
+                    <div class="pkg-name">Small Parcel</div><div class="pkg-weight">Up to 5 kg</div></div>
+                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R65</span></div>
+                </div>
+                <div class="pkg-card" onclick="selectPackage(this,'Medium Box',110,'sb')">
+                    <div><div class="pkg-icon"><i class="fa-solid fa-box"></i></div>
+                    <div class="pkg-name">Medium Box</div><div class="pkg-weight">Up to 15 kg</div></div>
+                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R110</span></div>
+                </div>
+                <div class="pkg-card" onclick="selectPackage(this,'Large Freight',180,'sb')">
+                    <div><div class="pkg-icon"><i class="fa-solid fa-pallet"></i></div>
+                    <div class="pkg-name">Large Freight</div><div class="pkg-weight">Up to 30 kg</div></div>
+                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R180</span></div>
+                </div>
+            </div>
+            <div class="section-hd" style="margin-bottom:10px;"><h2>Payment method</h2></div>
+            <div class="pay-method-row">
+                <button class="pay-pill active" id="pay-pill-cash-sb" onclick="selectPaymentMethod('cash','sb')">
+                    <i class="fa-solid fa-money-bill-wave"></i>Cash
+                </button>
+                <button class="pay-pill hidden" id="pay-pill-gpay-sb" onclick="selectPaymentMethod('google_pay','sb')">
+                    <i class="fa-brands fa-google-pay"></i>Google Pay
+                </button>
+                <button class="pay-pill" id="pay-pill-yoco-sb" onclick="selectPaymentMethod('yoco','sb')">
+                    <svg width="36" height="14" viewBox="0 0 120 46" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="4" y="36" font-family="Arial Black,Arial" font-weight="900" font-size="40" fill="currentColor">Yoco</text></svg>
+                    Card
+                </button>
+            </div>
+            <div class="yoco-test-note" id="yoco-test-note-sb">
+                <span class="test-tag" id="yoco-test-tag-sb">Test mode</span>
+                <span id="yoco-test-msg-sb">Sandbox payment — no real charge will be made.</span>
+            </div>
+            <div class="gpay-test-note" id="gpay-test-note-sb" style="display:none;">
+                <span class="test-tag">Test mode</span> Sandbox payment — no real charge will be made.
+            </div>
+            <div id="gpay-button-container-sb" class="gpay-btn-container-el" style="display:none;"></div>
+            <button class="submit-btn-el" id="submitBtn-sb" onclick="confirmBooking()">
+                <span id="submitLabel-sb">Set pickup &amp; destination</span>
+            </button>
+        </div>
+
+        <!-- Track view -->
+        <div id="sb-view-track" style="display:none;">
+            <div id="track-empty-sb" class="track-empty">
+                <i class="fa-solid fa-box-open" style="font-size:28px;display:block;margin-bottom:10px;opacity:0.25;"></i>
+                No deliveries yet.<br>Your orders will appear here.
+            </div>
+            <div id="track-list-sb" class="track-list" style="display:none;"></div>
+        </div>
+    </div>
+
+    <!-- Profile panel -->
+    <div id="sb-panel-profile" class="sb-body sb-panel" style="display:none;">
+        <button class="sb-back-btn" onclick="desktopShowMain()">
+            <i class="fa-solid fa-chevron-left"></i> Back
+        </button>
+        <div class="drawer-header desktop-header" style="margin:0 -24px 0;border-radius:16px;overflow:hidden;">
+            <div class="drawer-avatar-wrap" id="drawer-avatar-wrap-sb"><span class="av-init-lg" id="drawer-avatar-init-sb">?</span></div>
+            <div class="drawer-name"  id="drawer-name-sb">—</div>
+            <div class="drawer-email" id="drawer-email-sb">—</div>
+        </div>
+        <div id="profile-body-sb" style="margin-top:20px;">
+            <!-- populated by renderProfileBody() -->
+        </div>
+    </div>
+
+    <!-- Driver form panel -->
+    <div id="sb-panel-driver" class="sb-body sb-panel" style="display:none;">
+        <button class="sb-back-btn" onclick="desktopShowProfile()">
+            <i class="fa-solid fa-chevron-left"></i> Back to profile
+        </button>
+        <div style="margin-bottom:16px;">
+            <div class="dm-title">Become a Driver</div>
+            <div class="dm-sub" style="margin-top:6px;">Join CourierGo with your bakkie or motorbike and start earning on your own schedule.</div>
+        </div>
+        <div id="driver-form-body-sb" style="flex:1;">
+            <!-- populated by renderDriverFormBody() -->
+        </div>
+        <button class="dm-submit" id="dm-submit-btn-sb" onclick="submitDriverApplication('sb')" style="margin-top:16px;">Submit application</button>
+        <div class="dm-legal" style="margin-top:10px;">We'll review your details and contact you on the number provided.</div>
+    </div>
+</div>
+
 <script type="module">
 import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import {
-    getAuth,
-    GoogleAuthProvider,
-    signInWithPopup,
-    signOut as fbSignOut,
-    onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import {
-    getDatabase, ref, push, set, get, update, onValue, query, orderByChild, equalTo
-} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-import {
-    getRemoteConfig,
-    fetchAndActivate,
-    getValue
-} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-remote-config.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { getDatabase, ref, push, set, get, update, onValue, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+import { getRemoteConfig, fetchAndActivate, getValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-remote-config.js";
 
 const MAPBOX_TOKEN = "pk.eyJ1Ijoia2F0bGVnb3BoYXNoYSIsImEiOiJjbTlpOTdzbmYwMGNsMmpzYWJtZzN4d3pqIn0.Zt-aSMEoahrV3zkiVVHbOw";
 const SHIPDAY_KEY  = "K5a8wQJF3f.az2zfrhgzwxK9JONI2y8";
-
-/*
- * YOCO_PUBLIC_KEY is always null on boot.
- * It is populated exclusively by initRemoteConfig() after Firebase Remote Config
- * resolves the "yoco_public_key" parameter you set in the Firebase console.
- *
- * pk_test_... → test mode banner shown when Yoco pill is selected
- * pk_live_... → no banner (live, real charges)
- * ""          → Yoco payment option remains but shows an error on tap
- */
 let YOCO_PUBLIC_KEY = null;
 
 const firebaseConfig = {
-    apiKey:            "AIzaSyBQSPwpVbGrdCuOoyitAeWQHIeipj2MgIY",
-    authDomain:        "newstart-64c43.firebaseapp.com",
-    databaseURL:       "https://newstart-64c43-default-rtdb.firebaseio.com",
-    projectId:         "newstart-64c43",
-    storageBucket:     "newstart-64c43.firebasestorage.app",
+    apiKey: "AIzaSyBQSPwpVbGrdCuOoyitAeWQHIeipj2MgIY",
+    authDomain: "newstart-64c43.firebaseapp.com",
+    databaseURL: "https://newstart-64c43-default-rtdb.firebaseio.com",
+    projectId: "newstart-64c43",
+    storageBucket: "newstart-64c43.firebasestorage.app",
     messagingSenderId: "941619830061",
-    appId:             "1:941619830061:web:de9e0f791eb8f6eacf87a4"
+    appId: "1:941619830061:web:de9e0f791eb8f6eacf87a4"
 };
 
 const fbApp    = initializeApp(firebaseConfig);
@@ -905,88 +1068,81 @@ const auth     = getAuth(fbApp);
 const database = getDatabase(fbApp);
 const provider = new GoogleAuthProvider();
 
-/* ── Remote Config ──────────────────────────────────────────────────────────
- * Sets YOCO_PUBLIC_KEY from the "yoco_public_key" Remote Config parameter,
- * then calls updateYocoTestNote() so the banner reflects the actual key type.
- * ───────────────────────────────────────────────────────────────────────── */
 const remoteConfig = getRemoteConfig(fbApp);
-remoteConfig.settings.minimumFetchIntervalMillis = 3600000; // 1 h in production
-remoteConfig.defaultConfig = { yoco_public_key: "" };      // safe offline fallback
+remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
+remoteConfig.defaultConfig = { yoco_public_key: "" };
 
 async function initRemoteConfig() {
     try {
         await fetchAndActivate(remoteConfig);
         const key = getValue(remoteConfig, "yoco_public_key").asString();
-        if (key) {
-            YOCO_PUBLIC_KEY = key;
-            // Banner visibility is now driven by the real key — update it
-            updateYocoTestNote();
-            console.log("Yoco public key loaded from Remote Config.");
-        } else {
-            console.warn("yoco_public_key not set in Remote Config — Yoco payments disabled.");
-        }
-    } catch (e) {
-        console.warn("Remote Config fetch failed:", e.message);
-    }
+        if (key) { YOCO_PUBLIC_KEY = key; updateYocoTestNote('mobile'); updateYocoTestNote('sb'); }
+    } catch(e) { console.warn("Remote Config fetch failed:", e.message); }
 }
-
-// Fire in parallel with auth — whichever finishes first is fine
 initRemoteConfig();
 
-/* ── State ── */
-let currentUser = null;
-let userProfile = {};
+/* ─── Helpers ─── */
+function isDesktop() { return window.innerWidth >= 768; }
+function initials(name) { if (!name) return '?'; return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
 
-/* ── Toast ── */
-function showToast(type, title, msg, duration = 4200) {
+/* ─── State ─── */
+let currentUser    = null;
+let userProfile    = {};
+let selectedPkg    = null;
+let selectedPayment = { mobile: 'cash', sb: 'cash' };
+let routeDistKm    = 0;
+let selectedCoords = { pickup: null, dropoff: null };
+let suggFeatures   = { pickup: [], dropoff: [] };
+let debounceTimers = {};
+let ordersListenerAttached = false;
+let selectedVehicleType    = null;
+
+/* ─── Toast ─── */
+function showToast(type, title, msg, duration=4200) {
     const icons = { success:'fa-circle-check', error:'fa-circle-xmark', info:'fa-circle-info' };
     const t = document.createElement('div');
     t.className = `toast toast-${type}`;
-    t.innerHTML = `<i class="fa-solid ${icons[type]} toast-icon"></i>
-        <div><div class="toast-title">${title}</div>${msg ? `<div class="toast-msg">${msg}</div>` : ''}</div>`;
+    t.innerHTML = `<i class="fa-solid ${icons[type]} toast-icon"></i><div><div class="toast-title">${title}</div>${msg?`<div class="toast-msg">${msg}</div>`:''}</div>`;
     document.getElementById('toast-container').appendChild(t);
-    requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
-    setTimeout(() => { t.classList.add('hide'); t.addEventListener('transitionend', () => t.remove(), { once:true }); }, duration);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+    setTimeout(()=>{ t.classList.add('hide'); t.addEventListener('transitionend',()=>t.remove(),{once:true}); }, duration);
 }
 window.showToast = showToast;
 
-/* ── Auth ── */
+/* ─── Auth ─── */
 window.signInWithGoogle = async function() {
-    try {
-        await signInWithPopup(auth, provider);
-    } catch(e) {
-        if (e.code !== 'auth/popup-closed-by-user') showToast('error', 'Sign-in failed', e.message);
-    }
+    try { await signInWithPopup(auth, provider); }
+    catch(e) { if (e.code !== 'auth/popup-closed-by-user') showToast('error','Sign-in failed',e.message); }
 };
-
 window.signOut = async function() {
     await fbSignOut(auth);
-    showToast('info', 'Signed out', 'See you next time.');
-    closeProfile();
+    showToast('info','Signed out','See you next time.');
+    closeProfile(); desktopShowMain();
 };
 
 async function loadUserProfile(user) {
-    const snap = await get(ref(database, `users/${user.uid}`));
-    if (snap.exists()) {
-        userProfile = snap.val();
-    } else {
-        userProfile = { name: user.displayName || '', email: user.email || '', phone: '', photoURL: user.photoURL || '' };
-        await set(ref(database, `users/${user.uid}`), userProfile);
-    }
+    const snap = await get(ref(database,`users/${user.uid}`));
+    if (snap.exists()) { userProfile = snap.val(); }
+    else { userProfile = {name:user.displayName||'',email:user.email||'',phone:'',photoURL:user.photoURL||''}; await set(ref(database,`users/${user.uid}`),userProfile); }
     userProfile.name     = user.displayName || userProfile.name;
     userProfile.email    = user.email       || userProfile.email;
     userProfile.photoURL = user.photoURL    || userProfile.photoURL;
 }
 
 window.savePhone = async function() {
-    const val = document.getElementById('phone-input').value.trim();
-    if (!val) { showToast('error', 'Enter a number', 'Phone number cannot be empty.'); return; }
+    const val = document.getElementById('phone-input') ? document.getElementById('phone-input').value.trim()
+              : document.getElementById('phone-input-sb') ? document.getElementById('phone-input-sb').value.trim() : '';
+    const activeInput = document.getElementById('phone-input-sb') || document.getElementById('phone-input');
+    const sbInput = document.getElementById('phone-input-sb');
+    const mobInput = document.getElementById('phone-input');
+    const v = (sbInput && sbInput.value.trim()) || (mobInput && mobInput.value.trim()) || '';
+    if (!v) { showToast('error','Enter a number','Phone number cannot be empty.'); return; }
     if (!currentUser) return;
-    await update(ref(database, `users/${currentUser.uid}`), { phone: val });
-    userProfile.phone = val;
+    await update(ref(database,`users/${currentUser.uid}`),{phone:v});
+    userProfile.phone = v;
     renderProfileUI();
-    showToast('success', 'Number saved', 'Your driver will use this to contact you.');
-    document.getElementById('phone-warn').style.display = 'none';
+    showToast('success','Number saved','Your driver will use this to contact you.');
+    ['phone-warn','sb-phone-warn'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
 };
 
 onAuthStateChanged(auth, async (user) => {
@@ -1003,10 +1159,8 @@ onAuthStateChanged(auth, async (user) => {
         attachOrdersListener();
         loadDriverApplication();
     } else {
-        currentUser = null;
-        userProfile = {};
-        ordersListenerAttached = false;
-        selectedVehicleType = null;
+        currentUser = null; userProfile = {};
+        ordersListenerAttached = false; selectedVehicleType = null;
         renderOrders(null);
         renderDriverStatus(null);
         closeDriverModal();
@@ -1017,121 +1171,179 @@ onAuthStateChanged(auth, async (user) => {
 
 function hideSplash() {
     const s = document.getElementById('splash');
-    if (s) { s.classList.add('hide'); setTimeout(() => s.remove(), 650); }
-}
-
-function initials(name) {
-    if (!name) return '?';
-    return name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+    if (s) { s.classList.add('hide'); setTimeout(()=>s.remove(),650); }
 }
 
 function renderAvatarBtn() {
+    // Mobile
     const btn  = document.getElementById('avatar-btn');
-    const init = document.getElementById('avatar-btn-init');
-    if (userProfile.photoURL) {
-        btn.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar" onerror="this.style.display='none'">`;
-    } else {
-        init.textContent = initials(userProfile.name);
+    if (userProfile.photoURL) btn.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
+    else document.getElementById('avatar-btn-init').textContent = initials(userProfile.name);
+    // Desktop sidebar
+    const sbBtn  = document.getElementById('sb-avatar-btn');
+    const sbInit = document.getElementById('sb-avatar-init');
+    if (sbBtn) {
+        if (userProfile.photoURL) sbBtn.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
+        else sbInit.textContent = initials(userProfile.name);
     }
+}
+
+/* ─── Profile body template (shared between mobile drawer & desktop panel) ─── */
+function profileBodyHTML(ctx) {
+    // ctx = 'mobile' | 'sb'
+    return `
+    <div class="drawer-section-title">Mobile number for deliveries</div>
+    <div class="phone-field-wrap">
+        <i class="fa-solid fa-phone phone-field-icon"></i>
+        <input id="phone-input-${ctx}" class="phone-field" type="tel" placeholder="+27 60 123 4567" inputmode="tel" value="${userProfile.phone||''}">
+    </div>
+    <button class="phone-save-btn" onclick="savePhone()">Save number</button>
+    <p class="phone-hint">This number is shared with the driver so they can contact you about your delivery.</p>
+
+    <div class="drawer-section-title">Account</div>
+    <div class="info-row">
+        <div class="info-row-icon"><i class="fa-solid fa-user"></i></div>
+        <div class="info-row-text"><div class="ir-label">Full name</div><div class="ir-value">${userProfile.name||'—'}</div></div>
+    </div>
+    <div class="info-row">
+        <div class="info-row-icon"><i class="fa-solid fa-envelope"></i></div>
+        <div class="info-row-text"><div class="ir-label">Email</div><div class="ir-value">${userProfile.email||'—'}</div></div>
+    </div>
+    <div class="info-row">
+        <div class="info-row-icon"><i class="fa-solid fa-phone"></i></div>
+        <div class="info-row-text"><div class="ir-label">Mobile</div><div class="ir-value">${userProfile.phone||'Not set'}</div></div>
+    </div>
+
+    <div class="drawer-section-title">Drive with CourierGo</div>
+    <div class="driver-cta" id="driver-cta-${ctx}" onclick="${ctx==='sb'?'desktopShowDriver()':'openDriverModal()'}">
+        <div class="driver-cta-icon"><i class="fa-solid fa-truck-pickup"></i></div>
+        <div class="driver-cta-text"><div class="driver-cta-title">Become a driver</div><div class="driver-cta-sub">Earn with your bakkie or motorbike</div></div>
+        <i class="fa-solid fa-chevron-right driver-cta-arrow"></i>
+    </div>
+    <div class="driver-status-card" id="driver-status-card-${ctx}" style="display:none;"></div>
+
+    <button class="logout-btn" onclick="signOut()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out</button>`;
+}
+
+/* ─── Driver form body template ─── */
+function driverFormBodyHTML(ctx) {
+    return `
+    <div class="dm-field">
+        <label class="dm-label">Vehicle type</label>
+        <div class="vehicle-type-row">
+            <div class="vehicle-pill" id="vt-bakkie-${ctx}" onclick="selectVehicleType('Bakkie','${ctx}')">
+                <i class="fa-solid fa-truck-pickup"></i><span>Bakkie</span>
+            </div>
+            <div class="vehicle-pill" id="vt-motorbike-${ctx}" onclick="selectVehicleType('Motorbike','${ctx}')">
+                <i class="fa-solid fa-motorcycle"></i><span>Motorbike</span>
+            </div>
+        </div>
+    </div>
+    <div class="dm-field"><label class="dm-label">Full name</label><input id="dm-name-${ctx}" class="dm-input" type="text" placeholder="As on your ID"></div>
+    <div class="dm-field"><label class="dm-label">Mobile number</label><input id="dm-phone-${ctx}" class="dm-input" type="tel" placeholder="+27 60 123 4567" inputmode="tel"></div>
+    <div class="dm-field"><label class="dm-label">ID number</label><input id="dm-id-${ctx}" class="dm-input" type="text" placeholder="13-digit SA ID number" inputmode="numeric"></div>
+    <div class="dm-field"><label class="dm-label">Driver's license number</label><input id="dm-license-${ctx}" class="dm-input" type="text" placeholder="License number"></div>
+    <div class="dm-field"><label class="dm-label">Vehicle make &amp; model</label><input id="dm-vehicle-model-${ctx}" class="dm-input" type="text" placeholder="e.g. Toyota Hilux 2019"></div>
+    <div class="dm-field"><label class="dm-label">License plate</label><input id="dm-plate-${ctx}" class="dm-input" type="text" placeholder="e.g. CA 123-456"></div>
+    <div class="dm-field" style="margin-bottom:16px;"><label class="dm-label">City / area of operation</label><input id="dm-city-${ctx}" class="dm-input" type="text" placeholder="e.g. Johannesburg"></div>
+
+    <div class="dm-disclaimer">
+        <div class="dm-disclaimer-title">
+            <i class="fa-solid fa-shield-halved"></i>
+            Background check &amp; data consent
+        </div>
+        <p>CourierGo will conduct a background check on your provided information, including your ID number and driver's license, to verify your identity and driving record before approving your application.</p>
+        <p>Your personal information will be collected, stored, and processed in accordance with the <strong>Protection of Personal Information Act (POPIA), Act 4 of 2013</strong>. Your data will only be used for verification, driver onboarding, and operational communication purposes. You may request access to or deletion of your data at any time by contacting us.</p>
+        <label class="dm-checkbox-label">
+            <input type="checkbox" id="dm-consent-${ctx}" onchange="updateDriverSubmitBtn('${ctx}')">
+            <span class="dm-checkbox-text">
+                I consent to a background check on my personal information and understand that my data will be handled in accordance with POPIA.
+                <span>I confirm the information provided is accurate and complete.</span>
+            </span>
+        </label>
+    </div>`;
 }
 
 function renderProfileUI() {
-    const wrap = document.getElementById('drawer-avatar-wrap');
-    if (userProfile.photoURL) {
-        wrap.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
-    } else {
-        document.getElementById('drawer-avatar-init').textContent = initials(userProfile.name);
+    // Mobile drawer
+    const mAvWrap = document.getElementById('drawer-avatar-wrap-mobile');
+    if (mAvWrap) {
+        if (userProfile.photoURL) mAvWrap.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
+        else { const s=document.createElement('span'); s.className='av-init-lg'; s.textContent=initials(userProfile.name); mAvWrap.innerHTML=''; mAvWrap.appendChild(s); }
     }
-    if (userMarker) refreshMapMarker();
-    document.getElementById('drawer-name').textContent  = userProfile.name  || '—';
-    document.getElementById('drawer-email').textContent = userProfile.email || '—';
-    document.getElementById('info-name').textContent    = userProfile.name  || '—';
-    document.getElementById('info-email').textContent   = userProfile.email || '—';
-    document.getElementById('info-phone').textContent   = userProfile.phone || 'Not set';
-    document.getElementById('phone-input').value        = userProfile.phone || '';
+    ['mobile','sb'].forEach(ctx => {
+        const nm = document.getElementById(`drawer-name-${ctx}`);    if(nm) nm.textContent = userProfile.name||'—';
+        const em = document.getElementById(`drawer-email-${ctx}`);   if(em) em.textContent = userProfile.email||'—';
+        const ai = document.getElementById(`drawer-avatar-init-${ctx}`); if(ai) ai.textContent = initials(userProfile.name);
+        const aw = document.getElementById(`drawer-avatar-wrap-${ctx}`);
+        if(aw && userProfile.photoURL) aw.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
+        const pb = document.getElementById(`profile-body-${ctx}`);
+        if(pb) pb.innerHTML = profileBodyHTML(ctx);
+        const dfb = document.getElementById(`driver-form-body-${ctx}`);
+        if(dfb) dfb.innerHTML = driverFormBodyHTML(ctx);
+        const pinp = document.getElementById(`phone-input-${ctx}`);
+        if(pinp) pinp.value = userProfile.phone||'';
+        // pre-fill driver form name/phone
+        const dmn = document.getElementById(`dm-name-${ctx}`);
+        const dmp = document.getElementById(`dm-phone-${ctx}`);
+        if(dmn) dmn.value = userProfile.name||'';
+        if(dmp) dmp.value = userProfile.phone||'';
+    });
+    if(userMarker) refreshMapMarker();
 }
 
 function checkPhoneWarning() {
-    document.getElementById('phone-warn').style.display = (!userProfile.phone) ? 'flex' : 'none';
+    ['phone-warn','sb-phone-warn'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display = (!userProfile.phone)?'flex':'none'; });
 }
 
-/* ── Orders ── */
-let ordersListenerAttached = false;
-
+/* ─── Orders ─── */
 function attachOrdersListener() {
     if (ordersListenerAttached || !currentUser) return;
     ordersListenerAttached = true;
-    const ordersQuery = query(ref(database, 'orders'), orderByChild('userId'), equalTo(currentUser.uid));
-    onValue(ordersQuery, snap => renderOrders(snap.val()));
+    const q = query(ref(database,'orders'), orderByChild('userId'), equalTo(currentUser.uid));
+    onValue(q, snap => renderOrders(snap.val()));
 }
 
 const STATUS_META = {
-    placed:     { label: 'Order placed',    badge: 'badge-placed',    step: 0 },
-    assigned:   { label: 'Driver assigned', badge: 'badge-assigned',  step: 1 },
-    picked_up:  { label: 'Picked up',       badge: 'badge-transit',   step: 2 },
-    in_transit: { label: 'In transit',      badge: 'badge-transit',   step: 2 },
-    delivered:  { label: 'Delivered',       badge: 'badge-delivered', step: 3 },
-    cancelled:  { label: 'Cancelled',       badge: 'badge-cancelled', step: -1 }
+    placed:     {label:'Order placed',    badge:'badge-placed',    step:0},
+    assigned:   {label:'Driver assigned', badge:'badge-assigned',  step:1},
+    picked_up:  {label:'Picked up',       badge:'badge-transit',   step:2},
+    in_transit: {label:'In transit',      badge:'badge-transit',   step:2},
+    delivered:  {label:'Delivered',       badge:'badge-delivered', step:3},
+    cancelled:  {label:'Cancelled',       badge:'badge-cancelled', step:-1}
 };
-const STATUS_STEPS = ['Placed', 'Assigned', 'Picked up', 'Delivered'];
-
-function shortAddr(addr) { return (addr || '').split(',')[0]; }
+const STATUS_STEPS = ['Placed','Assigned','Picked up','Delivered'];
+function shortAddr(a) { return (a||'').split(',')[0]; }
 function formatOrderDate(ts) {
-    const d = new Date(ts);
-    return d.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' }) +
-        ' · ' + d.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' });
+    const d=new Date(ts);
+    return d.toLocaleDateString('en-ZA',{day:'numeric',month:'short'})+' · '+d.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'});
 }
-
 function orderCardHTML(o) {
-    const meta = STATUS_META[o.status] || STATUS_META.placed;
-    const pct  = meta.step < 0 ? 0 : (meta.step / (STATUS_STEPS.length - 1)) * 100;
-    const stepsHTML = STATUS_STEPS.map((s, i) =>
-        `<div class="step ${i <= meta.step ? 'done' : ''}"><span class="step-dot"></span><span class="step-label">${s}</span></div>`
-    ).join('');
-    const pkgName = (o.orderItem && o.orderItem[0] && o.orderItem[0].name) || 'Package';
-    return `
-        <div class="order-card">
-            <div class="order-card-top">
-                <span class="order-id">${o.orderNumber || ''}</span>
-                <span class="order-badge ${meta.badge}">${meta.label}</span>
-            </div>
-            <div class="order-route">
-                <span class="order-route-pt">${shortAddr(o.restaurantAddress)}</span>
-                <i class="fa-solid fa-arrow-right-long"></i>
-                <span class="order-route-pt">${shortAddr(o.customerAddress)}</span>
-            </div>
-            ${meta.step >= 0 ? `
-            <div class="order-progress">
-                <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
-                <div class="progress-steps">${stepsHTML}</div>
-            </div>` : ''}
-            <div class="order-footer">
-                <span>${pkgName}</span>
-                <span>${formatOrderDate(o.timestamp)}</span>
-                <span class="order-price">R${o.totalOrderCost ?? '—'}</span>
-            </div>
-        </div>`;
+    const meta=STATUS_META[o.status]||STATUS_META.placed;
+    const pct=meta.step<0?0:(meta.step/(STATUS_STEPS.length-1))*100;
+    const steps=STATUS_STEPS.map((s,i)=>`<div class="step ${i<=meta.step?'done':''}"><span class="step-dot"></span><span class="step-label">${s}</span></div>`).join('');
+    const pkgName=(o.orderItem&&o.orderItem[0]&&o.orderItem[0].name)||'Package';
+    return `<div class="order-card">
+        <div class="order-card-top"><span class="order-id">${o.orderNumber||''}</span><span class="order-badge ${meta.badge}">${meta.label}</span></div>
+        <div class="order-route"><span class="order-route-pt">${shortAddr(o.restaurantAddress)}</span><i class="fa-solid fa-arrow-right-long"></i><span class="order-route-pt">${shortAddr(o.customerAddress)}</span></div>
+        ${meta.step>=0?`<div class="order-progress"><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div><div class="progress-steps">${steps}</div></div>`:''}
+        <div class="order-footer"><span>${pkgName}</span><span>${formatOrderDate(o.timestamp)}</span><span class="order-price">R${o.totalOrderCost??'—'}</span></div>
+    </div>`;
+}
+function renderOrders(obj) {
+    const orders = obj ? Object.values(obj).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0)) : [];
+    ['mobile','sb'].forEach(ctx => {
+        const listEl  = document.getElementById(`track-list-${ctx}`);
+        const emptyEl = document.getElementById(`track-empty-${ctx}`);
+        if (!listEl || !emptyEl) return;
+        if (!orders.length) { listEl.innerHTML=''; listEl.style.display='none'; emptyEl.style.display='block'; }
+        else { emptyEl.style.display='none'; listEl.style.display='flex'; listEl.innerHTML=orders.map(orderCardHTML).join(''); }
+    });
 }
 
-function renderOrders(ordersObj) {
-    const listEl  = document.getElementById('track-list');
-    const emptyEl = document.getElementById('track-empty');
-    const orders  = ordersObj
-        ? Object.values(ordersObj).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
-        : [];
-    if (!orders.length) {
-        listEl.innerHTML = '';
-        listEl.style.display  = 'none';
-        emptyEl.style.display = 'block';
-        return;
-    }
-    emptyEl.style.display = 'none';
-    listEl.style.display  = 'flex';
-    listEl.innerHTML = orders.map(orderCardHTML).join('');
-}
-
-/* ── Profile drawer ── */
+/* ─── Panel navigation ─── */
 window.openProfile  = function() {
+    if (currentUser) renderProfileUI();
     document.getElementById('profile-overlay').classList.add('open');
     document.getElementById('profile-drawer').classList.add('open');
 };
@@ -1140,93 +1352,127 @@ window.closeProfile = function() {
     document.getElementById('profile-drawer').classList.remove('open');
 };
 
-/* ══ DRIVER APPLICATION ══ */
-let selectedVehicleType = null;
+window.desktopShowMain    = function() { showDesktopPanel('main'); };
+window.desktopShowProfile = function() { renderProfileUI(); showDesktopPanel('profile'); };
+window.desktopShowDriver  = function() { renderDriverFormBodyForCtx('sb'); showDesktopPanel('driver'); };
 
+function showDesktopPanel(name) {
+    ['main','profile','driver'].forEach(p => {
+        const el = document.getElementById(`sb-panel-${p}`);
+        if (el) el.style.display = (p===name)?'flex':'none';
+        // 'main' panel uses flex column via .sb-body — just show/hide
+        if (el && p === name) { el.style.display='block'; el.classList.add('sb-panel'); }
+    });
+    const el = document.getElementById(`sb-panel-${name}`);
+    if(el) { el.style.display='block'; void el.offsetWidth; el.style.animation='none'; requestAnimationFrame(()=>{ el.style.animation=''; }); }
+}
+
+function renderDriverFormBodyForCtx(ctx) {
+    const dfb = document.getElementById(`driver-form-body-${ctx}`);
+    if (dfb) {
+        dfb.innerHTML = driverFormBodyHTML(ctx);
+        const dmn = document.getElementById(`dm-name-${ctx}`);
+        const dmp = document.getElementById(`dm-phone-${ctx}`);
+        if(dmn) dmn.value = userProfile.name||'';
+        if(dmp) dmp.value = userProfile.phone||'';
+    }
+}
+
+/* ─── Driver application ─── */
 window.openDriverModal = function() {
-    if (!currentUser) { showToast('error', 'Not signed in', 'Please sign in first.'); return; }
-    document.getElementById('dm-name').value  = userProfile.name  || '';
-    document.getElementById('dm-phone').value = userProfile.phone || '';
+    if (!currentUser) { showToast('error','Not signed in','Please sign in first.'); return; }
+    renderDriverFormBodyForCtx('mobile');
     document.getElementById('driver-modal-overlay').classList.add('open');
 };
-window.closeDriverModal = function() {
-    document.getElementById('driver-modal-overlay').classList.remove('open');
-};
-window.closeDriverModalOnOverlay = function(e) {
-    if (e.target.id === 'driver-modal-overlay') closeDriverModal();
-};
+window.closeDriverModal = function() { document.getElementById('driver-modal-overlay').classList.remove('open'); };
+window.closeDriverModalOnOverlay = function(e) { if(e.target.id==='driver-modal-overlay') closeDriverModal(); };
 
-window.selectVehicleType = function(type) {
+window.selectVehicleType = function(type, ctx) {
     selectedVehicleType = type;
-    document.getElementById('vt-bakkie').classList.toggle('active', type === 'Bakkie');
-    document.getElementById('vt-motorbike').classList.toggle('active', type === 'Motorbike');
+    ['mobile','sb'].forEach(c => {
+        const b = document.getElementById(`vt-bakkie-${c}`);
+        const m = document.getElementById(`vt-motorbike-${c}`);
+        if(b) b.classList.toggle('active', type==='Bakkie');
+        if(m) m.classList.toggle('active', type==='Motorbike');
+    });
 };
 
-window.submitDriverApplication = async function() {
-    if (!currentUser) { showToast('error', 'Not signed in', 'Please sign in first.'); return; }
-    const name    = document.getElementById('dm-name').value.trim();
-    const phone   = document.getElementById('dm-phone').value.trim();
-    const idNumber = document.getElementById('dm-id').value.trim();
-    const license = document.getElementById('dm-license').value.trim();
-    const vehicle = document.getElementById('dm-vehicle-model').value.trim();
-    const plate   = document.getElementById('dm-plate').value.trim();
-    const city    = document.getElementById('dm-city').value.trim();
-    if (!selectedVehicleType) { showToast('error', 'Select a vehicle type', 'Choose Bakkie or Motorbike.'); return; }
-    if (!name || !phone || !idNumber || !license || !vehicle || !plate || !city) {
-        showToast('error', 'Missing details', 'Please fill in every field.'); return;
-    }
-    const btn = document.getElementById('dm-submit-btn');
-    btn.disabled = true; btn.textContent = 'Submitting…';
+window.updateDriverSubmitBtn = function(ctx) {
+    const checkbox = document.getElementById(`dm-consent-${ctx}`);
+    const btn = document.getElementById(`dm-submit-btn-${ctx}`);
+    if (btn) btn.disabled = !(checkbox && checkbox.checked);
+};
+
+// Initially disable submit buttons until consent is checked
+function initDriverSubmitBtns() {
+    ['mobile','sb'].forEach(ctx => {
+        const btn = document.getElementById(`dm-submit-btn-${ctx}`);
+        if(btn) btn.disabled = true;
+    });
+}
+
+window.submitDriverApplication = async function(ctx) {
+    if (!currentUser) { showToast('error','Not signed in','Please sign in first.'); return; }
+    const g = id => { const el=document.getElementById(`${id}-${ctx}`); return el?el.value.trim():''; };
+    const name    = g('dm-name');
+    const phone   = g('dm-phone');
+    const idNum   = g('dm-id');
+    const license = g('dm-license');
+    const vehicle = g('dm-vehicle-model');
+    const plate   = g('dm-plate');
+    const city    = g('dm-city');
+    const consent = document.getElementById(`dm-consent-${ctx}`);
+    if (!selectedVehicleType) { showToast('error','Select a vehicle type','Choose Bakkie or Motorbike.'); return; }
+    if (!name||!phone||!idNum||!license||!vehicle||!plate||!city) { showToast('error','Missing details','Please fill in every field.'); return; }
+    if (!consent||!consent.checked) { showToast('error','Consent required','Please read and accept the background check and POPIA consent.'); return; }
+    const btn = document.getElementById(`dm-submit-btn-${ctx}`);
+    btn.disabled=true; btn.textContent='Submitting…';
     try {
         const application = {
-            uid: currentUser.uid, name, phone, idNumber, license,
-            vehicleType: selectedVehicleType, vehicleModel: vehicle,
-            licensePlate: plate, city, email: userProfile.email || currentUser.email || '',
-            status: 'pending', timestamp: Date.now()
+            uid:currentUser.uid, name, phone, idNumber:idNum, license,
+            vehicleType:selectedVehicleType, vehicleModel:vehicle,
+            licensePlate:plate, city, email:userProfile.email||currentUser.email||'',
+            status:'pending', timestamp:Date.now(), popiaConcsentGiven:true
         };
-        await set(ref(database, `driverApplications/${currentUser.uid}`), application);
-        showToast('success', 'Application submitted', "We'll be in touch on your provided number soon.");
-        closeDriverModal();
+        await set(ref(database,`driverApplications/${currentUser.uid}`),application);
+        showToast('success','Application submitted',"We'll be in touch on your provided number soon.");
+        if(ctx==='mobile') closeDriverModal();
+        else desktopShowProfile();
         renderDriverStatus(application);
     } catch(e) {
         console.error(e);
-        showToast('error', 'Submission failed', e.message || 'Something went wrong.');
-    } finally {
-        btn.disabled = false; btn.textContent = 'Submit application';
+        showToast('error','Submission failed',e.message||'Something went wrong.');
+        btn.disabled=false; btn.textContent='Submit application';
     }
 };
 
 const DRIVER_STATUS_META = {
-    pending:  { icon: 'fa-clock',        title: 'Application pending',       sub: () => "We're reviewing your details." },
-    approved: { icon: 'fa-circle-check', title: "You're an approved driver", sub: (a) => `${a.vehicleType} · ${a.licensePlate}` },
-    rejected: { icon: 'fa-circle-xmark', title: 'Application not approved',  sub: () => 'Contact support for details.' }
+    pending:  {icon:'fa-clock',        title:'Application pending',        sub:()=>"We're reviewing your details."},
+    approved: {icon:'fa-circle-check', title:"You're an approved driver",  sub:(a)=>`${a.vehicleType} · ${a.licensePlate}`},
+    rejected: {icon:'fa-circle-xmark', title:'Application not approved',   sub:()=>'Contact support for details.'}
 };
-
 function renderDriverStatus(app) {
-    const cta    = document.getElementById('driver-cta-default');
-    const status = document.getElementById('driver-status-card');
-    if (!cta || !status) return;
-    if (!app) { cta.style.display = 'flex'; status.style.display = 'none'; return; }
-    cta.style.display = 'none'; status.style.display = 'flex';
-    status.className = `driver-status-card ${app.status || 'pending'}`;
-    const meta = DRIVER_STATUS_META[app.status] || DRIVER_STATUS_META.pending;
-    status.innerHTML = `
-        <div class="driver-status-icon"><i class="fa-solid ${meta.icon}"></i></div>
-        <div class="driver-status-text">
-            <div class="driver-status-title">${meta.title}</div>
-            <div class="driver-status-sub">${meta.sub(app)}</div>
-        </div>`;
+    ['mobile','sb'].forEach(ctx => {
+        const cta    = document.getElementById(`driver-cta-${ctx}`);
+        const status = document.getElementById(`driver-status-card-${ctx}`);
+        if (!cta||!status) return;
+        if (!app) { cta.style.display='flex'; status.style.display='none'; return; }
+        cta.style.display='none'; status.style.display='flex';
+        status.className=`driver-status-card ${app.status||'pending'}`;
+        const meta=DRIVER_STATUS_META[app.status]||DRIVER_STATUS_META.pending;
+        status.innerHTML=`<div class="driver-status-icon"><i class="fa-solid ${meta.icon}"></i></div>
+            <div class="driver-status-text"><div class="driver-status-title">${meta.title}</div><div class="driver-status-sub">${meta.sub(app)}</div></div>`;
+    });
 }
-
 async function loadDriverApplication() {
     if (!currentUser) return;
     try {
-        const snap = await get(ref(database, `driverApplications/${currentUser.uid}`));
-        renderDriverStatus(snap.exists() ? snap.val() : null);
+        const snap = await get(ref(database,`driverApplications/${currentUser.uid}`));
+        renderDriverStatus(snap.exists()?snap.val():null);
     } catch(e) { renderDriverStatus(null); }
 }
 
-/* ══ MAP ══ */
+/* ─── Map ─── */
 mapboxgl.accessToken = MAPBOX_TOKEN;
 let map, userMarker, pickupMarker, dropoffMarker;
 let mapInitialised = false;
@@ -1234,532 +1480,406 @@ let mapInitialised = false;
 function initMap() {
     if (mapInitialised) return;
     mapInitialised = true;
+    const leftOffset = isDesktop() ? 380 : 0;
     map = new mapboxgl.Map({
-        container: 'map', style: 'mapbox://styles/mapbox/light-v11',
-        center: [28.0473, -26.2041], zoom: 12, attributionControl: false
+        container:'map', style:'mapbox://styles/mapbox/light-v11',
+        center:[28.0473,-26.2041], zoom:12, attributionControl:false
     });
-    map.setPadding({ top: 170, bottom: 340, left: 16, right: 16 });
-    map.on('load', () => {
-        if (navigator.geolocation) {
+    map.setPadding(isDesktop()
+        ? {top:60,bottom:60,left:60,right:60}
+        : {top:170,bottom:340,left:16,right:16});
+    map.on('load',()=>{
+        if(navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
-                pos => {
-                    const { longitude: lng, latitude: lat } = pos.coords;
-                    map.flyTo({ center: [lng, lat], zoom: 13, duration: 1400 });
-                    placeUserMarker(lng, lat);
-                },
-                () => placeUserMarker(28.0473, -26.2041)
+                pos=>{ const{longitude:lng,latitude:lat}=pos.coords; map.flyTo({center:[lng,lat],zoom:13,duration:1400}); placeUserMarker(lng,lat); },
+                ()=>placeUserMarker(28.0473,-26.2041)
             );
-        } else { placeUserMarker(28.0473, -26.2041); }
+        } else placeUserMarker(28.0473,-26.2041);
     });
-    setupSearch('pickup');
-    setupSearch('dropoff');
+    setupSearch('pickup','mobile'); setupSearch('dropoff','mobile');
+    setupSearch('pickup','sb');     setupSearch('dropoff','sb');
     updateSubmitBtn();
 }
 
 function buildAvatarEl() {
-    const wrap  = document.createElement('div'); wrap.className = 'user-marker-wrap';
-    const pulse = document.createElement('div'); pulse.className = 'user-marker-pulse';
-    const av    = document.createElement('div'); av.className = 'user-marker-avatar';
-    if (userProfile.photoURL) {
-        const img = document.createElement('img'); img.src = userProfile.photoURL;
-        img.onerror = () => { img.remove(); const sp = document.createElement('span'); sp.className = 'av-init'; sp.textContent = initials(userProfile.name); av.appendChild(sp); };
+    const wrap=document.createElement('div'); wrap.className='user-marker-wrap';
+    const pulse=document.createElement('div'); pulse.className='user-marker-pulse';
+    const av=document.createElement('div'); av.className='user-marker-avatar';
+    if(userProfile.photoURL) {
+        const img=document.createElement('img'); img.src=userProfile.photoURL;
+        img.onerror=()=>{ img.remove(); const sp=document.createElement('span'); sp.className='av-init'; sp.textContent=initials(userProfile.name); av.appendChild(sp); };
         av.appendChild(img);
-    } else {
-        const sp = document.createElement('span'); sp.className = 'av-init'; sp.textContent = initials(userProfile.name); av.appendChild(sp);
-    }
-    const caret = document.createElement('div'); caret.className = 'user-marker-caret';
+    } else { const sp=document.createElement('span'); sp.className='av-init'; sp.textContent=initials(userProfile.name); av.appendChild(sp); }
+    const caret=document.createElement('div'); caret.className='user-marker-caret';
     wrap.appendChild(pulse); wrap.appendChild(av); wrap.appendChild(caret);
     return wrap;
 }
-
-function placeUserMarker(lng, lat) {
-    if (userMarker) userMarker.remove();
-    userMarker = new mapboxgl.Marker({ element: buildAvatarEl(), anchor: 'bottom' }).setLngLat([lng, lat]).addTo(map);
+function placeUserMarker(lng,lat) {
+    if(userMarker) userMarker.remove();
+    userMarker=new mapboxgl.Marker({element:buildAvatarEl(),anchor:'bottom'}).setLngLat([lng,lat]).addTo(map);
 }
-
-function refreshMapMarker() {
-    if (!userMarker) return;
-    const ll = userMarker.getLngLat();
-    placeUserMarker(ll.lng, ll.lat);
-}
+function refreshMapMarker() { if(!userMarker) return; const ll=userMarker.getLngLat(); placeUserMarker(ll.lng,ll.lat); }
 
 function buildDestEl(type) {
-    const el = document.createElement('div'); el.className = `dest-marker ${type}`;
-    el.innerHTML = type === 'pickup' ? '<i class="fa-solid fa-location-dot"></i>' : '<i class="fa-solid fa-flag-checkered"></i>';
+    const el=document.createElement('div'); el.className=`dest-marker ${type}`;
+    el.innerHTML=type==='pickup'?'<i class="fa-solid fa-location-dot"></i>':'<i class="fa-solid fa-flag-checkered"></i>';
     return el;
 }
-
-function placeDestMarker(type, lng, lat) {
-    if (type === 'pickup') {
-        if (pickupMarker) pickupMarker.remove();
-        pickupMarker = new mapboxgl.Marker({ element: buildDestEl('pickup'), anchor: 'bottom' }).setLngLat([lng, lat]).addTo(map);
-    } else {
-        if (dropoffMarker) dropoffMarker.remove();
-        dropoffMarker = new mapboxgl.Marker({ element: buildDestEl('dropoff'), anchor: 'bottom' }).setLngLat([lng, lat]).addTo(map);
-    }
-    if (pickupMarker && dropoffMarker) { drawRoute(); fitBothMarkers(); }
+function placeDestMarker(type,lng,lat) {
+    if(type==='pickup') { if(pickupMarker) pickupMarker.remove(); pickupMarker=new mapboxgl.Marker({element:buildDestEl('pickup'),anchor:'bottom'}).setLngLat([lng,lat]).addTo(map); }
+    else { if(dropoffMarker) dropoffMarker.remove(); dropoffMarker=new mapboxgl.Marker({element:buildDestEl('dropoff'),anchor:'bottom'}).setLngLat([lng,lat]).addTo(map); }
+    if(pickupMarker&&dropoffMarker) { drawRoute(); fitBothMarkers(); }
 }
 
-let routeDistKm = 0;
-
 async function drawRoute() {
-    const p = pickupMarker.getLngLat(), d = dropoffMarker.getLngLat();
+    const p=pickupMarker.getLngLat(), d=dropoffMarker.getLngLat();
     try {
-        const res  = await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${p.lng},${p.lat};${d.lng},${d.lat}?geometries=geojson&access_token=${MAPBOX_TOKEN}`);
-        const data = await res.json();
-        if (!data.routes?.[0]) return;
-        const route = data.routes[0];
-        routeDistKm = parseFloat((route.distance / 1000).toFixed(1));
-        const mins = Math.ceil(route.duration / 60);
-        const timeStr = mins >= 60 ? `${Math.floor(mins/60)}h ${mins%60}m` : `${mins} min`;
-        document.getElementById('route-dist').textContent = routeDistKm + ' km';
-        document.getElementById('route-time').textContent = timeStr;
+        const res=await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${p.lng},${p.lat};${d.lng},${d.lat}?geometries=geojson&access_token=${MAPBOX_TOKEN}`);
+        const data=await res.json();
+        if(!data.routes?.[0]) return;
+        const route=data.routes[0];
+        routeDistKm=parseFloat((route.distance/1000).toFixed(1));
+        const mins=Math.ceil(route.duration/60);
+        const timeStr=mins>=60?`${Math.floor(mins/60)}h ${mins%60}m`:`${mins} min`;
+        ['','sb-'].forEach(pfx=>{
+            const d2=document.getElementById(`${pfx}route-dist`)||document.getElementById(`sb-route-dist`);
+        });
+        // Update both mobile and sidebar
+        setRouteBarValues(routeDistKm+' km', timeStr);
         updateRoutePrice();
         updateFoodPackageAvailability();
         document.getElementById('route-bar').classList.add('visible');
-        const geojson = { type: 'Feature', geometry: route.geometry };
-        if (map.getSource('route')) { map.getSource('route').setData(geojson); }
+        document.getElementById('sb-route-bar').classList.add('visible');
+        const geojson={type:'Feature',geometry:route.geometry};
+        if(map.getSource('route')) map.getSource('route').setData(geojson);
         else {
-            map.addSource('route', { type: 'geojson', data: geojson });
-            map.addLayer({ id: 'route', type: 'line', source: 'route',
-                layout: { 'line-join': 'round', 'line-cap': 'round' },
-                paint: { 'line-color': '#18181b', 'line-width': 4, 'line-opacity': 0.85 }
-            });
+            map.addSource('route',{type:'geojson',data:geojson});
+            map.addLayer({id:'route',type:'line',source:'route',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#18181b','line-width':4,'line-opacity':0.85}});
         }
         updateSubmitBtn();
-    } catch(e) { console.error('Route error', e); }
+    } catch(e) { console.error('Route error',e); }
 }
-
+function setRouteBarValues(dist, time) {
+    ['route-dist','sb-route-dist'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=dist; });
+    ['route-time','sb-route-time'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=time; });
+}
 function fitBothMarkers() {
-    const p = pickupMarker.getLngLat(), d = dropoffMarker.getLngLat();
+    const p=pickupMarker.getLngLat(), d=dropoffMarker.getLngLat();
     map.fitBounds(new mapboxgl.LngLatBounds([p.lng,p.lat],[d.lng,d.lat]),
-        { padding: { top:200, bottom:360, left:40, right:40 }, duration: 900 });
+        {padding:isDesktop()?{top:80,bottom:80,left:80,right:80}:{top:200,bottom:360,left:40,right:40},duration:900});
 }
-
 function updateRoutePrice() {
-    if (selectedPkg) {
-        const total = Math.round(selectedPkg.base + routeDistKm * 3.5);
-        document.getElementById('route-price').textContent = `R${total}`;
+    if(selectedPkg) {
+        const total=Math.round(selectedPkg.base+routeDistKm*3.5);
+        ['route-price','sb-route-price'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=`R${total}`; });
     }
 }
 
-let debounceTimers = {};
-let selectedCoords = { pickup: null, dropoff: null };
-let suggFeatures   = { pickup: [], dropoff: [] };
+/* ─── Search (ctx = 'mobile' | 'sb') ─── */
+function searchInputId(type,ctx)  { return ctx==='mobile' ? `input-${type}` : `input-${type}-sb`; }
+function searchSuggId(type,ctx)   { return ctx==='mobile' ? `sugg-${type}`  : `sugg-${type}-sb`; }
+function searchClearId(type,ctx)  { return ctx==='mobile' ? `clear-${type}` : `clear-${type}-sb`; }
+const suggKey = (type,ctx) => `${type}_${ctx}`;
 
-function setupSearch(type) {
-    const input = document.getElementById(`input-${type}`);
-    const sugg  = document.getElementById(`sugg-${type}`);
-    const clear = document.getElementById(`clear-${type}`);
-    input.addEventListener('input', () => {
-        const q = input.value.trim();
-        clear.classList.toggle('visible', q.length > 0);
-        if (q.length < 2) { sugg.style.display = 'none'; return; }
-        clearTimeout(debounceTimers[type]);
-        debounceTimers[type] = setTimeout(() => fetchSuggestions(type, q), 300);
+function setupSearch(type, ctx) {
+    const inputEl = document.getElementById(searchInputId(type,ctx));
+    const suggEl  = document.getElementById(searchSuggId(type,ctx));
+    const clearEl = document.getElementById(searchClearId(type,ctx));
+    if(!inputEl) return;
+    inputEl.addEventListener('input',()=>{
+        const q=inputEl.value.trim();
+        clearEl.classList.toggle('visible',q.length>0);
+        if(q.length<2) { suggEl.style.display='none'; return; }
+        clearTimeout(debounceTimers[suggKey(type,ctx)]);
+        debounceTimers[suggKey(type,ctx)]=setTimeout(()=>fetchSuggestions(type,ctx,q),300);
     });
-    document.addEventListener('click', e => {
-        if (!input.contains(e.target) && !sugg.contains(e.target)) sugg.style.display = 'none';
-    });
+    document.addEventListener('click',e=>{ if(!inputEl.contains(e.target)&&!suggEl.contains(e.target)) suggEl.style.display='none'; });
 }
 
-async function fetchSuggestions(type, q) {
+async function fetchSuggestions(type,ctx,q) {
     try {
-        const res  = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?access_token=${MAPBOX_TOKEN}&autocomplete=true&limit=5&country=ZA`);
-        const data = await res.json();
-        suggFeatures[type] = data.features || [];
-        renderSuggestions(type);
-    } catch(e) {}
+        const res=await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?access_token=${MAPBOX_TOKEN}&autocomplete=true&limit=5&country=ZA`);
+        const data=await res.json();
+        suggFeatures[suggKey(type,ctx)]=data.features||[];
+        renderSuggestions(type,ctx);
+    } catch(e){}
 }
 
-function renderSuggestions(type) {
-    const sugg  = document.getElementById(`sugg-${type}`);
-    const feats = suggFeatures[type];
-    if (!feats.length) { sugg.style.display = 'none'; return; }
-    sugg.innerHTML = feats.map((f, i) => {
-        const name = f.text || f.place_name.split(',')[0];
-        const sub  = f.place_name.replace(name + ', ', '').slice(0, 52);
-        return `<div class="suggestion-item" onclick="selectSuggestion('${type}',${i})">
+function renderSuggestions(type,ctx) {
+    const suggEl=document.getElementById(searchSuggId(type,ctx));
+    const feats=suggFeatures[suggKey(type,ctx)]||[];
+    if(!feats.length) { suggEl.style.display='none'; return; }
+    suggEl.innerHTML=feats.map((f,i)=>{
+        const name=f.text||f.place_name.split(',')[0];
+        const sub=f.place_name.replace(name+', ','').slice(0,52);
+        return `<div class="suggestion-item" onclick="selectSuggestion('${type}','${ctx}',${i})">
             <div class="sugg-icon"><i class="fa-solid fa-location-dot"></i></div>
             <div><div class="sugg-text-main">${name}</div><div class="sugg-text-sub">${sub}</div></div>
         </div>`;
     }).join('');
-    sugg.style.display = 'block';
+    suggEl.style.display='block';
 }
 
-window.selectSuggestion = function(type, idx) {
-    const f = suggFeatures[type][idx];
-    const [lng, lat] = f.center;
-    document.getElementById(`input-${type}`).value = f.place_name;
-    document.getElementById(`clear-${type}`).classList.add('visible');
-    document.getElementById(`sugg-${type}`).style.display = 'none';
-    selectedCoords[type] = [lng, lat];
-    placeDestMarker(type, lng, lat);
+window.selectSuggestion = function(type,ctx,idx) {
+    const f=suggFeatures[suggKey(type,ctx)][idx];
+    const [lng,lat]=f.center;
+    // Update both inputs (keep them in sync)
+    const iMob = document.getElementById(searchInputId(type,'mobile'));
+    const iSb  = document.getElementById(searchInputId(type,'sb'));
+    const cMob = document.getElementById(searchClearId(type,'mobile'));
+    const cSb  = document.getElementById(searchClearId(type,'sb'));
+    if(iMob) { iMob.value=f.place_name; }
+    if(iSb)  { iSb.value=f.place_name; }
+    if(cMob) cMob.classList.add('visible');
+    if(cSb)  cSb.classList.add('visible');
+    document.getElementById(searchSuggId(type,ctx)).style.display='none';
+    selectedCoords[type]=[lng,lat];
+    placeDestMarker(type,lng,lat);
     updateSubmitBtn();
 };
 
-window.clearInput = function(type) {
-    document.getElementById(`input-${type}`).value = '';
-    document.getElementById(`clear-${type}`).classList.remove('visible');
-    document.getElementById(`sugg-${type}`).style.display = 'none';
-    selectedCoords[type] = null;
-    if (type === 'pickup'  && pickupMarker)  { pickupMarker.remove();  pickupMarker  = null; }
-    if (type === 'dropoff' && dropoffMarker) { dropoffMarker.remove(); dropoffMarker = null; }
-    if (map?.getSource('route')) map.getSource('route').setData({ type:'Feature', geometry:{ type:'LineString', coordinates:[] }});
+window.clearInput = function(type,ctx) {
+    ['mobile','sb'].forEach(c=>{
+        const inp=document.getElementById(searchInputId(type,c)); if(inp) inp.value='';
+        const clr=document.getElementById(searchClearId(type,c)); if(clr) clr.classList.remove('visible');
+        const sug=document.getElementById(searchSuggId(type,c)); if(sug) sug.style.display='none';
+    });
+    selectedCoords[type]=null;
+    if(type==='pickup'&&pickupMarker)   { pickupMarker.remove(); pickupMarker=null; }
+    if(type==='dropoff'&&dropoffMarker) { dropoffMarker.remove(); dropoffMarker=null; }
+    if(map?.getSource('route')) map.getSource('route').setData({type:'Feature',geometry:{type:'LineString',coordinates:[]}});
     document.getElementById('route-bar').classList.remove('visible');
-    routeDistKm = 0;
+    document.getElementById('sb-route-bar').classList.remove('visible');
+    routeDistKm=0;
     updateFoodPackageAvailability();
     updateSubmitBtn();
 };
 
-let selectedPkg     = null;
-let selectedPayment = 'cash';
-
-window.selectPackage = function(el, name, base) {
-    if (el.classList.contains('disabled')) return;
-    document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    selectedPkg = { name, base };
+/* ─── Package selection (ctx = 'mobile' | 'sb') ─── */
+window.selectPackage = function(el,name,base,ctx) {
+    if(el.classList.contains('disabled')) return;
+    // Deselect all cards in both contexts
+    document.querySelectorAll('.pkg-card').forEach(c=>c.classList.remove('active'));
+    // Activate matched cards in both contexts (same name)
+    document.querySelectorAll('.pkg-card').forEach(c=>{
+        if(c.querySelector('.pkg-name')&&c.querySelector('.pkg-name').textContent===name) c.classList.add('active');
+    });
+    selectedPkg={name,base};
     updateRoutePrice();
     updateSubmitBtn();
 };
 
-const FOOD_DELIVERY_MAX_KM = 10;
+const FOOD_MAX_KM = 10;
 function updateFoodPackageAvailability() {
-    const card   = document.getElementById('pkg-food');
-    const weight = document.getElementById('pkg-food-weight');
-    if (!card) return;
-    const tooFar = routeDistKm > FOOD_DELIVERY_MAX_KM;
-    card.classList.toggle('disabled', tooFar);
-    weight.textContent = tooFar ? `Over ${FOOD_DELIVERY_MAX_KM}km away` : 'Restaurant orders';
-    if (tooFar && selectedPkg && selectedPkg.name === 'Food Delivery') {
-        card.classList.remove('active'); selectedPkg = null; updateSubmitBtn();
-        showToast('info', 'Food delivery unavailable', `Pickup and dropoff must be within ${FOOD_DELIVERY_MAX_KM}km for food delivery.`);
-    }
+    ['mobile','sb'].forEach(ctx=>{
+        const card  =document.getElementById(`pkg-food-${ctx}`);
+        const weight=document.getElementById(`pkg-food-weight-${ctx}`);
+        if(!card) return;
+        const tooFar=routeDistKm>FOOD_MAX_KM;
+        card.classList.toggle('disabled',tooFar);
+        if(weight) weight.textContent=tooFar?`Over ${FOOD_MAX_KM}km away`:'Restaurant orders';
+        if(tooFar&&selectedPkg&&selectedPkg.name==='Food Delivery') {
+            card.classList.remove('active'); selectedPkg=null; updateSubmitBtn();
+            showToast('info','Food delivery unavailable',`Pickup and dropoff must be within ${FOOD_MAX_KM}km.`);
+        }
+    });
 }
 
-/* ══════════════════════════════════════════
-   YOCO — Remote Config-driven test banner
-   ─────────────────────────────────────────
-   Rules:
-     • YOCO_PUBLIC_KEY not yet loaded  → banner hidden
-     • starts with pk_test_            → banner shown (amber "Test mode" tag)
-     • starts with pk_live_            → banner hidden (no warning needed)
-     • Yoco pill not selected          → banner hidden regardless
-══════════════════════════════════════════ */
-function updateYocoTestNote() {
-    const note = document.getElementById('yoco-test-note');
-    if (!note) return;
-
-    // Only relevant when the Yoco pill is the active payment method
-    if (selectedPayment !== 'yoco' || !YOCO_PUBLIC_KEY) {
-        note.style.display = 'none';
-        return;
-    }
-
-    if (YOCO_PUBLIC_KEY.startsWith('pk_test_')) {
-        document.getElementById('yoco-test-tag').textContent = 'Test mode';
-        document.getElementById('yoco-test-msg').textContent = 'Sandbox payment — no real charge will be made.';
-        note.style.display = 'flex';
-    } else {
-        // Live key — suppress the banner entirely
-        note.style.display = 'none';
-    }
+/* ─── Yoco test note ─── */
+function updateYocoTestNote(ctx) {
+    const note=document.getElementById(`yoco-test-note-${ctx}`);
+    if(!note) return;
+    if(selectedPayment[ctx]!=='yoco'||!YOCO_PUBLIC_KEY) { note.style.display='none'; return; }
+    if(YOCO_PUBLIC_KEY.startsWith('pk_test_')) {
+        document.getElementById(`yoco-test-tag-${ctx}`).textContent='Test mode';
+        document.getElementById(`yoco-test-msg-${ctx}`).textContent='Sandbox payment — no real charge will be made.';
+        note.style.display='flex';
+    } else { note.style.display='none'; }
 }
 
-/* ── Payment method selector ── */
-window.selectPaymentMethod = function(type) {
-    selectedPayment = type;
-    document.getElementById('pay-pill-cash').classList.toggle('active', type === 'cash');
-    document.getElementById('pay-pill-gpay').classList.toggle('active', type === 'google_pay');
-    document.getElementById('pay-pill-yoco').classList.toggle('active', type === 'yoco');
+/* ─── Payment method ─── */
+window.selectPaymentMethod = function(type,ctx) {
+    selectedPayment[ctx]=type;
+    ['cash','gpay','yoco'].forEach(p=>{
+        const id=p==='gpay'?`pay-pill-gpay-${ctx}`:`pay-pill-${p}-${ctx}`;
+        const el=document.getElementById(id); if(el) el.classList.remove('active');
+    });
+    const activeId=type==='cash'?`pay-pill-cash-${ctx}`:type==='google_pay'?`pay-pill-gpay-${ctx}`:`pay-pill-yoco-${ctx}`;
+    const activeEl=document.getElementById(activeId); if(activeEl) activeEl.classList.add('active');
 
-    const gpayContainer = document.getElementById('gpay-button-container');
-    const gpayNote      = document.getElementById('gpay-test-note');
+    const gpCont=document.getElementById(`gpay-button-container-${ctx}`);
+    const gpNote=document.getElementById(`gpay-test-note-${ctx}`);
+    if(gpCont) gpCont.style.display=type==='google_pay'?'block':'none';
+    if(gpNote) gpNote.style.display=type==='google_pay'?'flex':'none';
 
-    gpayContainer.style.display = (type === 'google_pay') ? 'block' : 'none';
-    gpayNote.style.display      = (type === 'google_pay') ? 'flex'  : 'none';
-
-    // Yoco banner is controlled entirely by Remote Config key type — never hardcoded
-    updateYocoTestNote();
-
-    if (type === 'google_pay') {
-        requestAnimationFrame(() => setTimeout(() => ensureGooglePayButton(), 50));
-    }
+    updateYocoTestNote(ctx);
+    if(type==='google_pay') requestAnimationFrame(()=>setTimeout(()=>ensureGooglePayButton(ctx),50));
     updateSubmitBtn();
 };
 
 function updateSubmitBtn() {
-    const btn   = document.getElementById('submitBtn');
-    const label = document.getElementById('submitLabel');
-    const hp = !!selectedCoords.pickup;
-    const hd = !!selectedCoords.dropoff;
-    const hk = !!selectedPkg;
-
-    if (!hp || !hd)  { btn.className=''; label.textContent='Set pickup & destination'; btn.disabled=true; }
-    else if (!hk)    { btn.className=''; label.textContent='Select a package size';    btn.disabled=true; }
-    else {
-        const total = Math.round(selectedPkg.base + routeDistKm * 3.5);
-        btn.className = 'ready';
-        if (selectedPayment === 'yoco') {
-            label.innerHTML = `<i class="fa-solid fa-credit-card"></i> Pay R${total} with Yoco`;
-        } else {
-            label.textContent = `Book ${selectedPkg.name} · R${total}`;
+    const hp=!!selectedCoords.pickup;
+    const hd=!!selectedCoords.dropoff;
+    const hk=!!selectedPkg;
+    ['mobile','sb'].forEach(ctx=>{
+        const btnId   = ctx==='mobile'?'submitBtn':'submitBtn-sb';
+        const labelId = ctx==='mobile'?'submitLabel':'submitLabel-sb';
+        const btn   = document.getElementById(btnId);
+        const label = document.getElementById(labelId);
+        if(!btn||!label) return;
+        if(!hp||!hd)      { btn.className=ctx==='sb'?'submit-btn-el':''; label.textContent='Set pickup & destination'; btn.disabled=true; }
+        else if(!hk)      { btn.className=ctx==='sb'?'submit-btn-el':''; label.textContent='Select a package size';    btn.disabled=true; }
+        else {
+            const total=Math.round(selectedPkg.base+routeDistKm*3.5);
+            btn.className=ctx==='sb'?'submit-btn-el ready':'ready';
+            if(selectedPayment[ctx]==='yoco') label.innerHTML=`<i class="fa-solid fa-credit-card"></i> Pay R${total} with Yoco`;
+            else label.textContent=`Book ${selectedPkg.name} · R${total}`;
+            btn.disabled=false;
         }
-        btn.disabled = false;
-    }
-
-    btn.style.display = (selectedPayment === 'google_pay') ? 'none' : 'flex';
+        btn.style.display=selectedPayment[ctx]==='google_pay'?'none':'flex';
+    });
 }
 
-let sheetCollapsed = false;
-window.toggleSheet = () => {
-    sheetCollapsed = !sheetCollapsed;
-    document.getElementById('sheet').classList.toggle('collapsed', sheetCollapsed);
-};
-window.switchTab = (tab) => {
-    const isSend = tab === 'send';
-    document.getElementById('view-send').style.display  = isSend ? 'block' : 'none';
-    document.getElementById('view-track').style.display = isSend ? 'none'  : 'block';
-    document.getElementById('tab-send').classList.toggle('active', isSend);
-    document.getElementById('tab-track').classList.toggle('active', !isSend);
-};
+/* ─── Sheet / tab ─── */
+let sheetCollapsed=false;
+window.toggleSheet = ()=>{ sheetCollapsed=!sheetCollapsed; document.getElementById('sheet').classList.toggle('collapsed',sheetCollapsed); };
+window.switchTab = tab=>{ const s=tab==='send'; document.getElementById('view-send').style.display=s?'block':'none'; document.getElementById('view-track').style.display=s?'none':'block'; document.getElementById('tab-send').classList.toggle('active',s); document.getElementById('tab-track').classList.toggle('active',!s); };
+window.sbSwitchTab = tab=>{ const s=tab==='send'; document.getElementById('sb-view-send').style.display=s?'block':'none'; document.getElementById('sb-view-track').style.display=s?'none':'block'; document.getElementById('sb-tab-send').classList.toggle('active',s); document.getElementById('sb-tab-track').classList.toggle('active',!s); };
 
-/* ══════════════════════════════════════════
-   YOCO PAYMENT
-══════════════════════════════════════════ */
-let yocoSDK = null;
-
+/* ─── Yoco SDK ─── */
+let yocoSDK=null;
 function getYocoSDK() {
-    if (!YOCO_PUBLIC_KEY) {
-        showToast('error', 'Yoco not configured', 'Payment key not loaded yet. Please try again in a moment.');
-        return null;
-    }
-    if (yocoSDK && yocoSDK._publicKey === YOCO_PUBLIC_KEY) return yocoSDK;
-    if (typeof window.YocoSDK === 'undefined') {
-        showToast('error', 'Yoco not loaded', 'Please check your connection and refresh.');
-        return null;
-    }
-    yocoSDK = new window.YocoSDK({ publicKey: YOCO_PUBLIC_KEY });
-    yocoSDK._publicKey = YOCO_PUBLIC_KEY; // track which key this instance uses
-    return yocoSDK;
+    if(!YOCO_PUBLIC_KEY) { showToast('error','Yoco not configured','Payment key not loaded yet. Please try again.'); return null; }
+    if(yocoSDK&&yocoSDK._publicKey===YOCO_PUBLIC_KEY) return yocoSDK;
+    if(typeof window.YocoSDK==='undefined') { showToast('error','Yoco not loaded','Please check your connection and refresh.'); return null; }
+    yocoSDK=new window.YocoSDK({publicKey:YOCO_PUBLIC_KEY}); yocoSDK._publicKey=YOCO_PUBLIC_KEY; return yocoSDK;
 }
-
 async function processYocoPayment(amountRands) {
-    return new Promise((resolve, reject) => {
-        const sdk = getYocoSDK();
-        if (!sdk) { reject(new Error('Yoco SDK not loaded.')); return; }
-
+    return new Promise((resolve,reject)=>{
+        const sdk=getYocoSDK(); if(!sdk){reject(new Error('Yoco SDK not loaded.')); return;}
         sdk.showPopup({
-            amountInCents: amountRands * 100,
-            currency: 'ZAR',
-            name: 'CourierGo',
-            description: `${selectedPkg ? selectedPkg.name : 'Delivery'} — ${document.getElementById('input-pickup').value.split(',')[0]} → ${document.getElementById('input-dropoff').value.split(',')[0]}`,
-            callback: function(result) {
-                if (result.error) {
-                    if (result.error.message && result.error.message.toLowerCase().includes('cancel')) {
-                        reject({ cancelled: true });
-                    } else {
-                        reject(new Error(result.error.message || 'Yoco payment failed'));
-                    }
-                } else {
-                    // Derive testMode from the actual key so the order record is accurate
-                    resolve({ token: result.id, testMode: YOCO_PUBLIC_KEY.startsWith('pk_test_') });
-                }
+            amountInCents:amountRands*100, currency:'ZAR', name:'CourierGo',
+            description:`${selectedPkg?selectedPkg.name:'Delivery'}`,
+            callback:function(result){
+                if(result.error){
+                    if(result.error.message&&result.error.message.toLowerCase().includes('cancel')) reject({cancelled:true});
+                    else reject(new Error(result.error.message||'Yoco payment failed'));
+                } else resolve({token:result.id,testMode:YOCO_PUBLIC_KEY.startsWith('pk_test_')});
             }
         });
     });
 }
 
-/* ══════════════════════════════════════════
-   CORE ORDER BOOKING
-══════════════════════════════════════════ */
+/* ─── Booking ─── */
 async function doBookOrder(paymentMeta) {
-    const btn = document.getElementById('submitBtn');
-    let succeeded = false;
+    let succeeded=false;
+    const ctx = isDesktop()?'sb':'mobile';
+    const pickupInput  = document.getElementById(ctx==='sb'?'input-pickup-sb':'input-pickup');
+    const dropoffInput = document.getElementById(ctx==='sb'?'input-dropoff-sb':'input-dropoff');
     try {
-        const orderId = "CG-" + Math.floor(1000 + Math.random() * 9000);
-        const total   = Math.round(selectedPkg.base + routeDistKm * 3.5);
-        const pickup  = document.getElementById('input-pickup').value;
-        const dropoff = document.getElementById('input-dropoff').value;
-        const phone   = userProfile.phone || 'Not provided';
-
-        const payload = {
-            orderNumber:         orderId,
-            userId:              currentUser.uid,
-            customerName:        userProfile.name  || currentUser.displayName || 'User',
-            customerEmail:       userProfile.email || currentUser.email || '',
-            customerPhoneNumber: phone,
-            customerAddress:     dropoff,
-            restaurantName:      "CourierGo Dispatch",
-            restaurantAddress:   pickup,
-            orderItem:           [{ name: selectedPkg.name, unitPrice: total, quantity: 1 }],
-            totalOrderCost:      total,
-            distanceKm:          routeDistKm,
-            pickupCoords:        selectedCoords.pickup,
-            dropoffCoords:       selectedCoords.dropoff,
-            status:              'placed',
-            paymentMethod:       paymentMeta.method,
-            paymentToken:        paymentMeta.token || null,
-            paymentTestMode:     !!paymentMeta.testMode,
-            timestamp:           Date.now()
+        const orderId="CG-"+Math.floor(1000+Math.random()*9000);
+        const total=Math.round(selectedPkg.base+routeDistKm*3.5);
+        const pickup  = pickupInput ? pickupInput.value : '';
+        const dropoff = dropoffInput? dropoffInput.value: '';
+        const payload={
+            orderNumber:orderId, userId:currentUser.uid,
+            customerName:userProfile.name||currentUser.displayName||'User',
+            customerEmail:userProfile.email||currentUser.email||'',
+            customerPhoneNumber:userProfile.phone||'Not provided',
+            customerAddress:dropoff, restaurantName:"CourierGo Dispatch", restaurantAddress:pickup,
+            orderItem:[{name:selectedPkg.name,unitPrice:total,quantity:1}],
+            totalOrderCost:total, distanceKm:routeDistKm,
+            pickupCoords:selectedCoords.pickup, dropoffCoords:selectedCoords.dropoff,
+            status:'placed', paymentMethod:paymentMeta.method,
+            paymentToken:paymentMeta.token||null, paymentTestMode:!!paymentMeta.testMode,
+            timestamp:Date.now()
         };
-
-        await set(push(ref(database, 'orders')), payload);
-
-        const sdRes = await fetch("https://api.shipday.com/orders", {
-            method: "POST",
-            headers: { "Authorization": `Basic ${SHIPDAY_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-        if (!sdRes.ok) throw new Error("Shipday:" + sdRes.status);
-
-        showToast('success', `Order ${orderId} confirmed!`,
-            `${selectedPkg.name} · ${pickup.split(',')[0]} → ${dropoff.split(',')[0]}`);
-
-        if (!userProfile.phone) {
-            setTimeout(() => showToast('info','Add your phone number','Open your profile to add a contact number for the driver.'), 1500);
-        }
-
-        succeeded = true;
+        await set(push(ref(database,'orders')),payload);
+        const sdRes=await fetch("https://api.shipday.com/orders",{method:"POST",headers:{"Authorization":`Basic ${SHIPDAY_KEY}`,"Content-Type":"application/json"},body:JSON.stringify(payload)});
+        if(!sdRes.ok) throw new Error("Shipday:"+sdRes.status);
+        showToast('success',`Order ${orderId} confirmed!`,`${selectedPkg.name} · ${(pickup||'').split(',')[0]} → ${(dropoff||'').split(',')[0]}`);
+        if(!userProfile.phone) setTimeout(()=>showToast('info','Add your phone number','Open your profile to add a contact number for the driver.'),1500);
+        succeeded=true;
     } catch(e) {
         console.error(e);
-        if (e.message && e.message.startsWith('Shipday')) {
-            showToast('info', 'Order saved', 'Dispatch sync pending — our team will follow up.');
-            succeeded = true;
-        } else {
-            showToast('error', 'Booking failed', e.message || 'Something went wrong.');
-        }
+        if(e.message&&e.message.startsWith('Shipday')) { showToast('info','Order saved','Dispatch sync pending — our team will follow up.'); succeeded=true; }
+        else showToast('error','Booking failed',e.message||'Something went wrong.');
     } finally {
-        if (succeeded) {
-            resetBookingForm();
-        } else {
-            btn.disabled = false;
-            updateSubmitBtn();
-        }
+        if(succeeded) resetBookingForm();
+        else updateSubmitBtn();
     }
     return succeeded;
 }
 
 window.confirmBooking = async function() {
-    if (!selectedPkg || !selectedCoords.pickup || !selectedCoords.dropoff) return;
-    if (!currentUser) { showToast('error','Not signed in','Please sign in first.'); return; }
-
-    const btn   = document.getElementById('submitBtn');
-    const label = document.getElementById('submitLabel');
-
-    if (selectedPayment === 'yoco') {
-        const total = Math.round(selectedPkg.base + routeDistKm * 3.5);
+    if(!selectedPkg||!selectedCoords.pickup||!selectedCoords.dropoff) return;
+    if(!currentUser) { showToast('error','Not signed in','Please sign in first.'); return; }
+    const ctx=isDesktop()?'sb':'mobile';
+    const btn   = document.getElementById(ctx==='sb'?'submitBtn-sb':'submitBtn');
+    const label = document.getElementById(ctx==='sb'?'submitLabel-sb':'submitLabel');
+    if(selectedPayment[ctx]==='yoco') {
+        const total=Math.round(selectedPkg.base+routeDistKm*3.5);
         try {
-            const payResult = await processYocoPayment(total);
-            label.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
-            btn.disabled = true;
-            showToast('success', 'Card authorised', 'Completing your booking…');
-            await doBookOrder({ method: 'yoco', token: payResult.token, testMode: payResult.testMode });
-        } catch(err) {
-            if (err && err.cancelled) return;
-            showToast('error', 'Payment failed', err.message || 'Could not complete Yoco payment.');
-        }
+            const payResult=await processYocoPayment(total);
+            label.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
+            btn.disabled=true;
+            showToast('success','Card authorised','Completing your booking…');
+            await doBookOrder({method:'yoco',token:payResult.token,testMode:payResult.testMode});
+        } catch(err) { if(err&&err.cancelled) return; showToast('error','Payment failed',err.message||'Could not complete Yoco payment.'); }
         return;
     }
-
-    // Cash flow
-    label.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
-    btn.disabled = true;
-    await doBookOrder({ method: 'cash', testMode: false });
+    label.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
+    btn.disabled=true;
+    await doBookOrder({method:'cash',testMode:false});
 };
 
 function resetBookingForm() {
-    clearInput('pickup');
-    clearInput('dropoff');
-    document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('active'));
-    selectedPkg = null; routeDistKm = 0;
-    document.getElementById('route-dist').textContent  = '—';
-    document.getElementById('route-time').textContent  = '—';
-    document.getElementById('route-price').textContent = '—';
-    selectPaymentMethod('cash');
+    clearInput('pickup','mobile'); clearInput('dropoff','mobile');
+    document.querySelectorAll('.pkg-card').forEach(c=>c.classList.remove('active'));
+    selectedPkg=null; routeDistKm=0;
+    setRouteBarValues('—','—');
+    ['route-price','sb-route-price'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='—';});
+    ['mobile','sb'].forEach(ctx=>selectPaymentMethod('cash',ctx));
     updateSubmitBtn();
 }
 
-/* ══════════════════════════════════════════
-   GOOGLE PAY
-══════════════════════════════════════════ */
-let googlePayClient = null;
-let gpayAvailable   = false;
-
-const gpayBaseCardMethod = {
-    type: 'CARD',
-    parameters: { allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'], allowedCardNetworks: ['VISA', 'MASTERCARD'] }
-};
-const gpayCardMethod = {
-    ...gpayBaseCardMethod,
-    tokenizationSpecification: {
-        type: 'PAYMENT_GATEWAY',
-        parameters: { gateway: 'example', gatewayMerchantId: 'exampleGatewayMerchantId' }
-    }
-};
-
+/* ─── Google Pay ─── */
+let googlePayClient=null, gpayAvailable=false;
+const gpayBaseCardMethod={type:'CARD',parameters:{allowedAuthMethods:['PAN_ONLY','CRYPTOGRAM_3DS'],allowedCardNetworks:['VISA','MASTERCARD']}};
+const gpayCardMethod={...gpayBaseCardMethod,tokenizationSpecification:{type:'PAYMENT_GATEWAY',parameters:{gateway:'example',gatewayMerchantId:'exampleGatewayMerchantId'}}};
 function gpayPaymentDataRequest(amountZAR) {
-    return {
-        apiVersion: 2, apiVersionMinor: 0,
-        allowedPaymentMethods: [gpayCardMethod],
-        merchantInfo: { merchantName: 'CourierGo (Test)' },
-        transactionInfo: { countryCode: 'ZA', currencyCode: 'ZAR', totalPriceStatus: 'FINAL', totalPrice: amountZAR.toFixed(2) }
-    };
+    return {apiVersion:2,apiVersionMinor:0,allowedPaymentMethods:[gpayCardMethod],merchantInfo:{merchantName:'CourierGo (Test)'},transactionInfo:{countryCode:'ZA',currencyCode:'ZAR',totalPriceStatus:'FINAL',totalPrice:amountZAR.toFixed(2)}};
 }
-
 function waitForGooglePayScript() {
-    return new Promise(resolve => {
-        if (window.google && window.google.payments) return resolve();
-        window.addEventListener('gpayready', () => resolve(), { once: true });
-        setTimeout(() => { if (window.google && window.google.payments) resolve(); }, 1500);
-    });
+    return new Promise(resolve=>{ if(window.google&&window.google.payments) return resolve(); window.addEventListener('gpayready',()=>resolve(),{once:true}); setTimeout(()=>{if(window.google&&window.google.payments)resolve();},1500); });
 }
-
 async function initGooglePay() {
     await waitForGooglePayScript();
-    if (!window.google || !window.google.payments) return;
-    googlePayClient = new google.payments.api.PaymentsClient({ environment: 'TEST' });
-    try {
-        const resp = await googlePayClient.isReadyToPay({ apiVersion: 2, apiVersionMinor: 0, allowedPaymentMethods: [gpayBaseCardMethod] });
-        gpayAvailable = !!resp.result;
-    } catch(e) { gpayAvailable = false; }
-    if (gpayAvailable) { document.getElementById('pay-pill-gpay').classList.remove('hidden'); }
+    if(!window.google||!window.google.payments) return;
+    googlePayClient=new google.payments.api.PaymentsClient({environment:'TEST'});
+    try { const r=await googlePayClient.isReadyToPay({apiVersion:2,apiVersionMinor:0,allowedPaymentMethods:[gpayBaseCardMethod]}); gpayAvailable=!!r.result; } catch(e){gpayAvailable=false;}
+    if(gpayAvailable) { ['pay-pill-gpay-mobile','pay-pill-gpay-sb'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('hidden');}); }
 }
-
-let gpayButtonCreated = false;
-
-function ensureGooglePayButton() {
-    if (gpayButtonCreated || !gpayAvailable || !googlePayClient) return;
-    gpayButtonCreated = true;
-    const button = googlePayClient.createButton({
-        onClick: onGooglePayButtonClicked,
-        buttonColor: 'black', buttonType: 'pay', buttonSizeMode: 'fill', buttonRadius: 14
-    });
-    document.getElementById('gpay-button-container').appendChild(button);
+let gpayButtonCreated={mobile:false,sb:false};
+function ensureGooglePayButton(ctx) {
+    if(gpayButtonCreated[ctx]||!gpayAvailable||!googlePayClient) return;
+    gpayButtonCreated[ctx]=true;
+    const btn=googlePayClient.createButton({onClick:onGooglePayButtonClicked,buttonColor:'black',buttonType:'pay',buttonSizeMode:'fill',buttonRadius:14});
+    const cont=document.getElementById(`gpay-button-container-${ctx}`); if(cont) cont.appendChild(btn);
 }
-
 async function onGooglePayButtonClicked() {
-    if (!currentUser) { showToast('error', 'Not signed in', 'Please sign in first.'); return; }
-    if (!selectedPkg || !selectedCoords.pickup || !selectedCoords.dropoff) {
-        showToast('error', 'Trip details missing', 'Set pickup, destination and package size first.'); return;
-    }
-    const total = Math.round(selectedPkg.base + routeDistKm * 3.5);
+    if(!currentUser){showToast('error','Not signed in','Please sign in first.');return;}
+    if(!selectedPkg||!selectedCoords.pickup||!selectedCoords.dropoff){showToast('error','Trip details missing','Set pickup, destination and package size first.');return;}
+    const total=Math.round(selectedPkg.base+routeDistKm*3.5);
     try {
-        const paymentData = await googlePayClient.loadPaymentData(gpayPaymentDataRequest(total));
-        const testToken = paymentData?.paymentMethodData?.tokenizationData?.token;
-        console.log('Google Pay sandbox token:', testToken);
-        showToast('success', 'Test payment captured', 'Google Pay sandbox — no real charge was made.');
-        await doBookOrder({ method: 'google_pay', testMode: true });
-    } catch (err) {
-        if (err && err.statusCode === 'CANCELED') return;
-        console.error('Google Pay error', err);
-        showToast('error', 'Google Pay failed', 'Could not complete the test payment.');
-    }
+        const pd=await googlePayClient.loadPaymentData(gpayPaymentDataRequest(total));
+        showToast('success','Test payment captured','Google Pay sandbox — no real charge was made.');
+        await doBookOrder({method:'google_pay',testMode:true});
+    } catch(err){ if(err&&err.statusCode==='CANCELED') return; showToast('error','Google Pay failed','Could not complete the test payment.'); }
 }
 
 initGooglePay();
-setTimeout(hideSplash, 3000);
+setTimeout(hideSplash,3000);
 </script>
 </body>
 </html>
