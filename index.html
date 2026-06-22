@@ -1825,28 +1825,30 @@ window.confirmBooking = async function() {
     const btn   = document.getElementById(ctx==='sb'?'submitBtn-sb':'submitBtn');
     const label = document.getElementById(ctx==='sb'?'submitLabel-sb':'submitLabel');
     if(selectedPayment[ctx]==='yoco') {
-        const total=Math.round(selectedPkg.base+routeDistKm*3.5);
-        try {
-            // Yoco DOM Watcher logic:
-            const mobileSearchCard = document.getElementById('top-bar');
-            if (mobileSearchCard && ctx === 'mobile') mobileSearchCard.style.display = 'none';
+    const total=Math.round(selectedPkg.base+routeDistKm*3.5);
+    const topBar = document.getElementById('top-bar');
+    
+    // Hide top bar on mobile before Yoco popup
+    if (topBar && ctx === 'mobile') topBar.style.display = 'none';
 
-            const yocoCloseWatcher = setInterval(() => {
-                const isYocoOpen = document.querySelector('iframe[src*="yoco"], [id*="yoco"]');
-                if (!isYocoOpen) {
-                    if (mobileSearchCard && ctx === 'mobile') mobileSearchCard.style.display = '';
-                    clearInterval(yocoCloseWatcher);
-                }
-            }, 500);
+    const restoreTopBar = () => {
+        if (topBar && ctx === 'mobile') topBar.style.display = '';
+    };
 
-            const payResult=await processYocoPayment(total);
-            label.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
-            btn.disabled=true;
-            showToast('success','Card authorised','Completing your booking…');
-            await doBookOrder({method:'yoco',token:payResult.token,testMode:payResult.testMode});
-        } catch(err) { if(err&&err.cancelled) return; showToast('error','Payment failed',err.message||'Could not complete Yoco payment.'); }
-        return;
+    try {
+        const payResult = await processYocoPayment(total);
+        label.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
+        btn.disabled = true;
+        showToast('success', 'Card authorised', 'Completing your booking…');
+        await doBookOrder({ method: 'yoco', token: payResult.token, testMode: payResult.testMode });
+    } catch(err) {
+        if (err && err.cancelled) { restoreTopBar(); return; }
+        showToast('error', 'Payment failed', err.message || 'Could not complete Yoco payment.');
+    } finally {
+        restoreTopBar();
     }
+    return;
+}
     label.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
     btn.disabled=true;
     await doBookOrder({method:'cash',testMode:false});
