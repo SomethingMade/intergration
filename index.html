@@ -724,20 +724,18 @@
         .sb-nav-btn:hover { border-color: #18181b; color: #18181b; background: #fafafa; }
         .sb-nav-btn:active { transform: scale(0.92); }
 
-        /* ── Subscription & Verified Badge ── */
+        /* ── Subscription & Verified Badge (Facebook-style SVG) ── */
         .verified-badge {
             position: absolute;
             bottom: -2px; right: -2px;
-            width: 14px; height: 14px;
-            background: #3b82f6;
-            border: 2px solid #fff;
-            border-radius: 50%;
+            width: 16px; height: 16px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 8px; color: #fff;
             z-index: 10;
+            filter: drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 1.5px #fff);
         }
+        .verified-badge svg { width: 100%; height: 100%; display: block; }
         .drawer-avatar-wrap .verified-badge {
-            width: 22px; height: 22px; font-size: 11px; bottom: 2px; right: 2px;
+            width: 24px; height: 24px; bottom: 2px; right: 2px;
         }
         .user-marker-wrap .verified-badge {
             bottom: 6px; right: 6px; 
@@ -843,31 +841,31 @@
             <h2>Package size</h2><span>Swipe →</span>
         </div>
         <div class="pkg-scroll" id="mobile-pkg-scroll">
-            <div class="pkg-card" id="pkg-food-mobile" onclick="selectPackage(this,'Food Delivery',45,'mobile')">
+            <div class="pkg-card" id="pkg-food-mobile" onclick="selectPackage(this,'food','mobile')">
                 <div><div class="pkg-icon"><i class="fa-solid fa-utensils"></i></div>
                 <div class="pkg-name">Food Delivery</div>
                 <div class="pkg-weight" id="pkg-food-weight-mobile">Restaurant orders</div></div>
-                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R45</span></div>
+                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-food-mobile">R45</span></div>
             </div>
-            <div class="pkg-card" onclick="selectPackage(this,'Document',40,'mobile')">
+            <div class="pkg-card" onclick="selectPackage(this,'document','mobile')">
                 <div><div class="pkg-icon"><i class="fa-solid fa-envelope"></i></div>
                 <div class="pkg-name">Document</div><div class="pkg-weight">Up to 1 kg</div></div>
-                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R40</span></div>
+                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-document-mobile">R40</span></div>
             </div>
-            <div class="pkg-card" onclick="selectPackage(this,'Small Parcel',65,'mobile')">
+            <div class="pkg-card" onclick="selectPackage(this,'small','mobile')">
                 <div><div class="pkg-icon"><i class="fa-solid fa-box-open"></i></div>
                 <div class="pkg-name">Small Parcel</div><div class="pkg-weight">Up to 5 kg</div></div>
-                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R65</span></div>
+                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-small-mobile">R65</span></div>
             </div>
-            <div class="pkg-card" onclick="selectPackage(this,'Medium Box',110,'mobile')">
+            <div class="pkg-card" onclick="selectPackage(this,'medium','mobile')">
                 <div><div class="pkg-icon"><i class="fa-solid fa-box"></i></div>
                 <div class="pkg-name">Medium Box</div><div class="pkg-weight">Up to 15 kg</div></div>
-                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R110</span></div>
+                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-medium-mobile">R110</span></div>
             </div>
-            <div class="pkg-card" onclick="selectPackage(this,'Large Freight',180,'mobile')">
+            <div class="pkg-card" onclick="selectPackage(this,'large','mobile')">
                 <div><div class="pkg-icon"><i class="fa-solid fa-pallet"></i></div>
                 <div class="pkg-name">Large Freight</div><div class="pkg-weight">Up to 30 kg</div></div>
-                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R180</span></div>
+                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-large-mobile">R180</span></div>
             </div>
         </div>
         <div class="section-hd" style="margin-bottom:10px;"><h2>Payment method</h2></div>
@@ -998,31 +996,31 @@
                 </div>
             </div>
             <div class="pkg-scroll" id="sb-pkg-scroll">
-                <div class="pkg-card" id="pkg-food-sb" onclick="selectPackage(this,'Food Delivery',45,'sb')">
+                <div class="pkg-card" id="pkg-food-sb" onclick="selectPackage(this,'food','sb')">
                     <div><div class="pkg-icon"><i class="fa-solid fa-utensils"></i></div>
                     <div class="pkg-name">Food Delivery</div>
                     <div class="pkg-weight" id="pkg-food-weight-sb">Restaurant orders</div></div>
-                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R45</span></div>
+                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-food-sb">R45</span></div>
                 </div>
-                <div class="pkg-card" onclick="selectPackage(this,'Document',40,'sb')">
+                <div class="pkg-card" onclick="selectPackage(this,'document','sb')">
                     <div><div class="pkg-icon"><i class="fa-solid fa-envelope"></i></div>
                     <div class="pkg-name">Document</div><div class="pkg-weight">Up to 1 kg</div></div>
-                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R40</span></div>
+                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-document-sb">R40</span></div>
                 </div>
-                <div class="pkg-card" onclick="selectPackage(this,'Small Parcel',65,'sb')">
+                <div class="pkg-card" onclick="selectPackage(this,'small','sb')">
                     <div><div class="pkg-icon"><i class="fa-solid fa-box-open"></i></div>
                     <div class="pkg-name">Small Parcel</div><div class="pkg-weight">Up to 5 kg</div></div>
-                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R65</span></div>
+                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-small-sb">R65</span></div>
                 </div>
-                <div class="pkg-card" onclick="selectPackage(this,'Medium Box',110,'sb')">
+                <div class="pkg-card" onclick="selectPackage(this,'medium','sb')">
                     <div><div class="pkg-icon"><i class="fa-solid fa-box"></i></div>
                     <div class="pkg-name">Medium Box</div><div class="pkg-weight">Up to 15 kg</div></div>
-                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R110</span></div>
+                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-medium-sb">R110</span></div>
                 </div>
-                <div class="pkg-card" onclick="selectPackage(this,'Large Freight',180,'sb')">
+                <div class="pkg-card" onclick="selectPackage(this,'large','sb')">
                     <div><div class="pkg-icon"><i class="fa-solid fa-pallet"></i></div>
                     <div class="pkg-name">Large Freight</div><div class="pkg-weight">Up to 30 kg</div></div>
-                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val">R180</span></div>
+                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-large-sb">R180</span></div>
                 </div>
             </div>
             <div class="section-hd" style="margin-bottom:10px;"><h2>Payment method</h2></div>
@@ -1145,6 +1143,20 @@ let routeDistKm    = 0;
 let selectedCoords = { pickup: null, dropoff: null };
 let suggFeatures   = { pickup: [], dropoff: [] };
 let debounceTimers = {};
+
+/* ─── Package catalogue & live pricing (base prices controlled by admin via Firebase) ─── */
+const PACKAGE_META = {
+    food:     { name: 'Food Delivery', defaultBase: 45 },
+    document: { name: 'Document',      defaultBase: 40 },
+    small:    { name: 'Small Parcel',  defaultBase: 65 },
+    medium:   { name: 'Medium Box',    defaultBase: 110 },
+    large:    { name: 'Large Freight', defaultBase: 180 }
+};
+let pkgBasePrices = Object.fromEntries(Object.entries(PACKAGE_META).map(([k,v])=>[k,v.defaultBase]));
+let PER_KM_RATE   = 3.5;
+
+/* ─── Facebook-style verified badge (inline SVG, no external image) ─── */
+const VERIFIED_BADGE_SVG = `<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg"><path fill="#3b82f6" d="M20.396 11c-.018-.646-.215-1.275-.57-1.82-.354-.547-.86-.978-1.453-1.246.273-.61.354-1.286.233-1.94-.121-.654-.435-1.259-.904-1.738-.479-.469-1.084-.783-1.738-.904-.654-.121-1.33-.04-1.94.233-.268-.593-.7-1.1-1.246-1.453C12.234.215 11.604.018 10.96 0h-.16c-.643.018-1.272.215-1.817.57-.547.353-.978.86-1.246 1.453-.61-.274-1.286-.355-1.94-.234-.654.122-1.259.436-1.738.905-.469.479-.783 1.084-.904 1.738-.121.654-.04 1.33.234 1.94-.593.268-1.1.7-1.453 1.246-.353.546-.55 1.175-.567 1.819-.018.642.179 1.272.534 1.817.353.547.86.978 1.453 1.246-.273.61-.354 1.286-.233 1.94.121.654.435 1.259.904 1.738.479.469 1.084.783 1.738.904.654.121 1.33.04 1.94-.233.267.593.7 1.1 1.246 1.453.546.353 1.175.55 1.819.567h.158c.642-.018 1.272-.215 1.817-.57.547-.353.978-.86 1.246-1.453.61.273 1.286.354 1.94.233.654-.121 1.259-.435 1.738-.904.469-.479.783-1.084.904-1.738.121-.654.04-1.33-.233-1.94.593-.268 1.1-.7 1.453-1.246.353-.546.55-1.175.57-1.817v-.16z"/><path fill="#fff" d="M16.59 7.61 10.55 13.65 7.36 10.46l1.18-1.18 2.01 2.01 4.85-4.85z"/></svg>`;
 let ordersListenerAttached = false;
 let selectedVehicleType    = null;
 
@@ -1212,31 +1224,9 @@ window.savePhone = async function() {
     ['phone-warn','sb-phone-warn'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
 };
 
-window.toggleSubscriptionTest = async function() {
-    if (!currentUser) return;
-    try {
-        const currentMonth = new Date().toISOString().slice(0, 7);
-        await update(ref(database, `users/${currentUser.uid}`), { 
-            isSubscribed: true,
-            freeDeliveriesUsed: 0,
-            lastDeliveryMonth: currentMonth
-        });
-        userProfile.isSubscribed = true;
-        userProfile.freeDeliveriesUsed = 0;
-        userProfile.lastDeliveryMonth = currentMonth;
-        
-        // Refresh the UI elements
-        renderProfileUI();
-        renderAvatarBtn();
-        renderPaymentMethods(); // Re-show the Pro payment pill
-        if (userMarker) refreshMapMarker();
-        updateSubmitBtn();
-        
-        showToast('success', 'Subscription Activated', 'You are now a CourierGo Pro member with 4 free deliveries.');
-    } catch (e) {
-        showToast('error', 'Update failed', e.message);
-    }
-};
+/* NOTE: Pro subscription status (`isSubscribed`) is intentionally NOT settable from the client.
+   It is granted by an admin after a real Paystack subscription payment is confirmed
+   (handled in the upcoming admin dashboard / webhook). The client only ever reads this field. */
 
 onAuthStateChanged(auth, async (user) => {
     hideSplash();
@@ -1272,14 +1262,14 @@ function renderAvatarBtn() {
     const btn  = document.getElementById('avatar-btn');
     if (userProfile.photoURL) btn.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
     else btn.innerHTML = `<span class="av-init" id="avatar-btn-init">${initials(userProfile.name)}</span>`;
-    if (userProfile.isSubscribed) btn.innerHTML += `<div class="verified-badge"><i class="fa-solid fa-check"></i></div>`;
+    if (userProfile.isSubscribed) btn.innerHTML += `<div class="verified-badge">${VERIFIED_BADGE_SVG}</div>`;
 
     // Desktop sidebar
     const sbBtn  = document.getElementById('sb-avatar-btn');
     if (sbBtn) {
         if (userProfile.photoURL) sbBtn.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
         else sbBtn.innerHTML = `<span class="av-init" id="sb-avatar-init">${initials(userProfile.name)}</span>`;
-        if (userProfile.isSubscribed) sbBtn.innerHTML += `<div class="verified-badge"><i class="fa-solid fa-check"></i></div>`;
+        if (userProfile.isSubscribed) sbBtn.innerHTML += `<div class="verified-badge">${VERIFIED_BADGE_SVG}</div>`;
     }
 }
 
@@ -1304,7 +1294,7 @@ function profileBodyHTML(ctx) {
             </div>
             <div class="sub-desc">Get 4 free deliveries a month and a verified badge.</div>
             <a href="https://paystack.shop/pay/l-zrz39erw" target="_blank" class="sub-btn">Subscribe now</a>
-            <button onclick="toggleSubscriptionTest()" style="margin-top:6px; background:none; border:none; color:#a1a1aa; font-size:10px; cursor:pointer; text-decoration:underline;">Test: Mark as subscribed</button>
+            <div class="sub-desc" style="margin-top:-2px;">Your Pro status is activated by our team shortly after payment is confirmed.</div>
         </div>`;
 
     return `
@@ -1388,7 +1378,7 @@ function renderProfileUI() {
         if(aw) {
             if (userProfile.photoURL) aw.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
             else aw.innerHTML = `<span class="av-init-lg" id="drawer-avatar-init-${ctx}">${initials(userProfile.name)}</span>`;
-            if (userProfile.isSubscribed) aw.innerHTML += `<div class="verified-badge"><i class="fa-solid fa-check"></i></div>`;
+            if (userProfile.isSubscribed) aw.innerHTML += `<div class="verified-badge">${VERIFIED_BADGE_SVG}</div>`;
         }
         
         const nm = document.getElementById(`drawer-name-${ctx}`);    if(nm) nm.textContent = userProfile.name||'—';
@@ -1632,7 +1622,7 @@ function buildAvatarEl() {
     wrap.appendChild(pulse); wrap.appendChild(av); 
     
     if(userProfile.isSubscribed) {
-        const badge=document.createElement('div'); badge.className='verified-badge'; badge.innerHTML='<i class="fa-solid fa-check"></i>';
+        const badge=document.createElement('div'); badge.className='verified-badge'; badge.innerHTML=VERIFIED_BADGE_SVG;
         wrap.appendChild(badge);
     }
     
@@ -1696,7 +1686,7 @@ function fitBothMarkers() {
 }
 function updateRoutePrice() {
     if(selectedPkg) {
-        const total=Math.round(selectedPkg.base+routeDistKm*3.5);
+        const total=Math.round(selectedPkg.base+routeDistKm*PER_KM_RATE);
         ['route-price','sb-route-price'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=`R${total}`; });
     }
 }
@@ -1781,19 +1771,52 @@ window.clearInput = function(type,ctx) {
     updateSubmitBtn();
 };
 
-/* ─── Package selection (ctx = 'mobile' | 'sb') ─── */
-window.selectPackage = function(el,name,base,ctx) {
+/* ─── Package selection (ctx = 'mobile' | 'sb') — base price is live data from admin, not hardcoded ─── */
+window.selectPackage = function(el,key,ctx) {
     if(el.classList.contains('disabled')) return;
+    const meta = PACKAGE_META[key];
+    if(!meta) return;
     // Deselect all cards in both contexts
     document.querySelectorAll('.pkg-card').forEach(c=>c.classList.remove('active'));
-    // Activate matched cards in both contexts (same name)
+    // Activate matched cards in both contexts (same key)
+    ['mobile','sb'].forEach(c=>{ const card=document.getElementById(`pkg-${key}-${c}`); if(card) card.classList.add('active'); });
     document.querySelectorAll('.pkg-card').forEach(c=>{
-        if(c.querySelector('.pkg-name')&&c.querySelector('.pkg-name').textContent===name) c.classList.add('active');
+        if(c.querySelector('.pkg-name')&&c.querySelector('.pkg-name').textContent===meta.name) c.classList.add('active');
     });
-    selectedPkg={name,base};
+    selectedPkg={key,name:meta.name,base:pkgBasePrices[key]};
     updateRoutePrice();
     updateSubmitBtn();
 };
+
+/* ─── Live pricing render + Firebase Realtime listener (admin-controlled base prices) ─── */
+function renderPackagePrices() {
+    Object.keys(PACKAGE_META).forEach(key=>{
+        const price = pkgBasePrices[key];
+        ['mobile','sb'].forEach(ctx=>{
+            const el=document.getElementById(`pkg-price-${key}-${ctx}`);
+            if(el) el.textContent=`R${price}`;
+        });
+    });
+    // Keep an in-progress selection in sync if admin changes the price live
+    if(selectedPkg && selectedPkg.key && pkgBasePrices[selectedPkg.key]!==undefined) {
+        selectedPkg.base = pkgBasePrices[selectedPkg.key];
+        updateRoutePrice();
+        updateSubmitBtn();
+    }
+}
+
+function initPricingListener() {
+    onValue(ref(database,'pricing/packages'), snap => {
+        const val = snap.exists() ? snap.val() : null;
+        if(val) {
+            Object.keys(PACKAGE_META).forEach(key=>{
+                if(typeof val[key]==='number' && val[key]>=0) pkgBasePrices[key]=val[key];
+            });
+        }
+        if(val && typeof val.perKmRate==='number' && val.perKmRate>=0) PER_KM_RATE = val.perKmRate;
+        renderPackagePrices();
+    }, (err)=>console.warn('Pricing listener failed:',err.message));
+}
 
 /* ─── Desktop Scrolling Packages ─── */
 window.scrollPkg = function(direction) {
@@ -1889,7 +1912,7 @@ function updateSubmitBtn() {
         else if(!hk)      { btn.className=ctx==='sb'?'submit-btn-el':''; label.textContent='Select a package size';    btn.disabled=true; }
         else {
             const isProFree = (selectedPayment[ctx] === 'pro');
-            const originalTotal = Math.round(selectedPkg.base+routeDistKm*3.5);
+            const originalTotal = Math.round(selectedPkg.base+routeDistKm*PER_KM_RATE);
             const total = isProFree ? 0 : originalTotal;
             
             btn.className=ctx==='sb'?'submit-btn-el ready':'ready';
@@ -1954,7 +1977,7 @@ async function doBookOrder(paymentMeta) {
     try {
         const orderId="CG-"+Math.floor(1000+Math.random()*9000);
         const isProFree = paymentMeta.method === 'pro';
-        const originalTotal = Math.round(selectedPkg.base+routeDistKm*3.5);
+        const originalTotal = Math.round(selectedPkg.base+routeDistKm*PER_KM_RATE);
         const totalToCharge = isProFree ? 0 : originalTotal;
         
         const pickup  = pickupInput ? pickupInput.value : '';
@@ -2019,7 +2042,7 @@ window.confirmBooking = async function() {
     }
     
     if(selectedPayment[ctx]==='paystack') {
-        const total=Math.round(selectedPkg.base+routeDistKm*3.5);
+        const total=Math.round(selectedPkg.base+routeDistKm*PER_KM_RATE);
         try {
             const mobileSearchCard = document.getElementById('top-bar');
             if (mobileSearchCard && ctx === 'mobile') mobileSearchCard.style.display = 'none';
@@ -2096,7 +2119,7 @@ function ensureGooglePayButton(ctx) {
 async function onGooglePayButtonClicked() {
     if(!currentUser){showToast('error','Not signed in','Please sign in first.');return;}
     if(!selectedPkg||!selectedCoords.pickup||!selectedCoords.dropoff){showToast('error','Trip details missing','Set pickup, destination and package size first.');return;}
-    const total=Math.round(selectedPkg.base+routeDistKm*3.5);
+    const total=Math.round(selectedPkg.base+routeDistKm*PER_KM_RATE);
     try {
         const pd=await googlePayClient.loadPaymentData(gpayPaymentDataRequest(total));
         showToast('success','Test payment captured','Google Pay sandbox — no real charge was made.');
@@ -2104,6 +2127,8 @@ async function onGooglePayButtonClicked() {
     } catch(err){ if(err&&err.statusCode==='CANCELED') return; showToast('error','Google Pay failed','Could not complete the test payment.'); }
 }
 
+renderPackagePrices();
+initPricingListener();
 initGooglePay();
 setTimeout(hideSplash,3000);
 </script>
