@@ -8,7 +8,7 @@
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
     <script async src="https://pay.google.com/gp/p/js/pay.js" onload="window.dispatchEvent(new Event('gpayready'))"></script>
-    <script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
@@ -613,7 +613,7 @@
             pointer-events: none;
         }
         @media (min-width: 768px) {
-            #toast-container { left: calc(380px + 50% * (1 - 380px / 100vw + 380px / 100vw)); left: calc(380px + (100vw - 380px) / 2); transform: translateX(-50%); max-width: 360px; }
+            #toast-container { left: calc(380px + (100vw - 380px) / 2); transform: translateX(-50%); max-width: 360px; }
         }
         .toast {
             width: 100%; padding: 13px 15px; border-radius: 14px;
@@ -677,12 +677,12 @@
         .pay-pill.active { border-color: #18181b; background: #fafafa; color: #18181b; }
         .pay-pill.hidden { display: none; }
 
-        .yoco-test-note {
+        .paystack-test-note {
             display: none; align-items: center; gap: 7px;
             font-size: 10.5px; color: #a1a1aa; font-weight: 500;
             margin: -2px 0 10px; padding-left: 1px;
         }
-        .yoco-test-note .test-tag {
+        .paystack-test-note .test-tag {
             font-size: 8.5px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase;
             background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 5px;
         }
@@ -834,14 +834,13 @@
             <button class="pay-pill hidden" id="pay-pill-gpay-mobile" onclick="selectPaymentMethod('google_pay','mobile')">
                 <i class="fa-brands fa-google-pay"></i>Google Pay
             </button>
-            <button class="pay-pill" id="pay-pill-yoco-mobile" onclick="selectPaymentMethod('yoco','mobile')">
-                <svg width="36" height="14" viewBox="0 0 120 46" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="4" y="36" font-family="Arial Black,Arial" font-weight="900" font-size="40" fill="currentColor">Yoco</text></svg>
-                Card
+            <button class="pay-pill" id="pay-pill-paystack-mobile" onclick="selectPaymentMethod('paystack','mobile')">
+                <i class="fa-solid fa-credit-card"></i> Card
             </button>
         </div>
-        <div class="yoco-test-note" id="yoco-test-note-mobile">
-            <span class="test-tag" id="yoco-test-tag-mobile">Test mode</span>
-            <span id="yoco-test-msg-mobile">Sandbox payment — no real charge will be made.</span>
+        <div class="paystack-test-note" id="paystack-test-note-mobile">
+            <span class="test-tag" id="paystack-test-tag-mobile">Test mode</span>
+            <span id="paystack-test-msg-mobile">Sandbox payment — no real charge will be made.</span>
         </div>
         <div class="gpay-test-note" id="gpay-test-note-mobile" style="display:none;">
             <span class="test-tag">Test mode</span> Sandbox payment — no real charge will be made.
@@ -987,14 +986,13 @@
                 <button class="pay-pill hidden" id="pay-pill-gpay-sb" onclick="selectPaymentMethod('google_pay','sb')">
                     <i class="fa-brands fa-google-pay"></i>Google Pay
                 </button>
-                <button class="pay-pill" id="pay-pill-yoco-sb" onclick="selectPaymentMethod('yoco','sb')">
-                    <svg width="36" height="14" viewBox="0 0 120 46" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="4" y="36" font-family="Arial Black,Arial" font-weight="900" font-size="40" fill="currentColor">Yoco</text></svg>
-                    Card
+                <button class="pay-pill" id="pay-pill-paystack-sb" onclick="selectPaymentMethod('paystack','sb')">
+                    <i class="fa-solid fa-credit-card"></i> Card
                 </button>
             </div>
-            <div class="yoco-test-note" id="yoco-test-note-sb">
-                <span class="test-tag" id="yoco-test-tag-sb">Test mode</span>
-                <span id="yoco-test-msg-sb">Sandbox payment — no real charge will be made.</span>
+            <div class="paystack-test-note" id="paystack-test-note-sb">
+                <span class="test-tag" id="paystack-test-tag-sb">Test mode</span>
+                <span id="paystack-test-msg-sb">Sandbox payment — no real charge will be made.</span>
             </div>
             <div class="gpay-test-note" id="gpay-test-note-sb" style="display:none;">
                 <span class="test-tag">Test mode</span> Sandbox payment — no real charge will be made.
@@ -1050,7 +1048,7 @@ import { getRemoteConfig, fetchAndActivate, getValue } from "https://www.gstatic
 
 const MAPBOX_TOKEN = "pk.eyJ1Ijoia2F0bGVnb3BoYXNoYSIsImEiOiJjbTlpOTdzbmYwMGNsMmpzYWJtZzN4d3pqIn0.Zt-aSMEoahrV3zkiVVHbOw";
 const SHIPDAY_KEY  = "K5a8wQJF3f.az2zfrhgzwxK9JONI2y8";
-let YOCO_PUBLIC_KEY = null;
+let PAYSTACK_PUBLIC_KEY = null;
 
 const firebaseConfig = {
     apiKey: "AIzaSyBQSPwpVbGrdCuOoyitAeWQHIeipj2MgIY",
@@ -1069,13 +1067,17 @@ const provider = new GoogleAuthProvider();
 
 const remoteConfig = getRemoteConfig(fbApp);
 remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
-remoteConfig.defaultConfig = { yoco_public_key: "" };
+remoteConfig.defaultConfig = { paystack_public_key: "" };
 
 async function initRemoteConfig() {
     try {
         await fetchAndActivate(remoteConfig);
-        const key = getValue(remoteConfig, "yoco_public_key").asString();
-        if (key) { YOCO_PUBLIC_KEY = key; updateYocoTestNote('mobile'); updateYocoTestNote('sb'); }
+        const key = getValue(remoteConfig, "paystack_public_key").asString();
+        if (key) { 
+            PAYSTACK_PUBLIC_KEY = key; 
+            updatePaystackTestNote('mobile'); 
+            updatePaystackTestNote('sb'); 
+        }
     } catch(e) { console.warn("Remote Config fetch failed:", e.message); }
 }
 initRemoteConfig();
@@ -1692,14 +1694,14 @@ function updateFoodPackageAvailability() {
     });
 }
 
-/* ─── Yoco test note ─── */
-function updateYocoTestNote(ctx) {
-    const note=document.getElementById(`yoco-test-note-${ctx}`);
+/* ─── Paystack test note ─── */
+function updatePaystackTestNote(ctx) {
+    const note=document.getElementById(`paystack-test-note-${ctx}`);
     if(!note) return;
-    if(selectedPayment[ctx]!=='yoco'||!YOCO_PUBLIC_KEY) { note.style.display='none'; return; }
-    if(YOCO_PUBLIC_KEY.startsWith('pk_test_')) {
-        document.getElementById(`yoco-test-tag-${ctx}`).textContent='Test mode';
-        document.getElementById(`yoco-test-msg-${ctx}`).textContent='Sandbox payment — no real charge will be made.';
+    if(selectedPayment[ctx]!=='paystack'||!PAYSTACK_PUBLIC_KEY) { note.style.display='none'; return; }
+    if(PAYSTACK_PUBLIC_KEY.startsWith('pk_test_')) {
+        document.getElementById(`paystack-test-tag-${ctx}`).textContent='Test mode';
+        document.getElementById(`paystack-test-msg-${ctx}`).textContent='Sandbox payment — no real charge will be made.';
         note.style.display='flex';
     } else { note.style.display='none'; }
 }
@@ -1707,11 +1709,11 @@ function updateYocoTestNote(ctx) {
 /* ─── Payment method ─── */
 window.selectPaymentMethod = function(type,ctx) {
     selectedPayment[ctx]=type;
-    ['cash','gpay','yoco'].forEach(p=>{
+    ['cash','gpay','paystack'].forEach(p=>{
         const id=p==='gpay'?`pay-pill-gpay-${ctx}`:`pay-pill-${p}-${ctx}`;
         const el=document.getElementById(id); if(el) el.classList.remove('active');
     });
-    const activeId=type==='cash'?`pay-pill-cash-${ctx}`:type==='google_pay'?`pay-pill-gpay-${ctx}`:`pay-pill-yoco-${ctx}`;
+    const activeId=type==='cash'?`pay-pill-cash-${ctx}`:type==='google_pay'?`pay-pill-gpay-${ctx}`:`pay-pill-paystack-${ctx}`;
     const activeEl=document.getElementById(activeId); if(activeEl) activeEl.classList.add('active');
 
     const gpCont=document.getElementById(`gpay-button-container-${ctx}`);
@@ -1719,7 +1721,7 @@ window.selectPaymentMethod = function(type,ctx) {
     if(gpCont) gpCont.style.display=type==='google_pay'?'block':'none';
     if(gpNote) gpNote.style.display=type==='google_pay'?'flex':'none';
 
-    updateYocoTestNote(ctx);
+    updatePaystackTestNote(ctx);
     if(type==='google_pay') requestAnimationFrame(()=>setTimeout(()=>ensureGooglePayButton(ctx),50));
     updateSubmitBtn();
 };
@@ -1739,7 +1741,7 @@ function updateSubmitBtn() {
         else {
             const total=Math.round(selectedPkg.base+routeDistKm*3.5);
             btn.className=ctx==='sb'?'submit-btn-el ready':'ready';
-            if(selectedPayment[ctx]==='yoco') label.innerHTML=`<i class="fa-solid fa-credit-card"></i> Pay R${total} with Yoco`;
+            if(selectedPayment[ctx]==='paystack') label.innerHTML=`<i class="fa-solid fa-credit-card"></i> Pay R${total} with Paystack`;
             else label.textContent=`Book ${selectedPkg.name} · R${total}`;
             btn.disabled=false;
         }
@@ -1753,27 +1755,35 @@ window.toggleSheet = ()=>{ sheetCollapsed=!sheetCollapsed; document.getElementBy
 window.switchTab = tab=>{ const s=tab==='send'; document.getElementById('view-send').style.display=s?'block':'none'; document.getElementById('view-track').style.display=s?'none':'block'; document.getElementById('tab-send').classList.toggle('active',s); document.getElementById('tab-track').classList.toggle('active',!s); };
 window.sbSwitchTab = tab=>{ const s=tab==='send'; document.getElementById('sb-view-send').style.display=s?'block':'none'; document.getElementById('sb-view-track').style.display=s?'none':'block'; document.getElementById('sb-tab-send').classList.toggle('active',s); document.getElementById('sb-tab-track').classList.toggle('active',!s); };
 
-/* ─── Yoco SDK ─── */
-let yocoSDK=null;
-function getYocoSDK() {
-    if(!YOCO_PUBLIC_KEY) { showToast('error','Yoco not configured','Payment key not loaded yet. Please try again.'); return null; }
-    if(yocoSDK&&yocoSDK._publicKey===YOCO_PUBLIC_KEY) return yocoSDK;
-    if(typeof window.YocoSDK==='undefined') { showToast('error','Yoco not loaded','Please check your connection and refresh.'); return null; }
-    yocoSDK=new window.YocoSDK({publicKey:YOCO_PUBLIC_KEY}); yocoSDK._publicKey=YOCO_PUBLIC_KEY; return yocoSDK;
-}
-async function processYocoPayment(amountRands) {
-    return new Promise((resolve,reject)=>{
-        const sdk=getYocoSDK(); if(!sdk){reject(new Error('Yoco SDK not loaded.')); return;}
-        sdk.showPopup({
-            amountInCents:amountRands*100, currency:'ZAR', name:'CourierGo',
-            description:`${selectedPkg?selectedPkg.name:'Delivery'}`,
-            callback:function(result){
-                if(result.error){
-                    if(result.error.message&&result.error.message.toLowerCase().includes('cancel')) reject({cancelled:true});
-                    else reject(new Error(result.error.message||'Yoco payment failed'));
-                } else resolve({token:result.id,testMode:YOCO_PUBLIC_KEY.startsWith('pk_test_')});
+/* ─── Paystack SDK ─── */
+async function processPaystackPayment(amountRands, email) {
+    return new Promise((resolve, reject) => {
+        if (!PAYSTACK_PUBLIC_KEY) {
+            reject(new Error('Paystack key not loaded. Please try again.')); 
+            return;
+        }
+        if (typeof PaystackPop === 'undefined') {
+            reject(new Error('Paystack SDK not loaded. Please check your connection and refresh.')); 
+            return;
+        }
+
+        const handler = PaystackPop.setup({
+            key: PAYSTACK_PUBLIC_KEY,
+            email: email,
+            amount: amountRands * 100, // Paystack requires amount in cents/kobo
+            currency: 'ZAR',
+            ref: 'CG-' + Math.floor(Math.random() * 1000000000),
+            callback: function(response) {
+                resolve({
+                    token: response.reference,
+                    testMode: PAYSTACK_PUBLIC_KEY.startsWith('pk_test_')
+                });
+            },
+            onClose: function() {
+                reject({ cancelled: true });
             }
         });
+        handler.openIframe();
     });
 }
 
@@ -1824,29 +1834,35 @@ window.confirmBooking = async function() {
     const ctx=isDesktop()?'sb':'mobile';
     const btn   = document.getElementById(ctx==='sb'?'submitBtn-sb':'submitBtn');
     const label = document.getElementById(ctx==='sb'?'submitLabel-sb':'submitLabel');
-    if(selectedPayment[ctx]==='yoco') {
+    
+    if(selectedPayment[ctx]==='paystack') {
         const total=Math.round(selectedPkg.base+routeDistKm*3.5);
         try {
-            // Yoco DOM Watcher logic:
             const mobileSearchCard = document.getElementById('top-bar');
             if (mobileSearchCard && ctx === 'mobile') mobileSearchCard.style.display = 'none';
 
-            const yocoCloseWatcher = setInterval(() => {
-                const isYocoOpen = document.querySelector('iframe[src*="yoco"], [id*="yoco"]');
-                if (!isYocoOpen) {
+            const paystackCloseWatcher = setInterval(() => {
+                const isPaystackOpen = document.querySelector('iframe[name="paystack-checkout"]');
+                if (!isPaystackOpen) {
                     if (mobileSearchCard && ctx === 'mobile') mobileSearchCard.style.display = '';
-                    clearInterval(yocoCloseWatcher);
+                    clearInterval(paystackCloseWatcher);
                 }
             }, 500);
 
-            const payResult=await processYocoPayment(total);
+            const userEmail = userProfile.email || currentUser.email || 'customer@couriergo.co.za';
+            const payResult = await processPaystackPayment(total, userEmail);
+            
             label.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
             btn.disabled=true;
             showToast('success','Card authorised','Completing your booking…');
-            await doBookOrder({method:'yoco',token:payResult.token,testMode:payResult.testMode});
-        } catch(err) { if(err&&err.cancelled) return; showToast('error','Payment failed',err.message||'Could not complete Yoco payment.'); }
+            await doBookOrder({method:'paystack',token:payResult.token,testMode:payResult.testMode});
+        } catch(err) { 
+            if(err&&err.cancelled) return; 
+            showToast('error','Payment failed',err.message||'Could not complete Paystack payment.'); 
+        }
         return;
     }
+    
     label.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
     btn.disabled=true;
     await doBookOrder({method:'cash',testMode:false});
