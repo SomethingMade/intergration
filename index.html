@@ -120,13 +120,13 @@
         #avatar-btn {
             position: fixed; top: 54px; right: calc(50% - 194px);
             z-index: 70; width: 40px; height: 40px;
-            border-radius: 50%; overflow: hidden;
+            border-radius: 50%; overflow: visible; /* Updated for badge */
             border: 2.5px solid #fff;
             box-shadow: 0 2px 10px rgba(0,0,0,0.3);
             cursor: pointer; background: #18181b;
             display: none; align-items: center; justify-content: center;
         }
-        #avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
+        #avatar-btn img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
         #avatar-btn .av-init { color: #fff; font-size: 13px; font-weight: 800; }
 
         .search-card {
@@ -258,12 +258,12 @@
             .sb-avatar-btn {
                 width: 38px; height: 38px; border-radius: 50%;
                 border: 2px solid rgba(255,255,255,0.2);
-                overflow: hidden; cursor: pointer; background: #27272a;
+                overflow: visible; /* Updated for badge */ cursor: pointer; background: #27272a;
                 display: flex; align-items: center; justify-content: center;
                 flex-shrink: 0; transition: border-color 0.15s;
             }
             .sb-avatar-btn:hover { border-color: rgba(255,255,255,0.5); }
-            .sb-avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
+            .sb-avatar-btn img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
             .sb-avatar-btn .av-init { color: #fff; font-size: 12px; font-weight: 800; }
 
             /* Search inside sidebar */
@@ -428,11 +428,11 @@
         .drawer-avatar-wrap {
             width: 72px; height: 72px; border-radius: 50%;
             border: 3px solid rgba(255,255,255,0.2);
-            overflow: hidden; margin-bottom: 14px;
+            overflow: visible; margin-bottom: 14px; position: relative;
             background: #27272a;
             display: flex; align-items: center; justify-content: center;
         }
-        .drawer-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .drawer-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
         .drawer-avatar-wrap .av-init-lg { color: #fff; font-size: 24px; font-weight: 800; }
         .drawer-name  { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: -0.3px; }
         .drawer-email { font-size: 12px; color: #71717a; margin-top: 3px; }
@@ -719,6 +719,45 @@
         .sb-nav-btn:hover { border-color: #18181b; color: #18181b; background: #fafafa; }
         .sb-nav-btn:active { transform: scale(0.92); }
 
+        /* ── Subscription & Verified Badge ── */
+        .verified-badge {
+            position: absolute;
+            bottom: -2px; right: -2px;
+            width: 14px; height: 14px;
+            background: #3b82f6;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 8px; color: #fff;
+            z-index: 10;
+        }
+        .drawer-avatar-wrap .verified-badge {
+            width: 22px; height: 22px; font-size: 11px; bottom: 2px; right: 2px;
+        }
+        .user-marker-wrap .verified-badge {
+            bottom: 6px; right: 6px; 
+        }
+        
+        .subscription-card {
+            background: #fafafa;
+            border: 1.5px solid #e4e4e7;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+        .sub-header { display: flex; align-items: center; gap: 10px; }
+        .sub-icon { width: 32px; height: 32px; border-radius: 10px; background: #eff6ff; color: #3b82f6; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .sub-title { font-size: 13px; font-weight: 800; color: #18181b; }
+        .sub-desc { font-size: 11px; color: #71717a; line-height: 1.5; }
+        .sub-btn {
+            background: #18181b; color: #fff; border: none; border-radius: 10px;
+            padding: 10px; font-size: 12px; font-weight: 700; cursor: pointer;
+            transition: opacity 0.15s; font-family: 'Inter', sans-serif;
+            text-align: center; text-decoration: none; display: block;
+        }
+        .sub-btn:hover { opacity: 0.9; color: #fff; }
+        .sub-active-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #15803d; background: #f0fdf4; padding: 6px 10px; border-radius: 8px; border: 1.5px solid #bbf7d0; width: max-content;}
     </style>
 </head>
 <body>
@@ -1124,7 +1163,7 @@ window.signOut = async function() {
 async function loadUserProfile(user) {
     const snap = await get(ref(database,`users/${user.uid}`));
     if (snap.exists()) { userProfile = snap.val(); }
-    else { userProfile = {name:user.displayName||'',email:user.email||'',phone:'',photoURL:user.photoURL||''}; await set(ref(database,`users/${user.uid}`),userProfile); }
+    else { userProfile = {name:user.displayName||'',email:user.email||'',phone:'',photoURL:user.photoURL||'',isSubscribed:false}; await set(ref(database,`users/${user.uid}`),userProfile); }
     userProfile.name     = user.displayName || userProfile.name;
     userProfile.email    = user.email       || userProfile.email;
     userProfile.photoURL = user.photoURL    || userProfile.photoURL;
@@ -1144,6 +1183,23 @@ window.savePhone = async function() {
     renderProfileUI();
     showToast('success','Number saved','Your driver will use this to contact you.');
     ['phone-warn','sb-phone-warn'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
+};
+
+window.toggleSubscriptionTest = async function() {
+    if (!currentUser) return;
+    try {
+        await update(ref(database, `users/${currentUser.uid}`), { isSubscribed: true });
+        userProfile.isSubscribed = true;
+        
+        // Refresh the UI elements to show the new badges
+        renderProfileUI();
+        renderAvatarBtn();
+        if (userMarker) refreshMapMarker();
+        
+        showToast('success', 'Subscription Activated', 'You are now a CourierGo Pro member.');
+    } catch (e) {
+        showToast('error', 'Update failed', e.message);
+    }
 };
 
 onAuthStateChanged(auth, async (user) => {
@@ -1179,20 +1235,43 @@ function renderAvatarBtn() {
     // Mobile
     const btn  = document.getElementById('avatar-btn');
     if (userProfile.photoURL) btn.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
-    else document.getElementById('avatar-btn-init').textContent = initials(userProfile.name);
+    else btn.innerHTML = `<span class="av-init" id="avatar-btn-init">${initials(userProfile.name)}</span>`;
+    if (userProfile.isSubscribed) btn.innerHTML += `<div class="verified-badge"><i class="fa-solid fa-check"></i></div>`;
+
     // Desktop sidebar
     const sbBtn  = document.getElementById('sb-avatar-btn');
-    const sbInit = document.getElementById('sb-avatar-init');
     if (sbBtn) {
         if (userProfile.photoURL) sbBtn.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
-        else sbInit.textContent = initials(userProfile.name);
+        else sbBtn.innerHTML = `<span class="av-init" id="sb-avatar-init">${initials(userProfile.name)}</span>`;
+        if (userProfile.isSubscribed) sbBtn.innerHTML += `<div class="verified-badge"><i class="fa-solid fa-check"></i></div>`;
     }
 }
 
 /* ─── Profile body template (shared between mobile drawer & desktop panel) ─── */
 function profileBodyHTML(ctx) {
-    // ctx = 'mobile' | 'sb'
+    const isSub = userProfile.isSubscribed;
+    const subUI = isSub ?
+        `<div class="subscription-card">
+            <div class="sub-header">
+                <div class="sub-icon"><i class="fa-solid fa-gem"></i></div>
+                <div class="sub-title">CourierGo Pro</div>
+            </div>
+            <div class="sub-desc">You get 4 free deliveries every month.</div>
+            <div class="sub-active-badge"><i class="fa-solid fa-circle-check"></i> Active Subscription</div>
+        </div>` :
+        `<div class="subscription-card">
+            <div class="sub-header">
+                <div class="sub-icon"><i class="fa-solid fa-box"></i></div>
+                <div class="sub-title">Upgrade to Pro</div>
+            </div>
+            <div class="sub-desc">Get 4 free deliveries a month and a verified badge.</div>
+            <a href="https://paystack.shop/pay/l-zrz39erw" target="_blank" class="sub-btn">Subscribe now</a>
+            <button onclick="toggleSubscriptionTest()" style="margin-top:6px; background:none; border:none; color:#a1a1aa; font-size:10px; cursor:pointer; text-decoration:underline;">Test: Mark as subscribed</button>
+        </div>`;
+
     return `
+    ${subUI}
+    
     <div class="drawer-section-title">Mobile number for deliveries</div>
     <div class="phone-field-wrap">
         <i class="fa-solid fa-phone phone-field-icon"></i>
@@ -1266,18 +1345,17 @@ function driverFormBodyHTML(ctx) {
 }
 
 function renderProfileUI() {
-    // Mobile drawer
-    const mAvWrap = document.getElementById('drawer-avatar-wrap-mobile');
-    if (mAvWrap) {
-        if (userProfile.photoURL) mAvWrap.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
-        else { const s=document.createElement('span'); s.className='av-init-lg'; s.textContent=initials(userProfile.name); mAvWrap.innerHTML=''; mAvWrap.appendChild(s); }
-    }
     ['mobile','sb'].forEach(ctx => {
+        const aw = document.getElementById(`drawer-avatar-wrap-${ctx}`);
+        if(aw) {
+            if (userProfile.photoURL) aw.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
+            else aw.innerHTML = `<span class="av-init-lg" id="drawer-avatar-init-${ctx}">${initials(userProfile.name)}</span>`;
+            if (userProfile.isSubscribed) aw.innerHTML += `<div class="verified-badge"><i class="fa-solid fa-check"></i></div>`;
+        }
+        
         const nm = document.getElementById(`drawer-name-${ctx}`);    if(nm) nm.textContent = userProfile.name||'—';
         const em = document.getElementById(`drawer-email-${ctx}`);   if(em) em.textContent = userProfile.email||'—';
-        const ai = document.getElementById(`drawer-avatar-init-${ctx}`); if(ai) ai.textContent = initials(userProfile.name);
-        const aw = document.getElementById(`drawer-avatar-wrap-${ctx}`);
-        if(aw && userProfile.photoURL) aw.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
+        
         const pb = document.getElementById(`profile-body-${ctx}`);
         if(pb) pb.innerHTML = profileBodyHTML(ctx);
         const dfb = document.getElementById(`driver-form-body-${ctx}`);
@@ -1512,9 +1590,18 @@ function buildAvatarEl() {
         av.appendChild(img);
     } else { const sp=document.createElement('span'); sp.className='av-init'; sp.textContent=initials(userProfile.name); av.appendChild(sp); }
     const caret=document.createElement('div'); caret.className='user-marker-caret';
-    wrap.appendChild(pulse); wrap.appendChild(av); wrap.appendChild(caret);
+    
+    wrap.appendChild(pulse); wrap.appendChild(av); 
+    
+    if(userProfile.isSubscribed) {
+        const badge=document.createElement('div'); badge.className='verified-badge'; badge.innerHTML='<i class="fa-solid fa-check"></i>';
+        wrap.appendChild(badge);
+    }
+    
+    wrap.appendChild(caret);
     return wrap;
 }
+
 function placeUserMarker(lng,lat) {
     if(userMarker) userMarker.remove();
     userMarker=new mapboxgl.Marker({element:buildAvatarEl(),anchor:'bottom'}).setLngLat([lng,lat]).addTo(map);
