@@ -665,7 +665,7 @@
         .order-price { font-weight: 800; color: #18181b; font-size: 12px; }
 
         /* ── Payment method ── */
-        .pay-method-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .pay-method-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 8px; margin-bottom: 12px; }
         .pay-pill {
             display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
             padding: 10px 6px; border: 2px solid #e4e4e7; border-radius: 12px;
@@ -675,7 +675,12 @@
         }
         .pay-pill i { font-size: 15px; }
         .pay-pill.active { border-color: #18181b; background: #fafafa; color: #18181b; }
-        .pay-pill.hidden { display: none; }
+        .pay-pill.hidden { display: none !important; }
+        
+        /* Pro Payment Pill Styling */
+        #pay-pill-pro-mobile.active, #pay-pill-pro-sb.active {
+            border-color: #3b82f6; background: #eff6ff; color: #1d4ed8;
+        }
 
         .paystack-test-note {
             display: none; align-items: center; gap: 7px;
@@ -876,6 +881,9 @@
             <button class="pay-pill" id="pay-pill-paystack-mobile" onclick="selectPaymentMethod('paystack','mobile')">
                 <i class="fa-solid fa-credit-card"></i> Card
             </button>
+            <button class="pay-pill hidden" id="pay-pill-pro-mobile" onclick="selectPaymentMethod('pro','mobile')">
+                <i class="fa-solid fa-gem"></i>Free (Pro)
+            </button>
         </div>
         <div class="paystack-test-note" id="paystack-test-note-mobile">
             <span class="test-tag" id="paystack-test-tag-mobile">Test mode</span>
@@ -1028,6 +1036,9 @@
                 <button class="pay-pill" id="pay-pill-paystack-sb" onclick="selectPaymentMethod('paystack','sb')">
                     <i class="fa-solid fa-credit-card"></i> Card
                 </button>
+                <button class="pay-pill hidden" id="pay-pill-pro-sb" onclick="selectPaymentMethod('pro','sb')">
+                    <i class="fa-solid fa-gem"></i>Free (Pro)
+                </button>
             </div>
             <div class="paystack-test-note" id="paystack-test-note-sb">
                 <span class="test-tag" id="paystack-test-tag-sb">Test mode</span>
@@ -1162,11 +1173,27 @@ window.signOut = async function() {
 
 async function loadUserProfile(user) {
     const snap = await get(ref(database,`users/${user.uid}`));
-    if (snap.exists()) { userProfile = snap.val(); }
-    else { userProfile = {name:user.displayName||'',email:user.email||'',phone:'',photoURL:user.photoURL||'',isSubscribed:false}; await set(ref(database,`users/${user.uid}`),userProfile); }
-    userProfile.name     = user.displayName || userProfile.name;
-    userProfile.email    = user.email       || userProfile.email;
-    userProfile.photoURL = user.photoURL    || userProfile.photoURL;
+    let p = snap.exists() ? snap.val() : {};
+    let updates = false;
+
+    // Default missing fields
+    if (!p.email) { p.email = user.email || ''; updates = true; }
+    if (!p.name)  { p.name = user.displayName || ''; updates = true; }
+    if (!p.photoURL && user.photoURL) { p.photoURL = user.photoURL; updates = true; }
+    if (p.isSubscribed === undefined) { p.isSubscribed = false; updates = true; }
+
+    // Reset logic for the 4 free deliveries limit each month
+    const currentMonth = new Date().toISOString().slice(0, 7); // Format: "2026-06"
+    if (p.lastDeliveryMonth !== currentMonth) {
+        p.freeDeliveriesUsed = 0;
+        p.lastDeliveryMonth = currentMonth;
+        updates = true;
+    }
+
+    userProfile = p;
+    if (updates) await update(ref(database,`users/${user.uid}`), userProfile);
+    
+    renderPaymentMethods(); // Force update of the billing UI if limits reached
 }
 
 window.savePhone = async function() {
@@ -1188,15 +1215,24 @@ window.savePhone = async function() {
 window.toggleSubscriptionTest = async function() {
     if (!currentUser) return;
     try {
-        await update(ref(database, `users/${currentUser.uid}`), { isSubscribed: true });
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        await update(ref(database, `users/${currentUser.uid}`), { 
+            isSubscribed: true,
+            freeDeliveriesUsed: 0,
+            lastDeliveryMonth: currentMonth
+        });
         userProfile.isSubscribed = true;
+        userProfile.freeDeliveriesUsed = 0;
+        userProfile.lastDeliveryMonth = currentMonth;
         
-        // Refresh the UI elements to show the new badges
+        // Refresh the UI elements
         renderProfileUI();
         renderAvatarBtn();
+        renderPaymentMethods(); // Re-show the Pro payment pill
         if (userMarker) refreshMapMarker();
+        updateSubmitBtn();
         
-        showToast('success', 'Subscription Activated', 'You are now a CourierGo Pro member.');
+        showToast('success', 'Subscription Activated', 'You are now a CourierGo Pro member with 4 free deliveries.');
     } catch (e) {
         showToast('error', 'Update failed', e.message);
     }
@@ -1250,13 +1286,15 @@ function renderAvatarBtn() {
 /* ─── Profile body template (shared between mobile drawer & desktop panel) ─── */
 function profileBodyHTML(ctx) {
     const isSub = userProfile.isSubscribed;
+    const used = userProfile.freeDeliveriesUsed || 0;
+    
     const subUI = isSub ?
         `<div class="subscription-card">
             <div class="sub-header">
                 <div class="sub-icon"><i class="fa-solid fa-gem"></i></div>
                 <div class="sub-title">CourierGo Pro</div>
             </div>
-            <div class="sub-desc">You get 4 free deliveries every month.</div>
+            <div class="sub-desc">You have used ${used} of 4 free deliveries this month.</div>
             <div class="sub-active-badge"><i class="fa-solid fa-circle-check"></i> Active Subscription</div>
         </div>` :
         `<div class="subscription-card">
@@ -1794,13 +1832,35 @@ function updatePaystackTestNote(ctx) {
 }
 
 /* ─── Payment method ─── */
+window.renderPaymentMethods = function() {
+    ['mobile','sb'].forEach(ctx => {
+        const proBtn = document.getElementById(`pay-pill-pro-${ctx}`);
+        if (proBtn) {
+            const used = userProfile.freeDeliveriesUsed || 0;
+            if (userProfile.isSubscribed && used < 4) {
+                proBtn.classList.remove('hidden');
+                // Automatically switch to Pro if they haven't selected it already or are on cash/card
+                if (!selectedPayment[ctx] || selectedPayment[ctx] === 'cash' || selectedPayment[ctx] === 'paystack') {
+                    selectPaymentMethod('pro', ctx);
+                }
+            } else {
+                proBtn.classList.add('hidden');
+                // Fallback to cash if pro is hidden
+                if (selectedPayment[ctx] === 'pro') {
+                    selectPaymentMethod('cash', ctx); 
+                }
+            }
+        }
+    });
+};
+
 window.selectPaymentMethod = function(type,ctx) {
     selectedPayment[ctx]=type;
-    ['cash','gpay','paystack'].forEach(p=>{
-        const id=p==='gpay'?`pay-pill-gpay-${ctx}`:`pay-pill-${p}-${ctx}`;
+    ['cash','gpay','paystack','pro'].forEach(p=>{
+        const id=p==='gpay'?`pay-pill-gpay-${ctx}`:p==='pro'?`pay-pill-pro-${ctx}`:`pay-pill-${p}-${ctx}`;
         const el=document.getElementById(id); if(el) el.classList.remove('active');
     });
-    const activeId=type==='cash'?`pay-pill-cash-${ctx}`:type==='google_pay'?`pay-pill-gpay-${ctx}`:`pay-pill-paystack-${ctx}`;
+    const activeId=type==='cash'?`pay-pill-cash-${ctx}`:type==='google_pay'?`pay-pill-gpay-${ctx}`:type==='pro'?`pay-pill-pro-${ctx}`:`pay-pill-paystack-${ctx}`;
     const activeEl=document.getElementById(activeId); if(activeEl) activeEl.classList.add('active');
 
     const gpCont=document.getElementById(`gpay-button-container-${ctx}`);
@@ -1817,19 +1877,30 @@ function updateSubmitBtn() {
     const hp=!!selectedCoords.pickup;
     const hd=!!selectedCoords.dropoff;
     const hk=!!selectedPkg;
+    
     ['mobile','sb'].forEach(ctx=>{
         const btnId   = ctx==='mobile'?'submitBtn':'submitBtn-sb';
         const labelId = ctx==='mobile'?'submitLabel':'submitLabel-sb';
         const btn   = document.getElementById(btnId);
         const label = document.getElementById(labelId);
         if(!btn||!label) return;
+        
         if(!hp||!hd)      { btn.className=ctx==='sb'?'submit-btn-el':''; label.textContent='Set pickup & destination'; btn.disabled=true; }
         else if(!hk)      { btn.className=ctx==='sb'?'submit-btn-el':''; label.textContent='Select a package size';    btn.disabled=true; }
         else {
-            const total=Math.round(selectedPkg.base+routeDistKm*3.5);
+            const isProFree = (selectedPayment[ctx] === 'pro');
+            const originalTotal = Math.round(selectedPkg.base+routeDistKm*3.5);
+            const total = isProFree ? 0 : originalTotal;
+            
             btn.className=ctx==='sb'?'submit-btn-el ready':'ready';
-            if(selectedPayment[ctx]==='paystack') label.innerHTML=`<i class="fa-solid fa-credit-card"></i> Pay R${total} with Paystack`;
-            else label.textContent=`Book ${selectedPkg.name} · R${total}`;
+            
+            if(selectedPayment[ctx]==='paystack') {
+                label.innerHTML=`<i class="fa-solid fa-credit-card"></i> Pay R${total} with Paystack`;
+            } else if (isProFree) {
+                label.innerHTML=`<i class="fa-solid fa-gem"></i> Book Free Delivery (Pro)`;
+            } else {
+                label.textContent=`Book ${selectedPkg.name} · R${total}`;
+            }
             btn.disabled=false;
         }
         btn.style.display=selectedPayment[ctx]==='google_pay'?'none':'flex';
@@ -1882,7 +1953,10 @@ async function doBookOrder(paymentMeta) {
     const dropoffInput = document.getElementById(ctx==='sb'?'input-dropoff-sb':'input-dropoff');
     try {
         const orderId="CG-"+Math.floor(1000+Math.random()*9000);
-        const total=Math.round(selectedPkg.base+routeDistKm*3.5);
+        const isProFree = paymentMeta.method === 'pro';
+        const originalTotal = Math.round(selectedPkg.base+routeDistKm*3.5);
+        const totalToCharge = isProFree ? 0 : originalTotal;
+        
         const pickup  = pickupInput ? pickupInput.value : '';
         const dropoff = dropoffInput? dropoffInput.value: '';
         const payload={
@@ -1891,16 +1965,31 @@ async function doBookOrder(paymentMeta) {
             customerEmail:userProfile.email||currentUser.email||'',
             customerPhoneNumber:userProfile.phone||'Not provided',
             customerAddress:dropoff, restaurantName:"CourierGo Dispatch", restaurantAddress:pickup,
-            orderItem:[{name:selectedPkg.name,unitPrice:total,quantity:1}],
-            totalOrderCost:total, distanceKm:routeDistKm,
+            orderItem:[{name:selectedPkg.name,unitPrice:totalToCharge,quantity:1}],
+            totalOrderCost:totalToCharge, distanceKm:routeDistKm,
             pickupCoords:selectedCoords.pickup, dropoffCoords:selectedCoords.dropoff,
             status:'placed', paymentMethod:paymentMeta.method,
             paymentToken:paymentMeta.token||null, paymentTestMode:!!paymentMeta.testMode,
             timestamp:Date.now()
         };
+        
         await set(push(ref(database,'orders')),payload);
         const sdRes=await fetch("https://api.shipday.com/orders",{method:"POST",headers:{"Authorization":`Basic ${SHIPDAY_KEY}`,"Content-Type":"application/json"},body:JSON.stringify(payload)});
         if(!sdRes.ok) throw new Error("Shipday:"+sdRes.status);
+        
+        // Handle incrementing the free delivery limit logic
+        if (isProFree) {
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            userProfile.freeDeliveriesUsed = (userProfile.freeDeliveriesUsed || 0) + 1;
+            userProfile.lastDeliveryMonth = currentMonth;
+            await update(ref(database,`users/${currentUser.uid}`), {
+                freeDeliveriesUsed: userProfile.freeDeliveriesUsed,
+                lastDeliveryMonth: currentMonth
+            });
+            renderProfileUI();
+            renderPaymentMethods(); // will hide pro pill if they just used the 4th delivery
+        }
+
         showToast('success',`Order ${orderId} confirmed!`,`${selectedPkg.name} · ${(pickup||'').split(',')[0]} → ${(dropoff||'').split(',')[0]}`);
         if(!userProfile.phone) setTimeout(()=>showToast('info','Add your phone number','Open your profile to add a contact number for the driver.'),1500);
         succeeded=true;
@@ -1921,6 +2010,13 @@ window.confirmBooking = async function() {
     const ctx=isDesktop()?'sb':'mobile';
     const btn   = document.getElementById(ctx==='sb'?'submitBtn-sb':'submitBtn');
     const label = document.getElementById(ctx==='sb'?'submitLabel-sb':'submitLabel');
+    
+    if(selectedPayment[ctx]==='pro') {
+        label.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
+        btn.disabled=true;
+        await doBookOrder({method:'pro', testMode:false});
+        return;
+    }
     
     if(selectedPayment[ctx]==='paystack') {
         const total=Math.round(selectedPkg.base+routeDistKm*3.5);
@@ -1961,7 +2057,15 @@ function resetBookingForm() {
     selectedPkg=null; routeDistKm=0;
     setRouteBarValues('—','—');
     ['route-price','sb-route-price'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='—';});
-    ['mobile','sb'].forEach(ctx=>selectPaymentMethod('cash',ctx));
+    
+    // Switch to pro automatically if available after a booking
+    ['mobile','sb'].forEach(ctx => {
+        if (userProfile.isSubscribed && (userProfile.freeDeliveriesUsed || 0) < 4) {
+            selectPaymentMethod('pro', ctx);
+        } else {
+            selectPaymentMethod('cash', ctx);
+        }
+    });
     updateSubmitBtn();
 }
 
