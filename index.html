@@ -1209,11 +1209,8 @@ async function loadUserProfile(user) {
 }
 
 window.savePhone = async function() {
-    const val = document.getElementById('phone-input') ? document.getElementById('phone-input').value.trim()
-              : document.getElementById('phone-input-sb') ? document.getElementById('phone-input-sb').value.trim() : '';
-    const activeInput = document.getElementById('phone-input-sb') || document.getElementById('phone-input');
-    const sbInput = document.getElementById('phone-input-sb');
-    const mobInput = document.getElementById('phone-input');
+    const sbInput  = document.getElementById('phone-input-sb');
+    const mobInput = document.getElementById('phone-input-mobile');
     const v = (sbInput && sbInput.value.trim()) || (mobInput && mobInput.value.trim()) || '';
     if (!v) { showToast('error','Enter a number','Phone number cannot be empty.'); return; }
     if (!currentUser) return;
