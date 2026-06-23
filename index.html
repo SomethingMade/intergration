@@ -302,14 +302,10 @@
             #top-bar  { display: none !important; }
             #avatar-btn { display: none !important; }
             #sheet    { display: none !important; }
-            #profile-overlay { display: none !important; }
-            #profile-drawer  { display: none !important; }
-            #driver-modal-overlay { display: none !important; }
 
-            /* Desktop sidebar panels */
-            #sb-panel-main    { display: block; }
-            #sb-panel-profile { display: none; }
-            #sb-panel-driver  { display: none; }
+            /* Profile drawer & driver modal are shared with mobile and now also used on desktop */
+            .drawer-header { padding-top: 28px; }
+            .drawer-close  { top: 20px; }
 
             /* Panel transitions */
             .sb-panel {
@@ -319,17 +315,6 @@
                 from { opacity: 0; transform: translateX(12px); }
                 to   { opacity: 1; transform: translateX(0); }
             }
-
-            /* Back button */
-            .sb-back-btn {
-                display: flex; align-items: center; gap: 8px;
-                background: none; border: none; cursor: pointer;
-                font-size: 12px; font-weight: 700; color: #71717a;
-                padding: 0; margin-bottom: 18px;
-                transition: color 0.15s; font-family: 'Inter', sans-serif;
-            }
-            .sb-back-btn:hover { color: #18181b; }
-            .sb-back-btn i { font-size: 10px; }
         }
 
         /* Hide desktop sidebar on mobile */
@@ -1059,33 +1044,6 @@
             <div id="track-list-sb" class="track-list" style="display:none;"></div>
         </div>
     </div>
-
-    <div id="sb-panel-profile" class="sb-body sb-panel" style="display:none;">
-        <button class="sb-back-btn" onclick="desktopShowProfile()">
-            <i class="fa-solid fa-chevron-left"></i> Back
-        </button>
-        <div class="drawer-header desktop-header" style="margin:0 -24px 0;border-radius:16px;overflow:hidden;">
-            <div class="drawer-avatar-wrap" id="drawer-avatar-wrap-sb"><span class="av-init-lg" id="drawer-avatar-init-sb">?</span></div>
-            <div class="drawer-name"  id="drawer-name-sb">—</div>
-            <div class="drawer-email" id="drawer-email-sb">—</div>
-        </div>
-        <div id="profile-body-sb" style="margin-top:20px;">
-            </div>
-    </div>
-
-    <div id="sb-panel-driver" class="sb-body sb-panel" style="display:none;">
-        <button class="sb-back-btn" onclick="desktopShowProfile()">
-            <i class="fa-solid fa-chevron-left"></i> Back to profile
-        </button>
-        <div style="margin-bottom:16px;">
-            <div class="dm-title">Become a Driver</div>
-            <div class="dm-sub" style="margin-top:6px;">Join CourierGo with your bakkie or motorbike and start earning on your own schedule.</div>
-        </div>
-        <div id="driver-form-body-sb" style="flex:1;">
-            </div>
-        <button class="dm-submit" id="dm-submit-btn-sb" onclick="submitDriverApplication('sb')" style="margin-top:16px;">Submit application</button>
-        <div class="dm-legal" style="margin-top:10px;">We'll review your details and contact you on the number provided.</div>
-    </div>
 </div>
 
 <script type="module">
@@ -1320,7 +1278,7 @@ function profileBodyHTML(ctx) {
     </div>
 
     <div class="drawer-section-title">Drive with CourierGo</div>
-    <div class="driver-cta" id="driver-cta-${ctx}" onclick="${ctx==='sb'?'desktopShowDriver()':'openDriverModal()'}">
+    <div class="driver-cta" id="driver-cta-${ctx}" onclick="openDriverModal()">
         <div class="driver-cta-icon"><i class="fa-solid fa-truck-pickup"></i></div>
         <div class="driver-cta-text"><div class="driver-cta-title">Become a driver</div><div class="driver-cta-sub">Earn with your bakkie or motorbike</div></div>
         <i class="fa-solid fa-chevron-right driver-cta-arrow"></i>
@@ -1457,18 +1415,11 @@ window.closeProfile = function() {
 };
 
 window.desktopShowMain    = function() { showDesktopPanel('main'); };
-window.desktopShowProfile = function() { renderProfileUI(); showDesktopPanel('profile'); };
-window.desktopShowDriver  = function() { renderDriverFormBodyForCtx('sb'); showDesktopPanel('driver'); };
+window.desktopShowProfile = function() { openProfile(); };
 
 function showDesktopPanel(name) {
-    ['main','profile','driver'].forEach(p => {
-        const el = document.getElementById(`sb-panel-${p}`);
-        if (el) el.style.display = (p===name)?'flex':'none';
-        // 'main' panel uses flex column via .sb-body — just show/hide
-        if (el && p === name) { el.style.display='block'; el.classList.add('sb-panel'); }
-    });
     const el = document.getElementById(`sb-panel-${name}`);
-    if(el) { el.style.display='block'; void el.offsetWidth; el.style.animation='none'; requestAnimationFrame(()=>{ el.style.animation=''; }); }
+    if (el) el.style.display = 'block';
 }
 
 function renderDriverFormBodyForCtx(ctx) {
