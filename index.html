@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CourierGo</title>
+    <title>Pace Logistics</title>
 
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
@@ -783,13 +783,13 @@
     <div style="width:80px;height:80px;border-radius:20px;background:#18181b;display:flex;align-items:center;justify-content:center;margin-bottom:18px;box-shadow:0 8px 32px rgba(0,0,0,0.12);">
         <i class="fa-solid fa-truck-fast" style="font-size:32px;color:#fff;"></i>
     </div>
-    <h1 style="color:#18181b;font-size:28px;font-weight:900;letter-spacing:-0.6px;">CourierGo</h1>
+    <h1 style="color:#18181b;font-size:28px;font-weight:900;letter-spacing:-0.6px;">Pace Logistics</h1>
     <p style="color:#71717a;font-size:13px;margin-top:6px;">Fast. Reliable. Tracked.</p>
 </div>
 
 <div id="signin-gate">
     <div class="signin-logo-wrap"><i class="fa-solid fa-truck-fast"></i></div>
-    <div class="signin-title">CourierGo</div>
+    <div class="signin-title">Pace Logistics</div>
     <div class="signin-sub">Send packages, track deliveries, and manage your profile — all in one place.</div>
     <button class="google-btn" onclick="signInWithGoogle()">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
@@ -939,7 +939,7 @@
         <div class="dm-header">
             <div>
                 <div class="dm-title">Become a Driver</div>
-                <div class="dm-sub">Join CourierGo with your bakkie or motorbike and start earning on your own schedule.</div>
+                <div class="dm-sub">Join Pace Logistics with your bakkie or motorbike and start earning on your own schedule.</div>
             </div>
             <button class="dm-close" onclick="closeDriverModal()"><i class="fa-solid fa-xmark"></i></button>
         </div>
@@ -956,7 +956,7 @@
     <div class="sb-header">
         <div class="sb-logo-icon"><i class="fa-solid fa-truck-fast"></i></div>
         <div class="sb-logo-text">
-            <div class="sb-logo-name">CourierGo</div>
+            <div class="sb-logo-name">Pace Logistics</div>
             <div class="sb-logo-tag">Fast · Reliable · Tracked</div>
         </div>
         <div class="sb-avatar-btn" id="sb-avatar-btn" onclick="desktopShowProfile()">
@@ -1268,7 +1268,7 @@ function profileBodyHTML(ctx) {
         `<div class="subscription-card">
             <div class="sub-header">
                 <div class="sub-icon"><i class="fa-solid fa-gem"></i></div>
-                <div class="sub-title">CourierGo Pro</div>
+                <div class="sub-title">Pace Logistics Pro</div>
             </div>
             <div class="sub-desc">You have used ${used} of 4 free deliveries this month.</div>
             <div class="sub-active-badge"><i class="fa-solid fa-circle-check"></i> Active Subscription</div>
@@ -1346,7 +1346,7 @@ function driverFormBodyHTML(ctx) {
             <i class="fa-solid fa-shield-halved"></i>
             Background check &amp; data consent
         </div>
-        <p>CourierGo will conduct a background check on your provided information, including your ID number and driver's license, to verify your identity and driving record before approving your application.</p>
+        <p>Pace Logistics will conduct a background check on your provided information, including your ID number and driver's license, to verify your identity and driving record before approving your application.</p>
         <p>Your personal information will be collected, stored, and processed in accordance with the <strong>Protection of Personal Information Act (POPIA), Act 4 of 2013</strong>. Your data will only be used for verification, driver onboarding, and operational communication purposes. You may request access to or deletion of your data at any time by contacting us.</p>
         <label class="dm-checkbox-label">
             <input type="checkbox" id="dm-consent-${ctx}" onchange="updateDriverSubmitBtn('${ctx}')">
@@ -1954,7 +1954,7 @@ async function doBookOrder(paymentMeta) {
             customerName:userProfile.name||currentUser.displayName||'User',
             customerEmail:userProfile.email||currentUser.email||'',
             customerPhoneNumber:userProfile.phone||'Not provided',
-            customerAddress:dropoff, restaurantName:"CourierGo Dispatch", restaurantAddress:pickup,
+            customerAddress:dropoff, restaurantName:"Pace Logistics Dispatch", restaurantAddress:pickup,
             orderItem:[{name:selectedPkg.name,unitPrice:totalToCharge,quantity:1}],
             totalOrderCost:totalToCharge, distanceKm:routeDistKm,
             pickupCoords:selectedCoords.pickup, dropoffCoords:selectedCoords.dropoff,
@@ -2021,7 +2021,7 @@ window.confirmBooking = async function() {
                 }
             }, 500);
 
-            const userEmail = userProfile.email || currentUser.email || 'customer@couriergo.co.za';
+            const userEmail = userProfile.email || currentUser.email || 'customer@pacelogistics.co.za';
             const payResult = await processPaystackPayment(total, userEmail);
             
             label.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
@@ -2062,7 +2062,7 @@ let googlePayClient=null, gpayAvailable=false;
 const gpayBaseCardMethod={type:'CARD',parameters:{allowedAuthMethods:['PAN_ONLY','CRYPTOGRAM_3DS'],allowedCardNetworks:['VISA','MASTERCARD']}};
 const gpayCardMethod={...gpayBaseCardMethod,tokenizationSpecification:{type:'PAYMENT_GATEWAY',parameters:{gateway:'example',gatewayMerchantId:'exampleGatewayMerchantId'}}};
 function gpayPaymentDataRequest(amountZAR) {
-    return {apiVersion:2,apiVersionMinor:0,allowedPaymentMethods:[gpayCardMethod],merchantInfo:{merchantName:'CourierGo (Test)'},transactionInfo:{countryCode:'ZA',currencyCode:'ZAR',totalPriceStatus:'FINAL',totalPrice:amountZAR.toFixed(2)}};
+    return {apiVersion:2,apiVersionMinor:0,allowedPaymentMethods:[gpayCardMethod],merchantInfo:{merchantName:'Pace Logistics (Test)'},transactionInfo:{countryCode:'ZA',currencyCode:'ZAR',totalPriceStatus:'FINAL',totalPrice:amountZAR.toFixed(2)}};
 }
 function waitForGooglePayScript() {
     return new Promise(resolve=>{ if(window.google&&window.google.payments) return resolve(); window.addEventListener('gpayready',()=>resolve(),{once:true}); setTimeout(()=>{if(window.google&&window.google.payments)resolve();},1500); });
