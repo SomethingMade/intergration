@@ -780,12 +780,12 @@
 <div id="toast-container"></div>
 
 <div id="splash">
-    <img src="https://i.postimg.cc/d3Nx8ZjR/PACE-LOGO.png" alt="Pace Logistics Logo" style="max-width: 250px; height: auto;">
+    <img src="https://i.postimg.cc/Fsj0YWjK/PACE-PARCELS.png" alt="Pace Logistics Logo" style="max-width: 250px; height: auto;">
 </div>
 
 <div id="signin-gate">
     <div class="signin-logo-wrap"><i class="fa-solid fa-truck-fast"></i></div>
-    <div class="signin-title">Pace Logistics</div>
+    <div class="signin-title">Pace Parcels</div>
     <div class="signin-sub">Send packages, track deliveries, and manage your profile — all in one place.</div>
     <button class="google-btn" onclick="signInWithGoogle()">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
@@ -935,7 +935,7 @@
         <div class="dm-header">
             <div>
                 <div class="dm-title">Become a Driver</div>
-                <div class="dm-sub">Join Pace Logistics with your bakkie or motorbike and start earning on your own schedule.</div>
+                <div class="dm-sub">Join Pace Parcels with your bakkie or motorbike and start earning on your own schedule.</div>
             </div>
             <button class="dm-close" onclick="closeDriverModal()"><i class="fa-solid fa-xmark"></i></button>
         </div>
@@ -950,7 +950,7 @@
 
 <div id="desktop-sidebar">
     <div class="sb-header">
-    <img src="https://i.postimg.cc/d3Nx8ZjR/PACE-LOGO.png" alt="Pace Logistics" style="height: 40px; width: auto; margin-right: auto;">
+    <img src="https://i.postimg.cc/Fsj0YWjK/PACE-PARCELS.png" alt="Pace Logistics" style="height: 40px; width: auto; margin-right: auto;">
     <div class="sb-avatar-btn" id="sb-avatar-btn" onclick="desktopShowProfile()">
         <span class="av-init" id="sb-avatar-init">?</span>
     </div>
@@ -1260,7 +1260,7 @@ function profileBodyHTML(ctx) {
         `<div class="subscription-card">
             <div class="sub-header">
                 <div class="sub-icon"><i class="fa-solid fa-gem"></i></div>
-                <div class="sub-title">Pace Logistics Pro</div>
+                <div class="sub-title">Pace Parcels Pro</div>
             </div>
             <div class="sub-desc">You have used ${used} of 4 free deliveries this month.</div>
             <div class="sub-active-badge"><i class="fa-solid fa-circle-check"></i> Active Subscription</div>
@@ -1338,7 +1338,7 @@ function driverFormBodyHTML(ctx) {
             <i class="fa-solid fa-shield-halved"></i>
             Background check &amp; data consent
         </div>
-        <p>Pace Logistics will conduct a background check on your provided information, including your ID number and driver's license, to verify your identity and driving record before approving your application.</p>
+        <p>Pace Parcels will conduct a background check on your provided information, including your ID number and driver's license, to verify your identity and driving record before approving your application.</p>
         <p>Your personal information will be collected, stored, and processed in accordance with the <strong>Protection of Personal Information Act (POPIA), Act 4 of 2013</strong>. Your data will only be used for verification, driver onboarding, and operational communication purposes. You may request access to or deletion of your data at any time by contacting us.</p>
         <label class="dm-checkbox-label">
             <input type="checkbox" id="dm-consent-${ctx}" onchange="updateDriverSubmitBtn('${ctx}')">
@@ -1946,7 +1946,7 @@ async function doBookOrder(paymentMeta) {
             customerName:userProfile.name||currentUser.displayName||'User',
             customerEmail:userProfile.email||currentUser.email||'',
             customerPhoneNumber:userProfile.phone||'Not provided',
-            customerAddress:dropoff, restaurantName:"Pace Logistics Dispatch", restaurantAddress:pickup,
+            customerAddress:dropoff, restaurantName:"Pace Parcels Dispatch", restaurantAddress:pickup,
             orderItem:[{name:selectedPkg.name,unitPrice:totalToCharge,quantity:1}],
             totalOrderCost:totalToCharge, distanceKm:routeDistKm,
             pickupCoords:selectedCoords.pickup, dropoffCoords:selectedCoords.dropoff,
