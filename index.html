@@ -259,6 +259,58 @@
             overflow: hidden;
         }
         #profile-drawer.open { right: 0; }
+        
+        /* ── Minimalist Wallet Component ── */
+        .wallet-wrap {
+            margin-top: 14px;
+            margin-bottom: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 16px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            width: 100%;
+        }
+        .wallet-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .wallet-lbl {
+            font-size: 9.5px;
+            color: rgba(255, 255, 255, 0.45);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+        .wallet-val {
+            font-size: 17px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-top: 2px;
+        }
+        .wallet-topup-btn {
+            background: #ffffff;
+            color: #18181b;
+            border: none;
+            border-radius: 11px;
+            padding: 8px 14px;
+            font-size: 11.5px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s, transform 0.1s;
+            font-family: 'Inter', sans-serif;
+        }
+        .wallet-topup-btn:active {
+            transform: scale(0.96);
+            background: #f4f4f5;
+        }
 
         /* ── Chat Button in Drawer Header ── */
         .chat-header-btn {
@@ -1109,6 +1161,15 @@
         <div class="drawer-avatar-wrap" id="drawer-avatar-wrap-mobile"><span class="av-init-lg" id="drawer-avatar-init-mobile">?</span></div>
         <div class="drawer-name"  id="drawer-name-mobile">—</div>
         <div class="drawer-email" id="drawer-email-mobile">—</div>
+
+        <div id="wallet-wrap-mobile" class="wallet-wrap" style="display: none;">
+            <div class="wallet-info">
+                <span class="wallet-lbl">Wallet Balance</span>
+                <span class="wallet-val" id="wallet-balance-val-mobile">R0.00</span>
+            </div>
+            <button class="wallet-topup-btn" onclick="triggerWalletTopUp()"><i class="fa-solid fa-plus"></i> Top Up</button>
+        </div>
+
         <button class="chat-header-btn" onclick="openChat()"><i class="fa-regular fa-comment-dots"></i> Chat Support</button>
     </div>
     <div class="drawer-body" id="profile-body-mobile"></div>
@@ -1172,6 +1233,15 @@
 <div id="desktop-sidebar">
     <div class="sb-header">
         <img src="https://i.postimg.cc/Fsj0YWjK/PACE-PARCELS.png" alt="Pace Logistics" style="height: 40px; width: auto; margin-right: auto;">
+        
+        <div id="wallet-wrap-desktop" class="wallet-wrap" style="display: none; max-width: 155px; margin-top: 0; margin-right: 12px; padding: 6px 12px; border-radius: 12px;">
+            <div class="wallet-info">
+                <span class="wallet-lbl" style="font-size: 8px; letter-spacing: 0.3px;">Wallet</span>
+                <span class="wallet-val" id="wallet-balance-val-desktop" style="font-size: 13.5px;">R0.00</span>
+            </div>
+            <button class="wallet-topup-btn" onclick="triggerWalletTopUp()" style="padding: 5px 8px; font-size: 10px; border-radius: 8px;" title="Top Up Wallet"><i class="fa-solid fa-plus"></i></button>
+        </div>
+
         <div class="sb-avatar-btn" id="sb-avatar-btn" onclick="desktopShowProfile()">
             <span class="av-init" id="sb-avatar-init">?</span>
         </div>
@@ -1325,7 +1395,10 @@ const provider = new GoogleAuthProvider();
 
 const remoteConfig = getRemoteConfig(fbApp);
 remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
-remoteConfig.defaultConfig = { paystack_public_key: "" };
+remoteConfig.defaultConfig = { 
+    paystack_public_key: "",
+    show_wallet_feature: false
+};
 
 async function initRemoteConfig() {
     try {
@@ -1336,6 +1409,15 @@ async function initRemoteConfig() {
             updatePaystackTestNote('mobile'); 
             updatePaystackTestNote('sb'); 
         }
+        
+        // Remote Config Check for the Wallet Feature
+        const showWallet = getValue(remoteConfig, "show_wallet_feature").asBoolean();
+        if (showWallet) {
+            const mWallet = document.getElementById('wallet-wrap-mobile');
+            const dWallet = document.getElementById('wallet-wrap-desktop');
+            if (mWallet) mWallet.style.display = 'flex';
+            if (dWallet) dWallet.style.display = 'flex';
+        }
     } catch(e) { console.warn("Remote Config fetch failed:", e.message); }
 }
 initRemoteConfig();
@@ -1343,6 +1425,17 @@ initRemoteConfig();
 /* ─── Helpers ─── */
 function isDesktop() { return window.innerWidth >= 768; }
 function initials(name) { if (!name) return '?'; return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+
+/* ─── Global Features ─── */
+window.triggerWalletTopUp = function() {
+    if (!currentUser) {
+        showToast('error', 'Authentication Required', 'Please sign in to modify account funds details safely.');
+        return;
+    }
+    showToast('info', 'Payment Gateway', 'Initializing secure transaction options processing windows...');
+    // Wire alternative commercial API structures or modal processing layouts here safely.
+    console.log("Wallet fund initialization triggered for client identification key context:", currentUser.uid);
+};
 
 /* ─── State ─── */
 let currentUser    = null;
@@ -1452,6 +1545,19 @@ async function loadUserProfile(user) {
     if (updates) await update(ref(database,`users/${user.uid}`), userProfile);
     
     renderPaymentMethods();
+
+    // Wallet Balance Sync
+    const walletBalanceRef = ref(database, `users/${user.uid}/walletBalance`);
+    onValue(walletBalanceRef, (snapshot) => {
+        const currentBalance = snapshot.val() || 0;
+        const cleanDisplayValue = `R${parseFloat(currentBalance).toFixed(2)}`;
+        
+        const targetMobileElement = document.getElementById('wallet-balance-val-mobile');
+        const targetDesktopElement = document.getElementById('wallet-balance-val-desktop');
+        
+        if (targetMobileElement) targetMobileElement.textContent = cleanDisplayValue;
+        if (targetDesktopElement) targetDesktopElement.textContent = cleanDisplayValue;
+    });
 }
 
 window.savePhone = async function() {
