@@ -1940,7 +1940,6 @@ async function setLocationFromDrag(type, lng, lat) {
         if (data.features && data.features.length > 0) {
             const placeName = data.features[0].place_name;
 
-            // Update Input Fields
             ['mobile', 'sb'].forEach(ctx => {
                 const inp = document.getElementById(searchInputId(type, ctx));
                 const clr = document.getElementById(searchClearId(type, ctx));
@@ -1976,9 +1975,8 @@ function buildAvatarEl() {
     
     wrap.appendChild(caret);
 
-    // Make the avatar clickable
     wrap.addEventListener('click', async (e) => {
-        e.stopPropagation(); // prevent map click from triggering
+        e.stopPropagation();
         if (!userMarker) return;
         const lngLat = userMarker.getLngLat();
         selectedCoords['pickup'] = [lngLat.lng, lngLat.lat];
@@ -2157,7 +2155,6 @@ window.clearInput = function(type,ctx) {
     selectedCoords[type]=null;
     
     if(type==='dropoff'&&dropoffMarker) { dropoffMarker.remove(); dropoffMarker=null; }
-    // User marker remains explicitly since it doubles as the pickup
     
     if(map?.getSource('route')) map.getSource('route').setData({type:'Feature',geometry:{type:'LineString',coordinates:[]}});
     document.getElementById('route-bar').classList.remove('visible');
@@ -2235,16 +2232,24 @@ function updateFoodPackageAvailability() {
     });
 }
 
-/* ─── Paystack test note ─── */
+/* ─── Paystack mode note — auto-detects live vs test from Remote Config key ─── */
 function updatePaystackTestNote(ctx) {
-    const note=document.getElementById(`paystack-test-note-${ctx}`);
-    if(!note) return;
-    if(selectedPayment[ctx]!=='paystack'||!PAYSTACK_PUBLIC_KEY) { note.style.display='none'; return; }
-    if(PAYSTACK_PUBLIC_KEY.startsWith('pk_test_')) {
-        document.getElementById(`paystack-test-tag-${ctx}`).textContent='Test mode';
-        document.getElementById(`paystack-test-msg-${ctx}`).textContent='Sandbox payment — no real charge will be made.';
-        note.style.display='flex';
-    } else { note.style.display='none'; }
+    const note = document.getElementById(`paystack-test-note-${ctx}`);
+    if (!note) return;
+    // Hide entirely if Paystack isn't the selected method or key not yet loaded
+    if (selectedPayment[ctx] !== 'paystack' || !PAYSTACK_PUBLIC_KEY) { note.style.display = 'none'; return; }
+    const isTest = PAYSTACK_PUBLIC_KEY.startsWith('pk_test_');
+    const tagEl  = document.getElementById(`paystack-test-tag-${ctx}`);
+    const msgEl  = document.getElementById(`paystack-test-msg-${ctx}`);
+    if (isTest) {
+        if (tagEl) { tagEl.textContent = 'Test mode'; tagEl.style.background = '#fef3c7'; tagEl.style.color = '#92400e'; }
+        if (msgEl) msgEl.textContent = 'Sandbox payment — no real charge will be made.';
+        note.style.display = 'flex';
+    } else {
+        if (tagEl) { tagEl.textContent = 'Live'; tagEl.style.background = '#f0fdf4'; tagEl.style.color = '#15803d'; }
+        if (msgEl) msgEl.textContent = 'Secure payment powered by Paystack.';
+        note.style.display = 'flex';
+    }
 }
 
 /* ─── Cash Handling Modal ─── */
@@ -2280,10 +2285,9 @@ window.renderPaymentMethods = function() {
 };
 
 window.selectPaymentMethod = function(type,ctx) {
-    // Intercept Cash Selection to show physical branch Modal
     if (type === 'cash') {
         openCashModal();
-        selectPaymentMethod('paystack', ctx); // Forcefully toggle back to card
+        selectPaymentMethod('paystack', ctx);
         return;
     }
 
@@ -2350,7 +2354,7 @@ window.sbSwitchTab = tab=>{ const s=tab==='send'; document.getElementById('sb-vi
 async function processPaystackPayment(amountRands, email) {
     return new Promise((resolve, reject) => {
         if (!PAYSTACK_PUBLIC_KEY) {
-            reject(new Error('Paystack key not loaded. Please try again.')); 
+            reject(new Error('Payment configuration not ready. Please try again.')); 
             return;
         }
         if (typeof PaystackPop === 'undefined') {
@@ -2367,6 +2371,7 @@ async function processPaystackPayment(amountRands, email) {
             callback: function(response) {
                 resolve({
                     token: response.reference,
+                    // Automatically determined by whichever key is in Remote Config
                     testMode: PAYSTACK_PUBLIC_KEY.startsWith('pk_test_')
                 });
             },
@@ -2456,8 +2461,11 @@ window.confirmBooking = async function() {
             const mobileSearchCard = document.getElementById('top-bar');
             if (mobileSearchCard && ctx === 'mobile') mobileSearchCard.style.display = 'none';
 
+            // Broader selector catches both test and live Paystack iframes
             const paystackCloseWatcher = setInterval(() => {
-                const isPaystackOpen = document.querySelector('iframe[name="paystack-checkout"]');
+                const isPaystackOpen = document.querySelector(
+                    'iframe[name="paystack-checkout"], iframe[src*="paystack.co"], .paystack-container, #paystack-container'
+                );
                 if (!isPaystackOpen) {
                     if (mobileSearchCard && ctx === 'mobile') mobileSearchCard.style.display = '';
                     clearInterval(paystackCloseWatcher);
@@ -2469,11 +2477,11 @@ window.confirmBooking = async function() {
             
             label.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
             btn.disabled=true;
-            showToast('success','Card authorised','Completing your booking…');
+            showToast('success','Payment authorised','Completing your booking…');
             await doBookOrder({method:'paystack',token:payResult.token,testMode:payResult.testMode});
         } catch(err) { 
             if(err&&err.cancelled) return; 
-            showToast('error','Payment failed',err.message||'Could not complete Paystack payment.'); 
+            showToast('error','Payment failed',err.message||'Could not complete payment.'); 
         }
         return;
     }
@@ -2529,7 +2537,7 @@ function ensureGooglePayButton(ctx) {
     
     const cont = document.getElementById(`gpay-button-container-${ctx}`);
     if(cont) {
-        cont.innerHTML = ''; /* Ensures no duplicates are added */
+        cont.innerHTML = '';
         cont.appendChild(btn);
     }
 }
