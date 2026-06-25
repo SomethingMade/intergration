@@ -110,7 +110,7 @@
         .terms-body p { margin-bottom: 12px; }
 
         .terms-action-wrap {
-            padding: 32px 0 16px; /* Adds space so user must scroll down to see it */
+            padding: 32px 0 16px; 
             display: flex; justify-content: center;
         }
         .terms-accept-btn {
@@ -125,7 +125,8 @@
         .terms-accept-btn img { width: 18px; height: 18px; filter: brightness(0) invert(1); }
 
         /* ── User Map Marker ── */
-        .user-marker-wrap { position: relative; width: 54px; height: 54px; }
+        /* Added cursor: pointer so users know it can be clicked/dragged */
+        .user-marker-wrap { position: relative; width: 54px; height: 54px; cursor: pointer; }
         .user-marker-pulse {
             position: absolute; inset: 0; border-radius: 50%;
             background: rgba(59,130,246,0.25);
@@ -1239,6 +1240,16 @@ const PACKAGE_META = {
 let pkgBasePrices = Object.fromEntries(Object.entries(PACKAGE_META).map(([k,v])=>[k,v.defaultBase]));
 let PER_KM_RATE   = 3.5;
 
+/* ─── Helper: Calculate Total Price ─── */
+function calculateTotalPrice() {
+    if (!selectedPkg) return 0;
+    // Only 'food' uses the distance multiplier. The rest use fixed base pricing from Firebase.
+    if (selectedPkg.key === 'food') {
+        return Math.round(selectedPkg.base + (routeDistKm * PER_KM_RATE));
+    }
+    return Math.round(selectedPkg.base);
+}
+
 /* ─── Facebook-style verified badge ─── */
 const VERIFIED_BADGE_SVG = `<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg"><path fill="#3b82f6" d="M20.396 11c-.018-.646-.215-1.275-.57-1.82-.354-.547-.86-.978-1.453-1.246.273-.61.354-1.286.233-1.94-.121-.654-.435-1.259-.904-1.738-.479-.469-1.084-.783-1.738-.904-.654-.121-1.33-.04-1.94.233-.268-.593-.7-1.1-1.246-1.453C12.234.215 11.604.018 10.96 0h-.16c-.643.018-1.272.215-1.817.57-.547.353-.978.86-1.246 1.453-.61-.274-1.286-.355-1.94-.234-.654.122-1.259.436-1.738.905-.469.479-.783 1.084-.904 1.738-.121.654-.04 1.33.234 1.94-.593.268-1.1.7-1.453 1.246-.353.546-.55 1.175-.567 1.819-.018.642.179 1.272.534 1.817.353.547.86.978 1.453 1.246-.273.61-.354 1.286-.233 1.94.121.654.435 1.259.904 1.738.479.469 1.084.783 1.738.904.654.121 1.33.04 1.94-.233.267.593.7 1.1 1.246 1.453.546.353 1.175.55 1.819.567h.158c.642-.018 1.272-.215 1.817-.57.547-.353.978-.86 1.246-1.453.61.273 1.286.354 1.94.233.654-.121 1.259-.435 1.738-.904.469-.479.783-1.084.904-1.738.121-.654.04-1.33-.233-1.94.593-.268 1.1-.7 1.453-1.246.353-.546.55-1.175.57-1.817v-.16z"/><path fill="#fff" d="M16.59 7.61 10.55 13.65 7.36 10.46l1.18-1.18 2.01 2.01 4.85-4.85z"/></svg>`;
 let ordersListenerAttached = false;
@@ -1260,7 +1271,6 @@ window.showToast = showToast;
 let termsAccepted = false;
 
 window.signInWithGoogle = function() {
-    // If they haven't accepted terms yet, open the bottom sheet instead of logging in
     if (!termsAccepted) {
         openTerms();
     } else {
@@ -1702,6 +1712,35 @@ function initMap() {
     updateSubmitBtn();
 }
 
+async function setUserLocationAsPickup(lng, lat) {
+    try {
+        // Reverse Geocoding to get the place name
+        const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_TOKEN}`);
+        const data = await res.json();
+        
+        if (data.features && data.features.length > 0) {
+            const placeName = data.features[0].place_name;
+
+            // Update Input Fields
+            ['mobile', 'sb'].forEach(ctx => {
+                const inp = document.getElementById(searchInputId('pickup', ctx));
+                const clr = document.getElementById(searchClearId('pickup', ctx));
+                if (inp) inp.value = placeName;
+                if (clr) clr.classList.add('visible');
+            });
+
+            // Set coordinates and draw marker
+            selectedCoords['pickup'] = [lng, lat];
+            placeDestMarker('pickup', lng, lat);
+            updateSubmitBtn();
+            
+            showToast('success', 'Pickup Set', 'Your location has been set as the pickup point.');
+        }
+    } catch(e) {
+        showToast('error', 'Location Error', 'Could not fetch the address for this location.');
+    }
+}
+
 function buildAvatarEl() {
     const wrap=document.createElement('div'); wrap.className='user-marker-wrap';
     const pulse=document.createElement('div'); pulse.className='user-marker-pulse';
@@ -1721,12 +1760,25 @@ function buildAvatarEl() {
     }
     
     wrap.appendChild(caret);
+
+    // Make the avatar clickable
+    wrap.addEventListener('click', async (e) => {
+        e.stopPropagation(); // prevent map click from triggering
+        if (!userMarker) return;
+        const lngLat = userMarker.getLngLat();
+        await setUserLocationAsPickup(lngLat.lng, lngLat.lat);
+    });
+
     return wrap;
 }
 
 function placeUserMarker(lng,lat) {
     if(userMarker) userMarker.remove();
-    userMarker=new mapboxgl.Marker({element:buildAvatarEl(),anchor:'bottom'}).setLngLat([lng,lat]).addTo(map);
+    userMarker = new mapboxgl.Marker({
+        element: buildAvatarEl(),
+        anchor: 'bottom',
+        draggable: true // Allow dragging
+    }).setLngLat([lng,lat]).addTo(map);
 }
 function refreshMapMarker() { if(!userMarker) return; const ll=userMarker.getLngLat(); placeUserMarker(ll.lng,ll.lat); }
 
@@ -1769,16 +1821,16 @@ function setRouteBarValues(dist, time) {
     ['route-dist','sb-route-dist'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=dist; });
     ['route-time','sb-route-time'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=time; });
 }
+function updateRoutePrice() {
+    if(selectedPkg) {
+        const total = calculateTotalPrice();
+        ['route-price','sb-route-price'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=`R${total}`; });
+    }
+}
 function fitBothMarkers() {
     const p=pickupMarker.getLngLat(), d=dropoffMarker.getLngLat();
     map.fitBounds(new mapboxgl.LngLatBounds([p.lng,p.lat],[d.lng,d.lat]),
         {padding:isDesktop()?{top:80,bottom:80,left:80,right:80}:{top:200,bottom:360,left:40,right:40},duration:900});
-}
-function updateRoutePrice() {
-    if(selectedPkg) {
-        const total=Math.round(selectedPkg.base+routeDistKm*PER_KM_RATE);
-        ['route-price','sb-route-price'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=`R${total}`; });
-    }
 }
 
 /* ─── Search ─── */
@@ -1996,7 +2048,7 @@ function updateSubmitBtn() {
         else if(!hk)      { btn.className=ctx==='sb'?'submit-btn-el':''; label.textContent='Select a package size';    btn.disabled=true; }
         else {
             const isProFree = (selectedPayment[ctx] === 'pro');
-            const originalTotal = Math.round(selectedPkg.base+routeDistKm*PER_KM_RATE);
+            const originalTotal = calculateTotalPrice();
             const total = isProFree ? 0 : originalTotal;
             
             btn.className=ctx==='sb'?'submit-btn-el ready':'ready';
@@ -2061,7 +2113,7 @@ async function doBookOrder(paymentMeta) {
     try {
         const orderId="CG-"+Math.floor(1000+Math.random()*9000);
         const isProFree = paymentMeta.method === 'pro';
-        const originalTotal = Math.round(selectedPkg.base+routeDistKm*PER_KM_RATE);
+        const originalTotal = calculateTotalPrice();
         const totalToCharge = isProFree ? 0 : originalTotal;
         
         const pickup  = pickupInput ? pickupInput.value : '';
@@ -2125,7 +2177,7 @@ window.confirmBooking = async function() {
     }
     
     if(selectedPayment[ctx]==='paystack') {
-        const total=Math.round(selectedPkg.base+routeDistKm*PER_KM_RATE);
+        const total = calculateTotalPrice();
         try {
             const mobileSearchCard = document.getElementById('top-bar');
             if (mobileSearchCard && ctx === 'mobile') mobileSearchCard.style.display = 'none';
@@ -2215,7 +2267,7 @@ function ensureGooglePayButton(ctx) {
 async function onGooglePayButtonClicked() {
     if(!currentUser){showToast('error','Not signed in','Please sign in first.');return;}
     if(!selectedPkg||!selectedCoords.pickup||!selectedCoords.dropoff){showToast('error','Trip details missing','Set pickup, destination and package size first.');return;}
-    const total=Math.round(selectedPkg.base+routeDistKm*PER_KM_RATE);
+    const total = calculateTotalPrice();
     try {
         const pd=await googlePayClient.loadPaymentData(gpayPaymentDataRequest(total));
         showToast('success','Test payment captured','Google Pay sandbox — no real charge was made.');
