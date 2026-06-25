@@ -1,0 +1,2554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pace Logistics</title>
+
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+    <script async src="https://pay.google.com/gp/p/js/pay.js" onload="window.dispatchEvent(new Event('gpayready'))"></script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; font-family: 'Inter', sans-serif; overflow: hidden; background: #0a0a0a; }
+
+        /* ── Map ── */
+        #map { position: fixed; inset: 0; z-index: 0; transition: left 0.35s cubic-bezier(0.32,0,0.67,0); }
+        .mapboxgl-ctrl-logo, .mapboxgl-ctrl-attrib { display: none !important; }
+
+        /* ── Splash ── */
+        #splash {
+            position: fixed; inset: 0; z-index: 300;
+            background: #ffffff;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.55s ease;
+        }
+        #splash.hide { opacity: 0; pointer-events: none; }
+
+        /* ── Sign-in Gate ── */
+        #signin-gate {
+            position: fixed; inset: 0; z-index: 250;
+            background: #ffffff;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            padding: 32px;
+        }
+        #signin-gate.visible { display: flex; }
+
+        .signin-logo-wrap {
+            width: 88px; height: 88px; border-radius: 22px;
+            background: #18181b;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        }
+        .signin-logo-wrap i { font-size: 36px; color: #fff; }
+        .signin-title { font-size: 28px; font-weight: 900; color: #18181b; letter-spacing: -0.6px; margin-bottom: 8px; }
+        .signin-sub { font-size: 14px; color: #71717a; text-align: center; line-height: 1.6; max-width: 280px; margin-bottom: 40px; }
+        .google-btn {
+            display: flex; align-items: center; gap: 12px;
+            background: #18181b; color: #fff;
+            padding: 15px 24px; border-radius: 14px;
+            font-size: 14px; font-weight: 700;
+            border: none; cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+            transition: transform 0.15s, box-shadow 0.15s;
+            width: 100%; max-width: 300px; justify-content: center;
+        }
+        .google-btn:active { transform: scale(0.97); }
+        .google-btn img { width: 20px; height: 20px; filter: brightness(0) invert(1); }
+        .signin-legal { font-size: 11px; color: #a1a1aa; margin-top: 20px; text-align: center; line-height: 1.6; }
+        .signin-trust { display: flex; gap: 32px; margin-top: 36px; }
+        .trust-item { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+        .trust-item i { font-size: 16px; color: #18181b; }
+        .trust-item span { font-size: 9.5px; font-weight: 600; letter-spacing: 0.3px; color: #a1a1aa; }
+
+        /* ── Terms & Conditions Sheet ── */
+        #terms-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+            z-index: 400; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s; backdrop-filter: blur(3px);
+            display: flex; align-items: flex-end; justify-content: center;
+        }
+        #terms-overlay.open { opacity: 1; pointer-events: auto; }
+
+        #terms-sheet {
+            width: 100%; max-width: 420px; height: 85vh;
+            background: #fff; border-radius: 24px 24px 0 0;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.32,0,0.67,0);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+        #terms-overlay.open #terms-sheet { transform: translateY(0); }
+
+        .terms-header {
+            padding: 24px 20px 16px; border-bottom: 1px solid #f1f1f4;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .terms-title { font-size: 18px; font-weight: 800; color: #18181b; letter-spacing: -0.4px; }
+        .terms-close {
+            width: 30px; height: 30px; border-radius: 50%; background: #f4f4f5;
+            border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: #52525b; font-size: 12px; transition: background 0.15s;
+        }
+        .terms-close:hover { background: #e4e4e7; }
+
+        .terms-body {
+            flex: 1; overflow-y: auto; padding: 24px 20px;
+            font-size: 13px; color: #52525b; line-height: 1.6;
+        }
+        .terms-body::-webkit-scrollbar { width: 4px; }
+        .terms-body::-webkit-scrollbar-thumb { background: #e4e4e7; border-radius: 4px; }
+
+        .terms-body h3 { font-size: 14px; color: #18181b; margin: 24px 0 8px; font-weight: 800; letter-spacing: -0.2px; }
+        .terms-body h3:first-child { margin-top: 0; }
+        .terms-body p { margin-bottom: 12px; }
+
+        .terms-action-wrap {
+            padding: 32px 0 16px; 
+            display: flex; justify-content: center;
+        }
+        .terms-accept-btn {
+            width: 100%; padding: 15px; border-radius: 14px; border: none;
+            font-size: 13.5px; font-weight: 700; cursor: pointer;
+            background: #18181b; color: #fff;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+            transition: transform 0.15s; font-family: 'Inter', sans-serif;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .terms-accept-btn:active { transform: scale(0.98); }
+        .terms-accept-btn img { width: 18px; height: 18px; filter: brightness(0) invert(1); }
+
+        /* ── User Map Marker ── */
+        .user-marker-wrap { position: relative; width: 54px; height: 54px; cursor: grab; }
+        .user-marker-wrap:active { cursor: grabbing; }
+        .user-marker-pulse {
+            position: absolute; inset: 0; border-radius: 50%;
+            background: rgba(59,130,246,0.25);
+            animation: mpulse 2.4s ease-out infinite;
+        }
+        .user-marker-avatar {
+            position: absolute; inset: 6px; border-radius: 50%;
+            border: 2.5px solid #fff;
+            box-shadow: 0 2px 14px rgba(0,0,0,0.4);
+            overflow: hidden; background: #18181b;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .user-marker-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-marker-avatar .av-init { color: #fff; font-size: 13px; font-weight: 800; }
+        .user-marker-caret {
+            position: absolute; bottom: -7px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 7px solid transparent; border-right: 7px solid transparent;
+            border-top: 9px solid #fff;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));
+        }
+        @keyframes mpulse {
+            0%   { transform: scale(0.8);  opacity: 0.7; }
+            70%  { transform: scale(1.6);  opacity: 0; }
+            100% { transform: scale(1.6);  opacity: 0; }
+        }
+
+        /* ── Dest Markers ── */
+        .dest-marker {
+            width: 36px; height: 36px; border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg); border: 2.5px solid #fff;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+            display: flex; align-items: center; justify-content: center;
+            cursor: grab;
+        }
+        .dest-marker:active { cursor: grabbing; }
+        .dest-marker i { transform: rotate(45deg); font-size: 13px; color: #fff; }
+        .dest-marker.dropoff { background: #3b82f6; }
+
+        /* ════════════════════════════════════════
+           MOBILE LAYOUT (default)
+        ════════════════════════════════════════ */
+
+        /* ── Mobile: Top Bar ── */
+        #top-bar {
+            position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; max-width: 420px; z-index: 60;
+            padding: 52px 16px 0;
+        }
+
+        #avatar-btn {
+            position: fixed; top: 54px; right: calc(50% - 194px);
+            z-index: 70; width: 40px; height: 40px;
+            border-radius: 50%; overflow: visible;
+            border: 2.5px solid #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            cursor: pointer; background: #18181b;
+            display: none; align-items: center; justify-content: center;
+        }
+        #avatar-btn img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        #avatar-btn .av-init { color: #fff; font-size: 13px; font-weight: 800; }
+
+        .search-card {
+            background: rgba(255,255,255,0.97); backdrop-filter: blur(20px);
+            border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            overflow: visible;
+        }
+        .search-row { display: flex; align-items: center; padding: 13px 16px; gap: 10px; position: relative; }
+        .search-row + .search-row { border-top: 1px solid #f1f1f4; }
+        .search-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .search-dot.pickup  { background: #18181b; }
+        .search-dot.dropoff { background: #3b82f6; }
+        .search-input {
+            flex: 1; border: none; background: transparent;
+            font-size: 13px; font-weight: 500; color: #18181b;
+            outline: none; min-width: 0;
+        }
+        .search-input::placeholder { color: #a1a1aa; font-weight: 400; }
+        .search-clear {
+            width: 20px; height: 20px; border-radius: 50%; background: #e4e4e7;
+            display: none; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 9px; color: #71717a; border: none;
+        }
+        .search-clear.visible { display: flex; }
+        .suggestions-box {
+            position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+            background: #fff; border-radius: 14px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.14);
+            z-index: 100; max-height: 240px; overflow-y: auto; display: none;
+        }
+        .suggestion-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 11px 14px; cursor: pointer; transition: background 0.12s;
+        }
+        .suggestion-item:hover { background: #f4f4f5; }
+        .suggestion-item + .suggestion-item { border-top: 1px solid #f4f4f5; }
+        .sugg-icon { width: 30px; height: 30px; border-radius: 8px; background: #f4f4f5; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; color: #52525b; }
+        .sugg-text-main { font-size: 12px; font-weight: 600; color: #18181b; }
+        .sugg-text-sub  { font-size: 11px; color: #a1a1aa; margin-top: 1px; }
+
+        /* ── Mobile: Bottom Sheet ── */
+        #sheet {
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; max-width: 420px;
+            background: #fff; border-radius: 24px 24px 0 0;
+            padding: 0 20px 36px;
+            box-shadow: 0 -8px 40px rgba(0,0,0,0.13);
+            z-index: 60;
+            transition: transform 0.35s cubic-bezier(0.32,0,0.67,0);
+        }
+        #sheet.collapsed { transform: translateX(-50%) translateY(calc(100% - 72px)); }
+        .sheet-handle-wrap { padding: 12px 0 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .sheet-handle { width: 36px; height: 4px; border-radius: 4px; background: #d4d4d8; }
+
+        /* ── Mobile: Profile Drawer ── */
+        #profile-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            z-index: 150; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s;
+            backdrop-filter: blur(3px);
+        }
+        #profile-overlay.open { opacity: 1; pointer-events: auto; }
+
+        #profile-drawer {
+            position: fixed; top: 0; right: -100%; bottom: 0;
+            width: min(340px, 90vw);
+            background: #fff; z-index: 160;
+            transition: right 0.35s cubic-bezier(0.32,0,0.67,0);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+        #profile-drawer.open { right: 0; }
+
+        /* ── Chat Button in Drawer Header ── */
+        .chat-header-btn {
+            margin-top: 14px; padding: 10px 18px; border-radius: 12px;
+            background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.08);
+            font-size: 12.5px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background 0.15s, border-color 0.15s;
+            font-family: 'Inter', sans-serif;
+        }
+        .chat-header-btn i { font-size: 14px; }
+        .chat-header-btn:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.2); }
+
+        /* ── Chat Modal ── */
+        #chat-modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+            z-index: 500; opacity: 0; pointer-events: none;
+            transition: opacity 0.25s; backdrop-filter: blur(3px);
+            display: flex; align-items: flex-end; justify-content: center;
+        }
+        #chat-modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+        #chat-modal {
+            width: 100%; max-width: 420px; height: 85vh;
+            background: #f4f4f5; border-radius: 24px 24px 0 0;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.32,0,0.67,0);
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        #chat-modal-overlay.open #chat-modal { transform: translateY(0); }
+
+        .chat-header {
+            background: #fff; padding: 20px 20px 14px; border-bottom: 1px solid #e4e4e7;
+            display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+        }
+        .chat-title-wrap { display: flex; align-items: center; gap: 10px; }
+        .chat-title-icon { width: 36px; height: 36px; border-radius: 10px; background: #18181b; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .chat-title { font-size: 16px; font-weight: 800; color: #18181b; }
+        .chat-sub { font-size: 11px; color: #71717a; margin-top: 2px; }
+
+        .chat-body {
+            flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px;
+        }
+        .chat-body::-webkit-scrollbar { width: 4px; }
+        .chat-body::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 4px; }
+
+        .chat-msg-row { display: flex; flex-direction: column; max-width: 80%; }
+        .chat-msg-row.user { align-self: flex-end; align-items: flex-end; }
+        .chat-msg-row.support { align-self: flex-start; align-items: flex-start; }
+
+        .chat-bubble { padding: 12px 16px; font-size: 13px; line-height: 1.5; font-weight: 500; }
+        .chat-msg-row.user .chat-bubble { background: #18181b; color: #fff; border-radius: 18px 18px 4px 18px; }
+        .chat-msg-row.support .chat-bubble { background: #fff; color: #18181b; border: 1px solid #e4e4e7; border-radius: 18px 18px 18px 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .chat-time { font-size: 9px; color: #a1a1aa; margin-top: 4px; margin-bottom: 4px; font-weight: 600; padding: 0 4px; }
+
+        .chat-footer {
+            background: #fff; padding: 14px 20px 24px; border-top: 1px solid #e4e4e7; flex-shrink: 0;
+            display: flex; gap: 10px; align-items: center;
+        }
+        .chat-input {
+            flex: 1; padding: 14px 16px; border: 2px solid #e4e4e7; border-radius: 20px;
+            font-size: 13px; outline: none; font-family: 'Inter', sans-serif; transition: border-color 0.2s; background: #fafafa;
+        }
+        .chat-input:focus { border-color: #18181b; background: #fff; }
+        .chat-send-btn {
+            width: 46px; height: 46px; border-radius: 50%; background: #18181b; color: #fff; border: none;
+            display: flex; align-items: center; justify-content: center; font-size: 15px; cursor: pointer; transition: transform 0.15s; flex-shrink: 0;
+        }
+        .chat-send-btn:active { transform: scale(0.92); }
+        .chat-send-btn:disabled { background: #a1a1aa; cursor: not-allowed; transform: none; }
+
+        /* ── Mobile: Driver Modal ── */
+        #driver-modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+            z-index: 200; opacity: 0; pointer-events: none;
+            transition: opacity 0.25s; backdrop-filter: blur(3px);
+            display: flex; align-items: flex-end; justify-content: center;
+        }
+        #driver-modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+        #driver-modal {
+            width: 100%; max-width: 420px; max-height: 88vh;
+            background: #fff; border-radius: 24px 24px 0 0;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.32,0,0.67,0);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+        #driver-modal-overlay.open #driver-modal { transform: translateY(0); }
+
+        /* ── Cash Warning Modal ── */
+        #cash-modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+            z-index: 500; opacity: 0; pointer-events: none;
+            transition: opacity 0.25s; backdrop-filter: blur(3px);
+            display: flex; align-items: flex-end; justify-content: center;
+        }
+        #cash-modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+        #cash-modal {
+            width: 100%; max-width: 420px;
+            background: #fff; border-radius: 24px 24px 0 0;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.32,0,0.67,0);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+        #cash-modal-overlay.open #cash-modal { transform: translateY(0); }
+
+        /* ════════════════════════════════════════
+           DESKTOP LAYOUT (≥ 768px)
+        ════════════════════════════════════════ */
+        @media (min-width: 768px) {
+
+            #map { left: 380px; }
+
+            #desktop-sidebar {
+                position: fixed; top: 0; left: 0; bottom: 0;
+                width: 380px; z-index: 80;
+                background: #fff;
+                display: flex; flex-direction: column;
+                box-shadow: 4px 0 32px rgba(0,0,0,0.10);
+                overflow: hidden;
+            }
+
+            .sb-header {
+                background: #0a0a0a;
+                padding: 28px 24px 20px;
+                display: flex; align-items: center; gap: 14px;
+                flex-shrink: 0;
+            }
+            .sb-logo-icon {
+                width: 42px; height: 42px; border-radius: 12px;
+                background: rgba(255,255,255,0.12);
+                display: flex; align-items: center; justify-content: center;
+                font-size: 18px; color: #fff; flex-shrink: 0;
+            }
+            .sb-logo-text { flex: 1; min-width: 0; }
+            .sb-logo-name { font-size: 18px; font-weight: 900; color: #fff; letter-spacing: -0.4px; }
+            .sb-logo-tag  { font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 500; margin-top: 1px; }
+
+            .sb-avatar-btn {
+                width: 38px; height: 38px; border-radius: 50%;
+                border: 2px solid rgba(255,255,255,0.2);
+                overflow: visible; cursor: pointer; background: #27272a;
+                display: flex; align-items: center; justify-content: center;
+                flex-shrink: 0; transition: border-color 0.15s;
+            }
+            .sb-avatar-btn:hover { border-color: rgba(255,255,255,0.5); }
+            .sb-avatar-btn img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+            .sb-avatar-btn .av-init { color: #fff; font-size: 12px; font-weight: 800; }
+
+            .sb-search-section {
+                padding: 16px 20px 0;
+                flex-shrink: 0;
+            }
+            .sb-search-label {
+                font-size: 10px; font-weight: 700; color: #a1a1aa;
+                letter-spacing: 0.6px; text-transform: uppercase;
+                margin-bottom: 8px;
+            }
+
+            .sb-body {
+                flex: 1; overflow-y: auto; overflow-x: hidden;
+                padding: 16px 20px 32px;
+            }
+            .sb-body::-webkit-scrollbar { width: 4px; }
+            .sb-body::-webkit-scrollbar-thumb { background: #e4e4e7; border-radius: 4px; }
+
+            .sb-tabs {
+                background: #f4f4f5; padding: 3px; border-radius: 12px;
+                display: flex; gap: 2px; margin-bottom: 16px;
+            }
+            .sb-tab-btn {
+                flex: 1; padding: 8px; font-size: 11.5px; font-weight: 700;
+                border: none; border-radius: 9px; cursor: pointer;
+                transition: all 0.18s; background: transparent; color: #71717a;
+                font-family: 'Inter', sans-serif;
+            }
+            .sb-tab-btn.active { background: #fff; color: #18181b; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+            #top-bar  { display: none !important; }
+            #avatar-btn { display: none !important; }
+            #sheet    { display: none !important; }
+
+            .drawer-header { padding-top: 28px; }
+            .drawer-close  { top: 20px; }
+
+            .sb-panel {
+                animation: panelIn 0.22s ease;
+            }
+            @keyframes panelIn {
+                from { opacity: 0; transform: translateX(12px); }
+                to   { opacity: 1; transform: translateX(0); }
+            }
+        }
+
+        #desktop-sidebar { display: none; }
+        @media (min-width: 768px) {
+            #desktop-sidebar { display: flex; }
+        }
+
+        /* ════════════════════════════════════════
+           SHARED COMPONENT STYLES
+        ════════════════════════════════════════ */
+
+        .tabs { background: #f4f4f5; padding: 3px; border-radius: 12px; display: flex; gap: 2px; margin-bottom: 16px; }
+        .tab-btn {
+            flex: 1; padding: 8px; font-size: 11.5px; font-weight: 700; border: none;
+            border-radius: 9px; cursor: pointer; transition: all 0.18s;
+            background: transparent; color: #71717a; font-family: 'Inter', sans-serif;
+        }
+        .tab-btn.active { background: #fff; color: #18181b; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+        #route-bar, .route-bar-el {
+            display: none; background: #f4f4f5; border-radius: 12px;
+            padding: 10px 14px; margin-bottom: 12px;
+            gap: 12px; align-items: center;
+        }
+        #route-bar.visible, .route-bar-el.visible { display: flex; }
+        .route-stat { display: flex; flex-direction: column; align-items: center; flex: 1; }
+        .route-stat-val { font-size: 14px; font-weight: 800; color: #18181b; }
+        .route-stat-lbl { font-size: 10px; color: #71717a; font-weight: 500; margin-top: 1px; }
+        .route-divider  { width: 1px; height: 28px; background: #d4d4d8; }
+
+        .pkg-scroll { display: flex; gap: 10px; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; margin: 0 -20px; padding: 2px 20px 12px; scroll-behavior: smooth; }
+        .pkg-scroll::-webkit-scrollbar { display: none; }
+        .pkg-card {
+            flex-shrink: 0; width: 126px;
+            border: 2px solid #e4e4e7; border-radius: 18px;
+            padding: 12px; cursor: pointer;
+            transition: border-color 0.15s, background 0.15s;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .pkg-card:hover { border-color: #a1a1aa; }
+        .pkg-card.active { border-color: #18181b; background: #fafafa; }
+        .pkg-card.disabled { cursor: not-allowed; opacity: 0.4; pointer-events: none; }
+        .pkg-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: #f4f4f5; display: flex; align-items: center; justify-content: center;
+            font-size: 14px; color: #52525b; margin-bottom: 10px;
+            transition: background 0.15s, color 0.15s;
+        }
+        .pkg-card.active .pkg-icon { background: #18181b; color: #fff; }
+        .pkg-name   { font-size: 12px; font-weight: 700; color: #18181b; }
+        .pkg-weight { font-size: 10.5px; color: #71717a; margin-top: 2px; font-weight: 500; }
+        .pkg-price-row { display: flex; align-items: baseline; justify-content: space-between; margin-top: 10px; padding-top: 8px; border-top: 1px solid #e4e4e7; }
+        .pkg-price-label { font-size: 9.5px; color: #a1a1aa; }
+        .pkg-price-val   { font-size: 13px; font-weight: 800; color: #18181b; }
+
+        #submitBtn, .submit-btn-el {
+            width: 100%; padding: 15px; border-radius: 14px; border: none;
+            font-size: 13.5px; font-weight: 700; cursor: not-allowed;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: all 0.2s; margin-top: 4px;
+            background: #e4e4e7; color: #a1a1aa;
+            font-family: 'Inter', sans-serif;
+        }
+        #submitBtn.ready, .submit-btn-el.ready {
+            background: #18181b; color: #fff; cursor: pointer;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+        }
+        #submitBtn.ready:active, .submit-btn-el.ready:active { transform: scale(0.98); }
+
+        .track-empty { text-align: center; padding: 28px 0 8px; color: #a1a1aa; font-size: 13px; }
+        .track-list  { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding: 2px 1px 4px; }
+
+        /* ── Drawer / Profile shared styles ── */
+        .drawer-header {
+            background: #0a0a0a;
+            padding: 56px 24px 24px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .drawer-header.desktop-header { padding-top: 28px; }
+
+        .drawer-close {
+            position: absolute; top: 56px; right: 20px;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 13px; transition: background 0.15s;
+        }
+        .drawer-close.desktop-close { top: 20px; }
+        .drawer-close:hover { background: rgba(255,255,255,0.2); }
+
+        .drawer-avatar-wrap {
+            width: 72px; height: 72px; border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.2);
+            overflow: visible; margin-bottom: 14px; position: relative;
+            background: #27272a;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .drawer-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .drawer-avatar-wrap .av-init-lg { color: #fff; font-size: 24px; font-weight: 800; }
+        .drawer-name  { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: -0.3px; }
+        .drawer-email { font-size: 12px; color: #71717a; margin-top: 3px; }
+
+        .drawer-body { flex: 1; overflow-y: auto; padding: 24px; }
+        .drawer-body::-webkit-scrollbar { width: 4px; }
+        .drawer-body::-webkit-scrollbar-thumb { background: #e4e4e7; border-radius: 4px; }
+
+        .drawer-section-title {
+            font-size: 10.5px; font-weight: 700; color: #a1a1aa;
+            letter-spacing: 0.6px; text-transform: uppercase;
+            margin-bottom: 12px; margin-top: 20px;
+        }
+        .drawer-section-title:first-child { margin-top: 0; }
+
+        .phone-field-wrap { position: relative; }
+        .phone-field {
+            width: 100%; padding: 13px 16px 13px 44px;
+            border: 2px solid #e4e4e7; border-radius: 13px;
+            font-size: 14px; font-weight: 600; color: #18181b;
+            outline: none; font-family: 'Inter', sans-serif;
+            transition: border-color 0.15s;
+        }
+        .phone-field:focus { border-color: #18181b; }
+        .phone-field::placeholder { font-weight: 400; color: #a1a1aa; }
+        .phone-field-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #a1a1aa; }
+        .phone-save-btn {
+            width: 100%; margin-top: 10px; padding: 12px;
+            background: #18181b; color: #fff;
+            border: none; border-radius: 12px;
+            font-size: 13px; font-weight: 700;
+            cursor: pointer; transition: opacity 0.15s;
+            font-family: 'Inter', sans-serif;
+        }
+        .phone-save-btn:active { opacity: 0.8; }
+        .phone-hint { font-size: 11px; color: #a1a1aa; margin-top: 8px; line-height: 1.5; }
+
+        .info-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f4f4f5; }
+        .info-row:last-child { border-bottom: none; }
+        .info-row-icon { width: 34px; height: 34px; border-radius: 9px; background: #f4f4f5; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #52525b; flex-shrink: 0; }
+        .info-row-text .ir-label { font-size: 10.5px; color: #a1a1aa; font-weight: 500; }
+        .info-row-text .ir-value { font-size: 13px; font-weight: 600; color: #18181b; margin-top: 1px; }
+
+        .logout-btn {
+            width: 100%; margin-top: 24px; padding: 13px;
+            background: #fef2f2; color: #dc2626;
+            border: 1.5px solid #fecaca; border-radius: 13px;
+            font-size: 13px; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: background 0.15s; font-family: 'Inter', sans-serif;
+        }
+        .logout-btn:hover { background: #fee2e2; }
+
+        .driver-cta {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px; border: 1.5px solid #e4e4e7; border-radius: 14px;
+            cursor: pointer; transition: border-color 0.15s, background 0.15s;
+        }
+        .driver-cta:hover { border-color: #18181b; background: #fafafa; }
+        .driver-cta-icon { width: 40px; height: 40px; border-radius: 11px; background: #18181b; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+        .driver-cta-text { flex: 1; min-width: 0; }
+        .driver-cta-title { font-size: 13px; font-weight: 700; color: #18181b; }
+        .driver-cta-sub   { font-size: 11px; color: #a1a1aa; margin-top: 1px; }
+        .driver-cta-arrow { font-size: 11px; color: #d4d4d8; flex-shrink: 0; }
+
+        .driver-status-card { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 14px; border: 1.5px solid #e4e4e7; }
+        .driver-status-icon { width: 40px; height: 40px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+        .driver-status-text { flex: 1; min-width: 0; }
+        .driver-status-title { font-size: 13px; font-weight: 700; color: #18181b; }
+        .driver-status-sub   { font-size: 11px; color: #a1a1aa; margin-top: 1px; }
+        .driver-status-card.pending  .driver-status-icon { background: #fffbeb; color: #b45309; }
+        .driver-status-card.approved .driver-status-icon { background: #f0fdf4; color: #15803d; }
+        .driver-status-card.rejected .driver-status-icon { background: #fef2f2; color: #b91c1c; }
+
+        /* ── Driver modal shared ── */
+        .dm-header {
+            padding: 20px 20px 14px;
+            border-bottom: 1px solid #f1f1f4;
+            display: flex; align-items: flex-start; justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .dm-title { font-size: 17px; font-weight: 800; color: #18181b; letter-spacing: -0.3px; }
+        .dm-sub   { font-size: 12px; color: #71717a; margin-top: 4px; line-height: 1.5; max-width: 300px; }
+        .dm-close {
+            width: 30px; height: 30px; border-radius: 50%; background: #f4f4f5;
+            border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: #52525b; font-size: 12px; flex-shrink: 0; margin-left: 12px;
+        }
+        .dm-body { padding: 18px 20px; overflow-y: auto; flex: 1; }
+        .dm-body::-webkit-scrollbar { width: 4px; }
+        .dm-body::-webkit-scrollbar-thumb { background: #e4e4e7; border-radius: 4px; }
+        .dm-field { margin-bottom: 14px; }
+        .dm-label { font-size: 11px; font-weight: 700; color: #52525b; margin-bottom: 6px; display: block; }
+        .dm-input {
+            width: 100%; padding: 12px 14px; border: 2px solid #e4e4e7; border-radius: 12px;
+            font-size: 13px; font-weight: 500; color: #18181b; outline: none;
+            font-family: 'Inter', sans-serif; transition: border-color 0.15s; background: #fff;
+        }
+        .dm-input:focus { border-color: #18181b; }
+        .dm-input::placeholder { color: #a1a1aa; font-weight: 400; }
+
+        .vehicle-type-row { display: flex; gap: 8px; }
+        .vehicle-pill {
+            flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;
+            padding: 14px 8px; border: 2px solid #e4e4e7; border-radius: 13px;
+            cursor: pointer; transition: border-color 0.15s, background 0.15s; background: #fff;
+        }
+        .vehicle-pill i { font-size: 17px; color: #71717a; transition: color 0.15s; }
+        .vehicle-pill span { font-size: 11.5px; font-weight: 700; color: #52525b; }
+        .vehicle-pill.active { border-color: #18181b; background: #fafafa; }
+        .vehicle-pill.active i { color: #18181b; }
+        .vehicle-pill.active span { color: #18181b; }
+
+        /* ── POPIA / Disclaimer Checkbox ── */
+        .dm-disclaimer {
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 13px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+        .dm-disclaimer-title {
+            font-size: 11px; font-weight: 800; color: #18181b;
+            letter-spacing: 0.2px; margin-bottom: 8px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .dm-disclaimer-title i { font-size: 11px; color: #64748b; }
+        .dm-disclaimer p {
+            font-size: 10.5px; color: #64748b; line-height: 1.65;
+            margin-bottom: 12px;
+        }
+        .dm-disclaimer p:last-of-type { margin-bottom: 10px; }
+        .dm-checkbox-label {
+            display: flex; align-items: flex-start; gap: 10px;
+            cursor: pointer;
+        }
+        .dm-checkbox-label input[type="checkbox"] {
+            appearance: none; -webkit-appearance: none;
+            width: 18px; height: 18px; border-radius: 5px;
+            border: 2px solid #d4d4d8; background: #fff;
+            flex-shrink: 0; margin-top: 1px;
+            cursor: pointer; transition: border-color 0.15s, background 0.15s;
+            position: relative;
+        }
+        .dm-checkbox-label input[type="checkbox"]:checked {
+            background: #18181b; border-color: #18181b;
+        }
+        .dm-checkbox-label input[type="checkbox"]:checked::after {
+            content: ''; position: absolute;
+            top: 2px; left: 5px;
+            width: 5px; height: 9px;
+            border: 2px solid #fff; border-top: none; border-left: none;
+            transform: rotate(45deg);
+        }
+        .dm-checkbox-text {
+            font-size: 11px; color: #18181b; font-weight: 600; line-height: 1.55;
+        }
+        .dm-checkbox-text span { color: #64748b; font-weight: 400; }
+
+        .dm-footer { padding: 14px 20px 28px; border-top: 1px solid #f1f1f4; flex-shrink: 0; }
+        .dm-submit {
+            width: 100%; padding: 15px; border-radius: 14px; border: none;
+            font-size: 13.5px; font-weight: 700; cursor: pointer;
+            background: #18181b; color: #fff;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+            transition: transform 0.15s, opacity 0.15s;
+            font-family: 'Inter', sans-serif;
+        }
+        .dm-submit:active { transform: scale(0.98); }
+        .dm-submit:disabled { background: #e4e4e7; color: #a1a1aa; box-shadow: none; cursor: not-allowed; }
+        .dm-legal { font-size: 10.5px; color: #a1a1aa; text-align: center; margin-top: 10px; line-height: 1.5; }
+
+        /* ── Toasts ── */
+        #toast-container {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            width: calc(100% - 32px); max-width: 388px;
+            z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 8px;
+            pointer-events: none;
+        }
+        @media (min-width: 768px) {
+            #toast-container { left: calc(380px + (100vw - 380px) / 2); transform: translateX(-50%); max-width: 360px; }
+        }
+        .toast {
+            width: 100%; padding: 13px 15px; border-radius: 14px;
+            font-size: 12.5px; display: flex; align-items: flex-start; gap: 10px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.14);
+            opacity: 0; transform: translateY(8px);
+            transition: opacity 0.28s, transform 0.28s;
+            pointer-events: auto;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.hide { opacity: 0; transform: translateY(8px); }
+        .toast-success { background: #fff; border: 1.5px solid #bbf7d0; color: #15803d; }
+        .toast-error   { background: #fff; border: 1.5px solid #fecaca; color: #b91c1c; }
+        .toast-info    { background: #fff; border: 1.5px solid #bfdbfe; color: #1d4ed8; }
+        .toast-icon  { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+        .toast-title { font-size: 12.5px; font-weight: 700; }
+        .toast-msg   { font-size: 11.5px; opacity: 0.8; margin-top: 2px; }
+
+        .phone-warn {
+            display: flex; align-items: center; gap: 8px;
+            background: #fffbeb; border: 1.5px solid #fde68a;
+            border-radius: 10px; padding: 10px 12px;
+            margin-bottom: 10px; font-size: 11.5px; font-weight: 600; color: #92400e;
+        }
+
+        /* ── Order cards ── */
+        .order-card { border: 1.5px solid #f1f1f4; border-radius: 16px; padding: 14px; background: #fafafa; }
+        .order-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; }
+        .order-id { font-size: 12px; font-weight: 800; color: #18181b; letter-spacing: -0.1px; }
+        .order-badge { font-size: 9.5px; font-weight: 700; letter-spacing: 0.2px; padding: 4px 9px; border-radius: 999px; text-transform: uppercase; }
+        .badge-placed    { background: #f1f5f9; color: #475569; }
+        .badge-assigned  { background: #eff6ff; color: #1d4ed8; }
+        .badge-transit   { background: #fffbeb; color: #b45309; }
+        .badge-delivered { background: #f0fdf4; color: #15803d; }
+        .badge-cancelled { background: #fef2f2; color: #b91c1c; }
+        .order-route { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        .order-route-pt { font-size: 11.5px; font-weight: 600; color: #18181b; max-width: 38%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .order-route i { font-size: 9px; color: #c4c4c8; flex-shrink: 0; }
+        .order-progress { margin-bottom: 12px; }
+        .progress-track { height: 3px; background: #e4e4e7; border-radius: 3px; overflow: hidden; margin-bottom: 9px; }
+        .progress-fill { height: 100%; background: #18181b; border-radius: 3px; transition: width 0.4s ease; }
+        .progress-steps { display: flex; justify-content: space-between; }
+        .step { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; }
+        .step-dot { width: 7px; height: 7px; border-radius: 50%; background: #d4d4d8; }
+        .step.done .step-dot { background: #18181b; }
+        .step-label { font-size: 8.5px; font-weight: 600; color: #a1a1aa; text-align: center; }
+        .step.done .step-label { color: #52525b; }
+        .order-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid #e4e4e7; font-size: 10.5px; color: #71717a; font-weight: 500; }
+        .order-price { font-weight: 800; color: #18181b; font-size: 12px; }
+
+        /* ── Payment method ── */
+        .pay-method-row { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 10px; 
+            margin-bottom: 12px; 
+        }
+
+        .pay-pill {
+            display: flex; 
+            flex-direction: row;
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px;
+            padding: 12px 20px; 
+            border: 2px solid #e4e4e7; 
+            border-radius: 999px;
+            background: #fff; 
+            font-size: 12px; 
+            font-weight: 700; 
+            color: #52525b;
+            cursor: pointer; 
+            transition: border-color 0.15s, background 0.15s, color 0.15s;
+            font-family: 'Inter', sans-serif; 
+            text-align: center; 
+            flex: 1; 
+            white-space: nowrap;
+        }
+
+        .pay-pill i { font-size: 15px; }
+        .pay-pill.active { border-color: #18181b; background: #fafafa; color: #18181b; }
+        .pay-pill.hidden { display: none !important; }
+
+        /* ── Google Pay pill — official brand styling ── */
+        .gpay-pill {
+            padding: 9px 8px !important;
+            min-height: 46px;
+            gap: 0 !important;
+        }
+        .gpay-pill svg {
+            display: block;
+            width: 58px;
+            height: auto;
+        }
+        .gpay-pill.active {
+            border-color: #4285F4 !important;
+            background: #f0f4ff !important;
+        }
+        .gpay-pill:not(.active):hover {
+            border-color: #a8c1f8;
+            background: #f8f9ff;
+        }
+
+        /* Pro Payment Pill Styling */
+        #pay-pill-pro-mobile.active, #pay-pill-pro-sb.active {
+            border-color: #3b82f6; background: #eff6ff; color: #1d4ed8;
+        }
+
+        .paystack-test-note {
+            display: none; align-items: center; gap: 7px;
+            font-size: 10.5px; color: #a1a1aa; font-weight: 500;
+            margin: -2px 0 10px; padding-left: 1px;
+        }
+        .paystack-test-note .test-tag {
+            font-size: 8.5px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase;
+            background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 5px;
+        }
+        .gpay-test-note {
+            display: flex; align-items: center; gap: 7px;
+            font-size: 10.5px; color: #a1a1aa; font-weight: 500;
+            margin: -2px 0 10px; padding-left: 1px;
+        }
+        .gpay-test-note .test-tag {
+            font-size: 8.5px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase;
+            background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 5px;
+        }
+        #gpay-button-container, .gpay-btn-container-el { margin-bottom: 8px; width: 100%; min-width: 250px; }
+
+        /* Sidebar divider */
+        .sb-divider { height: 1px; background: #f1f1f4; margin: 16px -20px; }
+
+        /* Section heading row */
+        .section-hd {
+            display: flex; justify-content: space-between; align-items: baseline;
+            margin-bottom: 10px;
+        }
+        .section-hd h2 { font-size: 14px; font-weight: 700; color: #18181b; }
+        .section-hd span { font-size: 10.5px; color: #a1a1aa; }
+
+        /* Desktop Package Scroll Buttons */
+        .sb-nav-btns { display: flex; gap: 4px; }
+        .sb-nav-btn {
+            width: 24px; height: 24px; border-radius: 7px;
+            border: 1.5px solid #e4e4e7; background: #fff; color: #71717a;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; cursor: pointer; transition: all 0.15s ease;
+        }
+        .sb-nav-btn:hover { border-color: #18181b; color: #18181b; background: #fafafa; }
+        .sb-nav-btn:active { transform: scale(0.92); }
+
+        /* ── Subscription & Verified Badge ── */
+        .verified-badge {
+            position: absolute;
+            bottom: -2px; right: -2px;
+            width: 16px; height: 16px;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 10;
+            filter: drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 1.5px #fff);
+        }
+        .verified-badge svg { width: 100%; height: 100%; display: block; }
+        .drawer-avatar-wrap .verified-badge {
+            width: 24px; height: 24px; bottom: 2px; right: 2px;
+        }
+        .user-marker-wrap .verified-badge {
+            bottom: 6px; right: 6px; 
+        }
+        
+        .subscription-card {
+            background: #fafafa;
+            border: 1.5px solid #e4e4e7;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+        .sub-header { display: flex; align-items: center; gap: 10px; }
+        .sub-icon { width: 32px; height: 32px; border-radius: 10px; background: #eff6ff; color: #3b82f6; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .sub-title { font-size: 13px; font-weight: 800; color: #18181b; }
+        .sub-desc { font-size: 11px; color: #71717a; line-height: 1.5; }
+        .sub-btn {
+            background: #18181b; color: #fff; border: none; border-radius: 10px;
+            padding: 10px; font-size: 12px; font-weight: 700; cursor: pointer;
+            transition: opacity 0.15s; font-family: 'Inter', sans-serif;
+            text-align: center; text-decoration: none; display: block;
+        }
+        .sub-btn:hover { opacity: 0.9; color: #fff; }
+        .sub-active-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #15803d; background: #f0fdf4; padding: 6px 10px; border-radius: 8px; border: 1.5px solid #bbf7d0; width: max-content;}
+    </style>
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<div id="splash">
+    <img src="https://i.postimg.cc/Fsj0YWjK/PACE-PARCELS.png" alt="Pace Logistics Logo" style="max-width: 250px; height: auto;">
+</div>
+
+<div id="signin-gate">
+    <div class="signin-logo-wrap"><i class="fa-solid fa-truck-fast"></i></div>
+    <div class="signin-title">Pace Parcels</div>
+    <div class="signin-sub">Send packages, track deliveries, and manage your profile — all in one place.</div>
+    <button class="google-btn" onclick="signInWithGoogle()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+        Continue with Google
+    </button>
+    <div class="signin-trust">
+        <div class="trust-item"><i class="fa-solid fa-shield-halved"></i><span>Insured</span></div>
+        <div class="trust-item"><i class="fa-solid fa-location-crosshairs"></i><span>Live tracking</span></div>
+        <div class="trust-item"><i class="fa-solid fa-bolt"></i><span>Same-day</span></div>
+    </div>
+    <div class="signin-legal">By continuing you agree to our <a href="#" onclick="openTerms(); return false;" style="color:#18181b; font-weight:600; text-decoration:none;">Terms of Service & Privacy Policy</a>.</div>
+</div>
+
+<div id="terms-overlay" onclick="closeTermsOnOverlay(event)">
+    <div id="terms-sheet" onclick="event.stopPropagation()">
+        <div class="terms-header">
+            <div class="terms-title">Terms & Policies</div>
+            <button class="terms-close" onclick="closeTerms()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="terms-body" id="terms-scroll-area">
+            <h3>1. Introduction</h3>
+            <p>Welcome to Pace Parcels. By accessing or using our application, you agree to be bound by these Terms and Conditions. Please read them carefully.</p>
+            
+            <h3>2. Service Description</h3>
+            <p>Pace Parcels provides a platform connecting users with independent drivers for local parcel delivery. We act as a technology intermediary, not a direct logistics provider.</p>
+            
+            <h3>3. User Responsibilities</h3>
+            <p>You must provide accurate pickup and delivery details. You agree not to send illegal, hazardous, or heavily restricted items through our service. You must ensure you are reachable on your provided mobile number during a delivery.</p>
+            
+            <h3>4. Payments and Refunds</h3>
+            <p>Fares are estimated upfront based on distance and package size. Actual charges may vary slightly in the event of major route diversions. Refund requests are evaluated on a case-by-case basis by our support team.</p>
+            
+            <h3>5. Liability and Insurance</h3>
+            <p>While we strive for completely safe and secure deliveries, Pace Parcels' liability is limited. High-value items must be properly packaged, declared, and independently insured where applicable.</p>
+            
+            <h3>6. Privacy Policy & POPIA</h3>
+            <p>We process your personal information strictly in accordance with the Protection of Personal Information Act (POPIA), Act 4 of 2013. Your data (name, location, phone number) is used only to facilitate deliveries, verify driver identity, and improve your app experience.</p>
+            
+            <p style="margin-bottom: 60px; font-size: 11px; color: #a1a1aa; text-align: center; font-style: italic;">Scroll down to accept and continue.</p>
+
+            <div class="terms-action-wrap">
+                <button class="terms-accept-btn" onclick="acceptAndLogin()">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                    Accept & Continue with Google
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="map"></div>
+
+<button id="avatar-btn" onclick="openProfile()">
+    <span class="av-init" id="avatar-btn-init">?</span>
+</button>
+
+<div id="top-bar">
+    <div class="search-card" id="search-card">
+        <div class="search-row" style="border-radius:20px 20px 0 0; position:relative;">
+            <span class="search-dot pickup"></span>
+            <input id="input-pickup" class="search-input" placeholder="Pickup location" autocomplete="off">
+            <button id="clear-pickup" class="search-clear" onclick="clearInput('pickup','mobile')"><i class="fa-solid fa-xmark"></i></button>
+            <div id="sugg-pickup" class="suggestions-box"></div>
+        </div>
+        <div style="height:1px;background:#f1f1f4;position:relative;">
+            <div style="position:absolute;left:23px;top:-5px;width:1.5px;height:11px;background:#d4d4d8;"></div>
+        </div>
+        <div class="search-row" style="border-radius:0 0 20px 20px; position:relative;">
+            <span class="search-dot dropoff"></span>
+            <input id="input-dropoff" class="search-input" placeholder="Delivery destination" autocomplete="off">
+            <button id="clear-dropoff" class="search-clear" onclick="clearInput('dropoff','mobile')"><i class="fa-solid fa-xmark"></i></button>
+            <div id="sugg-dropoff" class="suggestions-box"></div>
+        </div>
+    </div>
+</div>
+
+<div id="sheet">
+    <div class="sheet-handle-wrap" onclick="toggleSheet()">
+        <div class="sheet-handle"></div>
+    </div>
+    <div class="tabs">
+        <button id="tab-send"  class="tab-btn active" onclick="switchTab('send')">Send Package</button>
+        <button id="tab-track" class="tab-btn"        onclick="switchTab('track')">Activity</button>
+    </div>
+    <div id="view-send">
+        <div id="phone-warn" class="phone-warn" style="display:none;">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>Add a mobile number in your profile so the driver can reach you.</span>
+        </div>
+        <div id="route-bar">
+            <div class="route-stat"><span class="route-stat-val" id="route-dist">—</span><span class="route-stat-lbl">Distance</span></div>
+            <div class="route-divider"></div>
+            <div class="route-stat"><span class="route-stat-val" id="route-time">—</span><span class="route-stat-lbl">Est. time</span></div>
+            <div class="route-divider"></div>
+            <div class="route-stat"><span class="route-stat-val" id="route-price">—</span><span class="route-stat-lbl">Base fare</span></div>
+        </div>
+        <div class="section-hd" style="margin-bottom:10px;">
+            <h2>Package size</h2><span>Swipe →</span>
+        </div>
+        <div class="pkg-scroll" id="mobile-pkg-scroll">
+            <div class="pkg-card" id="pkg-food-mobile" onclick="selectPackage(this,'food','mobile')">
+                <div><div class="pkg-icon"><i class="fa-solid fa-utensils"></i></div>
+                <div class="pkg-name">Food Delivery</div>
+                <div class="pkg-weight" id="pkg-food-weight-mobile">Restaurant orders</div></div>
+                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-food-mobile">R45</span></div>
+            </div>
+            <div class="pkg-card" onclick="selectPackage(this,'document','mobile')">
+                <div><div class="pkg-icon"><i class="fa-solid fa-envelope"></i></div>
+                <div class="pkg-name">Document</div><div class="pkg-weight">Up to 1 kg</div></div>
+                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-document-mobile">R40</span></div>
+            </div>
+            <div class="pkg-card" onclick="selectPackage(this,'small','mobile')">
+                <div><div class="pkg-icon"><i class="fa-solid fa-box-open"></i></div>
+                <div class="pkg-name">Small Parcel</div><div class="pkg-weight">Up to 5 kg</div></div>
+                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-small-mobile">R65</span></div>
+            </div>
+            <div class="pkg-card" onclick="selectPackage(this,'medium','mobile')">
+                <div><div class="pkg-icon"><i class="fa-solid fa-box"></i></div>
+                <div class="pkg-name">Medium Box</div><div class="pkg-weight">Up to 15 kg</div></div>
+                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-medium-mobile">R110</span></div>
+            </div>
+            <div class="pkg-card" onclick="selectPackage(this,'large','mobile')">
+                <div><div class="pkg-icon"><i class="fa-solid fa-pallet"></i></div>
+                <div class="pkg-name">Large Freight</div><div class="pkg-weight">Up to 30 kg</div></div>
+                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-large-mobile">R180</span></div>
+            </div>
+        </div>
+        <div class="section-hd" style="margin-bottom:10px;"><h2>Payment method</h2></div>
+        <div class="pay-method-row">
+            <button class="pay-pill" id="pay-pill-cash-mobile" onclick="selectPaymentMethod('cash','mobile')">
+                <i class="fa-solid fa-money-bill-wave"></i>Cash
+            </button>
+            <button class="pay-pill hidden" id="pay-pill-gpay-mobile" onclick="selectPaymentMethod('google_pay','mobile')">
+                <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                <span style="margin-top: 1px;">Pay</span>
+            </button>
+            <button class="pay-pill active" id="pay-pill-paystack-mobile" onclick="selectPaymentMethod('paystack','mobile')">
+                <i class="fa-solid fa-credit-card"></i> Card
+            </button>
+            <button class="pay-pill hidden" id="pay-pill-pro-mobile" onclick="selectPaymentMethod('pro','mobile')">
+                <i class="fa-solid fa-gem"></i>Free (Pro)
+            </button>
+        </div>
+        <div class="paystack-test-note" id="paystack-test-note-mobile">
+            <span class="test-tag" id="paystack-test-tag-mobile">Test mode</span>
+            <span id="paystack-test-msg-mobile">Sandbox payment — no real charge will be made.</span>
+        </div>
+        <div class="gpay-test-note" id="gpay-test-note-mobile" style="display:none;">
+            <span class="test-tag">Test mode</span> Sandbox payment — no real charge will be made.
+        </div>
+        <div id="gpay-button-container-mobile" style="display:none;"></div>
+        <button id="submitBtn" onclick="confirmBooking()">
+            <span id="submitLabel">Set pickup &amp; destination</span>
+        </button>
+    </div>
+    <div id="view-track" style="display:none;">
+        <div id="track-empty-mobile" class="track-empty">
+            <i class="fa-solid fa-box-open" style="font-size:28px;display:block;margin-bottom:10px;opacity:0.25;"></i>
+            No deliveries yet.<br>Your orders will appear here.
+        </div>
+        <div id="track-list-mobile" class="track-list" style="display:none;max-height:46vh;"></div>
+    </div>
+</div>
+
+<div id="profile-overlay" onclick="closeProfile()"></div>
+<div id="profile-drawer">
+    <div class="drawer-header">
+        <button class="drawer-close" onclick="closeProfile()"><i class="fa-solid fa-xmark"></i></button>
+        <div class="drawer-avatar-wrap" id="drawer-avatar-wrap-mobile"><span class="av-init-lg" id="drawer-avatar-init-mobile">?</span></div>
+        <div class="drawer-name"  id="drawer-name-mobile">—</div>
+        <div class="drawer-email" id="drawer-email-mobile">—</div>
+        <button class="chat-header-btn" onclick="openChat()"><i class="fa-regular fa-comment-dots"></i> Chat Support</button>
+    </div>
+    <div class="drawer-body" id="profile-body-mobile"></div>
+</div>
+
+<div id="chat-modal-overlay" onclick="closeChatOnOverlay(event)">
+    <div id="chat-modal" onclick="event.stopPropagation()">
+        <div class="chat-header">
+            <div class="chat-title-wrap">
+                <div class="chat-title-icon"><i class="fa-solid fa-headset"></i></div>
+                <div>
+                    <div class="chat-title">Support Team</div>
+                    <div class="chat-sub">We usually reply in a few minutes</div>
+                </div>
+            </div>
+            <button class="dm-close" onclick="closeChat()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="chat-body" id="chat-body">
+            </div>
+        <div class="chat-footer">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Type a message..." onkeypress="handleChatKeyPress(event)">
+            <button class="chat-send-btn" id="chat-send-btn" onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+</div>
+
+<div id="driver-modal-overlay" onclick="closeDriverModalOnOverlay(event)">
+    <div id="driver-modal" onclick="event.stopPropagation()">
+        <div class="dm-header">
+            <div>
+                <div class="dm-title">Become a Driver</div>
+                <div class="dm-sub">Join Pace Parcels with your bakkie or motorbike and start earning on your own schedule.</div>
+            </div>
+            <button class="dm-close" onclick="closeDriverModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="dm-body" id="driver-form-body-mobile"></div>
+        <div class="dm-footer">
+            <button class="dm-submit" id="dm-submit-btn-mobile" onclick="submitDriverApplication('mobile')">Submit application</button>
+            <div class="dm-legal">We'll review your details and contact you on the number provided.</div>
+        </div>
+    </div>
+</div>
+
+<div id="cash-modal-overlay" onclick="closeCashModalOnOverlay(event)">
+    <div id="cash-modal" onclick="event.stopPropagation()">
+        <div class="dm-header">
+            <div class="dm-title">Cash Payment Unavailable Online</div>
+            <button class="dm-close" onclick="closeCashModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="dm-body" style="padding: 32px 24px; font-size: 14px; color: #52525b; line-height: 1.6; text-align: center;">
+            <i class="fa-solid fa-store" style="font-size: 44px; color: #18181b; margin-bottom: 20px;"></i>
+            <p>To pay with cash, please visit your nearest Pace Parcels branch to book and dispatch your parcel in person with our team.</p>
+            <p style="margin-top: 12px;">For online and app bookings, a Card or Digital Wallet is required to proceed.</p>
+        </div>
+        <div class="dm-footer">
+            <button class="dm-submit" onclick="closeCashModal()">Understood</button>
+        </div>
+    </div>
+</div>
+
+<div id="desktop-sidebar">
+    <div class="sb-header">
+        <img src="https://i.postimg.cc/Fsj0YWjK/PACE-PARCELS.png" alt="Pace Logistics" style="height: 40px; width: auto; margin-right: auto;">
+        <div class="sb-avatar-btn" id="sb-avatar-btn" onclick="desktopShowProfile()">
+            <span class="av-init" id="sb-avatar-init">?</span>
+        </div>
+    </div>
+
+    <div class="sb-search-section">
+        <div class="sb-search-label">Route</div>
+        <div class="search-card" id="sb-search-card">
+            <div class="search-row" style="border-radius:20px 20px 0 0; position:relative;">
+                <span class="search-dot pickup"></span>
+                <input id="input-pickup-sb" class="search-input" placeholder="Pickup location" autocomplete="off">
+                <button id="clear-pickup-sb" class="search-clear" onclick="clearInput('pickup','sb')"><i class="fa-solid fa-xmark"></i></button>
+                <div id="sugg-pickup-sb" class="suggestions-box"></div>
+            </div>
+            <div style="height:1px;background:#f1f1f4;position:relative;">
+                <div style="position:absolute;left:23px;top:-5px;width:1.5px;height:11px;background:#d4d4d8;"></div>
+            </div>
+            <div class="search-row" style="border-radius:0 0 20px 20px; position:relative;">
+                <span class="search-dot dropoff"></span>
+                <input id="input-dropoff-sb" class="search-input" placeholder="Delivery destination" autocomplete="off">
+                <button id="clear-dropoff-sb" class="search-clear" onclick="clearInput('dropoff','sb')"><i class="fa-solid fa-xmark"></i></button>
+                <div id="sugg-dropoff-sb" class="suggestions-box"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sb-panel-main" class="sb-body sb-panel">
+        <div class="sb-divider" style="margin-top:16px;"></div>
+
+        <div class="sb-tabs">
+            <button id="sb-tab-send"  class="sb-tab-btn active" onclick="sbSwitchTab('send')">Send Package</button>
+            <button id="sb-tab-track" class="sb-tab-btn"        onclick="sbSwitchTab('track')">Activity</button>
+        </div>
+
+        <div id="sb-view-send">
+            <div id="sb-phone-warn" class="phone-warn" style="display:none;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Add a mobile number in your profile so the driver can reach you.</span>
+            </div>
+            <div class="route-bar-el" id="sb-route-bar">
+                <div class="route-stat"><span class="route-stat-val" id="sb-route-dist">—</span><span class="route-stat-lbl">Distance</span></div>
+                <div class="route-divider"></div>
+                <div class="route-stat"><span class="route-stat-val" id="sb-route-time">—</span><span class="route-stat-lbl">Est. time</span></div>
+                <div class="route-divider"></div>
+                <div class="route-stat"><span class="route-stat-val" id="sb-route-price">—</span><span class="route-stat-lbl">Base fare</span></div>
+            </div>
+            
+            <div class="section-hd" style="margin-bottom:10px; align-items: center;">
+                <h2>Package size</h2>
+                <div class="sb-nav-btns">
+                    <button class="sb-nav-btn" onclick="scrollPkg('left')" title="Scroll left"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button class="sb-nav-btn" onclick="scrollPkg('right')" title="Scroll right"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+            <div class="pkg-scroll" id="sb-pkg-scroll">
+                <div class="pkg-card" id="pkg-food-sb" onclick="selectPackage(this,'food','sb')">
+                    <div><div class="pkg-icon"><i class="fa-solid fa-utensils"></i></div>
+                    <div class="pkg-name">Food Delivery</div>
+                    <div class="pkg-weight" id="pkg-food-weight-sb">Restaurant orders</div></div>
+                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-food-sb">R45</span></div>
+                </div>
+                <div class="pkg-card" onclick="selectPackage(this,'document','sb')">
+                    <div><div class="pkg-icon"><i class="fa-solid fa-envelope"></i></div>
+                    <div class="pkg-name">Document</div><div class="pkg-weight">Up to 1 kg</div></div>
+                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-document-sb">R40</span></div>
+                </div>
+                <div class="pkg-card" onclick="selectPackage(this,'small','sb')">
+                    <div><div class="pkg-icon"><i class="fa-solid fa-box-open"></i></div>
+                    <div class="pkg-name">Small Parcel</div><div class="pkg-weight">Up to 5 kg</div></div>
+                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-small-sb">R65</span></div>
+                </div>
+                <div class="pkg-card" onclick="selectPackage(this,'medium','sb')">
+                    <div><div class="pkg-icon"><i class="fa-solid fa-box"></i></div>
+                    <div class="pkg-name">Medium Box</div><div class="pkg-weight">Up to 15 kg</div></div>
+                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-medium-sb">R110</span></div>
+                </div>
+                <div class="pkg-card" onclick="selectPackage(this,'large','sb')">
+                    <div><div class="pkg-icon"><i class="fa-solid fa-pallet"></i></div>
+                    <div class="pkg-name">Large Freight</div><div class="pkg-weight">Up to 30 kg</div></div>
+                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-large-sb">R180</span></div>
+                </div>
+            </div>
+            <div class="section-hd" style="margin-bottom:10px;"><h2>Payment method</h2></div>
+            <div class="pay-method-row">
+                <button class="pay-pill" id="pay-pill-cash-sb" onclick="selectPaymentMethod('cash','sb')">
+                    <i class="fa-solid fa-money-bill-wave"></i>Cash
+                </button>
+                <button class="pay-pill hidden" id="pay-pill-gpay-sb" onclick="selectPaymentMethod('google_pay','sb')">
+                    <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    Pay
+                </button>
+                <button class="pay-pill active" id="pay-pill-paystack-sb" onclick="selectPaymentMethod('paystack','sb')">
+                    <i class="fa-solid fa-credit-card"></i> Card
+                </button>
+                <button class="pay-pill hidden" id="pay-pill-pro-sb" onclick="selectPaymentMethod('pro','sb')">
+                    <i class="fa-solid fa-gem"></i>Free (Pro)
+                </button>
+            </div>
+            <div class="paystack-test-note" id="paystack-test-note-sb">
+                <span class="test-tag" id="paystack-test-tag-sb">Test mode</span>
+                <span id="paystack-test-msg-sb">Sandbox payment — no real charge will be made.</span>
+            </div>
+            <div class="gpay-test-note" id="gpay-test-note-sb" style="display:none;">
+                <span class="test-tag">Test mode</span> Sandbox payment — no real charge will be made.
+            </div>
+            <div id="gpay-button-container-sb" class="gpay-btn-container-el" style="display:none;"></div>
+            <button class="submit-btn-el" id="submitBtn-sb" onclick="confirmBooking()">
+                <span id="submitLabel-sb">Set pickup &amp; destination</span>
+            </button>
+        </div>
+
+        <div id="sb-view-track" style="display:none;">
+            <div id="track-empty-sb" class="track-empty">
+                <i class="fa-solid fa-box-open" style="font-size:28px;display:block;margin-bottom:10px;opacity:0.25;"></i>
+                No deliveries yet.<br>Your orders will appear here.
+            </div>
+            <div id="track-list-sb" class="track-list" style="display:none;"></div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { getDatabase, ref, push, set, get, update, onValue, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+import { getRemoteConfig, fetchAndActivate, getValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-remote-config.js";
+
+const MAPBOX_TOKEN = "pk.eyJ1Ijoia2F0bGVnb3BoYXNoYSIsImEiOiJjbTlpOTdzbmYwMGNsMmpzYWJtZzN4d3pqIn0.Zt-aSMEoahrV3zkiVVHbOw";
+const SHIPDAY_KEY  = "K5a8wQJF3f.az2zfrhgzwxK9JONI2y8";
+let PAYSTACK_PUBLIC_KEY = null;
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBQSPwpVbGrdCuOoyitAeWQHIeipj2MgIY",
+    authDomain: "newstart-64c43.firebaseapp.com",
+    databaseURL: "https://newstart-64c43-default-rtdb.firebaseio.com",
+    projectId: "newstart-64c43",
+    storageBucket: "newstart-64c43.firebasestorage.app",
+    messagingSenderId: "941619830061",
+    appId: "1:941619830061:web:de9e0f791eb8f6eacf87a4"
+};
+
+const fbApp    = initializeApp(firebaseConfig);
+const auth     = getAuth(fbApp);
+const database = getDatabase(fbApp);
+const provider = new GoogleAuthProvider();
+
+const remoteConfig = getRemoteConfig(fbApp);
+remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
+remoteConfig.defaultConfig = { paystack_public_key: "" };
+
+async function initRemoteConfig() {
+    try {
+        await fetchAndActivate(remoteConfig);
+        const key = getValue(remoteConfig, "paystack_public_key").asString();
+        if (key) { 
+            PAYSTACK_PUBLIC_KEY = key; 
+            updatePaystackTestNote('mobile'); 
+            updatePaystackTestNote('sb'); 
+        }
+    } catch(e) { console.warn("Remote Config fetch failed:", e.message); }
+}
+initRemoteConfig();
+
+/* ─── Helpers ─── */
+function isDesktop() { return window.innerWidth >= 768; }
+function initials(name) { if (!name) return '?'; return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+
+/* ─── State ─── */
+let currentUser    = null;
+let userProfile    = {};
+let selectedPkg    = null;
+let selectedPayment = { mobile: 'paystack', sb: 'paystack' };
+let routeDistKm    = 0;
+let selectedCoords = { pickup: null, dropoff: null };
+let suggFeatures   = { pickup: [], dropoff: [] };
+let debounceTimers = {};
+
+/* ─── Package catalogue & live pricing ─── */
+const PACKAGE_META = {
+    food:     { name: 'Food Delivery', defaultBase: 45 },
+    document: { name: 'Document',      defaultBase: 40 },
+    small:    { name: 'Small Parcel',  defaultBase: 65 },
+    medium:   { name: 'Medium Box',    defaultBase: 110 },
+    large:    { name: 'Large Freight', defaultBase: 180 }
+};
+let pkgBasePrices = Object.fromEntries(Object.entries(PACKAGE_META).map(([k,v])=>[k,v.defaultBase]));
+let PER_KM_RATE   = 3.5;
+
+/* ─── Helper: Calculate Total Price ─── */
+function calculateTotalPrice() {
+    if (!selectedPkg) return 0;
+    if (selectedPkg.key === 'food') {
+        return Math.round(selectedPkg.base + (routeDistKm * PER_KM_RATE));
+    }
+    return Math.round(selectedPkg.base);
+}
+
+/* ─── Facebook-style verified badge ─── */
+const VERIFIED_BADGE_SVG = `<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg"><path fill="#3b82f6" d="M20.396 11c-.018-.646-.215-1.275-.57-1.82-.354-.547-.86-.978-1.453-1.246.273-.61.354-1.286.233-1.94-.121-.654-.435-1.259-.904-1.738-.479-.469-1.084-.783-1.738-.904-.654-.121-1.33-.04-1.94.233-.268-.593-.7-1.1-1.246-1.453C12.234.215 11.604.018 10.96 0h-.16c-.643.018-1.272.215-1.817.57-.547.353-.978.86-1.246 1.453-.61-.274-1.286-.355-1.94-.234-.654.122-1.259.436-1.738.905-.469.479-.783 1.084-.904 1.738-.121.654-.04 1.33.234 1.94-.593.268-1.1.7-1.453 1.246-.353.546-.55 1.175-.567 1.819-.018.642.179 1.272.534 1.817.353.547.86.978 1.453 1.246-.273.61-.354 1.286-.233 1.94.121.654.435 1.259.904 1.738.479.469 1.084.783 1.738.904.654.121 1.33.04 1.94-.233.267.593.7 1.1 1.246 1.453.546.353 1.175.55 1.819.567h.158c.642-.018 1.272-.215 1.817-.57.547-.353.978-.86 1.246-1.453.61.273 1.286.354 1.94.233.654-.121 1.259-.435 1.738-.904.469-.479.783-1.084.904-1.738.121-.654.04-1.33-.233-1.94.593-.268 1.1-.7 1.453-1.246.353-.546.55-1.175.57-1.817v-.16z"/><path fill="#fff" d="M16.59 7.61 10.55 13.65 7.36 10.46l1.18-1.18 2.01 2.01 4.85-4.85z"/></svg>`;
+let ordersListenerAttached = false;
+let selectedVehicleType    = null;
+
+/* ─── Toast ─── */
+function showToast(type, title, msg, duration=4200) {
+    const icons = { success:'fa-circle-check', error:'fa-circle-xmark', info:'fa-circle-info' };
+    const t = document.createElement('div');
+    t.className = `toast toast-${type}`;
+    t.innerHTML = `<i class="fa-solid ${icons[type]} toast-icon"></i><div><div class="toast-title">${title}</div>${msg?`<div class="toast-msg">${msg}</div>`:''}</div>`;
+    document.getElementById('toast-container').appendChild(t);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+    setTimeout(()=>{ t.classList.add('hide'); t.addEventListener('transitionend',()=>t.remove(),{once:true}); }, duration);
+}
+window.showToast = showToast;
+
+/* ─── Auth / Terms Logic ─── */
+let termsAccepted = false;
+
+window.signInWithGoogle = function() {
+    if (!termsAccepted) {
+        openTerms();
+    } else {
+        executeGoogleLogin();
+    }
+};
+
+window.openTerms = function() {
+    document.getElementById('terms-overlay').classList.add('open');
+};
+
+window.closeTerms = function() {
+    document.getElementById('terms-overlay').classList.remove('open');
+};
+
+window.closeTermsOnOverlay = function(e) {
+    if(e.target.id === 'terms-overlay') closeTerms();
+};
+
+window.acceptAndLogin = async function() {
+    termsAccepted = true;
+    closeTerms();
+    await executeGoogleLogin();
+};
+
+async function executeGoogleLogin() {
+    try { await signInWithPopup(auth, provider); }
+    catch(e) { if (e.code !== 'auth/popup-closed-by-user') showToast('error','Sign-in failed',e.message); }
+}
+
+window.signOut = async function() {
+    await fbSignOut(auth);
+    showToast('info','Signed out','See you next time.');
+    closeProfile(); desktopShowMain();
+};
+
+async function loadUserProfile(user) {
+    const snap = await get(ref(database,`users/${user.uid}`));
+    let p = snap.exists() ? snap.val() : {};
+    let updates = false;
+
+    if (!p.email) { p.email = user.email || ''; updates = true; }
+    if (!p.name)  { p.name = user.displayName || ''; updates = true; }
+    if (!p.photoURL && user.photoURL) { p.photoURL = user.photoURL; updates = true; }
+    if (p.isSubscribed === undefined) { p.isSubscribed = false; updates = true; }
+
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    if (p.lastDeliveryMonth !== currentMonth) {
+        p.freeDeliveriesUsed = 0;
+        p.lastDeliveryMonth = currentMonth;
+        updates = true;
+    }
+
+    userProfile = p;
+    if (updates) await update(ref(database,`users/${user.uid}`), userProfile);
+    
+    renderPaymentMethods();
+}
+
+window.savePhone = async function() {
+    const sbInput  = document.getElementById('phone-input-sb');
+    const mobInput = document.getElementById('phone-input-mobile');
+    const v = (sbInput && sbInput.value.trim()) || (mobInput && mobInput.value.trim()) || '';
+    if (!v) { showToast('error','Enter a number','Phone number cannot be empty.'); return; }
+    if (!currentUser) return;
+    await update(ref(database,`users/${currentUser.uid}`),{phone:v});
+    userProfile.phone = v;
+    renderProfileUI();
+    showToast('success','Number saved','Your driver will use this to contact you.');
+    ['phone-warn','sb-phone-warn'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
+};
+
+onAuthStateChanged(auth, async (user) => {
+    hideSplash();
+    if (user) {
+        currentUser = user;
+        await loadUserProfile(user);
+        document.getElementById('signin-gate').classList.remove('visible');
+        document.getElementById('avatar-btn').style.display = 'flex';
+        renderAvatarBtn();
+        renderProfileUI();
+        checkPhoneWarning();
+        initMap();
+        attachOrdersListener();
+        loadDriverApplication();
+    } else {
+        currentUser = null; userProfile = {};
+        ordersListenerAttached = false; selectedVehicleType = null;
+        renderOrders(null);
+        renderDriverStatus(null);
+        closeDriverModal();
+        closeChat();
+        document.getElementById('avatar-btn').style.display = 'none';
+        document.getElementById('signin-gate').classList.add('visible');
+    }
+});
+
+function hideSplash() {
+    const s = document.getElementById('splash');
+    if (s) { s.classList.add('hide'); setTimeout(()=>s.remove(),650); }
+}
+
+function renderAvatarBtn() {
+    const btn  = document.getElementById('avatar-btn');
+    if (userProfile.photoURL) btn.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
+    else btn.innerHTML = `<span class="av-init" id="avatar-btn-init">${initials(userProfile.name)}</span>`;
+    if (userProfile.isSubscribed) btn.innerHTML += `<div class="verified-badge">${VERIFIED_BADGE_SVG}</div>`;
+
+    const sbBtn  = document.getElementById('sb-avatar-btn');
+    if (sbBtn) {
+        if (userProfile.photoURL) sbBtn.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
+        else sbBtn.innerHTML = `<span class="av-init" id="sb-avatar-init">${initials(userProfile.name)}</span>`;
+        if (userProfile.isSubscribed) sbBtn.innerHTML += `<div class="verified-badge">${VERIFIED_BADGE_SVG}</div>`;
+    }
+}
+
+/* ─── Profile body template ─── */
+function profileBodyHTML(ctx) {
+    const isSub = userProfile.isSubscribed;
+    const used = userProfile.freeDeliveriesUsed || 0;
+    
+    const subUI = isSub ?
+        `<div class="subscription-card">
+            <div class="sub-header">
+                <div class="sub-icon"><i class="fa-solid fa-gem"></i></div>
+                <div class="sub-title">Pace Parcels Pro</div>
+            </div>
+            <div class="sub-desc">You have used ${used} of 4 free deliveries this month.</div>
+            <div class="sub-active-badge"><i class="fa-solid fa-circle-check"></i> Active Subscription</div>
+        </div>` :
+        `<div class="subscription-card">
+            <div class="sub-header">
+                <div class="sub-icon"><i class="fa-solid fa-box"></i></div>
+                <div class="sub-title">Upgrade to Pro</div>
+            </div>
+            <div class="sub-desc">Get 4 free deliveries a month and a verified badge.</div>
+            <a href="https://paystack.shop/pay/l-zrz39erw" target="_blank" class="sub-btn">Subscribe now</a>
+            <div class="sub-desc" style="margin-top:-2px;">Your Pro status is activated by our team shortly after payment is confirmed.</div>
+        </div>`;
+
+    return `
+    ${subUI}
+    
+    <div class="drawer-section-title">Mobile number for deliveries</div>
+    <div class="phone-field-wrap">
+        <i class="fa-solid fa-phone phone-field-icon"></i>
+        <input id="phone-input-${ctx}" class="phone-field" type="tel" placeholder="+27 60 123 4567" inputmode="tel" value="${userProfile.phone||''}">
+    </div>
+    <button class="phone-save-btn" onclick="savePhone()">Save number</button>
+    <p class="phone-hint">This number is shared with the driver so they can contact you about your delivery.</p>
+
+    <div class="drawer-section-title">Account</div>
+    <div class="info-row">
+        <div class="info-row-icon"><i class="fa-solid fa-user"></i></div>
+        <div class="info-row-text"><div class="ir-label">Full name</div><div class="ir-value">${userProfile.name||'—'}</div></div>
+    </div>
+    <div class="info-row">
+        <div class="info-row-icon"><i class="fa-solid fa-envelope"></i></div>
+        <div class="info-row-text"><div class="ir-label">Email</div><div class="ir-value">${userProfile.email||'—'}</div></div>
+    </div>
+    <div class="info-row">
+        <div class="info-row-icon"><i class="fa-solid fa-phone"></i></div>
+        <div class="info-row-text"><div class="ir-label">Mobile</div><div class="ir-value">${userProfile.phone||'Not set'}</div></div>
+    </div>
+
+    <div class="drawer-section-title">Drive with CourierGo</div>
+    <div class="driver-cta" id="driver-cta-${ctx}" onclick="openDriverModal()">
+        <div class="driver-cta-icon"><i class="fa-solid fa-truck-pickup"></i></div>
+        <div class="driver-cta-text"><div class="driver-cta-title">Become a driver</div><div class="driver-cta-sub">Earn with your bakkie or motorbike</div></div>
+        <i class="fa-solid fa-chevron-right driver-cta-arrow"></i>
+    </div>
+    <div class="driver-status-card" id="driver-status-card-${ctx}" style="display:none;"></div>
+
+    <button class="logout-btn" onclick="signOut()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out</button>`;
+}
+
+/* ─── Driver form body template ─── */
+function driverFormBodyHTML(ctx) {
+    return `
+    <div class="dm-field">
+        <label class="dm-label">Vehicle type</label>
+        <div class="vehicle-type-row">
+            <div class="vehicle-pill" id="vt-bakkie-${ctx}" onclick="selectVehicleType('Bakkie','${ctx}')">
+                <i class="fa-solid fa-truck-pickup"></i><span>Bakkie</span>
+            </div>
+            <div class="vehicle-pill" id="vt-motorbike-${ctx}" onclick="selectVehicleType('Motorbike','${ctx}')">
+                <i class="fa-solid fa-motorcycle"></i><span>Motorbike</span>
+            </div>
+        </div>
+    </div>
+    <div class="dm-field"><label class="dm-label">Full name</label><input id="dm-name-${ctx}" class="dm-input" type="text" placeholder="As on your ID"></div>
+    <div class="dm-field"><label class="dm-label">Mobile number</label><input id="dm-phone-${ctx}" class="dm-input" type="tel" placeholder="+27 60 123 4567" inputmode="tel"></div>
+    <div class="dm-field"><label class="dm-label">ID number</label><input id="dm-id-${ctx}" class="dm-input" type="text" placeholder="13-digit SA ID number" inputmode="numeric"></div>
+    <div class="dm-field"><label class="dm-label">Driver's license number</label><input id="dm-license-${ctx}" class="dm-input" type="text" placeholder="License number"></div>
+    <div class="dm-field"><label class="dm-label">Vehicle make &amp; model</label><input id="dm-vehicle-model-${ctx}" class="dm-input" type="text" placeholder="e.g. Toyota Hilux 2019"></div>
+    <div class="dm-field"><label class="dm-label">License plate</label><input id="dm-plate-${ctx}" class="dm-input" type="text" placeholder="e.g. CA 123-456"></div>
+    <div class="dm-field" style="margin-bottom:16px;"><label class="dm-label">City / area of operation</label><input id="dm-city-${ctx}" class="dm-input" type="text" placeholder="e.g. Johannesburg"></div>
+
+    <div class="dm-disclaimer">
+        <div class="dm-disclaimer-title">
+            <i class="fa-solid fa-shield-halved"></i>
+            Background check &amp; data consent
+        </div>
+        <p>Pace Parcels will conduct a background check on your provided information, including your ID number and driver's license, to verify your identity and driving record before approving your application.</p>
+        <p>Your personal information will be collected, stored, and processed in accordance with the <strong>Protection of Personal Information Act (POPIA), Act 4 of 2013</strong>. Your data will only be used for verification, driver onboarding, and operational communication purposes. You may request access to or deletion of your data at any time by contacting us.</p>
+        <label class="dm-checkbox-label">
+            <input type="checkbox" id="dm-consent-${ctx}" onchange="updateDriverSubmitBtn('${ctx}')">
+            <span class="dm-checkbox-text">
+                I consent to a background check on my personal information and understand that my data will be handled in accordance with POPIA.
+                <span>I confirm the information provided is accurate and complete.</span>
+            </span>
+        </label>
+    </div>`;
+}
+
+function renderProfileUI() {
+    ['mobile','sb'].forEach(ctx => {
+        const aw = document.getElementById(`drawer-avatar-wrap-${ctx}`);
+        if(aw) {
+            if (userProfile.photoURL) aw.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
+            else aw.innerHTML = `<span class="av-init-lg" id="drawer-avatar-init-${ctx}">${initials(userProfile.name)}</span>`;
+            if (userProfile.isSubscribed) aw.innerHTML += `<div class="verified-badge">${VERIFIED_BADGE_SVG}</div>`;
+        }
+        
+        const nm = document.getElementById(`drawer-name-${ctx}`);    if(nm) nm.textContent = userProfile.name||'—';
+        const em = document.getElementById(`drawer-email-${ctx}`);   if(em) em.textContent = userProfile.email||'—';
+        
+        const pb = document.getElementById(`profile-body-${ctx}`);
+        if(pb) pb.innerHTML = profileBodyHTML(ctx);
+        const dfb = document.getElementById(`driver-form-body-${ctx}`);
+        if(dfb) dfb.innerHTML = driverFormBodyHTML(ctx);
+        const pinp = document.getElementById(`phone-input-${ctx}`);
+        if(pinp) pinp.value = userProfile.phone||'';
+        const dmn = document.getElementById(`dm-name-${ctx}`);
+        const dmp = document.getElementById(`dm-phone-${ctx}`);
+        if(dmn) dmn.value = userProfile.name||'';
+        if(dmp) dmp.value = userProfile.phone||'';
+    });
+    if(userMarker) refreshMapMarker();
+}
+
+function checkPhoneWarning() {
+    ['phone-warn','sb-phone-warn'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display = (!userProfile.phone)?'flex':'none'; });
+}
+
+/* ─── Support Chat Logic ─── */
+let chatListenerAttached = false;
+let chatRef = null;
+
+window.openChat = function() {
+    if (!currentUser) { showToast('error', 'Not signed in', 'Please sign in to use chat.'); return; }
+    document.getElementById('chat-modal-overlay').classList.add('open');
+    attachChatListener();
+};
+
+window.closeChat = function() {
+    document.getElementById('chat-modal-overlay').classList.remove('open');
+};
+
+window.closeChatOnOverlay = function(e) {
+    if (e.target.id === 'chat-modal-overlay') closeChat();
+};
+
+function attachChatListener() {
+    if (chatListenerAttached || !currentUser) return;
+    chatListenerAttached = true;
+    chatRef = ref(database, `chats/${currentUser.uid}`);
+    onValue(chatRef, (snap) => {
+        const data = snap.val();
+        renderChatMessages(data);
+    });
+}
+
+function renderChatMessages(data) {
+    const body = document.getElementById('chat-body');
+    if (!data) {
+        body.innerHTML = `
+            <div style="text-align:center; padding: 40px 20px; color: #a1a1aa; font-size: 13px;">
+                <i class="fa-regular fa-comments" style="font-size: 38px; margin-bottom: 14px; display:block;"></i>
+                Send us a message and we'll help you out!
+            </div>`;
+        return;
+    }
+
+    const messages = Object.values(data).sort((a, b) => a.timestamp - b.timestamp);
+    body.innerHTML = messages.map(m => {
+        const isUser = m.sender === 'user';
+        const timeStr = new Date(m.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        return `
+            <div class="chat-msg-row ${isUser ? 'user' : 'support'}">
+                <div class="chat-bubble">${m.text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+                <div class="chat-time">${timeStr}</div>
+            </div>
+        `;
+    }).join('');
+    
+    setTimeout(() => { body.scrollTop = body.scrollHeight; }, 50);
+}
+
+window.sendChatMessage = async function() {
+    const input = document.getElementById('chat-input');
+    const btn = document.getElementById('chat-send-btn');
+    const text = input.value.trim();
+    
+    if (!text || !currentUser) return;
+    
+    input.disabled = true;
+    btn.disabled = true;
+    
+    try {
+        await set(push(ref(database, `chats/${currentUser.uid}`)), {
+            sender: 'user',
+            text: text,
+            timestamp: Date.now()
+        });
+        input.value = '';
+    } catch (e) {
+        showToast('error', 'Message failed', 'Could not send message.');
+    } finally {
+        input.disabled = false;
+        btn.disabled = false;
+        input.focus();
+    }
+};
+
+window.handleChatKeyPress = function(e) {
+    if (e.key === 'Enter') sendChatMessage();
+};
+
+/* ─── Orders ─── */
+function attachOrdersListener() {
+    if (ordersListenerAttached || !currentUser) return;
+    ordersListenerAttached = true;
+    const q = query(ref(database,'orders'), orderByChild('userId'), equalTo(currentUser.uid));
+    onValue(q, snap => renderOrders(snap.val()));
+}
+
+const STATUS_META = {
+    placed:     {label:'Order placed',    badge:'badge-placed',    step:0},
+    assigned:   {label:'Driver assigned', badge:'badge-assigned',  step:1},
+    picked_up:  {label:'Picked up',       badge:'badge-transit',   step:2},
+    in_transit: {label:'In transit',      badge:'badge-transit',   step:2},
+    delivered:  {label:'Delivered',       badge:'badge-delivered', step:3},
+    cancelled:  {label:'Cancelled',       badge:'badge-cancelled', step:-1}
+};
+const STATUS_STEPS = ['Placed','Assigned','Picked up','Delivered'];
+function shortAddr(a) { return (a||'').split(',')[0]; }
+function formatOrderDate(ts) {
+    const d=new Date(ts);
+    return d.toLocaleDateString('en-ZA',{day:'numeric',month:'short'})+' · '+d.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'});
+}
+function orderCardHTML(o) {
+    const meta=STATUS_META[o.status]||STATUS_META.placed;
+    const pct=meta.step<0?0:(meta.step/(STATUS_STEPS.length-1))*100;
+    const steps=STATUS_STEPS.map((s,i)=>`<div class="step ${i<=meta.step?'done':''}"><span class="step-dot"></span><span class="step-label">${s}</span></div>`).join('');
+    const pkgName=(o.orderItem&&o.orderItem[0]&&o.orderItem[0].name)||'Package';
+    return `<div class="order-card">
+        <div class="order-card-top"><span class="order-id">${o.orderNumber||''}</span><span class="order-badge ${meta.badge}">${meta.label}</span></div>
+        <div class="order-route"><span class="order-route-pt">${shortAddr(o.restaurantAddress)}</span><i class="fa-solid fa-arrow-right-long"></i><span class="order-route-pt">${shortAddr(o.customerAddress)}</span></div>
+        ${meta.step>=0?`<div class="order-progress"><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div><div class="progress-steps">${steps}</div></div>`:''}
+        <div class="order-footer"><span>${pkgName}</span><span>${formatOrderDate(o.timestamp)}</span><span class="order-price">R${o.totalOrderCost??'—'}</span></div>
+    </div>`;
+}
+function renderOrders(obj) {
+    const orders = obj ? Object.values(obj).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0)) : [];
+    ['mobile','sb'].forEach(ctx => {
+        const listEl  = document.getElementById(`track-list-${ctx}`);
+        const emptyEl = document.getElementById(`track-empty-${ctx}`);
+        if (!listEl || !emptyEl) return;
+        if (!orders.length) { listEl.innerHTML=''; listEl.style.display='none'; emptyEl.style.display='block'; }
+        else { emptyEl.style.display='none'; listEl.style.display='flex'; listEl.innerHTML=orders.map(orderCardHTML).join(''); }
+    });
+}
+
+/* ─── Panel navigation ─── */
+window.openProfile  = function() {
+    if (currentUser) renderProfileUI();
+    document.getElementById('profile-overlay').classList.add('open');
+    document.getElementById('profile-drawer').classList.add('open');
+};
+window.closeProfile = function() {
+    document.getElementById('profile-overlay').classList.remove('open');
+    document.getElementById('profile-drawer').classList.remove('open');
+};
+
+window.desktopShowMain    = function() { showDesktopPanel('main'); };
+window.desktopShowProfile = function() { openProfile(); };
+
+function showDesktopPanel(name) {
+    const el = document.getElementById(`sb-panel-${name}`);
+    if (el) el.style.display = 'block';
+}
+
+function renderDriverFormBodyForCtx(ctx) {
+    const dfb = document.getElementById(`driver-form-body-${ctx}`);
+    if (dfb) {
+        dfb.innerHTML = driverFormBodyHTML(ctx);
+        const dmn = document.getElementById(`dm-name-${ctx}`);
+        const dmp = document.getElementById(`dm-phone-${ctx}`);
+        if(dmn) dmn.value = userProfile.name||'';
+        if(dmp) dmp.value = userProfile.phone||'';
+    }
+}
+
+/* ─── Driver application ─── */
+window.openDriverModal = function() {
+    if (!currentUser) { showToast('error','Not signed in','Please sign in first.'); return; }
+    renderDriverFormBodyForCtx('mobile');
+    document.getElementById('driver-modal-overlay').classList.add('open');
+};
+window.closeDriverModal = function() { document.getElementById('driver-modal-overlay').classList.remove('open'); };
+window.closeDriverModalOnOverlay = function(e) { if(e.target.id==='driver-modal-overlay') closeDriverModal(); };
+
+window.selectVehicleType = function(type, ctx) {
+    selectedVehicleType = type;
+    ['mobile','sb'].forEach(c => {
+        const b = document.getElementById(`vt-bakkie-${c}`);
+        const m = document.getElementById(`vt-motorbike-${c}`);
+        if(b) b.classList.toggle('active', type==='Bakkie');
+        if(m) m.classList.toggle('active', type==='Motorbike');
+    });
+};
+
+window.updateDriverSubmitBtn = function(ctx) {
+    const checkbox = document.getElementById(`dm-consent-${ctx}`);
+    const btn = document.getElementById(`dm-submit-btn-${ctx}`);
+    if (btn) btn.disabled = !(checkbox && checkbox.checked);
+};
+
+function initDriverSubmitBtns() {
+    ['mobile','sb'].forEach(ctx => {
+        const btn = document.getElementById(`dm-submit-btn-${ctx}`);
+        if(btn) btn.disabled = true;
+    });
+}
+
+window.submitDriverApplication = async function(ctx) {
+    if (!currentUser) { showToast('error','Not signed in','Please sign in first.'); return; }
+    const g = id => { const el=document.getElementById(`${id}-${ctx}`); return el?el.value.trim():''; };
+    const name    = g('dm-name');
+    const phone   = g('dm-phone');
+    const idNum   = g('dm-id');
+    const license = g('dm-license');
+    const vehicle = g('dm-vehicle-model');
+    const plate   = g('dm-plate');
+    const city    = g('dm-city');
+    const consent = document.getElementById(`dm-consent-${ctx}`);
+    if (!selectedVehicleType) { showToast('error','Select a vehicle type','Choose Bakkie or Motorbike.'); return; }
+    if (!name||!phone||!idNum||!license||!vehicle||!plate||!city) { showToast('error','Missing details','Please fill in every field.'); return; }
+    if (!consent||!consent.checked) { showToast('error','Consent required','Please read and accept the background check and POPIA consent.'); return; }
+    const btn = document.getElementById(`dm-submit-btn-${ctx}`);
+    btn.disabled=true; btn.textContent='Submitting…';
+    try {
+        const application = {
+            uid:currentUser.uid, name, phone, idNumber:idNum, license,
+            vehicleType:selectedVehicleType, vehicleModel:vehicle,
+            licensePlate:plate, city, email:userProfile.email||currentUser.email||'',
+            status:'pending', timestamp:Date.now(), popiaConcsentGiven:true
+        };
+        await set(ref(database,`driverApplications/${currentUser.uid}`),application);
+        showToast('success','Application submitted',"We'll be in touch on your provided number soon.");
+        if(ctx==='mobile') closeDriverModal();
+        else desktopShowProfile();
+        renderDriverStatus(application);
+    } catch(e) {
+        console.error(e);
+        showToast('error','Submission failed',e.message||'Something went wrong.');
+        btn.disabled=false; btn.textContent='Submit application';
+    }
+};
+
+const DRIVER_STATUS_META = {
+    pending:  {icon:'fa-clock',        title:'Application pending',        sub:()=>"We're reviewing your details."},
+    approved: {icon:'fa-circle-check', title:"You're an approved driver",  sub:(a)=>`${a.vehicleType} · ${a.licensePlate}`},
+    rejected: {icon:'fa-circle-xmark', title:'Application not approved',   sub:()=>'Contact support for details.'}
+};
+function renderDriverStatus(app) {
+    ['mobile','sb'].forEach(ctx => {
+        const cta    = document.getElementById(`driver-cta-${ctx}`);
+        const status = document.getElementById(`driver-status-card-${ctx}`);
+        if (!cta||!status) return;
+        if (!app) { cta.style.display='flex'; status.style.display='none'; return; }
+        cta.style.display='none'; status.style.display='flex';
+        status.className=`driver-status-card ${app.status||'pending'}`;
+        const meta=DRIVER_STATUS_META[app.status]||DRIVER_STATUS_META.pending;
+        status.innerHTML=`<div class="driver-status-icon"><i class="fa-solid ${meta.icon}"></i></div>
+            <div class="driver-status-text"><div class="driver-status-title">${meta.title}</div><div class="driver-status-sub">${meta.sub(app)}</div></div>`;
+    });
+}
+async function loadDriverApplication() {
+    if (!currentUser) return;
+    try {
+        const snap = await get(ref(database,`driverApplications/${currentUser.uid}`));
+        renderDriverStatus(snap.exists()?snap.val():null);
+    } catch(e) { renderDriverStatus(null); }
+}
+
+/* ─── Map ─── */
+mapboxgl.accessToken = MAPBOX_TOKEN;
+let map, userMarker, dropoffMarker;
+let mapInitialised = false;
+
+function initMap() {
+    if (mapInitialised) return;
+    mapInitialised = true;
+    const leftOffset = isDesktop() ? 380 : 0;
+    map = new mapboxgl.Map({
+        container:'map', style:'mapbox://styles/mapbox/light-v11',
+        center:[28.0473,-26.2041], zoom:12, attributionControl:false
+    });
+    map.setPadding(isDesktop()
+        ? {top:60,bottom:60,left:60,right:60}
+        : {top:170,bottom:340,left:16,right:16});
+    map.on('load',()=>{
+        if(navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                pos=>{ 
+                    const{longitude:lng,latitude:lat}=pos.coords; 
+                    map.flyTo({center:[lng,lat],zoom:13,duration:1400}); 
+                    placeUserMarker(lng,lat); 
+                    setLocationFromDrag('pickup', lng, lat);
+                },
+                ()=>{
+                    placeUserMarker(28.0473,-26.2041);
+                    setLocationFromDrag('pickup', 28.0473,-26.2041);
+                }
+            );
+        } else {
+            placeUserMarker(28.0473,-26.2041);
+            setLocationFromDrag('pickup', 28.0473,-26.2041);
+        }
+    });
+    setupSearch('pickup','mobile'); setupSearch('dropoff','mobile');
+    setupSearch('pickup','sb');     setupSearch('dropoff','sb');
+    updateSubmitBtn();
+}
+
+async function setLocationFromDrag(type, lng, lat) {
+    try {
+        const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_TOKEN}`);
+        const data = await res.json();
+        
+        if (data.features && data.features.length > 0) {
+            const placeName = data.features[0].place_name;
+
+            // Update Input Fields
+            ['mobile', 'sb'].forEach(ctx => {
+                const inp = document.getElementById(searchInputId(type, ctx));
+                const clr = document.getElementById(searchClearId(type, ctx));
+                if (inp) inp.value = placeName;
+                if (clr) clr.classList.add('visible');
+            });
+
+            selectedCoords[type] = [lng, lat];
+            updateSubmitBtn();
+        }
+    } catch(e) {
+        console.warn('Geocoding failed for drag event', e);
+    }
+}
+
+function buildAvatarEl() {
+    const wrap=document.createElement('div'); wrap.className='user-marker-wrap';
+    const pulse=document.createElement('div'); pulse.className='user-marker-pulse';
+    const av=document.createElement('div'); av.className='user-marker-avatar';
+    if(userProfile.photoURL) {
+        const img=document.createElement('img'); img.src=userProfile.photoURL;
+        img.onerror=()=>{ img.remove(); const sp=document.createElement('span'); sp.className='av-init'; sp.textContent=initials(userProfile.name); av.appendChild(sp); };
+        av.appendChild(img);
+    } else { const sp=document.createElement('span'); sp.className='av-init'; sp.textContent=initials(userProfile.name); av.appendChild(sp); }
+    const caret=document.createElement('div'); caret.className='user-marker-caret';
+    
+    wrap.appendChild(pulse); wrap.appendChild(av); 
+    
+    if(userProfile.isSubscribed) {
+        const badge=document.createElement('div'); badge.className='verified-badge'; badge.innerHTML=VERIFIED_BADGE_SVG;
+        wrap.appendChild(badge);
+    }
+    
+    wrap.appendChild(caret);
+
+    // Make the avatar clickable
+    wrap.addEventListener('click', async (e) => {
+        e.stopPropagation(); // prevent map click from triggering
+        if (!userMarker) return;
+        const lngLat = userMarker.getLngLat();
+        selectedCoords['pickup'] = [lngLat.lng, lngLat.lat];
+        await setLocationFromDrag('pickup', lngLat.lng, lngLat.lat);
+        if(selectedCoords.pickup && selectedCoords.dropoff) { drawRoute(); fitBothMarkers(); }
+    });
+
+    return wrap;
+}
+
+function placeUserMarker(lng,lat) {
+    if(userMarker) {
+        userMarker.setLngLat([lng,lat]);
+    } else {
+        userMarker = new mapboxgl.Marker({
+            element: buildAvatarEl(),
+            anchor: 'bottom',
+            draggable: true
+        }).setLngLat([lng,lat]).addTo(map);
+
+        userMarker.on('dragend', async () => {
+            const ll = userMarker.getLngLat();
+            selectedCoords['pickup'] = [ll.lng, ll.lat];
+            await setLocationFromDrag('pickup', ll.lng, ll.lat);
+            if(selectedCoords.pickup && selectedCoords.dropoff) { drawRoute(); fitBothMarkers(); }
+        });
+    }
+    selectedCoords['pickup'] = [lng, lat];
+}
+function refreshMapMarker() { if(!userMarker) return; const ll=userMarker.getLngLat(); placeUserMarker(ll.lng,ll.lat); }
+
+function buildDestEl(type) {
+    const el=document.createElement('div'); el.className=`dest-marker ${type}`;
+    el.innerHTML='<i class="fa-solid fa-flag-checkered"></i>';
+    return el;
+}
+function placeDestMarker(type,lng,lat) {
+    if(type === 'dropoff') { 
+        if(dropoffMarker) {
+            dropoffMarker.setLngLat([lng,lat]);
+        } else {
+            dropoffMarker = new mapboxgl.Marker({
+                element: buildDestEl('dropoff'),
+                anchor: 'bottom',
+                draggable: true
+            }).setLngLat([lng,lat]).addTo(map);
+
+            dropoffMarker.on('dragend', async () => {
+                const ll = dropoffMarker.getLngLat();
+                selectedCoords['dropoff'] = [ll.lng, ll.lat];
+                await setLocationFromDrag('dropoff', ll.lng, ll.lat);
+                if(selectedCoords.pickup && selectedCoords.dropoff) { drawRoute(); fitBothMarkers(); }
+            });
+        }
+    }
+    if(userMarker && dropoffMarker) { drawRoute(); fitBothMarkers(); }
+}
+
+async function drawRoute() {
+    if (!userMarker || !dropoffMarker) return;
+    const p=userMarker.getLngLat(), d=dropoffMarker.getLngLat();
+    try {
+        const res=await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${p.lng},${p.lat};${d.lng},${d.lat}?geometries=geojson&access_token=${MAPBOX_TOKEN}`);
+        const data=await res.json();
+        if(!data.routes?.[0]) return;
+        const route=data.routes[0];
+        routeDistKm=parseFloat((route.distance/1000).toFixed(1));
+        const mins=Math.ceil(route.duration/60);
+        const timeStr=mins>=60?`${Math.floor(mins/60)}h ${mins%60}m`:`${mins} min`;
+        setRouteBarValues(routeDistKm+' km', timeStr);
+        updateRoutePrice();
+        updateFoodPackageAvailability();
+        document.getElementById('route-bar').classList.add('visible');
+        document.getElementById('sb-route-bar').classList.add('visible');
+        const geojson={type:'Feature',geometry:route.geometry};
+        if(map.getSource('route')) map.getSource('route').setData(geojson);
+        else {
+            map.addSource('route',{type:'geojson',data:geojson});
+            map.addLayer({id:'route',type:'line',source:'route',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#18181b','line-width':4,'line-opacity':0.85}});
+        }
+        updateSubmitBtn();
+    } catch(e) { console.error('Route error',e); }
+}
+function setRouteBarValues(dist, time) {
+    ['route-dist','sb-route-dist'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=dist; });
+    ['route-time','sb-route-time'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=time; });
+}
+function updateRoutePrice() {
+    if(selectedPkg) {
+        const total = calculateTotalPrice();
+        ['route-price','sb-route-price'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=`R${total}`; });
+    }
+}
+function fitBothMarkers() {
+    if (!userMarker || !dropoffMarker) return;
+    const p=userMarker.getLngLat(), d=dropoffMarker.getLngLat();
+    map.fitBounds(new mapboxgl.LngLatBounds([p.lng,p.lat],[d.lng,d.lat]),
+        {padding:isDesktop()?{top:80,bottom:80,left:80,right:80}:{top:200,bottom:360,left:40,right:40},duration:900});
+}
+
+/* ─── Search ─── */
+function searchInputId(type,ctx)  { return ctx==='mobile' ? `input-${type}` : `input-${type}-sb`; }
+function searchSuggId(type,ctx)   { return ctx==='mobile' ? `sugg-${type}`  : `sugg-${type}-sb`; }
+function searchClearId(type,ctx)  { return ctx==='mobile' ? `clear-${type}` : `clear-${type}-sb`; }
+const suggKey = (type,ctx) => `${type}_${ctx}`;
+
+function setupSearch(type, ctx) {
+    const inputEl = document.getElementById(searchInputId(type,ctx));
+    const suggEl  = document.getElementById(searchSuggId(type,ctx));
+    const clearEl = document.getElementById(searchClearId(type,ctx));
+    if(!inputEl) return;
+    inputEl.addEventListener('input',()=>{
+        const q=inputEl.value.trim();
+        clearEl.classList.toggle('visible',q.length>0);
+        if(q.length<2) { suggEl.style.display='none'; return; }
+        clearTimeout(debounceTimers[suggKey(type,ctx)]);
+        debounceTimers[suggKey(type,ctx)]=setTimeout(()=>fetchSuggestions(type,ctx,q),300);
+    });
+    document.addEventListener('click',e=>{ if(!inputEl.contains(e.target)&&!suggEl.contains(e.target)) suggEl.style.display='none'; });
+}
+
+async function fetchSuggestions(type,ctx,q) {
+    try {
+        const res=await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?access_token=${MAPBOX_TOKEN}&autocomplete=true&limit=5&country=ZA`);
+        const data=await res.json();
+        suggFeatures[suggKey(type,ctx)]=data.features||[];
+        renderSuggestions(type,ctx);
+    } catch(e){}
+}
+
+function renderSuggestions(type,ctx) {
+    const suggEl=document.getElementById(searchSuggId(type,ctx));
+    const feats=suggFeatures[suggKey(type,ctx)]||[];
+    if(!feats.length) { suggEl.style.display='none'; return; }
+    suggEl.innerHTML=feats.map((f,i)=>{
+        const name=f.text||f.place_name.split(',')[0];
+        const sub=f.place_name.replace(name+', ','').slice(0,52);
+        return `<div class="suggestion-item" onclick="selectSuggestion('${type}','${ctx}',${i})">
+            <div class="sugg-icon"><i class="fa-solid fa-location-dot"></i></div>
+            <div><div class="sugg-text-main">${name}</div><div class="sugg-text-sub">${sub}</div></div>
+        </div>`;
+    }).join('');
+    suggEl.style.display='block';
+}
+
+window.selectSuggestion = function(type,ctx,idx) {
+    const f=suggFeatures[suggKey(type,ctx)][idx];
+    const [lng,lat]=f.center;
+    
+    ['mobile', 'sb'].forEach(c => {
+        const i = document.getElementById(searchInputId(type, c));
+        const clr = document.getElementById(searchClearId(type, c));
+        if(i) i.value = f.place_name;
+        if(clr) clr.classList.add('visible');
+    });
+    
+    document.getElementById(searchSuggId(type,ctx)).style.display='none';
+    selectedCoords[type]=[lng,lat];
+    
+    if (type === 'pickup') {
+        placeUserMarker(lng, lat);
+    } else {
+        placeDestMarker(type, lng, lat);
+    }
+    
+    updateSubmitBtn();
+    if (selectedCoords.pickup && selectedCoords.dropoff) { drawRoute(); fitBothMarkers(); }
+};
+
+window.clearInput = function(type,ctx) {
+    ['mobile','sb'].forEach(c=>{
+        const inp=document.getElementById(searchInputId(type,c)); if(inp) inp.value='';
+        const clr=document.getElementById(searchClearId(type,c)); if(clr) clr.classList.remove('visible');
+        const sug=document.getElementById(searchSuggId(type,c)); if(sug) sug.style.display='none';
+    });
+    selectedCoords[type]=null;
+    
+    if(type==='dropoff'&&dropoffMarker) { dropoffMarker.remove(); dropoffMarker=null; }
+    // User marker remains explicitly since it doubles as the pickup
+    
+    if(map?.getSource('route')) map.getSource('route').setData({type:'Feature',geometry:{type:'LineString',coordinates:[]}});
+    document.getElementById('route-bar').classList.remove('visible');
+    document.getElementById('sb-route-bar').classList.remove('visible');
+    routeDistKm=0;
+    updateFoodPackageAvailability();
+    updateSubmitBtn();
+};
+
+/* ─── Package selection ─── */
+window.selectPackage = function(el,key,ctx) {
+    if(el.classList.contains('disabled')) return;
+    const meta = PACKAGE_META[key];
+    if(!meta) return;
+    document.querySelectorAll('.pkg-card').forEach(c=>c.classList.remove('active'));
+    ['mobile','sb'].forEach(c=>{ const card=document.getElementById(`pkg-${key}-${c}`); if(card) card.classList.add('active'); });
+    document.querySelectorAll('.pkg-card').forEach(c=>{
+        if(c.querySelector('.pkg-name')&&c.querySelector('.pkg-name').textContent===meta.name) c.classList.add('active');
+    });
+    selectedPkg={key,name:meta.name,base:pkgBasePrices[key]};
+    updateRoutePrice();
+    updateSubmitBtn();
+};
+
+/* ─── Live pricing ─── */
+function renderPackagePrices() {
+    Object.keys(PACKAGE_META).forEach(key=>{
+        const price = pkgBasePrices[key];
+        ['mobile','sb'].forEach(ctx=>{
+            const el=document.getElementById(`pkg-price-${key}-${ctx}`);
+            if(el) el.textContent=`R${price}`;
+        });
+    });
+    if(selectedPkg && selectedPkg.key && pkgBasePrices[selectedPkg.key]!==undefined) {
+        selectedPkg.base = pkgBasePrices[selectedPkg.key];
+        updateRoutePrice();
+        updateSubmitBtn();
+    }
+}
+
+function initPricingListener() {
+    onValue(ref(database,'pricing/packages'), snap => {
+        const val = snap.exists() ? snap.val() : null;
+        if(val) {
+            Object.keys(PACKAGE_META).forEach(key=>{
+                if(typeof val[key]==='number' && val[key]>=0) pkgBasePrices[key]=val[key];
+            });
+        }
+        if(val && typeof val.perKmRate==='number' && val.perKmRate>=0) PER_KM_RATE = val.perKmRate;
+        renderPackagePrices();
+    }, (err)=>console.warn('Pricing listener failed:',err.message));
+}
+
+/* ─── Desktop Scrolling Packages ─── */
+window.scrollPkg = function(direction) {
+    const container = document.getElementById('sb-pkg-scroll');
+    if (!container) return;
+    const jumpDistance = direction === 'left' ? -136 : 136; 
+    container.scrollBy({ left: jumpDistance, behavior: 'smooth' });
+};
+
+const FOOD_MAX_KM = 10;
+function updateFoodPackageAvailability() {
+    ['mobile','sb'].forEach(ctx=>{
+        const card  =document.getElementById(`pkg-food-${ctx}`);
+        const weight=document.getElementById(`pkg-food-weight-${ctx}`);
+        if(!card) return;
+        const tooFar=routeDistKm>FOOD_MAX_KM;
+        card.classList.toggle('disabled',tooFar);
+        if(weight) weight.textContent=tooFar?`Over ${FOOD_MAX_KM}km away`:'Restaurant orders';
+        if(tooFar&&selectedPkg&&selectedPkg.name==='Food Delivery') {
+            card.classList.remove('active'); selectedPkg=null; updateSubmitBtn();
+            showToast('info','Food delivery unavailable',`Pickup and dropoff must be within ${FOOD_MAX_KM}km.`);
+        }
+    });
+}
+
+/* ─── Paystack test note ─── */
+function updatePaystackTestNote(ctx) {
+    const note=document.getElementById(`paystack-test-note-${ctx}`);
+    if(!note) return;
+    if(selectedPayment[ctx]!=='paystack'||!PAYSTACK_PUBLIC_KEY) { note.style.display='none'; return; }
+    if(PAYSTACK_PUBLIC_KEY.startsWith('pk_test_')) {
+        document.getElementById(`paystack-test-tag-${ctx}`).textContent='Test mode';
+        document.getElementById(`paystack-test-msg-${ctx}`).textContent='Sandbox payment — no real charge will be made.';
+        note.style.display='flex';
+    } else { note.style.display='none'; }
+}
+
+/* ─── Cash Handling Modal ─── */
+window.openCashModal = function() {
+    document.getElementById('cash-modal-overlay').classList.add('open');
+};
+window.closeCashModal = function() {
+    document.getElementById('cash-modal-overlay').classList.remove('open');
+};
+window.closeCashModalOnOverlay = function(e) {
+    if(e.target.id === 'cash-modal-overlay') closeCashModal();
+};
+
+/* ─── Payment method ─── */
+window.renderPaymentMethods = function() {
+    ['mobile','sb'].forEach(ctx => {
+        const proBtn = document.getElementById(`pay-pill-pro-${ctx}`);
+        if (proBtn) {
+            const used = userProfile.freeDeliveriesUsed || 0;
+            if (userProfile.isSubscribed && used < 4) {
+                proBtn.classList.remove('hidden');
+                if (!selectedPayment[ctx] || selectedPayment[ctx] === 'cash' || selectedPayment[ctx] === 'paystack') {
+                    selectPaymentMethod('pro', ctx);
+                }
+            } else {
+                proBtn.classList.add('hidden');
+                if (selectedPayment[ctx] === 'pro') {
+                    selectPaymentMethod('paystack', ctx); 
+                }
+            }
+        }
+    });
+};
+
+window.selectPaymentMethod = function(type,ctx) {
+    // Intercept Cash Selection to show physical branch Modal
+    if (type === 'cash') {
+        openCashModal();
+        selectPaymentMethod('paystack', ctx); // Forcefully toggle back to card
+        return;
+    }
+
+    selectedPayment[ctx]=type;
+    ['cash','gpay','paystack','pro'].forEach(p=>{
+        const id=p==='gpay'?`pay-pill-gpay-${ctx}`:p==='pro'?`pay-pill-pro-${ctx}`:`pay-pill-${p}-${ctx}`;
+        const el=document.getElementById(id); if(el) el.classList.remove('active');
+    });
+    
+    const activeId=type==='google_pay'?`pay-pill-gpay-${ctx}`:type==='pro'?`pay-pill-pro-${ctx}`:`pay-pill-paystack-${ctx}`;
+    const activeEl=document.getElementById(activeId); if(activeEl) activeEl.classList.add('active');
+
+    const gpCont=document.getElementById(`gpay-button-container-${ctx}`);
+    const gpNote=document.getElementById(`gpay-test-note-${ctx}`);
+    if(gpCont) gpCont.style.display=type==='google_pay'?'block':'none';
+    if(gpNote) gpNote.style.display=type==='google_pay'?'flex':'none';
+
+    updatePaystackTestNote(ctx);
+    if(type==='google_pay') requestAnimationFrame(()=>setTimeout(()=>ensureGooglePayButton(ctx),50));
+    updateSubmitBtn();
+};
+
+function updateSubmitBtn() {
+    const hp=!!selectedCoords.pickup;
+    const hd=!!selectedCoords.dropoff;
+    const hk=!!selectedPkg;
+    
+    ['mobile','sb'].forEach(ctx=>{
+        const btnId   = ctx==='mobile'?'submitBtn':'submitBtn-sb';
+        const labelId = ctx==='mobile'?'submitLabel':'submitLabel-sb';
+        const btn   = document.getElementById(btnId);
+        const label = document.getElementById(labelId);
+        if(!btn||!label) return;
+        
+        if(!hp||!hd)      { btn.className=ctx==='sb'?'submit-btn-el':''; label.textContent='Set pickup & destination'; btn.disabled=true; }
+        else if(!hk)      { btn.className=ctx==='sb'?'submit-btn-el':''; label.textContent='Select a package size';    btn.disabled=true; }
+        else {
+            const isProFree = (selectedPayment[ctx] === 'pro');
+            const originalTotal = calculateTotalPrice();
+            const total = isProFree ? 0 : originalTotal;
+            
+            btn.className=ctx==='sb'?'submit-btn-el ready':'ready';
+            
+            if(selectedPayment[ctx]==='paystack') {
+                label.innerHTML=`<i class="fa-solid fa-credit-card"></i> Pay R${total} with Paystack`;
+            } else if (isProFree) {
+                label.innerHTML=`<i class="fa-solid fa-gem"></i> Book Free Delivery (Pro)`;
+            } else {
+                label.textContent=`Book ${selectedPkg.name} · R${total}`;
+            }
+            btn.disabled=false;
+        }
+        btn.style.display=selectedPayment[ctx]==='google_pay'?'none':'flex';
+    });
+}
+
+/* ─── Sheet / tab ─── */
+let sheetCollapsed=false;
+window.toggleSheet = ()=>{ sheetCollapsed=!sheetCollapsed; document.getElementById('sheet').classList.toggle('collapsed',sheetCollapsed); };
+window.switchTab = tab=>{ const s=tab==='send'; document.getElementById('view-send').style.display=s?'block':'none'; document.getElementById('view-track').style.display=s?'none':'block'; document.getElementById('tab-send').classList.toggle('active',s); document.getElementById('tab-track').classList.toggle('active',!s); };
+window.sbSwitchTab = tab=>{ const s=tab==='send'; document.getElementById('sb-view-send').style.display=s?'block':'none'; document.getElementById('sb-view-track').style.display=s?'none':'block'; document.getElementById('sb-tab-send').classList.toggle('active',s); document.getElementById('sb-tab-track').classList.toggle('active',!s); };
+
+/* ─── Paystack SDK ─── */
+async function processPaystackPayment(amountRands, email) {
+    return new Promise((resolve, reject) => {
+        if (!PAYSTACK_PUBLIC_KEY) {
+            reject(new Error('Paystack key not loaded. Please try again.')); 
+            return;
+        }
+        if (typeof PaystackPop === 'undefined') {
+            reject(new Error('Paystack SDK not loaded. Please check your connection and refresh.')); 
+            return;
+        }
+
+        const handler = PaystackPop.setup({
+            key: PAYSTACK_PUBLIC_KEY,
+            email: email,
+            amount: amountRands * 100,
+            currency: 'ZAR',
+            ref: 'CG-' + Math.floor(Math.random() * 1000000000),
+            callback: function(response) {
+                resolve({
+                    token: response.reference,
+                    testMode: PAYSTACK_PUBLIC_KEY.startsWith('pk_test_')
+                });
+            },
+            onClose: function() {
+                reject({ cancelled: true });
+            }
+        });
+        handler.openIframe();
+    });
+}
+
+/* ─── Booking ─── */
+async function doBookOrder(paymentMeta) {
+    let succeeded=false;
+    const ctx = isDesktop()?'sb':'mobile';
+    const pickupInput  = document.getElementById(ctx==='sb'?'input-pickup-sb':'input-pickup');
+    const dropoffInput = document.getElementById(ctx==='sb'?'input-dropoff-sb':'input-dropoff');
+    try {
+        const orderId="CG-"+Math.floor(1000+Math.random()*9000);
+        const isProFree = paymentMeta.method === 'pro';
+        const originalTotal = calculateTotalPrice();
+        const totalToCharge = isProFree ? 0 : originalTotal;
+        
+        const pickup  = pickupInput ? pickupInput.value : '';
+        const dropoff = dropoffInput? dropoffInput.value: '';
+        const payload={
+            orderNumber:orderId, userId:currentUser.uid,
+            customerName:userProfile.name||currentUser.displayName||'User',
+            customerEmail:userProfile.email||currentUser.email||'',
+            customerPhoneNumber:userProfile.phone||'Not provided',
+            customerAddress:dropoff, restaurantName:"Pace Parcels Dispatch", restaurantAddress:pickup,
+            orderItem:[{name:selectedPkg.name,unitPrice:totalToCharge,quantity:1}],
+            totalOrderCost:totalToCharge, distanceKm:routeDistKm,
+            pickupCoords:selectedCoords.pickup, dropoffCoords:selectedCoords.dropoff,
+            status:'placed', paymentMethod:paymentMeta.method,
+            paymentToken:paymentMeta.token||null, paymentTestMode:!!paymentMeta.testMode,
+            timestamp:Date.now()
+        };
+        
+        await set(push(ref(database,'orders')),payload);
+        const sdRes=await fetch("https://api.shipday.com/orders",{method:"POST",headers:{"Authorization":`Basic ${SHIPDAY_KEY}`,"Content-Type":"application/json"},body:JSON.stringify(payload)});
+        if(!sdRes.ok) throw new Error("Shipday:"+sdRes.status);
+        
+        if (isProFree) {
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            userProfile.freeDeliveriesUsed = (userProfile.freeDeliveriesUsed || 0) + 1;
+            userProfile.lastDeliveryMonth = currentMonth;
+            await update(ref(database,`users/${currentUser.uid}`), {
+                freeDeliveriesUsed: userProfile.freeDeliveriesUsed,
+                lastDeliveryMonth: currentMonth
+            });
+            renderProfileUI();
+            renderPaymentMethods();
+        }
+
+        showToast('success',`Order ${orderId} confirmed!`,`${selectedPkg.name} · ${(pickup||'').split(',')[0]} → ${(dropoff||'').split(',')[0]}`);
+        if(!userProfile.phone) setTimeout(()=>showToast('info','Add your phone number','Open your profile to add a contact number for the driver.'),1500);
+        succeeded=true;
+    } catch(e) {
+        console.error(e);
+        if(e.message&&e.message.startsWith('Shipday')) { showToast('info','Order saved','Dispatch sync pending — our team will follow up.'); succeeded=true; }
+        else showToast('error','Booking failed',e.message||'Something went wrong.');
+    } finally {
+        if(succeeded) resetBookingForm();
+        else updateSubmitBtn();
+    }
+    return succeeded;
+}
+
+window.confirmBooking = async function() {
+    if(!selectedPkg||!selectedCoords.pickup||!selectedCoords.dropoff) return;
+    if(!currentUser) { showToast('error','Not signed in','Please sign in first.'); return; }
+    const ctx=isDesktop()?'sb':'mobile';
+    const btn   = document.getElementById(ctx==='sb'?'submitBtn-sb':'submitBtn');
+    const label = document.getElementById(ctx==='sb'?'submitLabel-sb':'submitLabel');
+    
+    if(selectedPayment[ctx]==='pro') {
+        label.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
+        btn.disabled=true;
+        await doBookOrder({method:'pro', testMode:false});
+        return;
+    }
+    
+    if(selectedPayment[ctx]==='paystack') {
+        const total = calculateTotalPrice();
+        try {
+            const mobileSearchCard = document.getElementById('top-bar');
+            if (mobileSearchCard && ctx === 'mobile') mobileSearchCard.style.display = 'none';
+
+            const paystackCloseWatcher = setInterval(() => {
+                const isPaystackOpen = document.querySelector('iframe[name="paystack-checkout"]');
+                if (!isPaystackOpen) {
+                    if (mobileSearchCard && ctx === 'mobile') mobileSearchCard.style.display = '';
+                    clearInterval(paystackCloseWatcher);
+                }
+            }, 500);
+
+            const userEmail = userProfile.email || currentUser.email || 'customer@pacelogistics.co.za';
+            const payResult = await processPaystackPayment(total, userEmail);
+            
+            label.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
+            btn.disabled=true;
+            showToast('success','Card authorised','Completing your booking…');
+            await doBookOrder({method:'paystack',token:payResult.token,testMode:payResult.testMode});
+        } catch(err) { 
+            if(err&&err.cancelled) return; 
+            showToast('error','Payment failed',err.message||'Could not complete Paystack payment.'); 
+        }
+        return;
+    }
+}
+
+function resetBookingForm() {
+    clearInput('pickup','mobile'); clearInput('dropoff','mobile');
+    document.querySelectorAll('.pkg-card').forEach(c=>c.classList.remove('active'));
+    selectedPkg=null; routeDistKm=0;
+    setRouteBarValues('—','—');
+    ['route-price','sb-route-price'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='—';});
+    
+    ['mobile','sb'].forEach(ctx => {
+        if (userProfile.isSubscribed && (userProfile.freeDeliveriesUsed || 0) < 4) {
+            selectPaymentMethod('pro', ctx);
+        } else {
+            selectPaymentMethod('paystack', ctx);
+        }
+    });
+    updateSubmitBtn();
+}
+
+/* ─── Google Pay ─── */
+let googlePayClient=null, gpayAvailable=false;
+const gpayBaseCardMethod={type:'CARD',parameters:{allowedAuthMethods:['PAN_ONLY','CRYPTOGRAM_3DS'],allowedCardNetworks:['VISA','MASTERCARD']}};
+const gpayCardMethod={...gpayBaseCardMethod,tokenizationSpecification:{type:'PAYMENT_GATEWAY',parameters:{gateway:'example',gatewayMerchantId:'exampleGatewayMerchantId'}}};
+function gpayPaymentDataRequest(amountZAR) {
+    return {apiVersion:2,apiVersionMinor:0,allowedPaymentMethods:[gpayCardMethod],merchantInfo:{merchantName:'Pace Logistics (Test)'},transactionInfo:{countryCode:'ZA',currencyCode:'ZAR',totalPriceStatus:'FINAL',totalPrice:amountZAR.toFixed(2)}};
+}
+function waitForGooglePayScript() {
+    return new Promise(resolve=>{ if(window.google&&window.google.payments) return resolve(); window.addEventListener('gpayready',()=>resolve(),{once:true}); setTimeout(()=>{if(window.google&&window.google.payments)resolve();},1500); });
+}
+async function initGooglePay() {
+    await waitForGooglePayScript();
+    if(!window.google||!window.google.payments) return;
+    googlePayClient=new google.payments.api.PaymentsClient({environment:'TEST'});
+    try { const r=await googlePayClient.isReadyToPay({apiVersion:2,apiVersionMinor:0,allowedPaymentMethods:[gpayBaseCardMethod]}); gpayAvailable=!!r.result; } catch(e){gpayAvailable=false;}
+    if(gpayAvailable) { ['pay-pill-gpay-mobile','pay-pill-gpay-sb'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('hidden');}); }
+}
+
+let gpayButtonCreated={mobile:false,sb:false};
+function ensureGooglePayButton(ctx) {
+    if(gpayButtonCreated[ctx] || !gpayAvailable || !googlePayClient) return;
+    gpayButtonCreated[ctx] = true;
+    
+    const btn = googlePayClient.createButton({
+        onClick: onGooglePayButtonClicked,
+        buttonColor: 'black',
+        buttonType: 'pay',
+        buttonSizeMode: 'fill',
+        buttonRadius: 14
+    });
+    
+    const cont = document.getElementById(`gpay-button-container-${ctx}`);
+    if(cont) {
+        cont.innerHTML = ''; /* Ensures no duplicates are added */
+        cont.appendChild(btn);
+    }
+}
+
+async function onGooglePayButtonClicked() {
+    if(!currentUser){showToast('error','Not signed in','Please sign in first.');return;}
+    if(!selectedPkg||!selectedCoords.pickup||!selectedCoords.dropoff){showToast('error','Trip details missing','Set pickup, destination and package size first.');return;}
+    const total = calculateTotalPrice();
+    try {
+        const pd=await googlePayClient.loadPaymentData(gpayPaymentDataRequest(total));
+        showToast('success','Test payment captured','Google Pay sandbox — no real charge was made.');
+        await doBookOrder({method:'google_pay',testMode:true});
+    } catch(err){ if(err&&err.statusCode==='CANCELED') return; showToast('error','Google Pay failed','Could not complete the test payment.'); }
+}
+
+renderPackagePrices();
+initPricingListener();
+initGooglePay();
+setTimeout(hideSplash,3000);
+</script>
+</body>
+</html>
