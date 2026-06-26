@@ -366,6 +366,43 @@
         }
         #cash-modal-overlay.open #cash-modal { transform: translateY(0); }
 
+        /* ── Payment Options Sheet ── */
+        #payment-sheet-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+            z-index: 500; opacity: 0; pointer-events: none;
+            transition: opacity 0.25s; backdrop-filter: blur(3px);
+            display: flex; align-items: flex-end; justify-content: center;
+        }
+        #payment-sheet-overlay.open { opacity: 1; pointer-events: auto; }
+
+        #payment-sheet {
+            width: 100%; max-width: 420px;
+            background: #fff; border-radius: 24px 24px 0 0;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.32,0,0.67,0);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+        #payment-sheet-overlay.open #payment-sheet { transform: translateY(0); }
+
+        .payment-option-btn {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px; border: 2px solid #e4e4e7; border-radius: 14px;
+            margin-bottom: 12px; cursor: pointer; transition: all 0.15s;
+            background: #fff; text-align: left;
+        }
+        .payment-option-btn:hover, .payment-option-btn.active {
+            border-color: #18181b; background: #fafafa;
+        }
+        .payment-option-left { display: flex; align-items: center; gap: 14px; }
+        .payment-option-icon {
+            width: 42px; height: 42px; border-radius: 10px;
+            background: #f4f4f5; display: flex; align-items: center; justify-content: center;
+            font-size: 16px; color: #18181b; flex-shrink: 0;
+        }
+        .payment-option-text { font-size: 13.5px; font-weight: 700; color: #18181b; }
+        .payment-option-sub { font-size: 11px; color: #71717a; margin-top: 2px; }
+
         /* ════════════════════════════════════════
            DESKTOP LAYOUT (≥ 768px)
         ════════════════════════════════════════ */
@@ -815,24 +852,16 @@
         .pay-pill i { font-size: 15px; }
         .pay-pill.active { border-color: #18181b; background: #fafafa; color: #18181b; }
 
-        .paystack-test-note {
-            display: none; align-items: center; gap: 7px;
-            font-size: 10.5px; color: #a1a1aa; font-weight: 500;
-            margin: -2px 0 10px; padding-left: 1px;
-        }
-        .paystack-test-note .test-tag {
-            font-size: 8.5px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase;
-            background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 5px;
-        }
-        .gpay-test-note {
+        .paystack-test-note, .gpay-test-note {
             display: flex; align-items: center; gap: 7px;
             font-size: 10.5px; color: #a1a1aa; font-weight: 500;
-            margin: -2px 0 10px; padding-left: 1px;
         }
-        .gpay-test-note .test-tag {
+        .paystack-test-note .test-tag, .gpay-test-note .test-tag {
             font-size: 8.5px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase;
-            background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 5px;
+            padding: 2px 6px; border-radius: 5px;
         }
+        .paystack-test-note .test-tag { background: #fef3c7; color: #92400e; }
+        .gpay-test-note .test-tag { background: #eff6ff; color: #1d4ed8; }
 
         /* Sidebar divider */
         .sb-divider { height: 1px; background: #f1f1f4; margin: 16px -20px; }
@@ -1003,18 +1032,15 @@
                 <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-large-mobile">R180</span></div>
             </div>
         </div>
+        
         <div class="section-hd" style="margin-bottom:10px;"><h2>Payment method</h2></div>
         <div class="pay-method-row">
             <button class="pay-pill" id="pay-pill-cash-mobile" onclick="selectPaymentMethod('cash','mobile')">
                 <i class="fa-solid fa-money-bill-wave"></i>Cash
             </button>
-            <button class="pay-pill active" id="pay-pill-paystack-mobile" onclick="selectPaymentMethod('paystack','mobile')">
-                <i class="fa-solid fa-credit-card"></i> Card
+            <button class="pay-pill active" id="pay-pill-card-mobile" onclick="openPaymentSheet('mobile')">
+                <i class="fa-solid fa-credit-card"></i> Card (Paystack)
             </button>
-        </div>
-        <div class="paystack-test-note" id="paystack-test-note-mobile">
-            <span class="test-tag" id="paystack-test-tag-mobile">Test mode</span>
-            <span id="paystack-test-msg-mobile">Sandbox payment — no real charge will be made.</span>
         </div>
         
         <div class="voucher-row">
@@ -1026,9 +1052,6 @@
             <span id="submitLabel">Set pickup &amp; destination</span>
         </button>
 
-        <div class="gpay-test-note" id="gpay-test-note-mobile" style="display:none; margin-top: 14px;">
-            <span class="test-tag">Test mode</span> Sandbox payment — no real charge will be made.
-        </div>
         <div id="gpay-button-container-mobile" style="display:none; width: 100%; margin-top: 8px;"></div>
     </div>
     <div id="view-track" style="display:none;">
@@ -1103,6 +1126,47 @@
         </div>
         <div class="dm-footer">
             <button class="dm-submit" onclick="closeCashModal()">Understood</button>
+        </div>
+    </div>
+</div>
+
+<div id="payment-sheet-overlay" onclick="closePaymentSheetOnOverlay(event)">
+    <div id="payment-sheet" onclick="event.stopPropagation()">
+        <div class="dm-header">
+            <div>
+                <div class="dm-title">Digital Payment Options</div>
+                <div class="dm-sub">Choose your preferred online checkout method</div>
+            </div>
+            <button class="dm-close" onclick="closePaymentSheet()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="dm-body" style="padding: 24px 20px;">
+            <div class="payment-option-btn active" id="opt-paystack" onclick="setDigitalPaymentMethod('paystack')">
+                <div class="payment-option-left">
+                    <div class="payment-option-icon"><i class="fa-solid fa-credit-card"></i></div>
+                    <div>
+                        <div class="payment-option-text">Credit / Debit Card</div>
+                        <div class="payment-option-sub">Securely powered by Paystack</div>
+                        <div class="paystack-test-note" style="display:none; margin-top: 6px;">
+                            <span class="test-tag">Test mode</span> <span style="font-size:10.5px;">Sandbox payment</span>
+                        </div>
+                    </div>
+                </div>
+                <i class="fa-solid fa-circle-check" id="check-paystack" style="color:#18181b; font-size:18px;"></i>
+            </div>
+
+            <div class="payment-option-btn" id="opt-gpay" onclick="setDigitalPaymentMethod('gpay')">
+                <div class="payment-option-left">
+                    <div class="payment-option-icon"><i class="fa-brands fa-google-pay" style="font-size:26px;"></i></div>
+                    <div>
+                        <div class="payment-option-text">Google Pay</div>
+                        <div class="payment-option-sub">Fast, seamless, and secure</div>
+                        <div class="gpay-test-note" style="display:none; margin-top: 6px;">
+                            <span class="test-tag">Test mode</span> <span style="font-size:10.5px;">Sandbox payment</span>
+                        </div>
+                    </div>
+                </div>
+                <i class="fa-solid fa-circle-check" id="check-gpay" style="color:#18181b; font-size:18px; display:none;"></i>
+            </div>
         </div>
     </div>
 </div>
@@ -1192,18 +1256,15 @@
                     <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-large-sb">R180</span></div>
                 </div>
             </div>
+
             <div class="section-hd" style="margin-bottom:10px;"><h2>Payment method</h2></div>
             <div class="pay-method-row">
                 <button class="pay-pill" id="pay-pill-cash-sb" onclick="selectPaymentMethod('cash','sb')">
                     <i class="fa-solid fa-money-bill-wave"></i>Cash
                 </button>
-                <button class="pay-pill active" id="pay-pill-paystack-sb" onclick="selectPaymentMethod('paystack','sb')">
-                    <i class="fa-solid fa-credit-card"></i> Card
+                <button class="pay-pill active" id="pay-pill-card-sb" onclick="openPaymentSheet('sb')">
+                    <i class="fa-solid fa-credit-card"></i> Card (Paystack)
                 </button>
-            </div>
-            <div class="paystack-test-note" id="paystack-test-note-sb">
-                <span class="test-tag" id="paystack-test-tag-sb">Test mode</span>
-                <span id="paystack-test-msg-sb">Sandbox payment — no real charge will be made.</span>
             </div>
             
             <div class="voucher-row">
@@ -1215,9 +1276,6 @@
                 <span id="submitLabel-sb">Set pickup &amp; destination</span>
             </button>
 
-            <div class="gpay-test-note" id="gpay-test-note-sb" style="display:none; margin-top: 14px;">
-                <span class="test-tag">Test mode</span> Sandbox payment — no real charge will be made.
-            </div>
             <div id="gpay-button-container-sb" class="gpay-btn-container-el" style="display:none; width: 100%; margin-top: 8px;"></div>
         </div>
 
@@ -1531,7 +1589,7 @@ function renderProfileUI() {
         if(dmn) dmn.value = userProfile.name||'';
         if(dmp) dmp.value = userProfile.phone||'';
     });
-    if(userMarker) refreshMapMarker();
+    if(typeof userMarker !== 'undefined' && userMarker) refreshMapMarker();
 }
 
 function checkPhoneWarning() {
@@ -1794,11 +1852,13 @@ window.submitDriverApplication = async function(ctx) {
     const plate   = g('dm-plate');
     const city    = g('dm-city');
     const consent = document.getElementById(`dm-consent-${ctx}`);
+    
     if (!selectedVehicleType) { showToast('error','Select a vehicle type','Choose Bakkie or Motorbike.'); return; }
     if (!name||!phone||!idNum||!license||!vehicle||!plate||!city) { showToast('error','Missing details','Please fill in every field.'); return; }
     if (!consent||!consent.checked) { showToast('error','Consent required','Please read and accept the background check and POPIA consent.'); return; }
     const btn = document.getElementById(`dm-submit-btn-${ctx}`);
     btn.disabled=true; btn.textContent='Submitting…';
+    
     try {
         const application = {
             uid:currentUser.uid, name, phone, idNumber:idNum, license,
@@ -1842,6 +1902,128 @@ async function loadDriverApplication() {
         const snap = await get(ref(database,`driverApplications/${currentUser.uid}`));
         renderDriverStatus(snap.exists()?snap.val():null);
     } catch(e) { renderDriverStatus(null); }
+}
+
+/* ─── Payment Methods logic ─── */
+let activeCtxForPayment = 'mobile';
+
+window.openPaymentSheet = function(ctx) {
+    activeCtxForPayment = ctx;
+    document.getElementById('payment-sheet-overlay').classList.add('open');
+    updatePaymentSheetUI(selectedPayment[ctx]);
+};
+
+window.closePaymentSheet = function() {
+    document.getElementById('payment-sheet-overlay').classList.remove('open');
+};
+
+window.closePaymentSheetOnOverlay = function(e) {
+    if (e.target.id === 'payment-sheet-overlay') closePaymentSheet();
+};
+
+window.setDigitalPaymentMethod = function(method) {
+    updatePaymentSheetUI(method);
+    selectPaymentMethod(method, activeCtxForPayment);
+    setTimeout(() => { closePaymentSheet(); }, 250);
+};
+
+function updatePaymentSheetUI(method) {
+    const isPaystack = method === 'paystack';
+    const isGPay = method === 'gpay';
+
+    const optPaystack = document.getElementById('opt-paystack');
+    const optGPay = document.getElementById('opt-gpay');
+    
+    if(optPaystack) {
+        optPaystack.classList.toggle('active', isPaystack);
+        document.getElementById('check-paystack').style.display = isPaystack ? 'block' : 'none';
+    }
+    if(optGPay) {
+        optGPay.classList.toggle('active', isGPay);
+        document.getElementById('check-gpay').style.display = isGPay ? 'block' : 'none';
+    }
+}
+
+window.selectPaymentMethod = function(method, ctx) {
+    if (method === 'cash') {
+        openCashModal();
+        selectPaymentMethod('paystack', ctx);
+        return;
+    }
+
+    selectedPayment[ctx] = method;
+    const cashPill = document.getElementById(`pay-pill-cash-${ctx}`);
+    const cardPill = document.getElementById(`pay-pill-card-${ctx}`);
+    
+    if(cashPill) cashPill.classList.remove('active');
+    if(cardPill) {
+        cardPill.classList.add('active');
+        if (method === 'paystack') {
+            cardPill.innerHTML = '<i class="fa-solid fa-credit-card"></i> Card (Paystack)';
+        } else if (method === 'gpay') {
+            cardPill.innerHTML = '<i class="fa-brands fa-google-pay" style="font-size:22px;"></i> Google Pay';
+        }
+    }
+
+    updatePaystackTestNote(ctx);
+    updateSubmitBtn();
+};
+
+window.updatePaystackTestNote = function(ctx) {
+    const notes = document.querySelectorAll('.paystack-test-note');
+    notes.forEach(el => el.style.display = 'none');
+    if(selectedPayment[ctx] === 'paystack' && PAYSTACK_PUBLIC_KEY && PAYSTACK_PUBLIC_KEY.startsWith('pk_test_')) {
+        const note = document.getElementById(`paystack-test-note-${ctx}`);
+        if(note) note.style.display = 'flex';
+    }
+};
+
+function updateSubmitBtn() {
+    const hp=!!selectedCoords.pickup;
+    const hd=!!selectedCoords.dropoff;
+    const hk=!!selectedPkg;
+    
+    ['mobile','sb'].forEach(ctx=>{
+        const btnId   = ctx==='mobile'?'submitBtn':'submitBtn-sb';
+        const labelId = ctx==='mobile'?'submitLabel':'submitLabel-sb';
+        const btn   = document.getElementById(btnId);
+        const label = document.getElementById(labelId);
+        const gpayCont = document.getElementById(`gpay-button-container-${ctx}`);
+        
+        if(!btn||!label) return;
+        
+        if(!hp||!hd) { 
+            btn.className=ctx==='sb'?'submit-btn-el':''; label.textContent='Set pickup & destination'; btn.disabled=true; 
+            btn.style.display = 'flex'; if(gpayCont) gpayCont.style.display = 'none';
+        }
+        else if(!hk) { 
+            btn.className=ctx==='sb'?'submit-btn-el':''; label.textContent='Select a package size'; btn.disabled=true; 
+            btn.style.display = 'flex'; if(gpayCont) gpayCont.style.display = 'none';
+        }
+        else {
+            let total = calculateTotalPrice();
+            let discount = appliedVoucherDiscount[ctx] || 0;
+            total = Math.max(0, total - discount);
+            
+            btn.className=ctx==='sb'?'submit-btn-el ready':'ready';
+            
+            if(selectedPayment[ctx]==='paystack') {
+                label.innerHTML=`<i class="fa-solid fa-credit-card"></i> Pay R${total} with Paystack`;
+                btn.style.display = 'flex';
+                if(gpayCont) gpayCont.style.display = 'none';
+            } else if (selectedPayment[ctx]==='gpay') {
+                btn.style.display = 'none';
+                if(gpayCont) gpayCont.style.display = 'block';
+            } else {
+                label.textContent=`Book ${selectedPkg.name} · R${total}`;
+                btn.style.display = 'flex';
+                if(gpayCont) gpayCont.style.display = 'none';
+            }
+            btn.disabled=false;
+            
+            ['route-price','sb-route-price'].forEach(id=>{ const routeEl=document.getElementById(id); if(routeEl) routeEl.textContent=`R${total}`; });
+        }
+    });
 }
 
 /* ─── Map ─── */
@@ -1891,21 +2073,16 @@ async function setLocationFromDrag(type, lng, lat) {
         
         if (data.features && data.features.length > 0) {
             const placeName = data.features[0].place_name;
-
-            // Update Input Fields
             ['mobile', 'sb'].forEach(ctx => {
                 const inp = document.getElementById(searchInputId(type, ctx));
                 const clr = document.getElementById(searchClearId(type, ctx));
                 if (inp) inp.value = placeName;
                 if (clr) clr.classList.add('visible');
             });
-
             selectedCoords[type] = [lng, lat];
             updateSubmitBtn();
         }
-    } catch(e) {
-        console.warn('Geocoding failed for drag event', e);
-    }
+    } catch(e) { console.warn('Geocoding failed for drag event', e); }
 }
 
 function buildAvatarEl() {
@@ -1919,19 +2096,16 @@ function buildAvatarEl() {
     } else { const sp=document.createElement('span'); sp.className='av-init'; sp.textContent=initials(userProfile.name); av.appendChild(sp); }
     const caret=document.createElement('div'); caret.className='user-marker-caret';
     
-    wrap.appendChild(pulse); wrap.appendChild(av); 
-    wrap.appendChild(caret);
+    wrap.appendChild(pulse); wrap.appendChild(av); wrap.appendChild(caret);
 
-    // Make the avatar clickable
     wrap.addEventListener('click', async (e) => {
-        e.stopPropagation(); // prevent map click from triggering
+        e.stopPropagation();
         if (!userMarker) return;
         const lngLat = userMarker.getLngLat();
         selectedCoords['pickup'] = [lngLat.lng, lngLat.lat];
         await setLocationFromDrag('pickup', lngLat.lng, lngLat.lat);
         if(selectedCoords.pickup && selectedCoords.dropoff) { drawRoute(); fitBothMarkers(); }
     });
-
     return wrap;
 }
 
@@ -1939,12 +2113,7 @@ function placeUserMarker(lng,lat) {
     if(userMarker) {
         userMarker.setLngLat([lng,lat]);
     } else {
-        userMarker = new mapboxgl.Marker({
-            element: buildAvatarEl(),
-            anchor: 'bottom',
-            draggable: true
-        }).setLngLat([lng,lat]).addTo(map);
-
+        userMarker = new mapboxgl.Marker({ element: buildAvatarEl(), anchor: 'bottom', draggable: true }).setLngLat([lng,lat]).addTo(map);
         userMarker.on('dragend', async () => {
             const ll = userMarker.getLngLat();
             selectedCoords['pickup'] = [ll.lng, ll.lat];
@@ -1954,6 +2123,7 @@ function placeUserMarker(lng,lat) {
     }
     selectedCoords['pickup'] = [lng, lat];
 }
+
 function refreshMapMarker() { if(!userMarker) return; const ll=userMarker.getLngLat(); placeUserMarker(ll.lng,ll.lat); }
 
 function buildDestEl(type) {
@@ -1961,17 +2131,13 @@ function buildDestEl(type) {
     el.innerHTML='<i class="fa-solid fa-flag-checkered"></i>';
     return el;
 }
+
 function placeDestMarker(type,lng,lat) {
     if(type === 'dropoff') { 
         if(dropoffMarker) {
             dropoffMarker.setLngLat([lng,lat]);
         } else {
-            dropoffMarker = new mapboxgl.Marker({
-                element: buildDestEl('dropoff'),
-                anchor: 'bottom',
-                draggable: true
-            }).setLngLat([lng,lat]).addTo(map);
-
+            dropoffMarker = new mapboxgl.Marker({ element: buildDestEl('dropoff'), anchor: 'bottom', draggable: true }).setLngLat([lng,lat]).addTo(map);
             dropoffMarker.on('dragend', async () => {
                 const ll = dropoffMarker.getLngLat();
                 selectedCoords['dropoff'] = [ll.lng, ll.lat];
@@ -2008,15 +2174,14 @@ async function drawRoute() {
         updateSubmitBtn();
     } catch(e) { console.error('Route error',e); }
 }
+
 function setRouteBarValues(dist, time) {
     ['route-dist','sb-route-dist'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=dist; });
     ['route-time','sb-route-time'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=time; });
 }
-function updateRoutePrice() {
-    if(selectedPkg) {
-        updateSubmitBtn();
-    }
-}
+
+function updateRoutePrice() { if(selectedPkg) updateSubmitBtn(); }
+
 function fitBothMarkers() {
     if (!userMarker || !dropoffMarker) return;
     const p=userMarker.getLngLat(), d=dropoffMarker.getLngLat();
@@ -2083,11 +2248,8 @@ window.selectSuggestion = function(type,ctx,idx) {
     document.getElementById(searchSuggId(type,ctx)).style.display='none';
     selectedCoords[type]=[lng,lat];
     
-    if (type === 'pickup') {
-        placeUserMarker(lng, lat);
-    } else {
-        placeDestMarker(type, lng, lat);
-    }
+    if (type === 'pickup') placeUserMarker(lng, lat);
+    else placeDestMarker(type, lng, lat);
     
     updateSubmitBtn();
     if (selectedCoords.pickup && selectedCoords.dropoff) { drawRoute(); fitBothMarkers(); }
@@ -2102,7 +2264,6 @@ window.clearInput = function(type,ctx) {
     selectedCoords[type]=null;
     
     if(type==='dropoff'&&dropoffMarker) { dropoffMarker.remove(); dropoffMarker=null; }
-    // User marker remains explicitly since it doubles as the pickup
     
     if(map?.getSource('route')) map.getSource('route').setData({type:'Feature',geometry:{type:'LineString',coordinates:[]}});
     document.getElementById('route-bar').classList.remove('visible');
@@ -2156,7 +2317,6 @@ function initPricingListener() {
     }, (err)=>console.warn('Pricing listener failed:',err.message));
 }
 
-/* ─── Desktop Scrolling Packages ─── */
 window.scrollPkg = function(direction) {
     const container = document.getElementById('sb-pkg-scroll');
     if (!container) return;
@@ -2180,18 +2340,6 @@ function updateFoodPackageAvailability() {
     });
 }
 
-/* ─── Paystack test note ─── */
-function updatePaystackTestNote(ctx) {
-    const note=document.getElementById(`paystack-test-note-${ctx}`);
-    if(!note) return;
-    if(selectedPayment[ctx]!=='paystack'||!PAYSTACK_PUBLIC_KEY) { note.style.display='none'; return; }
-    if(PAYSTACK_PUBLIC_KEY.startsWith('pk_test_')) {
-        document.getElementById(`paystack-test-tag-${ctx}`).textContent='Test mode';
-        document.getElementById(`paystack-test-msg-${ctx}`).textContent='Sandbox payment — no real charge will be made.';
-        note.style.display='flex';
-    } else { note.style.display='none'; }
-}
-
 /* ─── Voucher Handling ─── */
 window.applyVoucher = function(ctx) {
     const input = document.getElementById(`voucher-code-${ctx}`);
@@ -2200,7 +2348,6 @@ window.applyVoucher = function(ctx) {
     
     if(!code) return;
     
-    // Using a simple mock valid code "FREE50" to apply R50 discount
     if (code === 'FREE50' || code === 'PACE') {
         const discount = 50;
         appliedVoucherDiscount.mobile = discount;
@@ -2209,86 +2356,13 @@ window.applyVoucher = function(ctx) {
         ['mobile', 'sb'].forEach(c => {
             const b = document.getElementById(`voucher-btn-${c}`);
             const i = document.getElementById(`voucher-code-${c}`);
-            if(b) {
-                b.innerHTML = '<i class="fa-solid fa-check"></i> Applied';
-                b.style.background = '#15803d';
-            }
+            if(b) { b.innerHTML = '<i class="fa-solid fa-check"></i> Applied'; b.style.background = '#15803d'; }
             if(i) i.disabled = true;
         });
-        
         showToast('success', 'Voucher applied', `R${discount} off your delivery.`);
         updateSubmitBtn();
-    } else {
-        showToast('error', 'Invalid voucher', 'The code you entered is not valid.');
-    }
+    } else { showToast('error', 'Invalid voucher', 'The code you entered is not valid.'); }
 };
-
-/* ─── Cash Handling Modal ─── */
-window.openCashModal = function() {
-    document.getElementById('cash-modal-overlay').classList.add('open');
-};
-window.closeCashModal = function() {
-    document.getElementById('cash-modal-overlay').classList.remove('open');
-};
-window.closeCashModalOnOverlay = function(e) {
-    if(e.target.id === 'cash-modal-overlay') closeCashModal();
-};
-
-/* ─── Payment method ─── */
-window.selectPaymentMethod = function(type,ctx) {
-    // Intercept Cash Selection to show physical branch Modal
-    if (type === 'cash') {
-        openCashModal();
-        selectPaymentMethod('paystack', ctx); // Forcefully toggle back to card
-        return;
-    }
-
-    selectedPayment[ctx]=type;
-    ['cash','paystack'].forEach(p=>{
-        const id=`pay-pill-${p}-${ctx}`;
-        const el=document.getElementById(id); if(el) el.classList.remove('active');
-    });
-    
-    const activeId=`pay-pill-paystack-${ctx}`;
-    const activeEl=document.getElementById(activeId); if(activeEl) activeEl.classList.add('active');
-
-    updatePaystackTestNote(ctx);
-    updateSubmitBtn();
-};
-
-function updateSubmitBtn() {
-    const hp=!!selectedCoords.pickup;
-    const hd=!!selectedCoords.dropoff;
-    const hk=!!selectedPkg;
-    
-    ['mobile','sb'].forEach(ctx=>{
-        const btnId   = ctx==='mobile'?'submitBtn':'submitBtn-sb';
-        const labelId = ctx==='mobile'?'submitLabel':'submitLabel-sb';
-        const btn   = document.getElementById(btnId);
-        const label = document.getElementById(labelId);
-        if(!btn||!label) return;
-        
-        if(!hp||!hd)      { btn.className=ctx==='sb'?'submit-btn-el':''; label.textContent='Set pickup & destination'; btn.disabled=true; }
-        else if(!hk)      { btn.className=ctx==='sb'?'submit-btn-el':''; label.textContent='Select a package size';    btn.disabled=true; }
-        else {
-            let total = calculateTotalPrice();
-            let discount = appliedVoucherDiscount[ctx] || 0;
-            total = Math.max(0, total - discount); // Ensure total doesn't drop below 0
-            
-            btn.className=ctx==='sb'?'submit-btn-el ready':'ready';
-            
-            if(selectedPayment[ctx]==='paystack') {
-                label.innerHTML=`<i class="fa-solid fa-credit-card"></i> Pay R${total} with Paystack`;
-            } else {
-                label.textContent=`Book ${selectedPkg.name} · R${total}`;
-            }
-            btn.disabled=false;
-            
-            // Update route bar explicit pricing dynamically to match total
-            ['route-price','sb-route-price'].forEach(id=>{ const routeEl=document.getElementById(id); if(routeEl) routeEl.textContent=`R${total}`; });
-        }
-    });
-}
 
 /* ─── Sheet / tab ─── */
 let sheetCollapsed=false;
@@ -2299,7 +2373,7 @@ window.switchTab = tab=>{
     document.getElementById('view-track').style.display=s?'none':'block'; 
     document.getElementById('tab-send').classList.toggle('active',s); 
     document.getElementById('tab-track').classList.toggle('active',!s); 
-    if(!s) syncActiveOrdersWithShipday(); // Explicit Shipday API fetch on tracking tab
+    if(!s) syncActiveOrdersWithShipday(); 
 };
 window.sbSwitchTab = tab=>{ 
     const s=tab==='send'; 
@@ -2307,36 +2381,20 @@ window.sbSwitchTab = tab=>{
     document.getElementById('sb-view-track').style.display=s?'none':'block'; 
     document.getElementById('sb-tab-send').classList.toggle('active',s); 
     document.getElementById('sb-tab-track').classList.toggle('active',!s); 
-    if(!s) syncActiveOrdersWithShipday(); // Explicit Shipday API fetch on tracking tab
+    if(!s) syncActiveOrdersWithShipday(); 
 };
 
 /* ─── Paystack SDK ─── */
 async function processPaystackPayment(amountRands, email) {
     return new Promise((resolve, reject) => {
-        if (!PAYSTACK_PUBLIC_KEY) {
-            reject(new Error('Paystack key not loaded. Please try again.')); 
-            return;
-        }
-        if (typeof PaystackPop === 'undefined') {
-            reject(new Error('Paystack SDK not loaded. Please check your connection and refresh.')); 
-            return;
-        }
+        if (!PAYSTACK_PUBLIC_KEY) { reject(new Error('Paystack key not loaded. Please try again.')); return; }
+        if (typeof PaystackPop === 'undefined') { reject(new Error('Paystack SDK not loaded. Please check your connection and refresh.')); return; }
 
         const handler = PaystackPop.setup({
-            key: PAYSTACK_PUBLIC_KEY,
-            email: email,
-            amount: amountRands * 100,
-            currency: 'ZAR',
+            key: PAYSTACK_PUBLIC_KEY, email: email, amount: amountRands * 100, currency: 'ZAR',
             ref: 'CG-' + Math.floor(Math.random() * 1000000000),
-            callback: function(response) {
-                resolve({
-                    token: response.reference,
-                    testMode: PAYSTACK_PUBLIC_KEY.startsWith('pk_test_')
-                });
-            },
-            onClose: function() {
-                reject({ cancelled: true });
-            }
+            callback: function(response) { resolve({ token: response.reference, testMode: PAYSTACK_PUBLIC_KEY.startsWith('pk_test_') }); },
+            onClose: function() { reject({ cancelled: true }); }
         });
         handler.openIframe();
     });
@@ -2395,12 +2453,12 @@ window.confirmBooking = async function() {
     const ctx=isDesktop()?'sb':'mobile';
     const btn   = document.getElementById(ctx==='sb'?'submitBtn-sb':'submitBtn');
     const label = document.getElementById(ctx==='sb'?'submitLabel-sb':'submitLabel');
-    
+
+    let total = calculateTotalPrice();
+    let discount = appliedVoucherDiscount[ctx] || 0;
+    total = Math.max(0, total - discount);
+
     if(selectedPayment[ctx]==='paystack') {
-        let total = calculateTotalPrice();
-        let discount = appliedVoucherDiscount[ctx] || 0;
-        total = Math.max(0, total - discount);
-        
         try {
             const mobileSearchCard = document.getElementById('top-bar');
             if (mobileSearchCard && ctx === 'mobile') mobileSearchCard.style.display = 'none';
@@ -2424,7 +2482,8 @@ window.confirmBooking = async function() {
             if(err&&err.cancelled) return; 
             showToast('error','Payment failed',err.message||'Could not complete Paystack payment.'); 
         }
-        return;
+    } else if (selectedPayment[ctx] === 'gpay') {
+        onGooglePayButtonClicked();
     }
 }
 
@@ -2435,7 +2494,6 @@ function resetBookingForm() {
     setRouteBarValues('—','—');
     ['route-price','sb-route-price'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='—';});
     
-    // Reset voucher state
     appliedVoucherDiscount = { mobile: 0, sb: 0 };
     ['mobile', 'sb'].forEach(c => {
         const vb = document.getElementById(`voucher-btn-${c}`);
@@ -2452,6 +2510,7 @@ function resetBookingForm() {
 let googlePayClient=null, gpayAvailable=false;
 const gpayBaseCardMethod={type:'CARD',parameters:{allowedAuthMethods:['PAN_ONLY','CRYPTOGRAM_3DS'],allowedCardNetworks:['VISA','MASTERCARD']}};
 const gpayCardMethod={...gpayBaseCardMethod,tokenizationSpecification:{type:'PAYMENT_GATEWAY',parameters:{gateway:'example',gatewayMerchantId:'exampleGatewayMerchantId'}}};
+
 function gpayPaymentDataRequest(amountZAR) {
     return {apiVersion:2,apiVersionMinor:0,allowedPaymentMethods:[gpayCardMethod],merchantInfo:{merchantName:'Pace Logistics'},transactionInfo:{countryCode:'ZA',currencyCode:'ZAR',totalPriceStatus:'FINAL',totalPrice:amountZAR.toFixed(2)}};
 }
@@ -2466,10 +2525,8 @@ async function initGooglePay() {
     if(gpayAvailable) { 
         ensureGooglePayButton('mobile'); 
         ensureGooglePayButton('sb'); 
-        const gpNoteM = document.getElementById('gpay-test-note-mobile');
-        const gpNoteSb = document.getElementById('gpay-test-note-sb');
+        const gpNoteM = document.querySelector('.gpay-test-note');
         if (gpNoteM) gpNoteM.style.display = 'flex';
-        if (gpNoteSb) gpNoteSb.style.display = 'flex';
     }
 }
 
@@ -2488,8 +2545,7 @@ function ensureGooglePayButton(ctx) {
     
     const cont = document.getElementById(`gpay-button-container-${ctx}`);
     if(cont) {
-        cont.style.display = 'block';
-        cont.innerHTML = ''; /* Ensures no duplicates are added */
+        cont.innerHTML = ''; 
         cont.appendChild(btn);
     }
 }
