@@ -28,7 +28,7 @@
         }
         #splash.hide { opacity: 0; pointer-events: none; }
 
-        /* ── Sign-in Gate ── */
+        /* ── Sign-in Gate & Auth ── */
         #signin-gate {
             position: fixed; inset: 0; z-index: 250;
             background: #ffffff;
@@ -38,32 +38,63 @@
         #signin-gate.visible { display: flex; }
 
         .signin-logo-wrap {
-            width: 88px; height: 88px; border-radius: 22px;
+            width: 72px; height: 72px; border-radius: 18px;
             background: #18181b;
             display: flex; align-items: center; justify-content: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.12);
         }
-        .signin-logo-wrap i { font-size: 36px; color: #fff; }
-        .signin-title { font-size: 28px; font-weight: 900; color: #18181b; letter-spacing: -0.6px; margin-bottom: 8px; }
-        .signin-sub { font-size: 14px; color: #71717a; text-align: center; line-height: 1.6; max-width: 280px; margin-bottom: 40px; }
+        .signin-logo-wrap i { font-size: 32px; color: #fff; }
+        .signin-title { font-size: 24px; font-weight: 900; color: #18181b; letter-spacing: -0.6px; margin-bottom: 6px; }
+        .signin-sub { font-size: 13px; color: #71717a; text-align: center; line-height: 1.5; max-width: 280px; margin-bottom: 32px; }
+        
+        .auth-form {
+            width: 100%; max-width: 300px;
+            display: flex; flex-direction: column; gap: 12px;
+            margin-bottom: 24px;
+        }
+        .auth-input {
+            width: 100%; padding: 14px 16px;
+            border: 2px solid #e4e4e7; border-radius: 14px;
+            font-size: 13px; font-weight: 500; color: #18181b;
+            outline: none; font-family: 'Inter', sans-serif; transition: border-color 0.2s;
+        }
+        .auth-input:focus { border-color: #18181b; }
+        .auth-input::placeholder { color: #a1a1aa; }
+        .auth-btn-row { display: flex; gap: 10px; }
+        .auth-btn-primary {
+            flex: 1; background: #18181b; color: #fff; border: none;
+            padding: 14px; border-radius: 12px; font-size: 13.5px; font-weight: 700;
+            cursor: pointer; transition: transform 0.15s; font-family: 'Inter', sans-serif;
+        }
+        .auth-btn-primary:active { transform: scale(0.97); }
+        .auth-btn-secondary {
+            flex: 1; background: transparent; color: #18181b; border: 2px solid #18181b;
+            padding: 12px; border-radius: 12px; font-size: 13.5px; font-weight: 700;
+            cursor: pointer; transition: transform 0.15s; font-family: 'Inter', sans-serif;
+        }
+        .auth-btn-secondary:active { transform: scale(0.97); }
+        
+        .auth-divider {
+            display: flex; align-items: center; width: 100%; max-width: 300px;
+            margin-bottom: 24px; color: #a1a1aa; font-size: 11px; font-weight: 700; text-transform: uppercase;
+        }
+        .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1.5px; background: #f1f1f4; }
+        .auth-divider span { padding: 0 14px; }
+
         .google-btn {
             display: flex; align-items: center; gap: 12px;
-            background: #18181b; color: #fff;
-            padding: 15px 24px; border-radius: 14px;
-            font-size: 14px; font-weight: 700;
-            border: none; cursor: pointer;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.18);
-            transition: transform 0.15s, box-shadow 0.15s;
-            width: 100%; max-width: 300px; justify-content: center;
+            background: #fff; color: #18181b;
+            padding: 14px 24px; border-radius: 12px;
+            font-size: 13.5px; font-weight: 700;
+            border: 2px solid #e4e4e7; cursor: pointer;
+            transition: transform 0.15s, border-color 0.15s;
+            width: 100%; max-width: 300px; justify-content: center; font-family: 'Inter', sans-serif;
         }
+        .google-btn:hover { border-color: #18181b; }
         .google-btn:active { transform: scale(0.97); }
-        .google-btn img { width: 20px; height: 20px; filter: brightness(0) invert(1); }
-        .signin-legal { font-size: 11px; color: #a1a1aa; margin-top: 20px; text-align: center; line-height: 1.6; }
-        .signin-trust { display: flex; gap: 32px; margin-top: 36px; }
-        .trust-item { display: flex; flex-direction: column; align-items: center; gap: 7px; }
-        .trust-item i { font-size: 16px; color: #18181b; }
-        .trust-item span { font-size: 9.5px; font-weight: 600; letter-spacing: 0.3px; color: #a1a1aa; }
+        .google-btn img { width: 18px; height: 18px; }
+        .signin-legal { font-size: 10.5px; color: #a1a1aa; margin-top: 24px; text-align: center; line-height: 1.6; }
 
         /* ── Terms & Conditions Sheet ── */
         #terms-overlay {
@@ -121,7 +152,6 @@
             display: flex; align-items: center; justify-content: center; gap: 10px;
         }
         .terms-accept-btn:active { transform: scale(0.98); }
-        .terms-accept-btn img { width: 18px; height: 18px; filter: brightness(0) invert(1); }
 
         /* ── User Map Marker ── */
         .user-marker-wrap { position: relative; width: 54px; height: 54px; cursor: grab; }
@@ -176,18 +206,6 @@
             padding: 52px 16px 0;
         }
 
-        #avatar-btn {
-            position: fixed; top: 54px; right: calc(50% - 194px);
-            z-index: 70; width: 40px; height: 40px;
-            border-radius: 50%; overflow: visible;
-            border: 2.5px solid #fff;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            cursor: pointer; background: #18181b;
-            display: none; align-items: center; justify-content: center;
-        }
-        #avatar-btn img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-        #avatar-btn .av-init { color: #fff; font-size: 13px; font-weight: 800; }
-
         .search-card {
             background: rgba(255,255,255,0.97); backdrop-filter: blur(20px);
             border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.18);
@@ -228,17 +246,36 @@
 
         /* ── Mobile: Bottom Sheet ── */
         #sheet {
-            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+            position: fixed; bottom: 65px; left: 50%; transform: translateX(-50%);
             width: 100%; max-width: 420px;
             background: #fff; border-radius: 24px 24px 0 0;
-            padding: 0 20px 36px;
+            padding: 0 20px 24px;
             box-shadow: 0 -8px 40px rgba(0,0,0,0.13);
             z-index: 60;
             transition: transform 0.35s cubic-bezier(0.32,0,0.67,0);
         }
-        #sheet.collapsed { transform: translateX(-50%) translateY(calc(100% - 72px)); }
+        #sheet.collapsed { transform: translateX(-50%) translateY(calc(100% - 50px)); }
         .sheet-handle-wrap { padding: 12px 0 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .sheet-handle { width: 36px; height: 4px; border-radius: 4px; background: #d4d4d8; }
+
+        /* ── Mobile: Bottom Nav ── */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: #ffffff; box-shadow: 0 -4px 24px rgba(0,0,0,0.06);
+            display: flex; justify-content: space-around; align-items: center;
+            padding-bottom: env(safe-area-inset-bottom);
+            z-index: 100; height: 65px;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-decoration: none; color: #a1a1aa; flex: 1; height: 100%;
+            transition: color 0.2s ease;
+        }
+        .nav-item svg { width: 22px; height: 22px; margin-bottom: 4px; stroke-width: 2.2; }
+        .nav-item span { font-size: 10px; font-weight: 600; letter-spacing: 0.2px; }
+        .nav-item.active { color: #18181b; }
+        
+        .tabs { display: none; } /* Hidden on mobile in favor of bottom nav */
 
         /* ── Mobile: Profile Drawer ── */
         #profile-overlay {
@@ -406,8 +443,8 @@
            DESKTOP LAYOUT (≥ 768px)
         ════════════════════════════════════════ */
         @media (min-width: 768px) {
-
             #map { left: 380px; }
+            .bottom-nav { display: none !important; }
 
             #desktop-sidebar {
                 position: fixed; top: 0; left: 0; bottom: 0;
@@ -475,7 +512,6 @@
             .sb-tab-btn.active { background: #fff; color: #18181b; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
 
             #top-bar  { display: none !important; }
-            #avatar-btn { display: none !important; }
             #sheet    { display: none !important; }
 
             .drawer-header { padding-top: 28px; }
@@ -498,14 +534,6 @@
         /* ════════════════════════════════════════
            SHARED COMPONENT STYLES
         ════════════════════════════════════════ */
-
-        .tabs { background: #f4f4f5; padding: 3px; border-radius: 12px; display: flex; gap: 2px; margin-bottom: 16px; }
-        .tab-btn {
-            flex: 1; padding: 8px; font-size: 11.5px; font-weight: 700; border: none;
-            border-radius: 9px; cursor: pointer; transition: all 0.18s;
-            background: transparent; color: #71717a; font-family: 'Inter', sans-serif;
-        }
-        .tab-btn.active { background: #fff; color: #18181b; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
 
         #route-bar, .route-bar-el {
             display: none; background: #f4f4f5; border-radius: 12px;
@@ -762,7 +790,7 @@
 
         /* ── Toasts ── */
         #toast-container {
-            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
             width: calc(100% - 32px); max-width: 388px;
             z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 8px;
             pointer-events: none;
@@ -774,12 +802,12 @@
             width: 100%; padding: 13px 15px; border-radius: 14px;
             font-size: 12.5px; display: flex; align-items: flex-start; gap: 10px;
             box-shadow: 0 6px 24px rgba(0,0,0,0.14);
-            opacity: 0; transform: translateY(8px);
+            opacity: 0; transform: translateY(-8px);
             transition: opacity 0.28s, transform 0.28s;
             pointer-events: auto;
         }
         .toast.show { opacity: 1; transform: translateY(0); }
-        .toast.hide { opacity: 0; transform: translateY(8px); }
+        .toast.hide { opacity: 0; transform: translateY(-8px); }
         .toast-success { background: #fff; border: 1.5px solid #bbf7d0; color: #15803d; }
         .toast-error   { background: #fff; border: 1.5px solid #fecaca; color: #b91c1c; }
         .toast-info    { background: #fff; border: 1.5px solid #bfdbfe; color: #1d4ed8; }
@@ -821,64 +849,36 @@
 
         /* ── Payment method ── */
         .pay-method-row { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 10px; 
-            margin-bottom: 16px; 
+            display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; 
         }
 
         .pay-pill {
-            display: flex; 
-            flex-direction: row;
-            align-items: center; 
-            justify-content: center; 
-            gap: 8px;
-            padding: 12px 20px; 
-            border: 2px solid #e4e4e7; 
-            border-radius: 14px;
-            background: #fff; 
-            font-size: 12.5px; 
-            font-weight: 700; 
-            color: #52525b;
-            cursor: pointer; 
-            transition: border-color 0.15s, background 0.15s, color 0.15s;
-            font-family: 'Inter', sans-serif; 
-            text-align: center; 
-            flex: 1; 
-            white-space: nowrap;
+            display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px;
+            padding: 12px 20px; border: 2px solid #e4e4e7; border-radius: 14px;
+            background: #fff; font-size: 12.5px; font-weight: 700; color: #52525b;
+            cursor: pointer; transition: border-color 0.15s, background 0.15s, color 0.15s;
+            font-family: 'Inter', sans-serif; text-align: center; flex: 1; white-space: nowrap;
         }
 
         .pay-pill i { font-size: 15px; }
         .pay-pill.active { border-color: #18181b; background: #fafafa; color: #18181b; }
 
-        .paystack-test-note {
-            display: flex; align-items: center; gap: 7px;
-            font-size: 10.5px; color: #a1a1aa; font-weight: 500;
-        }
-        .paystack-test-note .test-tag {
-            font-size: 8.5px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase;
-            padding: 2px 6px; border-radius: 5px;
-            background: #fef3c7; color: #92400e;
-        }
+        .paystack-test-note { display: flex; align-items: center; gap: 7px; font-size: 10.5px; color: #a1a1aa; font-weight: 500; }
+        .paystack-test-note .test-tag { font-size: 8.5px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase; padding: 2px 6px; border-radius: 5px; background: #fef3c7; color: #92400e; }
 
         /* Sidebar divider */
         .sb-divider { height: 1px; background: #f1f1f4; margin: 16px -20px; }
 
         /* Section heading row */
-        .section-hd {
-            display: flex; justify-content: space-between; align-items: baseline;
-            margin-bottom: 10px;
-        }
+        .section-hd { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
         .section-hd h2 { font-size: 14px; font-weight: 700; color: #18181b; }
         .section-hd span { font-size: 10.5px; color: #a1a1aa; }
 
         /* Desktop Package Scroll Buttons */
         .sb-nav-btns { display: flex; gap: 4px; }
         .sb-nav-btn {
-            width: 24px; height: 24px; border-radius: 7px;
-            border: 1.5px solid #e4e4e7; background: #fff; color: #71717a;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 10px; cursor: pointer; transition: all 0.15s ease;
+            width: 24px; height: 24px; border-radius: 7px; border: 1.5px solid #e4e4e7; background: #fff; color: #71717a;
+            display: flex; align-items: center; justify-content: center; font-size: 10px; cursor: pointer; transition: all 0.15s ease;
         }
         .sb-nav-btn:hover { border-color: #18181b; color: #18181b; background: #fafafa; }
         .sb-nav-btn:active { transform: scale(0.92); }
@@ -903,23 +903,31 @@
 <div id="signin-gate">
     <div class="signin-logo-wrap"><i class="fa-solid fa-truck-fast"></i></div>
     <div class="signin-title">Pace Parcels</div>
-    <div class="signin-sub">Send packages, track deliveries, and manage your profile — all in one place.</div>
-    <button class="google-btn" onclick="signInWithGoogle()">
+    <div class="signin-sub">Send packages and track deliveries in real-time.</div>
+    
+    <div class="auth-form">
+        <input type="email" id="auth-email" class="auth-input" placeholder="Email address" autocomplete="email">
+        <input type="password" id="auth-password" class="auth-input" placeholder="Password">
+        <div class="auth-btn-row">
+            <button class="auth-btn-primary" onclick="initiateAuth('login')">Log In</button>
+            <button class="auth-btn-secondary" onclick="initiateAuth('signup')">Sign Up</button>
+        </div>
+    </div>
+    
+    <div class="auth-divider"><span>OR</span></div>
+
+    <button class="google-btn" onclick="initiateAuth('google')">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
         Continue with Google
     </button>
-    <div class="signin-trust">
-        <div class="trust-item"><i class="fa-solid fa-shield-halved"></i><span>Insured</span></div>
-        <div class="trust-item"><i class="fa-solid fa-location-crosshairs"></i><span>Live tracking</span></div>
-        <div class="trust-item"><i class="fa-solid fa-bolt"></i><span>Same-day</span></div>
-    </div>
-    <div class="signin-legal">By continuing you agree to our <a href="#" onclick="openTerms(); return false;" style="color:#18181b; font-weight:600; text-decoration:none;">Terms of Service & Privacy Policy</a>.</div>
+
+    <div class="signin-legal">By continuing you agree to our <a href="#" onclick="openTerms(); return false;" style="color:#18181b; font-weight:700; text-decoration:none;">Terms of Service &amp; Privacy Policy</a>.</div>
 </div>
 
 <div id="terms-overlay" onclick="closeTermsOnOverlay(event)">
     <div id="terms-sheet" onclick="event.stopPropagation()">
         <div class="terms-header">
-            <div class="terms-title">Terms & Policies</div>
+            <div class="terms-title">Terms &amp; Policies</div>
             <button class="terms-close" onclick="closeTerms()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="terms-body" id="terms-scroll-area">
@@ -938,15 +946,14 @@
             <h3>5. Liability and Insurance</h3>
             <p>While we strive for completely safe and secure deliveries, Pace Parcels' liability is limited. High-value items must be properly packaged, declared, and independently insured where applicable.</p>
             
-            <h3>6. Privacy Policy & POPIA</h3>
+            <h3>6. Privacy Policy &amp; POPIA</h3>
             <p>We process your personal information strictly in accordance with the Protection of Personal Information Act (POPIA), Act 4 of 2013. Your data (name, location, phone number) is used only to facilitate deliveries, verify driver identity, and improve your app experience.</p>
             
             <p style="margin-bottom: 60px; font-size: 11px; color: #a1a1aa; text-align: center; font-style: italic;">Scroll down to accept and continue.</p>
 
             <div class="terms-action-wrap">
                 <button class="terms-accept-btn" onclick="acceptAndLogin()">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
-                    Accept & Continue with Google
+                    Accept Terms &amp; Continue
                 </button>
             </div>
         </div>
@@ -954,10 +961,6 @@
 </div>
 
 <div id="map"></div>
-
-<button id="avatar-btn" onclick="openProfile()">
-    <span class="av-init" id="avatar-btn-init">?</span>
-</button>
 
 <div id="top-bar">
     <div class="search-card" id="search-card">
@@ -983,10 +986,7 @@
     <div class="sheet-handle-wrap" onclick="toggleSheet()">
         <div class="sheet-handle"></div>
     </div>
-    <div class="tabs">
-        <button id="tab-send"  class="tab-btn active" onclick="switchTab('send')">Send Package</button>
-        <button id="tab-track" class="tab-btn"        onclick="switchTab('track')">Activity</button>
-    </div>
+    
     <div id="view-send">
         <div id="phone-warn" class="phone-warn" style="display:none;">
             <i class="fa-solid fa-triangle-exclamation"></i>
@@ -1031,7 +1031,7 @@
             </div>
         </div>
         
-        <div class="section-hd" style="margin-bottom:10px;"><h2>Payment & Vouchers</h2></div>
+        <div class="section-hd" style="margin-bottom:10px;"><h2>Payment &amp; Vouchers</h2></div>
         <div class="pay-method-row">
             <button class="pay-pill active" onclick="openPaymentSheet('mobile')" style="width: 100%; justify-content: space-between; padding: 14px 20px;">
                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -1054,6 +1054,27 @@
         <div id="track-list-mobile" class="track-list" style="display:none;max-height:46vh;"></div>
     </div>
 </div>
+
+<nav class="bottom-nav" id="mobile-bottom-nav">
+    <a href="#" class="nav-item active" id="nav-item-send" onclick="switchTab('send'); return false;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 2L11 13"></path><path d="M22 2l-7 20-4-9-9-4 20-7z"></path>
+        </svg>
+        <span>Send</span>
+    </a>
+    <a href="#" class="nav-item" id="nav-item-track" onclick="switchTab('track'); return false;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+        <span>Activity</span>
+    </a>
+    <a href="#" class="nav-item" onclick="openProfile(); return false;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span>Profile</span>
+    </a>
+</nav>
 
 <div id="profile-overlay" onclick="closeProfile()"></div>
 <div id="profile-drawer">
@@ -1126,7 +1147,7 @@
     <div id="payment-sheet" onclick="event.stopPropagation()">
         <div class="dm-header">
             <div>
-                <div class="dm-title">Payment & Vouchers</div>
+                <div class="dm-title">Payment &amp; Vouchers</div>
                 <div class="dm-sub">Choose a checkout method and apply discounts</div>
             </div>
             <button class="dm-close" onclick="closePaymentSheet()"><i class="fa-solid fa-xmark"></i></button>
@@ -1250,7 +1271,7 @@
                 </div>
             </div>
 
-            <div class="section-hd" style="margin-bottom:10px;"><h2>Payment & Vouchers</h2></div>
+            <div class="section-hd" style="margin-bottom:10px;"><h2>Payment &amp; Vouchers</h2></div>
             <div class="pay-method-row">
                 <button class="pay-pill active" onclick="openPaymentSheet('sb')" style="width: 100%; justify-content: space-between; padding: 14px 20px;">
                     <div style="display: flex; align-items: center; gap: 10px;">
@@ -1278,7 +1299,7 @@
 
 <script type="module">
 import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { getDatabase, ref, push, set, get, update, onValue, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 import { getRemoteConfig, fetchAndActivate, getValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-remote-config.js";
 
@@ -1371,36 +1392,59 @@ window.showToast = showToast;
 
 /* ─── Auth / Terms Logic ─── */
 let termsAccepted = false;
+let pendingAuthAction = null;
 
-window.signInWithGoogle = function() {
+window.initiateAuth = function(actionType) {
     if (!termsAccepted) {
+        pendingAuthAction = actionType;
         openTerms();
     } else {
-        executeGoogleLogin();
+        executeAuth(actionType);
     }
 };
 
-window.openTerms = function() {
-    document.getElementById('terms-overlay').classList.add('open');
-};
-
-window.closeTerms = function() {
-    document.getElementById('terms-overlay').classList.remove('open');
-};
-
-window.closeTermsOnOverlay = function(e) {
-    if(e.target.id === 'terms-overlay') closeTerms();
-};
+window.openTerms = function() { document.getElementById('terms-overlay').classList.add('open'); };
+window.closeTerms = function() { document.getElementById('terms-overlay').classList.remove('open'); };
+window.closeTermsOnOverlay = function(e) { if(e.target.id === 'terms-overlay') closeTerms(); };
 
 window.acceptAndLogin = async function() {
     termsAccepted = true;
     closeTerms();
-    await executeGoogleLogin();
+    if (pendingAuthAction) {
+        executeAuth(pendingAuthAction);
+        pendingAuthAction = null;
+    }
 };
 
-async function executeGoogleLogin() {
-    try { await signInWithPopup(auth, provider); }
-    catch(e) { if (e.code !== 'auth/popup-closed-by-user') showToast('error','Sign-in failed',e.message); }
+async function executeAuth(type) {
+    const email = document.getElementById('auth-email') ? document.getElementById('auth-email').value.trim() : '';
+    const pass = document.getElementById('auth-password') ? document.getElementById('auth-password').value : '';
+    
+    if (type === 'google') {
+        try { 
+            await signInWithPopup(auth, provider); 
+        } catch(e) { 
+            if (e.code !== 'auth/popup-closed-by-user') showToast('error','Sign-in failed',e.message); 
+        }
+    } else if (type === 'signup') {
+        if(!email || !pass) { showToast('error', 'Required', 'Please enter email and password.'); return; }
+        try {
+            const cred = await createUserWithEmailAndPassword(auth, email, pass);
+            await sendEmailVerification(cred.user);
+            await fbSignOut(auth);
+            showToast('success', 'Check your email', 'We sent a verification link. Please verify to log in.', 6000);
+            document.getElementById('auth-password').value = ''; 
+        } catch(e) { showToast('error', 'Signup failed', e.message); }
+    } else if (type === 'login') {
+        if(!email || !pass) { showToast('error', 'Required', 'Please enter email and password.'); return; }
+        try {
+            const cred = await signInWithEmailAndPassword(auth, email, pass);
+            if (!cred.user.emailVerified) {
+                await fbSignOut(auth);
+                showToast('error', 'Verification required', 'Please check your inbox and verify your email before logging in.', 6000);
+            }
+        } catch(e) { showToast('error', 'Login failed', 'Invalid credentials or network issue.'); }
+    }
 }
 
 window.signOut = async function() {
@@ -1438,10 +1482,14 @@ window.savePhone = async function() {
 onAuthStateChanged(auth, async (user) => {
     hideSplash();
     if (user) {
+        if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
+            await fbSignOut(auth);
+            return; 
+        }
+
         currentUser = user;
         await loadUserProfile(user);
         document.getElementById('signin-gate').classList.remove('visible');
-        document.getElementById('avatar-btn').style.display = 'flex';
         renderAvatarBtn();
         renderProfileUI();
         checkPhoneWarning();
@@ -1456,7 +1504,6 @@ onAuthStateChanged(auth, async (user) => {
         renderDriverStatus(null);
         closeDriverModal();
         closeChat();
-        document.getElementById('avatar-btn').style.display = 'none';
         document.getElementById('signin-gate').classList.add('visible');
     }
 });
@@ -1467,10 +1514,6 @@ function hideSplash() {
 }
 
 function renderAvatarBtn() {
-    const btn  = document.getElementById('avatar-btn');
-    if (userProfile.photoURL) btn.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
-    else btn.innerHTML = `<span class="av-init" id="avatar-btn-init">${initials(userProfile.name)}</span>`;
-
     const sbBtn  = document.getElementById('sb-avatar-btn');
     if (sbBtn) {
         if (userProfile.photoURL) sbBtn.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
@@ -1770,10 +1813,20 @@ window.openProfile  = function() {
     if (currentUser) renderProfileUI();
     document.getElementById('profile-overlay').classList.add('open');
     document.getElementById('profile-drawer').classList.add('open');
+    
+    // Reset bottom nav active states to maintain visual continuity when closing profile
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    document.querySelector('.nav-item:last-child').classList.add('active'); 
 };
 window.closeProfile = function() {
     document.getElementById('profile-overlay').classList.remove('open');
     document.getElementById('profile-drawer').classList.remove('open');
+    
+    // Restore nav state based on active view
+    const isSendView = document.getElementById('view-send').style.display !== 'none';
+    document.getElementById('nav-item-send').classList.toggle('active', isSendView);
+    document.getElementById('nav-item-track').classList.toggle('active', !isSendView);
+    document.querySelector('.nav-item:last-child').classList.remove('active'); 
 };
 
 window.desktopShowMain    = function() { showDesktopPanel('main'); };
@@ -2325,19 +2378,22 @@ function updateFoodPackageAvailability() {
 let sheetCollapsed=false;
 window.toggleSheet = ()=>{ sheetCollapsed=!sheetCollapsed; document.getElementById('sheet').classList.toggle('collapsed',sheetCollapsed); };
 window.switchTab = tab=>{ 
-    const s=tab==='send'; 
-    document.getElementById('view-send').style.display=s?'block':'none'; 
-    document.getElementById('view-track').style.display=s?'none':'block'; 
-    document.getElementById('tab-send').classList.toggle('active',s); 
-    document.getElementById('tab-track').classList.toggle('active',!s); 
+    const s = tab === 'send'; 
+    document.getElementById('view-send').style.display = s ? 'block' : 'none'; 
+    document.getElementById('view-track').style.display = s ? 'none' : 'block'; 
+    
+    // Manage bottom nav active states for mobile
+    document.getElementById('nav-item-send').classList.toggle('active', s);
+    document.getElementById('nav-item-track').classList.toggle('active', !s);
+    
     if(!s) syncActiveOrdersWithShipday(); 
 };
 window.sbSwitchTab = tab=>{ 
-    const s=tab==='send'; 
-    document.getElementById('sb-view-send').style.display=s?'block':'none'; 
-    document.getElementById('sb-view-track').style.display=s?'none':'block'; 
-    document.getElementById('sb-tab-send').classList.toggle('active',s); 
-    document.getElementById('sb-tab-track').classList.toggle('active',!s); 
+    const s = tab === 'send'; 
+    document.getElementById('sb-view-send').style.display = s ? 'block' : 'none'; 
+    document.getElementById('sb-view-track').style.display = s ? 'none' : 'block'; 
+    document.getElementById('sb-tab-send').classList.toggle('active', s); 
+    document.getElementById('sb-tab-track').classList.toggle('active', !s); 
     if(!s) syncActiveOrdersWithShipday(); 
 };
 
