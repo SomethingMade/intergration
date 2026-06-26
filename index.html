@@ -1284,6 +1284,7 @@ import { getRemoteConfig, fetchAndActivate, getValue } from "https://www.gstatic
 const MAPBOX_TOKEN = "pk.eyJ1Ijoia2F0bGVnb3BoYXNoYSIsImEiOiJjbTlpOTdzbmYwMGNsMmpzYWJtZzN4d3pqIn0.Zt-aSMEoahrV3zkiVVHbOw";
 const SHIPDAY_KEY  = "K5a8wQJF3f.az2zfrhgzwxK9JONI2y8";
 let PAYSTACK_PUBLIC_KEY = null;
+let IKHOKHA_API_KEY = null;
 
 const firebaseConfig = {
     apiKey: "AIzaSyBQSPwpVbGrdCuOoyitAeWQHIeipj2MgIY",
@@ -1302,16 +1303,23 @@ const provider = new GoogleAuthProvider();
 
 const remoteConfig = getRemoteConfig(fbApp);
 remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
-remoteConfig.defaultConfig = { paystack_public_key: "" };
+remoteConfig.defaultConfig = { 
+    paystack_public_key: "",
+    ikhokha_api_key: ""
+};
 
 async function initRemoteConfig() {
     try {
         await fetchAndActivate(remoteConfig);
-        const key = getValue(remoteConfig, "paystack_public_key").asString();
-        if (key) { 
-            PAYSTACK_PUBLIC_KEY = key; 
+        const pKey = getValue(remoteConfig, "paystack_public_key").asString();
+        if (pKey) { 
+            PAYSTACK_PUBLIC_KEY = pKey; 
             updatePaystackTestNote('mobile'); 
             updatePaystackTestNote('sb'); 
+        }
+        const iKey = getValue(remoteConfig, "ikhokha_api_key").asString();
+        if (iKey) {
+            IKHOKHA_API_KEY = iKey;
         }
     } catch(e) { console.warn("Remote Config fetch failed:", e.message); }
 }
@@ -1449,6 +1457,7 @@ onAuthStateChanged(auth, async (user) => {
     } else {
         currentUser = null; userProfile = {};
         ordersListenerAttached = false; selectedVehicleType = null;
+        stopShipdayPolling();
         renderOrders(null);
         renderDriverStatus(null);
         closeDriverModal();
@@ -1663,12 +1672,66 @@ window.handleChatKeyPress = function(e) {
     if (e.key === 'Enter') sendChatMessage();
 };
 
-/* ─── Orders ─── */
+/* ─── Orders & Realtime Shipday Sync ─── */
+let shipdayPollInterval = null;
+
+function startShipdayPolling() {
+    if (shipdayPollInterval) clearInterval(shipdayPollInterval);
+    syncActiveOrdersWithShipday(); 
+    shipdayPollInterval = setInterval(syncActiveOrdersWithShipday, 12000); 
+}
+
+function stopShipdayPolling() {
+    if (shipdayPollInterval) clearInterval(shipdayPollInterval);
+}
+
+async function syncActiveOrdersWithShipday() {
+    if(!currentUser) return;
+    try {
+        const snap = await get(query(ref(database,'orders'), orderByChild('userId'), equalTo(currentUser.uid)));
+        if(!snap.exists()) return;
+        const ordersObj = snap.val();
+        
+        const activeOrders = Object.entries(ordersObj).filter(([k, o]) => o.status !== 'delivered' && o.status !== 'cancelled');
+        if (activeOrders.length === 0) return;
+
+        activeOrders.forEach(async ([key, o]) => {
+            if (!o.orderNumber) return;
+            try {
+                const res = await fetch(`https://api.shipday.com/orders?orderNumber=${o.orderNumber}`, {
+                    headers: {"Authorization": `Basic ${SHIPDAY_KEY}`}
+                });
+                if (res.ok) {
+                    const sdData = await res.json();
+                    if (sdData && sdData.length > 0) {
+                        const sdState = sdData[0].orderState;
+                        const mappedState = mapShipdayState(sdState);
+                        if (mappedState && mappedState !== o.status) {
+                            await update(ref(database, `orders/${key}`), { status: mappedState });
+                        }
+                    }
+                }
+            } catch(e) { console.warn("Shipday individual sync error", e); }
+        });
+    } catch(e) { console.error("Shipday sync error", e); }
+}
+
+function mapShipdayState(state) {
+    const s = (state || '').toUpperCase();
+    if (['UNASSIGNED'].includes(s)) return 'placed';
+    if (['ASSIGNED', 'STARTED', 'ACCEPTED'].includes(s)) return 'assigned'; 
+    if (['PICKED_UP', 'READY_TO_DELIVER', 'IN_TRANSIT'].includes(s)) return 'in_transit'; 
+    if (['ALREADY_DELIVERED', 'DELIVERED', 'COMPLETED'].includes(s)) return 'delivered';
+    if (['FAILED', 'CANCELED', 'CANCELLED'].includes(s)) return 'cancelled';
+    return null;
+}
+
 function attachOrdersListener() {
     if (ordersListenerAttached || !currentUser) return;
     ordersListenerAttached = true;
     const q = query(ref(database,'orders'), orderByChild('userId'), equalTo(currentUser.uid));
     onValue(q, snap => renderOrders(snap.val()));
+    startShipdayPolling(); 
 }
 
 const STATUS_META = {
@@ -2380,6 +2443,10 @@ window.confirmBooking = async function() {
     
     // Handle newly added iKhokha
     if(selectedPayment[ctx]==='ikhokha') {
+        if (!IKHOKHA_API_KEY) {
+            showToast('error', 'Configuration Error', 'iKhokha API key could not be loaded.');
+            return;
+        }
         label.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
         btn.disabled=true;
         showToast('info','iKhokha Gateway','Initializing iKhokha payment...');
