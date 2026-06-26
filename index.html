@@ -7,7 +7,6 @@
 
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
-    <script async src="https://pay.google.com/gp/p/js/pay.js" onload="window.dispatchEvent(new Event('gpayready'))"></script>
     <script src="https://js.paystack.co/v1/inline.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -825,7 +824,7 @@
             display: flex; 
             flex-wrap: wrap; 
             gap: 10px; 
-            margin-bottom: 12px; 
+            margin-bottom: 16px; 
         }
 
         .pay-pill {
@@ -836,9 +835,9 @@
             gap: 8px;
             padding: 12px 20px; 
             border: 2px solid #e4e4e7; 
-            border-radius: 999px;
+            border-radius: 14px;
             background: #fff; 
-            font-size: 12px; 
+            font-size: 12.5px; 
             font-weight: 700; 
             color: #52525b;
             cursor: pointer; 
@@ -852,16 +851,15 @@
         .pay-pill i { font-size: 15px; }
         .pay-pill.active { border-color: #18181b; background: #fafafa; color: #18181b; }
 
-        .paystack-test-note, .gpay-test-note {
+        .paystack-test-note {
             display: flex; align-items: center; gap: 7px;
             font-size: 10.5px; color: #a1a1aa; font-weight: 500;
         }
-        .paystack-test-note .test-tag, .gpay-test-note .test-tag {
+        .paystack-test-note .test-tag {
             font-size: 8.5px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase;
             padding: 2px 6px; border-radius: 5px;
+            background: #fef3c7; color: #92400e;
         }
-        .paystack-test-note .test-tag { background: #fef3c7; color: #92400e; }
-        .gpay-test-note .test-tag { background: #eff6ff; color: #1d4ed8; }
 
         /* Sidebar divider */
         .sb-divider { height: 1px; background: #f1f1f4; margin: 16px -20px; }
@@ -1033,26 +1031,20 @@
             </div>
         </div>
         
-        <div class="section-hd" style="margin-bottom:10px;"><h2>Payment method</h2></div>
+        <div class="section-hd" style="margin-bottom:10px;"><h2>Payment & Vouchers</h2></div>
         <div class="pay-method-row">
-            <button class="pay-pill" id="pay-pill-cash-mobile" onclick="selectPaymentMethod('cash','mobile')">
-                <i class="fa-solid fa-money-bill-wave"></i>Cash
+            <button class="pay-pill active" onclick="openPaymentSheet('mobile')" style="width: 100%; justify-content: space-between; padding: 14px 20px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-credit-card" style="font-size: 16px;"></i>
+                    <span style="font-size: 13px;">Card (Paystack)</span>
+                </div>
+                <i class="fa-solid fa-chevron-right" style="font-size: 12px; color: #a1a1aa;"></i>
             </button>
-            <button class="pay-pill active" id="pay-pill-card-mobile" onclick="openPaymentSheet('mobile')">
-                <i class="fa-solid fa-credit-card"></i> Card (Paystack)
-            </button>
-        </div>
-        
-        <div class="voucher-row">
-            <input type="text" id="voucher-code-mobile" class="voucher-input" placeholder="Have a voucher code?" autocomplete="off">
-            <button class="voucher-btn" onclick="applyVoucher('mobile')" id="voucher-btn-mobile">Apply</button>
         </div>
 
         <button id="submitBtn" onclick="confirmBooking()">
             <span id="submitLabel">Set pickup &amp; destination</span>
         </button>
-
-        <div id="gpay-button-container-mobile" style="display:none; width: 100%; margin-top: 8px;"></div>
     </div>
     <div id="view-track" style="display:none;">
         <div id="track-empty-mobile" class="track-empty">
@@ -1122,7 +1114,7 @@
         <div class="dm-body" style="padding: 32px 24px; font-size: 14px; color: #52525b; line-height: 1.6; text-align: center;">
             <i class="fa-solid fa-store" style="font-size: 44px; color: #18181b; margin-bottom: 20px;"></i>
             <p>To pay with cash, please visit your nearest Pace Parcels branch to book and dispatch your parcel in person with our team.</p>
-            <p style="margin-top: 12px;">For online and app bookings, a Card or Digital Wallet is required to proceed.</p>
+            <p style="margin-top: 12px;">For online and app bookings, a Card payment is required to proceed.</p>
         </div>
         <div class="dm-footer">
             <button class="dm-submit" onclick="closeCashModal()">Understood</button>
@@ -1134,8 +1126,8 @@
     <div id="payment-sheet" onclick="event.stopPropagation()">
         <div class="dm-header">
             <div>
-                <div class="dm-title">Digital Payment Options</div>
-                <div class="dm-sub">Choose your preferred online checkout method</div>
+                <div class="dm-title">Payment & Vouchers</div>
+                <div class="dm-sub">Choose a checkout method and apply discounts</div>
             </div>
             <button class="dm-close" onclick="closePaymentSheet()"><i class="fa-solid fa-xmark"></i></button>
         </div>
@@ -1146,7 +1138,7 @@
                     <div>
                         <div class="payment-option-text">Credit / Debit Card</div>
                         <div class="payment-option-sub">Securely powered by Paystack</div>
-                        <div class="paystack-test-note" style="display:none; margin-top: 6px;">
+                        <div class="paystack-test-note" id="paystack-test-note" style="display:none; margin-top: 6px;">
                             <span class="test-tag">Test mode</span> <span style="font-size:10.5px;">Sandbox payment</span>
                         </div>
                     </div>
@@ -1154,18 +1146,19 @@
                 <i class="fa-solid fa-circle-check" id="check-paystack" style="color:#18181b; font-size:18px;"></i>
             </div>
 
-            <div class="payment-option-btn" id="opt-gpay" onclick="setDigitalPaymentMethod('gpay')">
+            <div class="payment-option-btn" onclick="openCashModal()">
                 <div class="payment-option-left">
-                    <div class="payment-option-icon"><i class="fa-brands fa-google-pay" style="font-size:26px;"></i></div>
+                    <div class="payment-option-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
                     <div>
-                        <div class="payment-option-text">Google Pay</div>
-                        <div class="payment-option-sub">Fast, seamless, and secure</div>
-                        <div class="gpay-test-note" style="display:none; margin-top: 6px;">
-                            <span class="test-tag">Test mode</span> <span style="font-size:10.5px;">Sandbox payment</span>
-                        </div>
+                        <div class="payment-option-text">Cash (In-Branch)</div>
+                        <div class="payment-option-sub">Drop off and pay at our branch</div>
                     </div>
                 </div>
-                <i class="fa-solid fa-circle-check" id="check-gpay" style="color:#18181b; font-size:18px; display:none;"></i>
+            </div>
+
+            <div class="voucher-row" style="margin-top: 24px; margin-bottom: 0;">
+                <input type="text" id="voucher-code-sheet" class="voucher-input" placeholder="Have a voucher code?" autocomplete="off">
+                <button class="voucher-btn" onclick="applyVoucherSheet()" id="voucher-btn-sheet">Apply</button>
             </div>
         </div>
     </div>
@@ -1257,26 +1250,20 @@
                 </div>
             </div>
 
-            <div class="section-hd" style="margin-bottom:10px;"><h2>Payment method</h2></div>
+            <div class="section-hd" style="margin-bottom:10px;"><h2>Payment & Vouchers</h2></div>
             <div class="pay-method-row">
-                <button class="pay-pill" id="pay-pill-cash-sb" onclick="selectPaymentMethod('cash','sb')">
-                    <i class="fa-solid fa-money-bill-wave"></i>Cash
-                </button>
-                <button class="pay-pill active" id="pay-pill-card-sb" onclick="openPaymentSheet('sb')">
-                    <i class="fa-solid fa-credit-card"></i> Card (Paystack)
+                <button class="pay-pill active" onclick="openPaymentSheet('sb')" style="width: 100%; justify-content: space-between; padding: 14px 20px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-credit-card" style="font-size: 16px;"></i>
+                        <span style="font-size: 13px;">Card (Paystack)</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right" style="font-size: 12px; color: #a1a1aa;"></i>
                 </button>
             </div>
             
-            <div class="voucher-row">
-                <input type="text" id="voucher-code-sb" class="voucher-input" placeholder="Have a voucher code?" autocomplete="off">
-                <button class="voucher-btn" onclick="applyVoucher('sb')" id="voucher-btn-sb">Apply</button>
-            </div>
-
             <button class="submit-btn-el" id="submitBtn-sb" onclick="confirmBooking()">
                 <span id="submitLabel-sb">Set pickup &amp; destination</span>
             </button>
-
-            <div id="gpay-button-container-sb" class="gpay-btn-container-el" style="display:none; width: 100%; margin-top: 8px;"></div>
         </div>
 
         <div id="sb-view-track" style="display:none;">
@@ -1326,8 +1313,7 @@ async function initRemoteConfig() {
         const pKey = getValue(remoteConfig, "paystack_public_key").asString();
         if (pKey) { 
             PAYSTACK_PUBLIC_KEY = pKey; 
-            updatePaystackTestNote('mobile'); 
-            updatePaystackTestNote('sb'); 
+            updatePaystackTestNote(); 
         }
     } catch(e) { console.warn("Remote Config fetch failed:", e.message); }
 }
@@ -1904,8 +1890,18 @@ async function loadDriverApplication() {
     } catch(e) { renderDriverStatus(null); }
 }
 
-/* ─── Payment Methods logic ─── */
+/* ─── Cash & Payment Methods logic ─── */
 let activeCtxForPayment = 'mobile';
+
+window.openCashModal = function() {
+    document.getElementById('cash-modal-overlay').classList.add('open');
+};
+window.closeCashModal = function() {
+    document.getElementById('cash-modal-overlay').classList.remove('open');
+};
+window.closeCashModalOnOverlay = function(e) {
+    if (e.target.id === 'cash-modal-overlay') closeCashModal();
+};
 
 window.openPaymentSheet = function(ctx) {
     activeCtxForPayment = ctx;
@@ -1923,58 +1919,28 @@ window.closePaymentSheetOnOverlay = function(e) {
 
 window.setDigitalPaymentMethod = function(method) {
     updatePaymentSheetUI(method);
-    selectPaymentMethod(method, activeCtxForPayment);
+    selectedPayment[activeCtxForPayment] = method;
+    updatePaystackTestNote();
+    updateSubmitBtn();
     setTimeout(() => { closePaymentSheet(); }, 250);
 };
 
 function updatePaymentSheetUI(method) {
     const isPaystack = method === 'paystack';
-    const isGPay = method === 'gpay';
-
     const optPaystack = document.getElementById('opt-paystack');
-    const optGPay = document.getElementById('opt-gpay');
-    
     if(optPaystack) {
         optPaystack.classList.toggle('active', isPaystack);
         document.getElementById('check-paystack').style.display = isPaystack ? 'block' : 'none';
     }
-    if(optGPay) {
-        optGPay.classList.toggle('active', isGPay);
-        document.getElementById('check-gpay').style.display = isGPay ? 'block' : 'none';
-    }
 }
 
-window.selectPaymentMethod = function(method, ctx) {
-    if (method === 'cash') {
-        openCashModal();
-        selectPaymentMethod('paystack', ctx);
-        return;
-    }
-
-    selectedPayment[ctx] = method;
-    const cashPill = document.getElementById(`pay-pill-cash-${ctx}`);
-    const cardPill = document.getElementById(`pay-pill-card-${ctx}`);
-    
-    if(cashPill) cashPill.classList.remove('active');
-    if(cardPill) {
-        cardPill.classList.add('active');
-        if (method === 'paystack') {
-            cardPill.innerHTML = '<i class="fa-solid fa-credit-card"></i> Card (Paystack)';
-        } else if (method === 'gpay') {
-            cardPill.innerHTML = '<i class="fa-brands fa-google-pay" style="font-size:22px;"></i> Google Pay';
-        }
-    }
-
-    updatePaystackTestNote(ctx);
-    updateSubmitBtn();
-};
-
-window.updatePaystackTestNote = function(ctx) {
-    const notes = document.querySelectorAll('.paystack-test-note');
-    notes.forEach(el => el.style.display = 'none');
-    if(selectedPayment[ctx] === 'paystack' && PAYSTACK_PUBLIC_KEY && PAYSTACK_PUBLIC_KEY.startsWith('pk_test_')) {
-        const note = document.getElementById(`paystack-test-note-${ctx}`);
-        if(note) note.style.display = 'flex';
+window.updatePaystackTestNote = function() {
+    const note = document.getElementById('paystack-test-note');
+    if(!note) return;
+    note.style.display = 'none';
+    const currentMethod = selectedPayment[activeCtxForPayment];
+    if(currentMethod === 'paystack' && PAYSTACK_PUBLIC_KEY && PAYSTACK_PUBLIC_KEY.startsWith('pk_test_')) {
+        note.style.display = 'flex';
     }
 };
 
@@ -1988,17 +1954,16 @@ function updateSubmitBtn() {
         const labelId = ctx==='mobile'?'submitLabel':'submitLabel-sb';
         const btn   = document.getElementById(btnId);
         const label = document.getElementById(labelId);
-        const gpayCont = document.getElementById(`gpay-button-container-${ctx}`);
         
         if(!btn||!label) return;
         
         if(!hp||!hd) { 
             btn.className=ctx==='sb'?'submit-btn-el':''; label.textContent='Set pickup & destination'; btn.disabled=true; 
-            btn.style.display = 'flex'; if(gpayCont) gpayCont.style.display = 'none';
+            btn.style.display = 'flex'; 
         }
         else if(!hk) { 
             btn.className=ctx==='sb'?'submit-btn-el':''; label.textContent='Select a package size'; btn.disabled=true; 
-            btn.style.display = 'flex'; if(gpayCont) gpayCont.style.display = 'none';
+            btn.style.display = 'flex'; 
         }
         else {
             let total = calculateTotalPrice();
@@ -2009,22 +1974,38 @@ function updateSubmitBtn() {
             
             if(selectedPayment[ctx]==='paystack') {
                 label.innerHTML=`<i class="fa-solid fa-credit-card"></i> Pay R${total} with Paystack`;
-                btn.style.display = 'flex';
-                if(gpayCont) gpayCont.style.display = 'none';
-            } else if (selectedPayment[ctx]==='gpay') {
-                btn.style.display = 'none';
-                if(gpayCont) gpayCont.style.display = 'block';
             } else {
                 label.textContent=`Book ${selectedPkg.name} · R${total}`;
-                btn.style.display = 'flex';
-                if(gpayCont) gpayCont.style.display = 'none';
             }
+            btn.style.display = 'flex';
             btn.disabled=false;
             
             ['route-price','sb-route-price'].forEach(id=>{ const routeEl=document.getElementById(id); if(routeEl) routeEl.textContent=`R${total}`; });
         }
     });
 }
+
+/* ─── Voucher Handling (Sheet) ─── */
+window.applyVoucherSheet = function() {
+    const input = document.getElementById('voucher-code-sheet');
+    const btn = document.getElementById('voucher-btn-sheet');
+    const code = input.value.trim().toUpperCase();
+    
+    if(!code) return;
+    
+    if (code === 'FREE50' || code === 'PACE') {
+        const discount = 50;
+        appliedVoucherDiscount.mobile = discount;
+        appliedVoucherDiscount.sb = discount;
+        
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Applied'; 
+        btn.style.background = '#15803d';
+        input.disabled = true;
+        
+        showToast('success', 'Voucher applied', `R${discount} off your delivery.`);
+        updateSubmitBtn();
+    } else { showToast('error', 'Invalid voucher', 'The code you entered is not valid.'); }
+};
 
 /* ─── Map ─── */
 mapboxgl.accessToken = MAPBOX_TOKEN;
@@ -2340,30 +2321,6 @@ function updateFoodPackageAvailability() {
     });
 }
 
-/* ─── Voucher Handling ─── */
-window.applyVoucher = function(ctx) {
-    const input = document.getElementById(`voucher-code-${ctx}`);
-    const btn = document.getElementById(`voucher-btn-${ctx}`);
-    const code = input.value.trim().toUpperCase();
-    
-    if(!code) return;
-    
-    if (code === 'FREE50' || code === 'PACE') {
-        const discount = 50;
-        appliedVoucherDiscount.mobile = discount;
-        appliedVoucherDiscount.sb = discount;
-        
-        ['mobile', 'sb'].forEach(c => {
-            const b = document.getElementById(`voucher-btn-${c}`);
-            const i = document.getElementById(`voucher-code-${c}`);
-            if(b) { b.innerHTML = '<i class="fa-solid fa-check"></i> Applied'; b.style.background = '#15803d'; }
-            if(i) i.disabled = true;
-        });
-        showToast('success', 'Voucher applied', `R${discount} off your delivery.`);
-        updateSubmitBtn();
-    } else { showToast('error', 'Invalid voucher', 'The code you entered is not valid.'); }
-};
-
 /* ─── Sheet / tab ─── */
 let sheetCollapsed=false;
 window.toggleSheet = ()=>{ sheetCollapsed=!sheetCollapsed; document.getElementById('sheet').classList.toggle('collapsed',sheetCollapsed); };
@@ -2450,9 +2407,9 @@ async function doBookOrder(paymentMeta) {
 window.confirmBooking = async function() {
     if(!selectedPkg||!selectedCoords.pickup||!selectedCoords.dropoff) return;
     if(!currentUser) { showToast('error','Not signed in','Please sign in first.'); return; }
-    const ctx=isDesktop()?'sb':'mobile';
-    const btn   = document.getElementById(ctx==='sb'?'submitBtn-sb':'submitBtn');
-    const label = document.getElementById(ctx==='sb'?'submitLabel-sb':'submitLabel');
+    const ctx = isDesktop() ? 'sb' : 'mobile';
+    const btn   = document.getElementById(ctx === 'sb' ? 'submitBtn-sb' : 'submitBtn');
+    const label = document.getElementById(ctx === 'sb' ? 'submitLabel-sb' : 'submitLabel');
 
     let total = calculateTotalPrice();
     let discount = appliedVoucherDiscount[ctx] || 0;
@@ -2482,8 +2439,6 @@ window.confirmBooking = async function() {
             if(err&&err.cancelled) return; 
             showToast('error','Payment failed',err.message||'Could not complete Paystack payment.'); 
         }
-    } else if (selectedPayment[ctx] === 'gpay') {
-        onGooglePayButtonClicked();
     }
 }
 
@@ -2495,79 +2450,21 @@ function resetBookingForm() {
     ['route-price','sb-route-price'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='—';});
     
     appliedVoucherDiscount = { mobile: 0, sb: 0 };
+    const vb = document.getElementById('voucher-btn-sheet');
+    const vi = document.getElementById('voucher-code-sheet');
+    if(vb) { vb.innerText = 'Apply'; vb.style.background = '#18181b'; }
+    if(vi) { vi.value = ''; vi.disabled = false; }
+    
     ['mobile', 'sb'].forEach(c => {
-        const vb = document.getElementById(`voucher-btn-${c}`);
-        const vi = document.getElementById(`voucher-code-${c}`);
-        if(vb) { vb.innerText = 'Apply'; vb.style.background = '#18181b'; }
-        if(vi) { vi.value = ''; vi.disabled = false; }
-        selectPaymentMethod('paystack', c);
+        selectedPayment[c] = 'paystack';
     });
     
+    updatePaymentSheetUI('paystack');
     updateSubmitBtn();
-}
-
-/* ─── Google Pay ─── */
-let googlePayClient=null, gpayAvailable=false;
-const gpayBaseCardMethod={type:'CARD',parameters:{allowedAuthMethods:['PAN_ONLY','CRYPTOGRAM_3DS'],allowedCardNetworks:['VISA','MASTERCARD']}};
-const gpayCardMethod={...gpayBaseCardMethod,tokenizationSpecification:{type:'PAYMENT_GATEWAY',parameters:{gateway:'example',gatewayMerchantId:'exampleGatewayMerchantId'}}};
-
-function gpayPaymentDataRequest(amountZAR) {
-    return {apiVersion:2,apiVersionMinor:0,allowedPaymentMethods:[gpayCardMethod],merchantInfo:{merchantName:'Pace Logistics'},transactionInfo:{countryCode:'ZA',currencyCode:'ZAR',totalPriceStatus:'FINAL',totalPrice:amountZAR.toFixed(2)}};
-}
-function waitForGooglePayScript() {
-    return new Promise(resolve=>{ if(window.google&&window.google.payments) return resolve(); window.addEventListener('gpayready',()=>resolve(),{once:true}); setTimeout(()=>{if(window.google&&window.google.payments)resolve();},1500); });
-}
-async function initGooglePay() {
-    await waitForGooglePayScript();
-    if(!window.google||!window.google.payments) return;
-    googlePayClient=new google.payments.api.PaymentsClient({environment:'TEST'});
-    try { const r=await googlePayClient.isReadyToPay({apiVersion:2,apiVersionMinor:0,allowedPaymentMethods:[gpayBaseCardMethod]}); gpayAvailable=!!r.result; } catch(e){gpayAvailable=false;}
-    if(gpayAvailable) { 
-        ensureGooglePayButton('mobile'); 
-        ensureGooglePayButton('sb'); 
-        const gpNoteM = document.querySelector('.gpay-test-note');
-        if (gpNoteM) gpNoteM.style.display = 'flex';
-    }
-}
-
-let gpayButtonCreated={mobile:false,sb:false};
-function ensureGooglePayButton(ctx) {
-    if(gpayButtonCreated[ctx] || !gpayAvailable || !googlePayClient) return;
-    gpayButtonCreated[ctx] = true;
-    
-    const btn = googlePayClient.createButton({
-        onClick: onGooglePayButtonClicked,
-        buttonColor: 'black',
-        buttonType: 'pay',
-        buttonSizeMode: 'fill',
-        buttonRadius: 14
-    });
-    
-    const cont = document.getElementById(`gpay-button-container-${ctx}`);
-    if(cont) {
-        cont.innerHTML = ''; 
-        cont.appendChild(btn);
-    }
-}
-
-async function onGooglePayButtonClicked() {
-    if(!currentUser){showToast('error','Not signed in','Please sign in first.');return;}
-    if(!selectedPkg||!selectedCoords.pickup||!selectedCoords.dropoff){showToast('error','Trip details missing','Set pickup, destination and package size first.');return;}
-    
-    let total = calculateTotalPrice();
-    let discount = appliedVoucherDiscount.mobile || appliedVoucherDiscount.sb || 0;
-    total = Math.max(0, total - discount);
-    
-    try {
-        const pd=await googlePayClient.loadPaymentData(gpayPaymentDataRequest(total));
-        showToast('success','Test payment captured','Google Pay sandbox — no real charge was made.');
-        await doBookOrder({method:'google_pay',testMode:true});
-    } catch(err){ if(err&&err.statusCode==='CANCELED') return; showToast('error','Google Pay failed','Could not complete the test payment.'); }
 }
 
 renderPackagePrices();
 initPricingListener();
-initGooglePay();
 setTimeout(hideSplash,3000);
 </script>
 </body>
