@@ -814,27 +814,6 @@
 
         .pay-pill i { font-size: 15px; }
         .pay-pill.active { border-color: #18181b; background: #fafafa; color: #18181b; }
-        .pay-pill.hidden { display: none !important; }
-
-        /* ── Google Pay pill — official brand styling ── */
-        .gpay-pill {
-            padding: 9px 8px !important;
-            min-height: 46px;
-            gap: 0 !important;
-        }
-        .gpay-pill svg {
-            display: block;
-            width: 58px;
-            height: auto;
-        }
-        .gpay-pill.active {
-            border-color: #4285F4 !important;
-            background: #f0f4ff !important;
-        }
-        .gpay-pill:not(.active):hover {
-            border-color: #a8c1f8;
-            background: #f8f9ff;
-        }
 
         .paystack-test-note {
             display: none; align-items: center; gap: 7px;
@@ -854,7 +833,6 @@
             font-size: 8.5px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase;
             background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 5px;
         }
-        #gpay-button-container, .gpay-btn-container-el { margin-bottom: 8px; width: 100%; min-width: 250px; }
 
         /* Sidebar divider */
         .sb-divider { height: 1px; background: #f1f1f4; margin: 16px -20px; }
@@ -1030,30 +1008,14 @@
             <button class="pay-pill" id="pay-pill-cash-mobile" onclick="selectPaymentMethod('cash','mobile')">
                 <i class="fa-solid fa-money-bill-wave"></i>Cash
             </button>
-            <button class="pay-pill hidden" id="pay-pill-gpay-mobile" onclick="selectPaymentMethod('google_pay','mobile')">
-                <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                </svg>
-                <span style="margin-top: 1px;">Pay</span>
-            </button>
             <button class="pay-pill active" id="pay-pill-paystack-mobile" onclick="selectPaymentMethod('paystack','mobile')">
                 <i class="fa-solid fa-credit-card"></i> Card
-            </button>
-            <button class="pay-pill" id="pay-pill-ikhokha-mobile" onclick="selectPaymentMethod('ikhokha','mobile')">
-                <i class="fa-solid fa-wallet"></i> iKhokha
             </button>
         </div>
         <div class="paystack-test-note" id="paystack-test-note-mobile">
             <span class="test-tag" id="paystack-test-tag-mobile">Test mode</span>
             <span id="paystack-test-msg-mobile">Sandbox payment — no real charge will be made.</span>
         </div>
-        <div class="gpay-test-note" id="gpay-test-note-mobile" style="display:none;">
-            <span class="test-tag">Test mode</span> Sandbox payment — no real charge will be made.
-        </div>
-        <div id="gpay-button-container-mobile" style="display:none;"></div>
         
         <div class="voucher-row">
             <input type="text" id="voucher-code-mobile" class="voucher-input" placeholder="Have a voucher code?" autocomplete="off">
@@ -1063,6 +1025,11 @@
         <button id="submitBtn" onclick="confirmBooking()">
             <span id="submitLabel">Set pickup &amp; destination</span>
         </button>
+
+        <div class="gpay-test-note" id="gpay-test-note-mobile" style="display:none; margin-top: 14px;">
+            <span class="test-tag">Test mode</span> Sandbox payment — no real charge will be made.
+        </div>
+        <div id="gpay-button-container-mobile" style="display:none; width: 100%; margin-top: 8px;"></div>
     </div>
     <div id="view-track" style="display:none;">
         <div id="track-empty-mobile" class="track-empty">
@@ -1230,30 +1197,14 @@
                 <button class="pay-pill" id="pay-pill-cash-sb" onclick="selectPaymentMethod('cash','sb')">
                     <i class="fa-solid fa-money-bill-wave"></i>Cash
                 </button>
-                <button class="pay-pill hidden" id="pay-pill-gpay-sb" onclick="selectPaymentMethod('google_pay','sb')">
-                    <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                    </svg>
-                    Pay
-                </button>
                 <button class="pay-pill active" id="pay-pill-paystack-sb" onclick="selectPaymentMethod('paystack','sb')">
                     <i class="fa-solid fa-credit-card"></i> Card
-                </button>
-                <button class="pay-pill" id="pay-pill-ikhokha-sb" onclick="selectPaymentMethod('ikhokha','sb')">
-                    <i class="fa-solid fa-wallet"></i> iKhokha
                 </button>
             </div>
             <div class="paystack-test-note" id="paystack-test-note-sb">
                 <span class="test-tag" id="paystack-test-tag-sb">Test mode</span>
                 <span id="paystack-test-msg-sb">Sandbox payment — no real charge will be made.</span>
             </div>
-            <div class="gpay-test-note" id="gpay-test-note-sb" style="display:none;">
-                <span class="test-tag">Test mode</span> Sandbox payment — no real charge will be made.
-            </div>
-            <div id="gpay-button-container-sb" class="gpay-btn-container-el" style="display:none;"></div>
             
             <div class="voucher-row">
                 <input type="text" id="voucher-code-sb" class="voucher-input" placeholder="Have a voucher code?" autocomplete="off">
@@ -1263,6 +1214,11 @@
             <button class="submit-btn-el" id="submitBtn-sb" onclick="confirmBooking()">
                 <span id="submitLabel-sb">Set pickup &amp; destination</span>
             </button>
+
+            <div class="gpay-test-note" id="gpay-test-note-sb" style="display:none; margin-top: 14px;">
+                <span class="test-tag">Test mode</span> Sandbox payment — no real charge will be made.
+            </div>
+            <div id="gpay-button-container-sb" class="gpay-btn-container-el" style="display:none; width: 100%; margin-top: 8px;"></div>
         </div>
 
         <div id="sb-view-track" style="display:none;">
@@ -1284,7 +1240,6 @@ import { getRemoteConfig, fetchAndActivate, getValue } from "https://www.gstatic
 const MAPBOX_TOKEN = "pk.eyJ1Ijoia2F0bGVnb3BoYXNoYSIsImEiOiJjbTlpOTdzbmYwMGNsMmpzYWJtZzN4d3pqIn0.Zt-aSMEoahrV3zkiVVHbOw";
 const SHIPDAY_KEY  = "K5a8wQJF3f.az2zfrhgzwxK9JONI2y8";
 let PAYSTACK_PUBLIC_KEY = null;
-let IKHOKHA_API_KEY = null;
 
 const firebaseConfig = {
     apiKey: "AIzaSyBQSPwpVbGrdCuOoyitAeWQHIeipj2MgIY",
@@ -1304,8 +1259,7 @@ const provider = new GoogleAuthProvider();
 const remoteConfig = getRemoteConfig(fbApp);
 remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
 remoteConfig.defaultConfig = { 
-    paystack_public_key: "",
-    ikhokha_api_key: ""
+    paystack_public_key: ""
 };
 
 async function initRemoteConfig() {
@@ -1316,10 +1270,6 @@ async function initRemoteConfig() {
             PAYSTACK_PUBLIC_KEY = pKey; 
             updatePaystackTestNote('mobile'); 
             updatePaystackTestNote('sb'); 
-        }
-        const iKey = getValue(remoteConfig, "ikhokha_api_key").asString();
-        if (iKey) {
-            IKHOKHA_API_KEY = iKey;
         }
     } catch(e) { console.warn("Remote Config fetch failed:", e.message); }
 }
@@ -1722,7 +1672,7 @@ function mapShipdayState(state) {
     if (['ASSIGNED', 'STARTED', 'ACCEPTED'].includes(s)) return 'assigned'; 
     if (['PICKED_UP', 'READY_TO_DELIVER', 'IN_TRANSIT'].includes(s)) return 'in_transit'; 
     if (['ALREADY_DELIVERED', 'DELIVERED', 'COMPLETED'].includes(s)) return 'delivered';
-    if (['FAILED', 'CANCELED', 'CANCELLED'].includes(s)) return 'cancelled';
+    if (['FAILED', 'CANCELED', 'CANCELLED', 'INCOMPLETED'].includes(s)) return 'cancelled';
     return null;
 }
 
@@ -2294,21 +2244,15 @@ window.selectPaymentMethod = function(type,ctx) {
     }
 
     selectedPayment[ctx]=type;
-    ['cash','gpay','paystack','ikhokha'].forEach(p=>{
-        const id=p==='gpay'?`pay-pill-gpay-${ctx}`:p==='ikhokha'?`pay-pill-ikhokha-${ctx}`:`pay-pill-${p}-${ctx}`;
+    ['cash','paystack'].forEach(p=>{
+        const id=`pay-pill-${p}-${ctx}`;
         const el=document.getElementById(id); if(el) el.classList.remove('active');
     });
     
-    const activeId=type==='google_pay'?`pay-pill-gpay-${ctx}`:type==='ikhokha'?`pay-pill-ikhokha-${ctx}`:`pay-pill-paystack-${ctx}`;
+    const activeId=`pay-pill-paystack-${ctx}`;
     const activeEl=document.getElementById(activeId); if(activeEl) activeEl.classList.add('active');
 
-    const gpCont=document.getElementById(`gpay-button-container-${ctx}`);
-    const gpNote=document.getElementById(`gpay-test-note-${ctx}`);
-    if(gpCont) gpCont.style.display=type==='google_pay'?'block':'none';
-    if(gpNote) gpNote.style.display=type==='google_pay'?'flex':'none';
-
     updatePaystackTestNote(ctx);
-    if(type==='google_pay') requestAnimationFrame(()=>setTimeout(()=>ensureGooglePayButton(ctx),50));
     updateSubmitBtn();
 };
 
@@ -2335,8 +2279,6 @@ function updateSubmitBtn() {
             
             if(selectedPayment[ctx]==='paystack') {
                 label.innerHTML=`<i class="fa-solid fa-credit-card"></i> Pay R${total} with Paystack`;
-            } else if (selectedPayment[ctx]==='ikhokha') {
-                label.innerHTML=`<i class="fa-solid fa-wallet"></i> Pay R${total} with iKhokha`;
             } else {
                 label.textContent=`Book ${selectedPkg.name} · R${total}`;
             }
@@ -2345,15 +2287,28 @@ function updateSubmitBtn() {
             // Update route bar explicit pricing dynamically to match total
             ['route-price','sb-route-price'].forEach(id=>{ const routeEl=document.getElementById(id); if(routeEl) routeEl.textContent=`R${total}`; });
         }
-        btn.style.display=selectedPayment[ctx]==='google_pay'?'none':'flex';
     });
 }
 
 /* ─── Sheet / tab ─── */
 let sheetCollapsed=false;
 window.toggleSheet = ()=>{ sheetCollapsed=!sheetCollapsed; document.getElementById('sheet').classList.toggle('collapsed',sheetCollapsed); };
-window.switchTab = tab=>{ const s=tab==='send'; document.getElementById('view-send').style.display=s?'block':'none'; document.getElementById('view-track').style.display=s?'none':'block'; document.getElementById('tab-send').classList.toggle('active',s); document.getElementById('tab-track').classList.toggle('active',!s); };
-window.sbSwitchTab = tab=>{ const s=tab==='send'; document.getElementById('sb-view-send').style.display=s?'block':'none'; document.getElementById('sb-view-track').style.display=s?'none':'block'; document.getElementById('sb-tab-send').classList.toggle('active',s); document.getElementById('sb-tab-track').classList.toggle('active',!s); };
+window.switchTab = tab=>{ 
+    const s=tab==='send'; 
+    document.getElementById('view-send').style.display=s?'block':'none'; 
+    document.getElementById('view-track').style.display=s?'none':'block'; 
+    document.getElementById('tab-send').classList.toggle('active',s); 
+    document.getElementById('tab-track').classList.toggle('active',!s); 
+    if(!s) syncActiveOrdersWithShipday(); // Explicit Shipday API fetch on tracking tab
+};
+window.sbSwitchTab = tab=>{ 
+    const s=tab==='send'; 
+    document.getElementById('sb-view-send').style.display=s?'block':'none'; 
+    document.getElementById('sb-view-track').style.display=s?'none':'block'; 
+    document.getElementById('sb-tab-send').classList.toggle('active',s); 
+    document.getElementById('sb-tab-track').classList.toggle('active',!s); 
+    if(!s) syncActiveOrdersWithShipday(); // Explicit Shipday API fetch on tracking tab
+};
 
 /* ─── Paystack SDK ─── */
 async function processPaystackPayment(amountRands, email) {
@@ -2441,23 +2396,6 @@ window.confirmBooking = async function() {
     const btn   = document.getElementById(ctx==='sb'?'submitBtn-sb':'submitBtn');
     const label = document.getElementById(ctx==='sb'?'submitLabel-sb':'submitLabel');
     
-    // Handle newly added iKhokha
-    if(selectedPayment[ctx]==='ikhokha') {
-        if (!IKHOKHA_API_KEY) {
-            showToast('error', 'Configuration Error', 'iKhokha API key could not be loaded.');
-            return;
-        }
-        label.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
-        btn.disabled=true;
-        showToast('info','iKhokha Gateway','Initializing iKhokha payment...');
-        
-        // Mocking the iKhokha API window initialization wait
-        setTimeout(async () => {
-            await doBookOrder({method:'ikhokha', testMode:false});
-        }, 1500);
-        return;
-    }
-    
     if(selectedPayment[ctx]==='paystack') {
         let total = calculateTotalPrice();
         let discount = appliedVoucherDiscount[ctx] || 0;
@@ -2515,7 +2453,7 @@ let googlePayClient=null, gpayAvailable=false;
 const gpayBaseCardMethod={type:'CARD',parameters:{allowedAuthMethods:['PAN_ONLY','CRYPTOGRAM_3DS'],allowedCardNetworks:['VISA','MASTERCARD']}};
 const gpayCardMethod={...gpayBaseCardMethod,tokenizationSpecification:{type:'PAYMENT_GATEWAY',parameters:{gateway:'example',gatewayMerchantId:'exampleGatewayMerchantId'}}};
 function gpayPaymentDataRequest(amountZAR) {
-    return {apiVersion:2,apiVersionMinor:0,allowedPaymentMethods:[gpayCardMethod],merchantInfo:{merchantName:'Pace Logistics (Test)'},transactionInfo:{countryCode:'ZA',currencyCode:'ZAR',totalPriceStatus:'FINAL',totalPrice:amountZAR.toFixed(2)}};
+    return {apiVersion:2,apiVersionMinor:0,allowedPaymentMethods:[gpayCardMethod],merchantInfo:{merchantName:'Pace Logistics'},transactionInfo:{countryCode:'ZA',currencyCode:'ZAR',totalPriceStatus:'FINAL',totalPrice:amountZAR.toFixed(2)}};
 }
 function waitForGooglePayScript() {
     return new Promise(resolve=>{ if(window.google&&window.google.payments) return resolve(); window.addEventListener('gpayready',()=>resolve(),{once:true}); setTimeout(()=>{if(window.google&&window.google.payments)resolve();},1500); });
@@ -2525,7 +2463,14 @@ async function initGooglePay() {
     if(!window.google||!window.google.payments) return;
     googlePayClient=new google.payments.api.PaymentsClient({environment:'TEST'});
     try { const r=await googlePayClient.isReadyToPay({apiVersion:2,apiVersionMinor:0,allowedPaymentMethods:[gpayBaseCardMethod]}); gpayAvailable=!!r.result; } catch(e){gpayAvailable=false;}
-    if(gpayAvailable) { ['pay-pill-gpay-mobile','pay-pill-gpay-sb'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('hidden');}); }
+    if(gpayAvailable) { 
+        ensureGooglePayButton('mobile'); 
+        ensureGooglePayButton('sb'); 
+        const gpNoteM = document.getElementById('gpay-test-note-mobile');
+        const gpNoteSb = document.getElementById('gpay-test-note-sb');
+        if (gpNoteM) gpNoteM.style.display = 'flex';
+        if (gpNoteSb) gpNoteSb.style.display = 'flex';
+    }
 }
 
 let gpayButtonCreated={mobile:false,sb:false};
@@ -2543,6 +2488,7 @@ function ensureGooglePayButton(ctx) {
     
     const cont = document.getElementById(`gpay-button-container-${ctx}`);
     if(cont) {
+        cont.style.display = 'block';
         cont.innerHTML = ''; /* Ensures no duplicates are added */
         cont.appendChild(btn);
     }
