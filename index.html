@@ -195,6 +195,17 @@
         .dest-marker i { transform: rotate(45deg); font-size: 13px; color: #fff; }
         .dest-marker.dropoff { background: #3b82f6; }
 
+        /* ── Driver Markers ── */
+        .driver-marker {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: #18181b; border: 2.5px solid #fff;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: transform 0.2s ease;
+        }
+        .driver-marker:hover { transform: scale(1.1); }
+        .driver-marker i { font-size: 13px; color: #fff; }
+
         /* ════════════════════════════════════════
            MOBILE LAYOUT (default)
         ════════════════════════════════════════ */
@@ -1449,6 +1460,7 @@ async function executeAuth(type) {
 
 window.signOut = async function() {
     await fbSignOut(auth);
+    stopDriverTracking();
     showToast('info','Signed out','See you next time.');
     closeProfile(); desktopShowMain();
 };
@@ -2060,6 +2072,88 @@ window.applyVoucherSheet = function() {
     } else { showToast('error', 'Invalid voucher', 'The code you entered is not valid.'); }
 };
 
+/* ─── Online Drivers Tracking ─── */
+let driverMarkers = {};
+let driversInterval = null;
+
+async function fetchAndDisplayDrivers() {
+    if (!SHIPDAY_KEY) return;
+    try {
+        const res = await fetch("https://api.shipday.com/carriers", {
+            method: "GET",
+            headers: {
+                "Authorization": `Basic ${SHIPDAY_KEY}`,
+                "Content-Type": "application/json"
+            }
+        });
+        
+        if (!res.ok) throw new Error("Failed to fetch from Shipday API");
+        
+        const carriers = await res.json();
+        const currentDriverIds = new Set();
+        
+        carriers.forEach(carrier => {
+            // Extract location safely
+            const lat = carrier.latitude || (carrier.location && carrier.location.latitude);
+            const lng = carrier.longitude || (carrier.location && carrier.location.longitude);
+            const isOnShift = carrier.isOnShift !== false; // Evaluate if active
+            
+            if (lat && lng && isOnShift) {
+                const id = carrier.carrierId || carrier.id;
+                currentDriverIds.add(id);
+                updateDriverMarker(carrier, lng, lat);
+            }
+        });
+        
+        // Cleanup markers for drivers who went offline or ended shift
+        Object.keys(driverMarkers).forEach(id => {
+            if (!currentDriverIds.has(Number(id)) && !currentDriverIds.has(id)) {
+                driverMarkers[id].remove();
+                delete driverMarkers[id];
+            }
+        });
+        
+    } catch(e) {
+        console.warn("Live driver fetch issue:", e.message);
+    }
+}
+
+function updateDriverMarker(carrier, lng, lat) {
+    const id = carrier.carrierId || carrier.id;
+    
+    if (driverMarkers[id]) {
+        // Update position for existing marker
+        driverMarkers[id].setLngLat([lng, lat]);
+    } else {
+        // Create new marker DOM element
+        const el = document.createElement('div');
+        el.className = 'driver-marker';
+        el.innerHTML = '<i class="fa-solid fa-car-side"></i>';
+        
+        // Optional popup displaying the driver's name
+        const popup = new mapboxgl.Popup({ offset: 25, closeButton: false, closeOnClick: true })
+            .setHTML(`<div style="font-size: 12px; font-weight: 700; color: #18181b; padding: 2px;">${carrier.name || 'Pace Driver'}</div>`);
+        
+        driverMarkers[id] = new mapboxgl.Marker({ element: el })
+            .setLngLat([lng, lat])
+            .setPopup(popup)
+            .addTo(map);
+    }
+}
+
+function startDriverTracking() {
+    fetchAndDisplayDrivers(); // Initial fetch
+    // Poll Shipday every 15 seconds to update coordinates
+    if (!driversInterval) driversInterval = setInterval(fetchAndDisplayDrivers, 15000); 
+}
+
+function stopDriverTracking() {
+    if (driversInterval) {
+        clearInterval(driversInterval);
+        driversInterval = null;
+    }
+}
+
 /* ─── Map ─── */
 mapboxgl.accessToken = MAPBOX_TOKEN;
 let map, userMarker, dropoffMarker;
@@ -2098,6 +2192,8 @@ function initMap() {
     setupSearch('pickup','mobile'); setupSearch('dropoff','mobile');
     setupSearch('pickup','sb');     setupSearch('dropoff','sb');
     updateSubmitBtn();
+
+    startDriverTracking();
 }
 
 async function setLocationFromDrag(type, lng, lat) {
