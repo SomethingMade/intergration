@@ -30,15 +30,6 @@
             transition: opacity 0.55s ease;
         }
         #splash.hide { opacity: 0; pointer-events: none; }
-        
-        @keyframes splashPulse {
-            0%   { transform: scale(0.95); }
-            50%  { transform: scale(1.05); }
-            100% { transform: scale(0.95); }
-        }
-        .splash-logo-anim {
-            animation: splashPulse 1.8s ease-in-out infinite;
-        }
 
         /* ── Sign-in Gate & Auth ── */
         #signin-gate {
@@ -197,20 +188,26 @@
 
         /* ── Dest Markers ── */
         .dest-marker-wrap {
-            position: relative; width: 14px; height: 14px; cursor: grab;
-            display: flex; align-items: center; justify-content: center;
+            position: relative; width: 36px; height: 46px; cursor: grab;
+            display: flex; justify-content: center;
         }
         .dest-marker-wrap:active { cursor: grabbing; }
         .dest-marker-bg {
-            width: 14px; height: 14px; border-radius: 2px;
-            background: #18181b; border: 2px solid #fff;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            width: 36px; height: 36px; border-radius: 50%;
+            border: 2.5px solid #fff; box-shadow: 0 3px 12px rgba(0,0,0,0.3);
             display: flex; align-items: center; justify-content: center;
-            z-index: 2; position: absolute;
+            z-index: 2; position: absolute; top: 0;
         }
         .dest-marker-bg.dropoff { background: #3b82f6; }
-        .dest-marker-bg i { display: none; }
-        .dest-marker-caret { display: none; }
+        .dest-marker-bg i { font-size: 14px; color: #fff; }
+        .dest-marker-caret {
+            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 6px solid transparent; border-right: 6px solid transparent;
+            border-top: 14px solid #3b82f6;
+            z-index: 1;
+        }
+        .dest-marker-caret.dropoff { border-top-color: #3b82f6; }
 
         /* ── Driver Markers ── */
         .driver-marker {
@@ -978,7 +975,7 @@
 <div id="toast-container"></div>
 
 <div id="splash">
-    <img src="https://i.postimg.cc/Fsj0YWjK/PACE-PARCELS.png" alt="Pace Logistics Logo" class="splash-logo-anim" style="max-width: 250px; height: auto;">
+    <img src="https://i.postimg.cc/Fsj0YWjK/PACE-PARCELS.png" alt="Pace Logistics Logo" style="max-width: 250px; height: auto;">
 </div>
 
 <div id="signin-gate">
@@ -2420,7 +2417,7 @@ function buildDestEl(type) {
         <div class="dest-marker-bg ${type}">
             <i class="fa-solid fa-flag-checkered"></i>
         </div>
-        <div class="dest-marker-caret"></div>
+        <div class="dest-marker-caret ${type}"></div>
     `;
     return wrap;
 }
@@ -2430,7 +2427,7 @@ function placeDestMarker(type,lng,lat) {
         if(dropoffMarker) {
             dropoffMarker.setLngLat([lng,lat]);
         } else {
-            dropoffMarker = new mapboxgl.Marker({ element: buildDestEl('dropoff'), anchor: 'center', draggable: true }).setLngLat([lng,lat]).addTo(map);
+            dropoffMarker = new mapboxgl.Marker({ element: buildDestEl('dropoff'), anchor: 'bottom', draggable: true }).setLngLat([lng,lat]).addTo(map);
             dropoffMarker.on('dragend', async () => {
                 const ll = dropoffMarker.getLngLat();
                 selectedCoords['dropoff'] = [ll.lng, ll.lat];
@@ -2504,7 +2501,7 @@ function getPulseSlice(coords, distances, total, startFrac, endFrac) {
 
 function startPulseAnimation() {
     let startTimestamp = null;
-    const duration = 2000; // 2 seconds
+    const duration = 3000; 
     const pulseLen = 0.25; 
     
     function step(timestamp) {
@@ -2549,11 +2546,6 @@ async function drawRoute() {
         document.getElementById('sb-route-bar').classList.add('visible');
 
         allRouteCoords = route.geometry.coordinates;
-        
-        // Exact marker connection points (Option 1)
-        allRouteCoords.unshift([p.lng, p.lat]);
-        allRouteCoords.push([d.lng, d.lat]);
-        
         routeDists = computeDistances(allRouteCoords);
 
         if(!map.getSource('route')) {
