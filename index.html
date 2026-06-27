@@ -157,28 +157,28 @@
         .terms-accept-btn:active { transform: scale(0.98); }
 
         /* ── User Map Marker ── */
-        .user-marker-wrap { position: relative; width: 54px; height: 54px; cursor: grab; }
+        .user-marker-wrap { position: relative; width: 54px; height: 64px; cursor: grab; display: flex; justify-content: center;}
         .user-marker-wrap:active { cursor: grabbing; }
         .user-marker-pulse {
-            position: absolute; inset: 0; border-radius: 50%;
+            position: absolute; top: 0; left: 0; width: 54px; height: 54px; border-radius: 50%;
             background: rgba(59,130,246,0.25);
             animation: mpulse 2.4s ease-out infinite;
         }
         .user-marker-avatar {
-            position: absolute; inset: 6px; border-radius: 50%;
+            position: absolute; top: 6px; left: 6px; width: 42px; height: 42px; border-radius: 50%;
             border: 2.5px solid #fff;
             box-shadow: 0 2px 14px rgba(0,0,0,0.4);
             overflow: hidden; background: #18181b;
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: center; justify-content: center; z-index: 2;
         }
         .user-marker-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .user-marker-avatar .av-init { color: #fff; font-size: 13px; font-weight: 800; }
         .user-marker-caret {
-            position: absolute; bottom: -7px; left: 50%; transform: translateX(-50%);
+            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
             width: 0; height: 0;
             border-left: 7px solid transparent; border-right: 7px solid transparent;
-            border-top: 9px solid #fff;
-            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));
+            border-top: 14px solid #fff;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25)); z-index: 1;
         }
         @keyframes mpulse {
             0%   { transform: scale(0.8);  opacity: 0.7; }
@@ -187,16 +187,27 @@
         }
 
         /* ── Dest Markers ── */
-        .dest-marker {
-            width: 36px; height: 36px; border-radius: 50% 50% 50% 0;
-            transform: rotate(-45deg); border: 2.5px solid #fff;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.3);
-            display: flex; align-items: center; justify-content: center;
-            cursor: grab;
+        .dest-marker-wrap {
+            position: relative; width: 36px; height: 46px; cursor: grab;
+            display: flex; justify-content: center;
         }
-        .dest-marker:active { cursor: grabbing; }
-        .dest-marker i { transform: rotate(45deg); font-size: 13px; color: #fff; }
-        .dest-marker.dropoff { background: #3b82f6; }
+        .dest-marker-wrap:active { cursor: grabbing; }
+        .dest-marker-bg {
+            width: 36px; height: 36px; border-radius: 50%;
+            border: 2.5px solid #fff; box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2; position: absolute; top: 0;
+        }
+        .dest-marker-bg.dropoff { background: #3b82f6; }
+        .dest-marker-bg i { font-size: 14px; color: #fff; }
+        .dest-marker-caret {
+            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 6px solid transparent; border-right: 6px solid transparent;
+            border-top: 14px solid #fff; 
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+            z-index: 1;
+        }
 
         /* ── Driver Markers ── */
         .driver-marker {
@@ -1404,7 +1415,6 @@
 <script type="module">
 /* ─── PWA Dynamic Injection (Manifest & Service Worker) ─── */
 (function setupPWA() {
-    // 1. Inject Dynamic Web Manifest
     const manifest = {
         name: "Pace Parcels",
         short_name: "Pace",
@@ -1422,7 +1432,6 @@
     const manifestData = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
     document.getElementById('dynamic-manifest').setAttribute('href', manifestData);
 
-    // 2. Register Dynamic Minimal Service Worker 
     if ('serviceWorker' in navigator) {
         const swScript = `
             self.addEventListener('install', e => self.skipWaiting());
@@ -1437,11 +1446,8 @@
 /* ─── PWA Install Prompt Logic ─── */
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent default browser install infobar
     e.preventDefault();
     deferredPrompt = e;
-    
-    // Show our custom UI install banners
     document.querySelectorAll('.pwa-install-banner').forEach(el => el.style.display = 'flex');
 });
 
@@ -1450,9 +1456,7 @@ window.installPWA = async () => {
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
         if (outcome === 'accepted') console.log('User accepted the install prompt');
-        
         deferredPrompt = null;
-        // Hide the custom banner once the process is done
         document.querySelectorAll('.pwa-install-banner').forEach(el => el.style.display = 'none');
     }
 };
@@ -1520,6 +1524,7 @@ let selectedCoords = { pickup: null, dropoff: null };
 let suggFeatures   = { pickup: [], dropoff: [] };
 let debounceTimers = {};
 let appliedVoucherDiscount = { mobile: 0, sb: 0 };
+let routeAnimationId = null;
 
 /* ─── Package catalogue & live pricing ─── */
 const PACKAGE_META = {
@@ -2240,12 +2245,10 @@ async function fetchAndDisplayDrivers() {
         
         if (Array.isArray(carriers)) {
             carriers.forEach(carrier => {
-                // Ensure robust extraction of coordinates from nested location objects
                 const loc = carrier.carrierLocation || carrier.location || {};
                 const lat = carrier.latitude || loc.latitude;
                 const lng = carrier.longitude || loc.longitude;
                 
-                // Active status check
                 const isOnline = carrier.isOnShift === true;
                 
                 if (lat && lng && isOnline) {
@@ -2256,7 +2259,6 @@ async function fetchAndDisplayDrivers() {
             });
         }
         
-        // Cleanup markers for drivers who went offline or ended shift
         Object.keys(driverMarkers).forEach(id => {
             if (!currentDriverIds.has(id)) {
                 driverMarkers[id].remove();
@@ -2271,15 +2273,12 @@ async function fetchAndDisplayDrivers() {
 
 function updateDriverMarker(carrier, lng, lat, id) {
     if (driverMarkers[id]) {
-        // Update position for existing marker smoothly
         driverMarkers[id].setLngLat([lng, lat]);
     } else {
-        // Create new marker DOM element
         const el = document.createElement('div');
         el.className = 'driver-marker';
         el.innerHTML = '<i class="fa-solid fa-car-side"></i>';
         
-        // Popup displaying the driver's name and online status indicator
         const popup = new mapboxgl.Popup({ offset: 25, closeButton: false, closeOnClick: true })
             .setHTML(`<div style="font-size: 12px; font-weight: 700; color: #18181b; padding: 4px;">${carrier.name || 'Pace Driver'} <br><span style="color:#15803d; font-size:10px;">● Online</span></div>`);
         
@@ -2291,8 +2290,7 @@ function updateDriverMarker(carrier, lng, lat, id) {
 }
 
 function startDriverTracking() {
-    fetchAndDisplayDrivers(); // Initial fetch
-    // Poll Shipday every 10 seconds to update active driver coordinates
+    fetchAndDisplayDrivers(); 
     if (!driversInterval) driversInterval = setInterval(fetchAndDisplayDrivers, 10000); 
 }
 
@@ -2301,7 +2299,6 @@ function stopDriverTracking() {
         clearInterval(driversInterval);
         driversInterval = null;
     }
-    // Clean up map artifacts when tracking is stopped
     Object.values(driverMarkers).forEach(marker => marker.remove());
     driverMarkers = {};
 }
@@ -2368,15 +2365,17 @@ async function setLocationFromDrag(type, lng, lat) {
 }
 
 function buildAvatarEl() {
-    const wrap=document.createElement('div'); wrap.className='user-marker-wrap';
-    const pulse=document.createElement('div'); pulse.className='user-marker-pulse';
-    const av=document.createElement('div'); av.className='user-marker-avatar';
+    const wrap = document.createElement('div'); wrap.className = 'user-marker-wrap';
+    const pulse = document.createElement('div'); pulse.className = 'user-marker-pulse';
+    const av = document.createElement('div'); av.className = 'user-marker-avatar';
+    
     if(userProfile.photoURL) {
-        const img=document.createElement('img'); img.src=userProfile.photoURL;
-        img.onerror=()=>{ img.remove(); const sp=document.createElement('span'); sp.className='av-init'; sp.textContent=initials(userProfile.name); av.appendChild(sp); };
+        const img = document.createElement('img'); img.src = userProfile.photoURL;
+        img.onerror = () => { img.remove(); const sp = document.createElement('span'); sp.className = 'av-init'; sp.textContent = initials(userProfile.name); av.appendChild(sp); };
         av.appendChild(img);
-    } else { const sp=document.createElement('span'); sp.className='av-init'; sp.textContent=initials(userProfile.name); av.appendChild(sp); }
-    const caret=document.createElement('div'); caret.className='user-marker-caret';
+    } else { const sp = document.createElement('span'); sp.className = 'av-init'; sp.textContent = initials(userProfile.name); av.appendChild(sp); }
+    
+    const caret = document.createElement('div'); caret.className = 'user-marker-caret';
     
     wrap.appendChild(pulse); wrap.appendChild(av); wrap.appendChild(caret);
 
@@ -2409,9 +2408,15 @@ function placeUserMarker(lng,lat) {
 function refreshMapMarker() { if(!userMarker) return; const ll=userMarker.getLngLat(); placeUserMarker(ll.lng,ll.lat); }
 
 function buildDestEl(type) {
-    const el=document.createElement('div'); el.className=`dest-marker ${type}`;
-    el.innerHTML='<i class="fa-solid fa-flag-checkered"></i>';
-    return el;
+    const wrap = document.createElement('div');
+    wrap.className = `dest-marker-wrap`;
+    wrap.innerHTML = `
+        <div class="dest-marker-bg ${type}">
+            <i class="fa-solid fa-flag-checkered"></i>
+        </div>
+        <div class="dest-marker-caret"></div>
+    `;
+    return wrap;
 }
 
 function placeDestMarker(type,lng,lat) {
@@ -2433,27 +2438,66 @@ function placeDestMarker(type,lng,lat) {
 
 async function drawRoute() {
     if (!userMarker || !dropoffMarker) return;
-    const p=userMarker.getLngLat(), d=dropoffMarker.getLngLat();
+    const p = userMarker.getLngLat(), d = dropoffMarker.getLngLat();
     try {
-        const res=await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${p.lng},${p.lat};${d.lng},${d.lat}?geometries=geojson&access_token=${MAPBOX_TOKEN}`);
-        const data=await res.json();
+        const res = await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${p.lng},${p.lat};${d.lng},${d.lat}?geometries=geojson&access_token=${MAPBOX_TOKEN}`);
+        const data = await res.json();
         if(!data.routes?.[0]) return;
-        const route=data.routes[0];
-        routeDistKm=parseFloat((route.distance/1000).toFixed(1));
-        const mins=Math.ceil(route.duration/60);
-        const timeStr=mins>=60?`${Math.floor(mins/60)}h ${mins%60}m`:`${mins} min`;
-        setRouteBarValues(routeDistKm+' km', timeStr);
+        
+        const route = data.routes[0];
+        routeDistKm = parseFloat((route.distance/1000).toFixed(1));
+        const mins = Math.ceil(route.duration/60);
+        const timeStr = mins >= 60 ? `${Math.floor(mins/60)}h ${mins%60}m` : `${mins} min`;
+        
+        setRouteBarValues(routeDistKm + ' km', timeStr);
         updateRoutePrice();
         updateFoodPackageAvailability();
         document.getElementById('route-bar').classList.add('visible');
         document.getElementById('sb-route-bar').classList.add('visible');
-        const geojson={type:'Feature',geometry:route.geometry};
-        if(map.getSource('route')) map.getSource('route').setData(geojson);
-        else {
-            map.addSource('route',{type:'geojson',data:geojson});
-            map.addLayer({id:'route',type:'line',source:'route',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#18181b','line-width':4,'line-opacity':0.85}});
+
+        // Set up line layer map source if it doesn't already exist
+        if(!map.getSource('route')) {
+            map.addSource('route', { type: 'geojson', data: { type: 'Feature', geometry: { type: 'LineString', coordinates: [] } } });
+            map.addLayer({
+                id: 'route',
+                type: 'line',
+                source: 'route',
+                layout: { 'line-join': 'round', 'line-cap': 'round' },
+                paint: { 'line-color': '#18181b', 'line-width': 4.5, 'line-opacity': 0.85 }
+            });
         }
+
+        const allCoords = route.geometry.coordinates;
+        const currentCoords = [];
+        const geojson = { type: 'Feature', geometry: { type: 'LineString', coordinates: currentCoords } };
+
+        // Cancel previous animation if route is redrawn
+        if (routeAnimationId) {
+            cancelAnimationFrame(routeAnimationId);
+        }
+
+        let i = 0;
+        const speed = Math.max(1, Math.floor(allCoords.length / 40)); // Responsive draw speed
+
+        // Animate line frame by frame
+        function animateLine() {
+            if (i < allCoords.length) {
+                for (let j = 0; j < speed && i < allCoords.length; j++) {
+                    currentCoords.push(allCoords[i]);
+                    i++;
+                }
+                map.getSource('route').setData(geojson);
+                routeAnimationId = requestAnimationFrame(animateLine);
+            } else {
+                // Ensure end point is included perfectly when animation is done
+                geojson.geometry.coordinates = allCoords;
+                map.getSource('route').setData(geojson);
+            }
+        }
+        
+        animateLine();
         updateSubmitBtn();
+        
     } catch(e) { console.error('Route error',e); }
 }
 
@@ -2546,6 +2590,11 @@ window.clearInput = function(type,ctx) {
     selectedCoords[type]=null;
     
     if(type==='dropoff'&&dropoffMarker) { dropoffMarker.remove(); dropoffMarker=null; }
+    
+    if (routeAnimationId) {
+        cancelAnimationFrame(routeAnimationId);
+        routeAnimationId = null;
+    }
     
     if(map?.getSource('route')) map.getSource('route').setData({type:'Feature',geometry:{type:'LineString',coordinates:[]}});
     document.getElementById('route-bar').classList.remove('visible');
@@ -2682,27 +2731,24 @@ window.switchTab = function(tab) {
     const s = tab === 'send'; 
     const p = tab === 'profile';
     
-    // Manage display of views inside the sheet
     document.getElementById('view-send').style.display = s ? 'block' : 'none'; 
     document.getElementById('view-track').style.display = tab === 'track' ? 'block' : 'none'; 
     document.getElementById('view-profile').style.display = p ? 'block' : 'none'; 
     
-    // Manage bottom nav active states for mobile
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     const activeNav = document.getElementById('nav-item-' + tab);
     if(activeNav) activeNav.classList.add('active');
     
-    // Apply full view expansion specifically for profile
     const sheet = document.getElementById('sheet');
     const topBar = document.getElementById('top-bar');
     if (p) {
         sheet.classList.add('full-view');
         sheet.classList.remove('collapsed');
-        if (topBar) topBar.style.display = 'none'; // Hide top-bar to prevent overlay issues
+        if (topBar) topBar.style.display = 'none'; 
         if (currentUser) renderProfileUI();
     } else {
         sheet.classList.remove('full-view');
-        if (topBar) topBar.style.display = ''; // Revert to CSS handling
+        if (topBar) topBar.style.display = ''; 
         if(!s) syncActiveOrdersWithShipday(); 
     }
 };
