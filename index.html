@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#18181b">
     <title>Pace Logistics</title>
+
+    <link id="dynamic-manifest" rel="manifest">
 
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
@@ -217,6 +220,27 @@
             padding: 52px 16px 0;
             transition: opacity 0.2s ease;
         }
+
+        /* PWA Install Banner */
+        .pwa-install-banner {
+            display: none; /* Hidden by default until prompted */
+            align-items: center; justify-content: space-between;
+            background: rgba(255,255,255,0.97); backdrop-filter: blur(20px);
+            border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            padding: 12px 14px; margin-bottom: 12px;
+            animation: slideDown 0.3s ease-out;
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .pwa-banner-left { display: flex; align-items: center; gap: 12px; }
+        .pwa-banner-left img { width: 38px; height: 38px; border-radius: 10px; object-fit: contain; background: #fff; }
+        .pwa-title { font-size: 13.5px; font-weight: 800; color: #18181b; }
+        .pwa-sub { font-size: 11px; color: #71717a; margin-top: 2px; }
+        .pwa-install-btn {
+            background: #18181b; color: #fff; border: none; border-radius: 10px;
+            padding: 8px 16px; font-size: 12px; font-weight: 700; cursor: pointer;
+            font-family: 'Inter', sans-serif; transition: transform 0.15s;
+        }
+        .pwa-install-btn:active { transform: scale(0.94); }
 
         .search-card {
             background: rgba(255,255,255,0.97); backdrop-filter: blur(20px);
@@ -1006,6 +1030,17 @@
 <div id="map"></div>
 
 <div id="top-bar">
+    <div id="pwa-install-banner-mobile" class="pwa-install-banner">
+        <div class="pwa-banner-left">
+            <img src="https://i.postimg.cc/Fsj0YWjK/PACE-PARCELS.png" alt="Pace App Icon">
+            <div>
+                <div class="pwa-title">Pace Parcels App</div>
+                <div class="pwa-sub">Add to home screen</div>
+            </div>
+        </div>
+        <button class="pwa-install-btn" onclick="installPWA()">Install</button>
+    </div>
+
     <div class="search-card" id="search-card">
         <div class="search-row" style="border-radius:20px 20px 0 0; position:relative;">
             <span class="search-dot pickup"></span>
@@ -1252,6 +1287,17 @@
     </div>
 
     <div class="sb-search-section">
+        <div id="pwa-install-banner-sb" class="pwa-install-banner" style="margin-top: 4px;">
+            <div class="pwa-banner-left">
+                <img src="https://i.postimg.cc/Fsj0YWjK/PACE-PARCELS.png" alt="Pace App Icon">
+                <div>
+                    <div class="pwa-title">Pace Parcels Desktop</div>
+                    <div class="pwa-sub">Install application</div>
+                </div>
+            </div>
+            <button class="pwa-install-btn" onclick="installPWA()">Install</button>
+        </div>
+
         <div class="sb-search-label">Route</div>
         <div class="search-card" id="sb-search-card">
             <div class="search-row" style="border-radius:20px 20px 0 0; position:relative;">
@@ -1356,6 +1402,68 @@
 </div>
 
 <script type="module">
+/* ─── PWA Dynamic Injection (Manifest & Service Worker) ─── */
+(function setupPWA() {
+    // 1. Inject Dynamic Web Manifest
+    const manifest = {
+        name: "Pace Parcels",
+        short_name: "Pace",
+        description: "Send packages and track deliveries in real-time.",
+        start_url: location.href,
+        display: "standalone",
+        background_color: "#0a0a0a",
+        theme_color: "#18181b",
+        icons: [{
+            src: "https://i.postimg.cc/Fsj0YWjK/PACE-PARCELS.png",
+            sizes: "192x192 512x512",
+            type: "image/png"
+        }]
+    };
+    const manifestData = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
+    document.getElementById('dynamic-manifest').setAttribute('href', manifestData);
+
+    // 2. Register Dynamic Minimal Service Worker 
+    if ('serviceWorker' in navigator) {
+        const swScript = `
+            self.addEventListener('install', e => self.skipWaiting());
+            self.addEventListener('activate', e => self.clients.claim());
+            self.addEventListener('fetch', e => {}); 
+        `;
+        const blob = new Blob([swScript], { type: 'application/javascript' });
+        navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => console.warn('SW Register failed:', err));
+    }
+})();
+
+/* ─── PWA Install Prompt Logic ─── */
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent default browser install infobar
+    e.preventDefault();
+    deferredPrompt = e;
+    
+    // Show our custom UI install banners
+    document.querySelectorAll('.pwa-install-banner').forEach(el => el.style.display = 'flex');
+});
+
+window.installPWA = async () => {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') console.log('User accepted the install prompt');
+        
+        deferredPrompt = null;
+        // Hide the custom banner once the process is done
+        document.querySelectorAll('.pwa-install-banner').forEach(el => el.style.display = 'none');
+    }
+};
+
+window.addEventListener('appinstalled', () => {
+    document.querySelectorAll('.pwa-install-banner').forEach(el => el.style.display = 'none');
+    deferredPrompt = null;
+    showToast('success', 'App Installed', 'Pace Parcels is now available on your device.');
+});
+
+
 import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { getDatabase, ref, push, set, get, update, onValue, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
