@@ -2238,22 +2238,27 @@ async function fetchAndDisplayDrivers() {
         const carriers = await res.json();
         const currentDriverIds = new Set();
         
-        carriers.forEach(carrier => {
-            // Extract location safely
-            const lat = carrier.latitude || (carrier.location && carrier.location.latitude);
-            const lng = carrier.longitude || (carrier.location && carrier.location.longitude);
-            const isOnShift = carrier.isOnShift !== false; // Evaluate if active
-            
-            if (lat && lng && isOnShift) {
-                const id = carrier.carrierId || carrier.id;
-                currentDriverIds.add(id);
-                updateDriverMarker(carrier, lng, lat);
-            }
-        });
+        if (Array.isArray(carriers)) {
+            carriers.forEach(carrier => {
+                // Ensure robust extraction of coordinates from nested location objects
+                const loc = carrier.carrierLocation || carrier.location || {};
+                const lat = carrier.latitude || loc.latitude;
+                const lng = carrier.longitude || loc.longitude;
+                
+                // Active status check
+                const isOnline = carrier.isOnShift === true;
+                
+                if (lat && lng && isOnline) {
+                    const id = (carrier.carrierId || carrier.id).toString();
+                    currentDriverIds.add(id);
+                    updateDriverMarker(carrier, lng, lat, id);
+                }
+            });
+        }
         
         // Cleanup markers for drivers who went offline or ended shift
         Object.keys(driverMarkers).forEach(id => {
-            if (!currentDriverIds.has(Number(id)) && !currentDriverIds.has(id)) {
+            if (!currentDriverIds.has(id)) {
                 driverMarkers[id].remove();
                 delete driverMarkers[id];
             }
@@ -2264,11 +2269,9 @@ async function fetchAndDisplayDrivers() {
     }
 }
 
-function updateDriverMarker(carrier, lng, lat) {
-    const id = carrier.carrierId || carrier.id;
-    
+function updateDriverMarker(carrier, lng, lat, id) {
     if (driverMarkers[id]) {
-        // Update position for existing marker
+        // Update position for existing marker smoothly
         driverMarkers[id].setLngLat([lng, lat]);
     } else {
         // Create new marker DOM element
@@ -2276,9 +2279,9 @@ function updateDriverMarker(carrier, lng, lat) {
         el.className = 'driver-marker';
         el.innerHTML = '<i class="fa-solid fa-car-side"></i>';
         
-        // Optional popup displaying the driver's name
+        // Popup displaying the driver's name and online status indicator
         const popup = new mapboxgl.Popup({ offset: 25, closeButton: false, closeOnClick: true })
-            .setHTML(`<div style="font-size: 12px; font-weight: 700; color: #18181b; padding: 2px;">${carrier.name || 'Pace Driver'}</div>`);
+            .setHTML(`<div style="font-size: 12px; font-weight: 700; color: #18181b; padding: 4px;">${carrier.name || 'Pace Driver'} <br><span style="color:#15803d; font-size:10px;">● Online</span></div>`);
         
         driverMarkers[id] = new mapboxgl.Marker({ element: el })
             .setLngLat([lng, lat])
@@ -2289,8 +2292,8 @@ function updateDriverMarker(carrier, lng, lat) {
 
 function startDriverTracking() {
     fetchAndDisplayDrivers(); // Initial fetch
-    // Poll Shipday every 15 seconds to update coordinates
-    if (!driversInterval) driversInterval = setInterval(fetchAndDisplayDrivers, 15000); 
+    // Poll Shipday every 10 seconds to update active driver coordinates
+    if (!driversInterval) driversInterval = setInterval(fetchAndDisplayDrivers, 10000); 
 }
 
 function stopDriverTracking() {
@@ -2298,6 +2301,9 @@ function stopDriverTracking() {
         clearInterval(driversInterval);
         driversInterval = null;
     }
+    // Clean up map artifacts when tracking is stopped
+    Object.values(driverMarkers).forEach(marker => marker.remove());
+    driverMarkers = {};
 }
 
 /* ─── Map ─── */
