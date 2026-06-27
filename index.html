@@ -569,18 +569,36 @@
         .route-stat-lbl { font-size: 10px; color: #71717a; font-weight: 500; margin-top: 1px; }
         .route-divider  { width: 1px; height: 28px; background: #d4d4d8; }
 
-        .pkg-scroll { display: flex; gap: 10px; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; margin: 0 -20px; padding: 2px 20px 12px; scroll-behavior: smooth; }
+        /* Package Stack View Styles */
+        .pkg-scroll { 
+            display: flex; gap: 14px; overflow-x: auto; 
+            -ms-overflow-style: none; scrollbar-width: none; 
+            margin: 0 -20px; 
+            padding: 24px calc(50% - 63px) 32px; 
+            scroll-behavior: smooth; 
+            scroll-snap-type: x mandatory;
+            align-items: center;
+        }
         .pkg-scroll::-webkit-scrollbar { display: none; }
+        
         .pkg-card {
-            flex-shrink: 0; width: 126px;
+            flex-shrink: 0; width: 126px; height: 154px;
             border: 2px solid #e4e4e7; border-radius: 18px;
-            padding: 12px; cursor: pointer;
-            transition: border-color 0.15s, background 0.15s;
+            padding: 12px; cursor: pointer; background: #fff;
+            scroll-snap-align: center;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s, border-color 0.15s, background 0.15s, box-shadow 0.35s;
+            transform: scale(0.85);
+            opacity: 0.5;
             display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .pkg-card.focused {
+            transform: scale(1.1);
+            opacity: 1;
+            box-shadow: 0 14px 32px rgba(0,0,0,0.12);
         }
         .pkg-card:hover { border-color: #a1a1aa; }
         .pkg-card.active { border-color: #18181b; background: #fafafa; }
-        .pkg-card.disabled { cursor: not-allowed; opacity: 0.4; pointer-events: none; }
+        .pkg-card.disabled { cursor: not-allowed; opacity: 0.3 !important; pointer-events: none; transform: scale(0.8); }
         .pkg-icon {
             width: 36px; height: 36px; border-radius: 10px;
             background: #f4f4f5; display: flex; align-items: center; justify-content: center;
@@ -588,6 +606,8 @@
             transition: background 0.15s, color 0.15s;
         }
         .pkg-card.active .pkg-icon { background: #18181b; color: #fff; }
+        .pkg-card.active.focused .pkg-icon { background: #18181b; color: #fff; }
+
         .pkg-name   { font-size: 12px; font-weight: 700; color: #18181b; }
         .pkg-weight { font-size: 10.5px; color: #71717a; margin-top: 2px; font-weight: 500; }
         .pkg-price-row { display: flex; align-items: baseline; justify-content: space-between; margin-top: 10px; padding-top: 8px; border-top: 1px solid #e4e4e7; }
@@ -893,7 +913,7 @@
         .sb-divider { height: 1px; background: #f1f1f4; margin: 16px -20px; }
 
         /* Section heading row */
-        .section-hd { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+        .section-hd { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
         .section-hd h2 { font-size: 14px; font-weight: 700; color: #18181b; }
         .section-hd span { font-size: 10.5px; color: #a1a1aa; }
 
@@ -1022,7 +1042,7 @@
             <div class="route-divider"></div>
             <div class="route-stat"><span class="route-stat-val" id="route-price">—</span><span class="route-stat-lbl">Base fare</span></div>
         </div>
-        <div class="section-hd" style="margin-bottom:10px;">
+        <div class="section-hd" style="margin-bottom:4px;">
             <h2>Package size</h2><span>Swipe →</span>
         </div>
         <div class="pkg-scroll" id="mobile-pkg-scroll">
@@ -1273,7 +1293,7 @@
                 <div class="route-stat"><span class="route-stat-val" id="sb-route-price">—</span><span class="route-stat-lbl">Base fare</span></div>
             </div>
             
-            <div class="section-hd" style="margin-bottom:10px; align-items: center;">
+            <div class="section-hd" style="margin-bottom:4px; align-items: center;">
                 <h2>Package size</h2>
                 <div class="sb-nav-btns">
                     <button class="sb-nav-btn" onclick="scrollPkg('left')" title="Scroll left"><i class="fa-solid fa-chevron-left"></i></button>
@@ -2424,6 +2444,10 @@ window.clearInput = function(type,ctx) {
 /* ─── Package selection ─── */
 window.selectPackage = function(el,key,ctx) {
     if(el.classList.contains('disabled')) return;
+    
+    // Automatically scroll the selected card to the center
+    el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    
     const meta = PACKAGE_META[key];
     if(!meta) return;
     document.querySelectorAll('.pkg-card').forEach(c=>c.classList.remove('active'));
@@ -2468,8 +2492,18 @@ function initPricingListener() {
 window.scrollPkg = function(direction) {
     const container = document.getElementById('sb-pkg-scroll');
     if (!container) return;
-    const jumpDistance = direction === 'left' ? -136 : 136; 
-    container.scrollBy({ left: jumpDistance, behavior: 'smooth' });
+    
+    const focused = container.querySelector('.pkg-card.focused');
+    if (focused) {
+        let target = direction === 'left' ? focused.previousElementSibling : focused.nextElementSibling;
+        while(target && !target.classList.contains('pkg-card')) {
+            target = direction === 'left' ? target.previousElementSibling : target.nextElementSibling;
+        }
+        if (target) target.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    } else {
+         const jumpDistance = direction === 'left' ? -140 : 140; 
+         container.scrollBy({ left: jumpDistance, behavior: 'smooth' });
+    }
 };
 
 const FOOD_MAX_KM = 10;
@@ -2485,6 +2519,42 @@ function updateFoodPackageAvailability() {
             card.classList.remove('active'); selectedPkg=null; updateSubmitBtn();
             showToast('info','Food delivery unavailable',`Pickup and dropoff must be within ${FOOD_MAX_KM}km.`);
         }
+    });
+}
+
+/* ─── Package Stack Carousel Init ─── */
+function initPackageCarousel() {
+    const scrollers = document.querySelectorAll('.pkg-scroll');
+    scrollers.forEach(container => {
+        const updateFocus = () => {
+            const rect = container.getBoundingClientRect();
+            const containerCenter = rect.left + rect.width / 2;
+            let closestCard = null;
+            let closestDistance = Infinity;
+
+            const cards = container.querySelectorAll('.pkg-card');
+            cards.forEach(card => {
+                const cardRect = card.getBoundingClientRect();
+                const cardCenter = cardRect.left + cardRect.width / 2;
+                const distance = Math.abs(containerCenter - cardCenter);
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestCard = card;
+                }
+            });
+
+            cards.forEach(card => {
+                if (card === closestCard) {
+                    card.classList.add('focused');
+                } else {
+                    card.classList.remove('focused');
+                }
+            });
+        };
+
+        container.addEventListener('scroll', updateFocus);
+        setTimeout(updateFocus, 100);
+        window.addEventListener('resize', updateFocus);
     });
 }
 
@@ -2656,6 +2726,7 @@ function resetBookingForm() {
 
 renderPackagePrices();
 initPricingListener();
+initPackageCarousel();
 setTimeout(hideSplash,3000);
 </script>
 </body>
