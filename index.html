@@ -1525,6 +1525,9 @@ let suggFeatures   = { pickup: [], dropoff: [] };
 let debounceTimers = {};
 let appliedVoucherDiscount = { mobile: 0, sb: 0 };
 let routeAnimationId = null;
+let pulseAnimationId = null;
+let allRouteCoords = [];
+let routeDists = { distances: [], total: 0 };
 
 /* ─── Package catalogue & live pricing ─── */
 const PACKAGE_META = {
@@ -2436,6 +2439,93 @@ function placeDestMarker(type,lng,lat) {
     if(userMarker && dropoffMarker) { drawRoute(); fitBothMarkers(); }
 }
 
+/* ─── Route Computation Helpers ─── */
+function computeDistances(coords) {
+    let distances = [0];
+    let total = 0;
+    for (let i = 1; i < coords.length; i++) {
+        let dx = coords[i][0] - coords[i-1][0];
+        let dy = coords[i][1] - coords[i-1][1];
+        let d = Math.sqrt(dx*dx + dy*dy);
+        total += d;
+        distances.push(total);
+    }
+    return { distances, total };
+}
+
+function getPulseSlice(coords, distances, total, startFrac, endFrac) {
+    if (total === 0 || startFrac >= 1 || endFrac <= 0) return [];
+    startFrac = Math.max(0, startFrac);
+    endFrac = Math.min(1, endFrac);
+
+    let startDist = startFrac * total;
+    let endDist = endFrac * total;
+    let slice = [];
+    let addedStart = false;
+
+    for (let i = 0; i < coords.length; i++) {
+        let d = distances[i];
+
+        if (d >= startDist && !addedStart) {
+            if (i > 0 && d > startDist) {
+                let prevD = distances[i-1];
+                let r = (startDist - prevD) / (d - prevD);
+                let x = coords[i-1][0] + r * (coords[i][0] - coords[i-1][0]);
+                let y = coords[i-1][1] + r * (coords[i][1] - coords[i-1][1]);
+                slice.push([x, y]);
+            } else {
+                slice.push(coords[i]);
+            }
+            addedStart = true;
+        }
+
+        if (d > startDist && d < endDist) {
+            slice.push(coords[i]);
+        }
+
+        if (d >= endDist) {
+            if (i > 0 && d > endDist) {
+                let prevD = distances[i-1];
+                let r = (endDist - prevD) / (d - prevD);
+                let x = coords[i-1][0] + r * (coords[i][0] - coords[i-1][0]);
+                let y = coords[i-1][1] + r * (coords[i][1] - coords[i-1][1]);
+                slice.push([x, y]);
+            } else if (d === endDist) {
+                slice.push(coords[i]);
+            }
+            break;
+        }
+    }
+    return slice;
+}
+
+function startPulseAnimation() {
+    let startTimestamp = null;
+    const duration = 3000; 
+    const pulseLen = 0.25; 
+    
+    function step(timestamp) {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const elapsed = timestamp - startTimestamp;
+        
+        const t = (elapsed % duration) / duration; 
+        const tScaled = t * (1 + pulseLen);
+        const s = tScaled - pulseLen;
+        const e = tScaled;
+
+        const slice = getPulseSlice(allRouteCoords, routeDists.distances, routeDists.total, s, e);
+        
+        if (map.getSource('route-pulse')) {
+            map.getSource('route-pulse').setData({
+                type: 'Feature',
+                geometry: { type: 'LineString', coordinates: slice }
+            });
+        }
+        pulseAnimationId = requestAnimationFrame(step);
+    }
+    pulseAnimationId = requestAnimationFrame(step);
+}
+
 async function drawRoute() {
     if (!userMarker || !dropoffMarker) return;
     const p = userMarker.getLngLat(), d = dropoffMarker.getLngLat();
@@ -2455,7 +2545,9 @@ async function drawRoute() {
         document.getElementById('route-bar').classList.add('visible');
         document.getElementById('sb-route-bar').classList.add('visible');
 
-        // Set up line layer map source if it doesn't already exist
+        allRouteCoords = route.geometry.coordinates;
+        routeDists = computeDistances(allRouteCoords);
+
         if(!map.getSource('route')) {
             map.addSource('route', { type: 'geojson', data: { type: 'Feature', geometry: { type: 'LineString', coordinates: [] } } });
             map.addLayer({
@@ -2463,35 +2555,39 @@ async function drawRoute() {
                 type: 'line',
                 source: 'route',
                 layout: { 'line-join': 'round', 'line-cap': 'round' },
-                paint: { 'line-color': '#18181b', 'line-width': 4.5, 'line-opacity': 0.85 }
+                paint: { 'line-color': '#18181b', 'line-width': 4.5, 'line-opacity': 0.5 }
+            });
+        }
+        
+        if(!map.getSource('route-pulse')) {
+            map.addSource('route-pulse', { type: 'geojson', data: { type: 'Feature', geometry: { type: 'LineString', coordinates: [] } } });
+            map.addLayer({
+                id: 'route-pulse',
+                type: 'line',
+                source: 'route-pulse',
+                layout: { 'line-join': 'round', 'line-cap': 'round' },
+                paint: { 'line-color': '#3b82f6', 'line-width': 5.5, 'line-opacity': 1 }
             });
         }
 
-        const allCoords = route.geometry.coordinates;
+        if (routeAnimationId) cancelAnimationFrame(routeAnimationId);
+        if (pulseAnimationId) cancelAnimationFrame(pulseAnimationId);
+
         const currentCoords = [];
-        const geojson = { type: 'Feature', geometry: { type: 'LineString', coordinates: currentCoords } };
-
-        // Cancel previous animation if route is redrawn
-        if (routeAnimationId) {
-            cancelAnimationFrame(routeAnimationId);
-        }
-
         let i = 0;
-        const speed = Math.max(1, Math.floor(allCoords.length / 40)); // Responsive draw speed
+        const speed = Math.max(1, Math.floor(allRouteCoords.length / 40)); 
 
-        // Animate line frame by frame
         function animateLine() {
-            if (i < allCoords.length) {
-                for (let j = 0; j < speed && i < allCoords.length; j++) {
-                    currentCoords.push(allCoords[i]);
+            if (i < allRouteCoords.length) {
+                for (let j = 0; j < speed && i < allRouteCoords.length; j++) {
+                    currentCoords.push(allRouteCoords[i]);
                     i++;
                 }
-                map.getSource('route').setData(geojson);
+                map.getSource('route').setData({ type: 'Feature', geometry: { type: 'LineString', coordinates: currentCoords } });
                 routeAnimationId = requestAnimationFrame(animateLine);
             } else {
-                // Ensure end point is included perfectly when animation is done
-                geojson.geometry.coordinates = allCoords;
-                map.getSource('route').setData(geojson);
+                map.getSource('route').setData({ type: 'Feature', geometry: { type: 'LineString', coordinates: allRouteCoords } });
+                startPulseAnimation();
             }
         }
         
@@ -2595,8 +2691,14 @@ window.clearInput = function(type,ctx) {
         cancelAnimationFrame(routeAnimationId);
         routeAnimationId = null;
     }
+    if (pulseAnimationId) {
+        cancelAnimationFrame(pulseAnimationId);
+        pulseAnimationId = null;
+    }
     
     if(map?.getSource('route')) map.getSource('route').setData({type:'Feature',geometry:{type:'LineString',coordinates:[]}});
+    if(map?.getSource('route-pulse')) map.getSource('route-pulse').setData({type:'Feature',geometry:{type:'LineString',coordinates:[]}});
+    
     document.getElementById('route-bar').classList.remove('visible');
     document.getElementById('sb-route-bar').classList.remove('visible');
     routeDistKm=0;
