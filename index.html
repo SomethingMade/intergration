@@ -2504,7 +2504,7 @@ function getPulseSlice(coords, distances, total, startFrac, endFrac) {
 
 function startPulseAnimation() {
     let startTimestamp = null;
-    const duration = 3000; 
+    const duration = 2000; // 2 seconds
     const pulseLen = 0.25; 
     
     function step(timestamp) {
@@ -2549,6 +2549,11 @@ async function drawRoute() {
         document.getElementById('sb-route-bar').classList.add('visible');
 
         allRouteCoords = route.geometry.coordinates;
+        
+        // Exact marker connection points (Option 1)
+        allRouteCoords.unshift([p.lng, p.lat]);
+        allRouteCoords.push([d.lng, d.lat]);
+        
         routeDists = computeDistances(allRouteCoords);
 
         if(!map.getSource('route')) {
