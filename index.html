@@ -30,6 +30,15 @@
             transition: opacity 0.55s ease;
         }
         #splash.hide { opacity: 0; pointer-events: none; }
+        
+        @keyframes splashPulse {
+            0%   { transform: scale(0.95); }
+            50%  { transform: scale(1.05); }
+            100% { transform: scale(0.95); }
+        }
+        .splash-logo-anim {
+            animation: splashPulse 1.8s ease-in-out infinite;
+        }
 
         /* ── Sign-in Gate & Auth ── */
         #signin-gate {
@@ -188,26 +197,20 @@
 
         /* ── Dest Markers ── */
         .dest-marker-wrap {
-            position: relative; width: 36px; height: 46px; cursor: grab;
-            display: flex; justify-content: center;
+            position: relative; width: 14px; height: 14px; cursor: grab;
+            display: flex; align-items: center; justify-content: center;
         }
         .dest-marker-wrap:active { cursor: grabbing; }
         .dest-marker-bg {
-            width: 36px; height: 36px; border-radius: 50%;
-            border: 2.5px solid #fff; box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+            width: 14px; height: 14px; border-radius: 2px;
+            background: #18181b; border: 2px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
             display: flex; align-items: center; justify-content: center;
-            z-index: 2; position: absolute; top: 0;
+            z-index: 2; position: absolute;
         }
         .dest-marker-bg.dropoff { background: #3b82f6; }
-        .dest-marker-bg i { font-size: 14px; color: #fff; }
-        .dest-marker-caret {
-            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 0; height: 0;
-            border-left: 6px solid transparent; border-right: 6px solid transparent;
-            border-top: 14px solid #fff; 
-            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
-            z-index: 1;
-        }
+        .dest-marker-bg i { display: none; }
+        .dest-marker-caret { display: none; }
 
         /* ── Driver Markers ── */
         .driver-marker {
@@ -975,7 +978,7 @@
 <div id="toast-container"></div>
 
 <div id="splash">
-    <img src="https://i.postimg.cc/Fsj0YWjK/PACE-PARCELS.png" alt="Pace Logistics Logo" style="max-width: 250px; height: auto;">
+    <img src="https://i.postimg.cc/Fsj0YWjK/PACE-PARCELS.png" alt="Pace Logistics Logo" class="splash-logo-anim" style="max-width: 250px; height: auto;">
 </div>
 
 <div id="signin-gate">
@@ -2427,7 +2430,7 @@ function placeDestMarker(type,lng,lat) {
         if(dropoffMarker) {
             dropoffMarker.setLngLat([lng,lat]);
         } else {
-            dropoffMarker = new mapboxgl.Marker({ element: buildDestEl('dropoff'), anchor: 'bottom', draggable: true }).setLngLat([lng,lat]).addTo(map);
+            dropoffMarker = new mapboxgl.Marker({ element: buildDestEl('dropoff'), anchor: 'center', draggable: true }).setLngLat([lng,lat]).addTo(map);
             dropoffMarker.on('dragend', async () => {
                 const ll = dropoffMarker.getLngLat();
                 selectedCoords['dropoff'] = [ll.lng, ll.lat];
