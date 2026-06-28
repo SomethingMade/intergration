@@ -219,20 +219,28 @@
 
         /* ── Dest Markers ── */
         .dest-marker-wrap {
-            position: relative; width: 14px; height: 14px; cursor: grab;
-            display: flex; align-items: center; justify-content: center;
+            position: relative; width: 32px; height: 42px; cursor: grab;
+            display: flex; justify-content: center;
         }
         .dest-marker-wrap:active { cursor: grabbing; }
         .dest-marker-bg {
-            width: 14px; height: 14px; border-radius: 2px;
-            background: #18181b; border: 2px solid #fff;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            position: absolute; top: 0;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: #18181b; border: 2.5px solid #fff;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.25);
             display: flex; align-items: center; justify-content: center;
-            z-index: 2; position: absolute;
+            z-index: 2;
         }
         .dest-marker-bg.dropoff { background: #3b82f6; }
-        .dest-marker-bg i { display: none; }
-        .dest-marker-caret { display: none; }
+        .dest-marker-bg i { display: block; font-size: 14px; color: #fff; }
+        .dest-marker-caret {
+            display: block;
+            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 7px solid transparent; border-right: 7px solid transparent;
+            border-top: 14px solid #fff;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25)); z-index: 1;
+        }
 
         /* ── Driver Markers ── */
         .driver-marker {
@@ -2595,7 +2603,7 @@ function placeDestMarker(type,lng,lat) {
         if(dropoffMarker) {
             dropoffMarker.setLngLat([lng,lat]);
         } else {
-            dropoffMarker = new mapboxgl.Marker({ element: buildDestEl('dropoff'), anchor: 'center', draggable: true }).setLngLat([lng,lat]).addTo(map);
+            dropoffMarker = new mapboxgl.Marker({ element: buildDestEl('dropoff'), anchor: 'bottom', draggable: true }).setLngLat([lng,lat]).addTo(map);
             dropoffMarker.on('dragend', async () => {
                 const ll = dropoffMarker.getLngLat();
                 selectedCoords['dropoff'] = [ll.lng, ll.lat];
