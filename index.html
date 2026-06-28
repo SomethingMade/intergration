@@ -367,23 +367,46 @@
         .chat-header-btn i { font-size: 14px; }
         .chat-header-btn:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.2); }
 
-        /* ── Chat Modal ── */
-        #chat-modal-overlay {
+        /* ── Wallet Component ── */
+        .wallet-card {
+            background: #18181b; color: #fff;
+            border-radius: 16px; padding: 18px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+        .wallet-card-left { display: flex; flex-direction: column; }
+        .wallet-balance-label { font-size: 10.5px; color: #a1a1aa; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .wallet-balance-val { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; }
+        
+        .recharge-pill {
+            background: #fff; color: #18181b;
+            border: none; border-radius: 999px;
+            padding: 10px 16px; font-size: 12.5px; font-weight: 800;
+            cursor: pointer; display: flex; align-items: center; gap: 6px;
+            transition: transform 0.15s, opacity 0.15s; font-family: 'Inter', sans-serif;
+            box-shadow: 0 4px 12px rgba(255,255,255,0.15);
+        }
+        .recharge-pill:active { transform: scale(0.94); }
+
+        /* ── Modal shared ── */
+        #chat-modal-overlay, #recharge-modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.55);
             z-index: 500; opacity: 0; pointer-events: none;
             transition: opacity 0.25s; backdrop-filter: blur(3px);
             display: flex; align-items: flex-end; justify-content: center;
         }
-        #chat-modal-overlay.open { opacity: 1; pointer-events: auto; }
+        #chat-modal-overlay.open, #recharge-modal-overlay.open { opacity: 1; pointer-events: auto; }
 
-        #chat-modal {
-            width: 100%; max-width: 420px; height: 85vh;
+        #chat-modal, #recharge-modal {
+            width: 100%; max-width: 420px; 
             background: #f4f4f5; border-radius: 24px 24px 0 0;
             transform: translateY(100%);
             transition: transform 0.35s cubic-bezier(0.32,0,0.67,0);
             display: flex; flex-direction: column; overflow: hidden;
         }
-        #chat-modal-overlay.open #chat-modal { transform: translateY(0); }
+        #chat-modal { height: 85vh; }
+        #recharge-modal { background: #fff; }
+        #chat-modal-overlay.open #chat-modal, #recharge-modal-overlay.open #recharge-modal { transform: translateY(0); }
 
         .chat-header {
             background: #fff; padding: 20px 20px 14px; border-bottom: 1px solid #e4e4e7;
@@ -1216,6 +1239,35 @@
     </div>
 </div>
 
+<div id="recharge-modal-overlay" onclick="closeRechargeModalOnOverlay(event)">
+    <div id="recharge-modal" onclick="event.stopPropagation()">
+        <div class="dm-header">
+            <div>
+                <div class="dm-title">Top Up Wallet</div>
+                <div class="dm-sub">Add funds instantly using Paystack</div>
+            </div>
+            <button class="dm-close" onclick="closeRechargeModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="dm-body" style="padding: 24px 20px;">
+            <div class="dm-field" style="margin-bottom: 24px;">
+                <label class="dm-label">Amount (ZAR)</label>
+                <div style="position: relative;">
+                    <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-weight: 800; color: #18181b;">R</span>
+                    <input id="recharge-amount" class="dm-input" type="number" placeholder="0.00" min="10" style="padding-left: 36px; font-size: 16px; font-weight: 800;">
+                </div>
+            </div>
+            <div class="pay-method-row">
+                <div class="pay-pill active" style="width: 100%; justify-content: center; padding: 14px 20px; pointer-events: none; border-color: #18181b; background: #fafafa;">
+                    <i class="fa-solid fa-credit-card"></i> Card / Secure Checkout
+                </div>
+            </div>
+        </div>
+        <div class="dm-footer">
+            <button class="dm-submit" id="confirm-recharge-btn" onclick="confirmRecharge()">Proceed to Pay</button>
+        </div>
+    </div>
+</div>
+
 <div id="driver-modal-overlay" onclick="closeDriverModalOnOverlay(event)">
     <div id="driver-modal" onclick="event.stopPropagation()">
         <div class="dm-header">
@@ -1272,6 +1324,17 @@
                     </div>
                 </div>
                 <i class="fa-solid fa-circle-check" id="check-paystack" style="color:#18181b; font-size:18px;"></i>
+            </div>
+
+            <div class="payment-option-btn" id="opt-wallet" onclick="setDigitalPaymentMethod('wallet')">
+                <div class="payment-option-left">
+                    <div class="payment-option-icon" style="background: #18181b; color: #fff;"><i class="fa-solid fa-wallet"></i></div>
+                    <div>
+                        <div class="payment-option-text">Pace Wallet</div>
+                        <div class="payment-option-sub" id="payment-sheet-wallet-bal">Available: R0.00</div>
+                    </div>
+                </div>
+                <i class="fa-solid fa-circle-check" id="check-wallet" style="color:#18181b; font-size:18px; display:none;"></i>
             </div>
 
             <div class="payment-option-btn" onclick="openCashModal()">
@@ -1626,23 +1689,36 @@ async function executeAuth(type) {
 
 window.signOut = async function() {
     await fbSignOut(auth);
+    if(profileUnsubscribe) profileUnsubscribe();
     stopDriverTracking();
     showToast('info','Signed out','See you next time.');
     closeProfile(); desktopShowMain();
     switchTab('send');
 };
 
-async function loadUserProfile(user) {
-    const snap = await get(ref(database,`users/${user.uid}`));
-    let p = snap.exists() ? snap.val() : {};
-    let updates = false;
+let profileUnsubscribe = null;
+function listenToUserProfile(user) {
+    if (profileUnsubscribe) profileUnsubscribe();
+    const userRef = ref(database, `users/${user.uid}`);
+    profileUnsubscribe = onValue(userRef, async (snap) => {
+        let p = snap.exists() ? snap.val() : {};
+        let updates = false;
 
-    if (!p.email) { p.email = user.email || ''; updates = true; }
-    if (!p.name)  { p.name = user.displayName || ''; updates = true; }
-    if (!p.photoURL && user.photoURL) { p.photoURL = user.photoURL; updates = true; }
+        if (!p.email) { p.email = user.email || ''; updates = true; }
+        if (!p.name)  { p.name = user.displayName || ''; updates = true; }
+        if (!p.photoURL && user.photoURL) { p.photoURL = user.photoURL; updates = true; }
+        if (typeof p.walletBalance !== 'number') { p.walletBalance = 0; updates = true; }
 
-    userProfile = p;
-    if (updates) await update(ref(database,`users/${user.uid}`), userProfile);
+        userProfile = p;
+        if (updates) {
+             await update(userRef, {
+                 email: p.email, name: p.name, photoURL: p.photoURL, walletBalance: p.walletBalance
+             });
+        }
+        
+        renderProfileUI();
+        updatePaymentSheetUI(selectedPayment[activeCtxForPayment] || 'paystack');
+    });
 }
 
 window.savePhone = async function() {
@@ -1667,10 +1743,9 @@ onAuthStateChanged(auth, async (user) => {
         }
 
         currentUser = user;
-        await loadUserProfile(user);
+        listenToUserProfile(user); // Live updates for wallet and profile
         document.getElementById('signin-gate').classList.remove('visible');
         renderAvatarBtn();
-        renderProfileUI();
         checkPhoneWarning();
         initMap();
         attachOrdersListener();
@@ -1678,6 +1753,7 @@ onAuthStateChanged(auth, async (user) => {
     } else {
         currentUser = null; userProfile = {};
         ordersListenerAttached = false; selectedVehicleType = null;
+        if(profileUnsubscribe) profileUnsubscribe();
         stopShipdayPolling();
         renderOrders(null);
         renderDriverStatus(null);
@@ -1702,7 +1778,18 @@ function renderAvatarBtn() {
 
 /* ─── Profile body template ─── */
 function profileBodyHTML(ctx) {
+    const bal = typeof userProfile.walletBalance === 'number' ? userProfile.walletBalance.toFixed(2) : '0.00';
     return `
+    <div class="wallet-card">
+        <div class="wallet-card-left">
+            <div class="wallet-balance-label">Wallet Balance</div>
+            <div class="wallet-balance-val">R${bal}</div>
+        </div>
+        <button class="recharge-pill" onclick="openRechargeModal()">
+            <i class="fa-solid fa-plus"></i> Top Up
+        </button>
+    </div>
+
     <div class="drawer-section-title">Mobile number for deliveries</div>
     <div class="phone-field-wrap">
         <i class="fa-solid fa-phone phone-field-icon"></i>
@@ -1803,6 +1890,51 @@ function renderProfileUI() {
 function checkPhoneWarning() {
     ['phone-warn','sb-phone-warn'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display = (!userProfile.phone)?'flex':'none'; });
 }
+
+/* ─── Wallet Recharge Logic ─── */
+window.openRechargeModal = function() {
+    document.getElementById('recharge-amount').value = '';
+    document.getElementById('recharge-modal-overlay').classList.add('open');
+};
+window.closeRechargeModal = function() {
+    document.getElementById('recharge-modal-overlay').classList.remove('open');
+};
+window.closeRechargeModalOnOverlay = function(e) {
+    if (e.target.id === 'recharge-modal-overlay') closeRechargeModal();
+};
+
+window.confirmRecharge = async function() {
+    const amtInput = document.getElementById('recharge-amount').value;
+    const amount = parseFloat(amtInput);
+    if (isNaN(amount) || amount < 10) {
+        showToast('error', 'Invalid amount', 'Minimum recharge is R10.');
+        return;
+    }
+
+    const btn = document.getElementById('confirm-recharge-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
+
+    try {
+        const userEmail = userProfile.email || currentUser.email || 'customer@pacelogistics.co.za';
+        const payResult = await processPaystackPayment(amount, userEmail);
+
+        const currentBalance = typeof userProfile.walletBalance === 'number' ? userProfile.walletBalance : 0;
+        const newBalance = currentBalance + amount;
+
+        await update(ref(database, `users/${currentUser.uid}`), {
+            walletBalance: newBalance
+        });
+
+        showToast('success', 'Wallet recharged', `Successfully added R${amount.toFixed(2)} to your wallet.`);
+        closeRechargeModal();
+    } catch(err) {
+        if(!err.cancelled) showToast('error', 'Recharge failed', err.message || 'Could not complete payment.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Proceed to Pay';
+    }
+};
 
 /* ─── Support Chat Logic ─── */
 let chatListenerAttached = false;
@@ -2149,10 +2281,22 @@ window.setDigitalPaymentMethod = function(method) {
 
 function updatePaymentSheetUI(method) {
     const isPaystack = method === 'paystack';
+    const isWallet = method === 'wallet';
+    
     const optPaystack = document.getElementById('opt-paystack');
-    if(optPaystack) {
-        optPaystack.classList.toggle('active', isPaystack);
-        document.getElementById('check-paystack').style.display = isPaystack ? 'block' : 'none';
+    const checkPaystack = document.getElementById('check-paystack');
+    if(optPaystack) optPaystack.classList.toggle('active', isPaystack);
+    if(checkPaystack) checkPaystack.style.display = isPaystack ? 'block' : 'none';
+
+    const optWallet = document.getElementById('opt-wallet');
+    const checkWallet = document.getElementById('check-wallet');
+    if(optWallet) optWallet.classList.toggle('active', isWallet);
+    if(checkWallet) checkWallet.style.display = isWallet ? 'block' : 'none';
+
+    const balEl = document.getElementById('payment-sheet-wallet-bal');
+    if(balEl) {
+        const bal = typeof userProfile.walletBalance === 'number' ? userProfile.walletBalance : 0;
+        balEl.textContent = `Available: R${bal.toFixed(2)}`;
     }
 }
 
@@ -2196,6 +2340,8 @@ function updateSubmitBtn() {
             
             if(selectedPayment[ctx]==='paystack') {
                 label.innerHTML=`<i class="fa-solid fa-credit-card"></i> Pay R${total} with Paystack`;
+            } else if(selectedPayment[ctx]==='wallet') {
+                label.innerHTML=`<i class="fa-solid fa-wallet"></i> Pay R${total} from Wallet`;
             } else {
                 label.textContent=`Book ${selectedPkg.name} · R${total}`;
             }
@@ -2977,6 +3123,29 @@ window.confirmBooking = async function() {
         } catch(err) { 
             if(err&&err.cancelled) return; 
             showToast('error','Payment failed',err.message||'Could not complete Paystack payment.'); 
+        }
+    } else if (selectedPayment[ctx] === 'wallet') {
+        const currentBalance = typeof userProfile.walletBalance === 'number' ? userProfile.walletBalance : 0;
+        
+        if (currentBalance < total) {
+            showToast('error', 'Insufficient funds', 'Please top up your wallet or choose another payment method.');
+            return;
+        }
+        
+        btn.disabled = true;
+        label.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
+        
+        try {
+            // Deduct from wallet balance in DB
+            await update(ref(database, `users/${currentUser.uid}`), {
+                walletBalance: currentBalance - total
+            });
+            
+            showToast('success', 'Payment successful', 'Booking your delivery…');
+            await doBookOrder({method: 'wallet', token: 'wallet_tx', testMode: false});
+        } catch(err) {
+            showToast('error', 'Payment failed', 'Could not process wallet transaction.');
+            updateSubmitBtn();
         }
     }
 }
