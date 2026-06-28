@@ -217,31 +217,6 @@
             100% { transform: scale(1.6);  opacity: 0; }
         }
 
-        /* ── Dest Markers ── */
-        .dest-marker-wrap {
-            position: relative; width: 32px; height: 42px; cursor: grab;
-            display: flex; justify-content: center;
-        }
-        .dest-marker-wrap:active { cursor: grabbing; }
-        .dest-marker-bg {
-            position: absolute; top: 0;
-            width: 32px; height: 32px; border-radius: 50%;
-            background: #18181b; border: 2.5px solid #fff;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 2;
-        }
-        .dest-marker-bg.dropoff { background: #3b82f6; }
-        .dest-marker-bg i { display: block; font-size: 13px; color: #fff; }
-        .dest-marker-caret {
-            display: block;
-            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 0; height: 0;
-            border-left: 6px solid transparent; border-right: 6px solid transparent;
-            border-top: 13px solid #fff;
-            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.25)); z-index: 1;
-        }
-
         /* ── Driver Markers ── */
         .driver-marker {
             width: 32px; height: 32px; border-radius: 50%;
@@ -1139,6 +1114,16 @@
             <h2>Package size</h2><span>Swipe →</span>
         </div>
         <div class="pkg-scroll" id="mobile-pkg-scroll">
+            <div class="pkg-card" onclick="selectPackage(this,'drone','mobile')">
+                <div><div class="pkg-icon"><i class="fa-solid fa-helicopter"></i></div>
+                <div class="pkg-name">Drone Delivery</div><div class="pkg-weight">Up to 2 kg</div></div>
+                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-drone-mobile">R55</span></div>
+            </div>
+            <div class="pkg-card" onclick="selectPackage(this,'bike','mobile')">
+                <div><div class="pkg-icon"><i class="fa-solid fa-motorcycle"></i></div>
+                <div class="pkg-name">Bike Courier</div><div class="pkg-weight">Up to 5 kg</div></div>
+                <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-bike-mobile">R35</span></div>
+            </div>
             <div class="pkg-card" id="pkg-food-mobile" onclick="selectPackage(this,'food','mobile')">
                 <div><div class="pkg-icon"><i class="fa-solid fa-utensils"></i></div>
                 <div class="pkg-name">Food Delivery</div>
@@ -1445,6 +1430,16 @@
                 </div>
             </div>
             <div class="pkg-scroll" id="sb-pkg-scroll">
+                <div class="pkg-card" onclick="selectPackage(this,'drone','sb')">
+                    <div><div class="pkg-icon"><i class="fa-solid fa-helicopter"></i></div>
+                    <div class="pkg-name">Drone Delivery</div><div class="pkg-weight">Up to 2 kg</div></div>
+                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-drone-sb">R55</span></div>
+                </div>
+                <div class="pkg-card" onclick="selectPackage(this,'bike','sb')">
+                    <div><div class="pkg-icon"><i class="fa-solid fa-motorcycle"></i></div>
+                    <div class="pkg-name">Bike Courier</div><div class="pkg-weight">Up to 5 kg</div></div>
+                    <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-bike-sb">R35</span></div>
+                </div>
                 <div class="pkg-card" id="pkg-food-sb" onclick="selectPackage(this,'food','sb')">
                     <div><div class="pkg-icon"><i class="fa-solid fa-utensils"></i></div>
                     <div class="pkg-name">Food Delivery</div>
@@ -1618,6 +1613,8 @@ let routeDists = { distances: [], total: 0 };
 
 /* ─── Package catalogue & live pricing ─── */
 const PACKAGE_META = {
+    drone:    { name: 'Drone Delivery',defaultBase: 55 },
+    bike:     { name: 'Bike Courier',  defaultBase: 35 },
     food:     { name: 'Food Delivery', defaultBase: 45 },
     document: { name: 'Document',      defaultBase: 40 },
     small:    { name: 'Small Parcel',  defaultBase: 65 },
@@ -2484,7 +2481,7 @@ function stopDriverTracking() {
 
 /* ─── Map ─── */
 mapboxgl.accessToken = MAPBOX_TOKEN;
-let map, userMarker, dropoffMarker;
+let map, userMarker;
 let mapInitialised = false;
 
 function initMap() {
@@ -2586,35 +2583,6 @@ function placeUserMarker(lng,lat) {
 
 function refreshMapMarker() { if(!userMarker) return; const ll=userMarker.getLngLat(); placeUserMarker(ll.lng,ll.lat); }
 
-function buildDestEl(type) {
-    const wrap = document.createElement('div');
-    wrap.className = `dest-marker-wrap`;
-    wrap.innerHTML = `
-        <div class="dest-marker-bg ${type}">
-            <i class="fa-solid fa-flag-checkered"></i>
-        </div>
-        <div class="dest-marker-caret"></div>
-    `;
-    return wrap;
-}
-
-function placeDestMarker(type,lng,lat) {
-    if(type === 'dropoff') { 
-        if(dropoffMarker) {
-            dropoffMarker.setLngLat([lng,lat]);
-        } else {
-            dropoffMarker = new mapboxgl.Marker({ element: buildDestEl('dropoff'), anchor: 'bottom', draggable: true }).setLngLat([lng,lat]).addTo(map);
-            dropoffMarker.on('dragend', async () => {
-                const ll = dropoffMarker.getLngLat();
-                selectedCoords['dropoff'] = [ll.lng, ll.lat];
-                await setLocationFromDrag('dropoff', ll.lng, ll.lat);
-                if(selectedCoords.pickup && selectedCoords.dropoff) { drawRoute(); fitBothMarkers(); }
-            });
-        }
-    }
-    if(userMarker && dropoffMarker) { drawRoute(); fitBothMarkers(); }
-}
-
 /* ─── Route Computation Helpers ─── */
 function computeDistances(coords) {
     let distances = [0];
@@ -2703,8 +2671,9 @@ function startPulseAnimation() {
 }
 
 async function drawRoute() {
-    if (!userMarker || !dropoffMarker) return;
-    const p = userMarker.getLngLat(), d = dropoffMarker.getLngLat();
+    if (!userMarker || !selectedCoords.dropoff) return;
+    const p = userMarker.getLngLat();
+    const d = { lng: selectedCoords.dropoff[0], lat: selectedCoords.dropoff[1] };
     try {
         const res = await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${p.lng},${p.lat};${d.lng},${d.lat}?geometries=geojson&access_token=${MAPBOX_TOKEN}`);
         const data = await res.json();
@@ -2727,7 +2696,6 @@ async function drawRoute() {
             const snappedEnd = data.waypoints[data.waypoints.length - 1].location;
             
             userMarker.setLngLat(snappedStart);
-            dropoffMarker.setLngLat(snappedEnd);
             
             // Sync the internal state so bookings use the snapped coordinates
             selectedCoords.pickup = snappedStart;
@@ -2794,8 +2762,9 @@ function setRouteBarValues(dist, time) {
 function updateRoutePrice() { if(selectedPkg) updateSubmitBtn(); }
 
 function fitBothMarkers() {
-    if (!userMarker || !dropoffMarker) return;
-    const p=userMarker.getLngLat(), d=dropoffMarker.getLngLat();
+    if (!userMarker || !selectedCoords.dropoff) return;
+    const p=userMarker.getLngLat();
+    const d={ lng: selectedCoords.dropoff[0], lat: selectedCoords.dropoff[1] };
     map.fitBounds(new mapboxgl.LngLatBounds([p.lng,p.lat],[d.lng,d.lat]),
         {padding:isDesktop()?{top:80,bottom:80,left:80,right:80}:{top:200,bottom:360,left:40,right:40},duration:900});
 }
@@ -2860,7 +2829,6 @@ window.selectSuggestion = function(type,ctx,idx) {
     selectedCoords[type]=[lng,lat];
     
     if (type === 'pickup') placeUserMarker(lng, lat);
-    else placeDestMarker(type, lng, lat);
     
     updateSubmitBtn();
     if (selectedCoords.pickup && selectedCoords.dropoff) { drawRoute(); fitBothMarkers(); }
@@ -2873,8 +2841,6 @@ window.clearInput = function(type,ctx) {
         const sug=document.getElementById(searchSuggId(type,c)); if(sug) sug.style.display='none';
     });
     selectedCoords[type]=null;
-    
-    if(type==='dropoff'&&dropoffMarker) { dropoffMarker.remove(); dropoffMarker=null; }
     
     if (routeAnimationId) {
         cancelAnimationFrame(routeAnimationId);
