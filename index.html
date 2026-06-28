@@ -30,6 +30,15 @@
             transition: opacity 0.55s ease;
         }
         #splash.hide { opacity: 0; pointer-events: none; }
+        
+        @keyframes splashPulse {
+            0%   { transform: scale(0.95); }
+            50%  { transform: scale(1.05); }
+            100% { transform: scale(0.95); }
+        }
+        .splash-logo-anim {
+            animation: splashPulse 1.8s ease-in-out infinite;
+        }
 
         /* ── Sign-in Gate & Auth ── */
         #signin-gate {
@@ -162,7 +171,7 @@
         .user-marker-pulse {
             position: absolute; top: 0; left: 0; width: 54px; height: 54px; border-radius: 50%;
             background: rgba(59,130,246,0.25);
-            animation: mpulse 2.4s ease-out infinite;
+            animation: mpulse 1s ease-out infinite;
         }
         .user-marker-avatar {
             position: absolute; top: 6px; left: 6px; width: 42px; height: 42px; border-radius: 50%;
@@ -188,26 +197,20 @@
 
         /* ── Dest Markers ── */
         .dest-marker-wrap {
-            position: relative; width: 36px; height: 46px; cursor: grab;
-            display: flex; justify-content: center;
+            position: relative; width: 14px; height: 14px; cursor: grab;
+            display: flex; align-items: center; justify-content: center;
         }
         .dest-marker-wrap:active { cursor: grabbing; }
         .dest-marker-bg {
-            width: 36px; height: 36px; border-radius: 50%;
-            border: 2.5px solid #fff; box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+            width: 14px; height: 14px; border-radius: 2px;
+            background: #18181b; border: 2px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
             display: flex; align-items: center; justify-content: center;
-            z-index: 2; position: absolute; top: 0;
+            z-index: 2; position: absolute;
         }
         .dest-marker-bg.dropoff { background: #3b82f6; }
-        .dest-marker-bg i { font-size: 14px; color: #fff; }
-        .dest-marker-caret {
-            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 0; height: 0;
-            border-left: 6px solid transparent; border-right: 6px solid transparent;
-            border-top: 14px solid #3b82f6;
-            z-index: 1;
-        }
-        .dest-marker-caret.dropoff { border-top-color: #3b82f6; }
+        .dest-marker-bg i { display: none; }
+        .dest-marker-caret { display: none; }
 
         /* ── Driver Markers ── */
         .driver-marker {
@@ -975,7 +978,7 @@
 <div id="toast-container"></div>
 
 <div id="splash">
-    <img src="https://i.postimg.cc/Fsj0YWjK/PACE-PARCELS.png" alt="Pace Logistics Logo" style="max-width: 250px; height: auto;">
+    <img src="https://i.postimg.cc/Fsj0YWjK/PACE-PARCELS.png" alt="Pace Logistics Logo" class="splash-logo-anim" style="max-width: 250px; height: auto;">
 </div>
 
 <div id="signin-gate">
@@ -2417,7 +2420,7 @@ function buildDestEl(type) {
         <div class="dest-marker-bg ${type}">
             <i class="fa-solid fa-flag-checkered"></i>
         </div>
-        <div class="dest-marker-caret ${type}"></div>
+        <div class="dest-marker-caret"></div>
     `;
     return wrap;
 }
@@ -2427,7 +2430,7 @@ function placeDestMarker(type,lng,lat) {
         if(dropoffMarker) {
             dropoffMarker.setLngLat([lng,lat]);
         } else {
-            dropoffMarker = new mapboxgl.Marker({ element: buildDestEl('dropoff'), anchor: 'bottom', draggable: true }).setLngLat([lng,lat]).addTo(map);
+            dropoffMarker = new mapboxgl.Marker({ element: buildDestEl('dropoff'), anchor: 'center', draggable: true }).setLngLat([lng,lat]).addTo(map);
             dropoffMarker.on('dragend', async () => {
                 const ll = dropoffMarker.getLngLat();
                 selectedCoords['dropoff'] = [ll.lng, ll.lat];
@@ -2501,7 +2504,7 @@ function getPulseSlice(coords, distances, total, startFrac, endFrac) {
 
 function startPulseAnimation() {
     let startTimestamp = null;
-    const duration = 3000; 
+    const duration = 1000; // 1 second pulse
     const pulseLen = 0.25; 
     
     function step(timestamp) {
@@ -2544,6 +2547,19 @@ async function drawRoute() {
         updateFoodPackageAvailability();
         document.getElementById('route-bar').classList.add('visible');
         document.getElementById('sb-route-bar').classList.add('visible');
+
+        // --- OPTION 2: Snap markers to exact road coordinates (Uber Style) ---
+        if (data.waypoints && data.waypoints.length >= 2) {
+            const snappedStart = data.waypoints[0].location;
+            const snappedEnd = data.waypoints[data.waypoints.length - 1].location;
+            
+            userMarker.setLngLat(snappedStart);
+            dropoffMarker.setLngLat(snappedEnd);
+            
+            // Sync the internal state so bookings use the snapped coordinates
+            selectedCoords.pickup = snappedStart;
+            selectedCoords.dropoff = snappedEnd;
+        }
 
         allRouteCoords = route.geometry.coordinates;
         routeDists = computeDistances(allRouteCoords);
