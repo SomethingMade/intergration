@@ -659,7 +659,30 @@
         }
         .pkg-card:hover { border-color: #a1a1aa; }
         .pkg-card.active { border-color: #18181b; background: #fafafa; }
-        .pkg-card.disabled { cursor: not-allowed; opacity: 0.3 !important; pointer-events: none; transform: scale(0.8); }
+        
+        /* Disabled Drone/Bike Cards */
+        .pkg-card.disabled { 
+            cursor: not-allowed; 
+            opacity: 0.4 !important; 
+            pointer-events: none; 
+            transform: scale(0.85);
+            background: #f4f4f5;
+            position: relative;
+        }
+        .pkg-card.disabled.focused {
+            transform: scale(1.1);
+        }
+        .coming-soon-badge {
+            position: absolute;
+            top: -8px; right: -8px;
+            background: #18181b; color: #fff;
+            font-size: 9px; font-weight: 800;
+            padding: 4px 8px; border-radius: 8px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+
         .pkg-icon {
             width: 36px; height: 36px; border-radius: 10px;
             background: #f4f4f5; display: flex; align-items: center; justify-content: center;
@@ -1114,12 +1137,14 @@
             <h2>Package size</h2><span>Swipe →</span>
         </div>
         <div class="pkg-scroll" id="mobile-pkg-scroll">
-            <div class="pkg-card" onclick="selectPackage(this,'drone','mobile')">
+            <div class="pkg-card disabled">
+                <div class="coming-soon-badge">Soon</div>
                 <div><div class="pkg-icon"><i class="fa-solid fa-helicopter"></i></div>
                 <div class="pkg-name">Drone Delivery</div><div class="pkg-weight">Up to 2 kg</div></div>
                 <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-drone-mobile">R55</span></div>
             </div>
-            <div class="pkg-card" onclick="selectPackage(this,'bike','mobile')">
+            <div class="pkg-card disabled">
+                <div class="coming-soon-badge">Soon</div>
                 <div><div class="pkg-icon"><i class="fa-solid fa-motorcycle"></i></div>
                 <div class="pkg-name">Bike Courier</div><div class="pkg-weight">Up to 5 kg</div></div>
                 <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-bike-mobile">R35</span></div>
@@ -1130,7 +1155,7 @@
                 <div class="pkg-weight" id="pkg-food-weight-mobile">Restaurant orders</div></div>
                 <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-food-mobile">R45</span></div>
             </div>
-            <div class="pkg-card" onclick="selectPackage(this,'document','mobile')">
+            <div class="pkg-card" id="pkg-document-mobile" onclick="selectPackage(this,'document','mobile')">
                 <div><div class="pkg-icon"><i class="fa-solid fa-envelope"></i></div>
                 <div class="pkg-name">Document</div><div class="pkg-weight">Up to 1 kg</div></div>
                 <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-document-mobile">R40</span></div>
@@ -1430,12 +1455,14 @@
                 </div>
             </div>
             <div class="pkg-scroll" id="sb-pkg-scroll">
-                <div class="pkg-card" onclick="selectPackage(this,'drone','sb')">
+                <div class="pkg-card disabled">
+                    <div class="coming-soon-badge">Soon</div>
                     <div><div class="pkg-icon"><i class="fa-solid fa-helicopter"></i></div>
                     <div class="pkg-name">Drone Delivery</div><div class="pkg-weight">Up to 2 kg</div></div>
                     <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-drone-sb">R55</span></div>
                 </div>
-                <div class="pkg-card" onclick="selectPackage(this,'bike','sb')">
+                <div class="pkg-card disabled">
+                    <div class="coming-soon-badge">Soon</div>
                     <div><div class="pkg-icon"><i class="fa-solid fa-motorcycle"></i></div>
                     <div class="pkg-name">Bike Courier</div><div class="pkg-weight">Up to 5 kg</div></div>
                     <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-bike-sb">R35</span></div>
@@ -1446,7 +1473,7 @@
                     <div class="pkg-weight" id="pkg-food-weight-sb">Restaurant orders</div></div>
                     <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-food-sb">R45</span></div>
                 </div>
-                <div class="pkg-card" onclick="selectPackage(this,'document','sb')">
+                <div class="pkg-card" id="pkg-document-sb" onclick="selectPackage(this,'document','sb')">
                     <div><div class="pkg-icon"><i class="fa-solid fa-envelope"></i></div>
                     <div class="pkg-name">Document</div><div class="pkg-weight">Up to 1 kg</div></div>
                     <div class="pkg-price-row"><span class="pkg-price-label">from</span><span class="pkg-price-val" id="pkg-price-document-sb">R40</span></div>
@@ -2690,7 +2717,6 @@ async function drawRoute() {
         document.getElementById('route-bar').classList.add('visible');
         document.getElementById('sb-route-bar').classList.add('visible');
 
-        // --- OPTION 2: Snap markers to exact road coordinates (Uber Style) ---
         if (data.waypoints && data.waypoints.length >= 2) {
             const snappedStart = data.waypoints[0].location;
             const snappedEnd = data.waypoints[data.waypoints.length - 1].location;
@@ -2865,7 +2891,6 @@ window.clearInput = function(type,ctx) {
 window.selectPackage = function(el,key,ctx) {
     if(el.classList.contains('disabled')) return;
     
-    // Automatically scroll the selected card to the center
     el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
     
     const meta = PACKAGE_META[key];
@@ -2975,6 +3000,18 @@ function initPackageCarousel() {
         container.addEventListener('scroll', updateFocus);
         setTimeout(updateFocus, 100);
         window.addEventListener('resize', updateFocus);
+
+        // Scroll to the center card (Index 3 / Document) initially
+        setTimeout(() => {
+            const cards = container.querySelectorAll('.pkg-card');
+            if (cards.length >= 3) {
+                const targetCard = cards[Math.floor(cards.length / 2)];
+                const containerCenter = container.clientWidth / 2;
+                const cardCenter = targetCard.offsetLeft + targetCard.offsetWidth / 2;
+                container.scrollLeft = cardCenter - containerCenter;
+                updateFocus();
+            }
+        }, 150);
     });
 }
 
