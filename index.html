@@ -1378,10 +1378,13 @@
                 </div>
             </div>
 
+            <!-- VOUCHER TOP UP COMPONENT -->
             <div class="voucher-row" style="margin-top: 24px; margin-bottom: 0;">
-                <input type="text" id="voucher-code-sheet" class="voucher-input" placeholder="Have a voucher code?" autocomplete="off">
-                <button class="voucher-btn" onclick="applyVoucherSheet()" id="voucher-btn-sheet">Apply</button>
+                <input type="text" id="voucher-code-sheet" class="voucher-input" placeholder="Have a voucher code?" autocomplete="off" style="text-transform: uppercase;">
+                <button class="voucher-btn" onclick="applyVoucherSheet()" id="voucher-btn-sheet">Redeem</button>
             </div>
+            <div style="font-size: 10px; color: #a1a1aa; margin-top: 6px; padding-left: 2px;">Voucher codes top up your Pace Wallet directly.</div>
+
         </div>
     </div>
 </div>
@@ -1576,7 +1579,6 @@ window.addEventListener('appinstalled', () => {
     showToast('success', 'App Installed', 'Pace Parcels is now available on your device.');
 });
 
-
 import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { getDatabase, ref, push, set, get, update, onValue, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
@@ -1627,6 +1629,7 @@ function initials(name) { if (!name) return '?'; return name.split(' ').map(w=>w
 let currentUser    = null;
 let userProfile    = {};
 let selectedPkg    = null;
+let activeCtxForPayment = 'mobile';
 let selectedPayment = { mobile: 'paystack', sb: 'paystack' };
 let routeDistKm    = 0;
 let selectedCoords = { pickup: null, dropoff: null };
@@ -1735,9 +1738,9 @@ async function executeAuth(type) {
 window.signOut = async function() {
     await fbSignOut(auth);
     if(profileUnsubscribe) profileUnsubscribe();
-    stopDriverTracking();
     showToast('info','Signed out','See you next time.');
-    closeProfile(); desktopShowMain();
+    closeProfile();
+    if (isDesktop()) desktopShowMain();
     switchTab('send');
 };
 
@@ -1789,20 +1792,14 @@ onAuthStateChanged(auth, async (user) => {
         }
 
         currentUser = user;
-        listenToUserProfile(user); // Live updates for wallet and profile
+        listenToUserProfile(user); 
         document.getElementById('signin-gate').classList.remove('visible');
         renderAvatarBtn();
         checkPhoneWarning();
-        initMap();
-        attachOrdersListener();
-        loadDriverApplication();
     } else {
         currentUser = null; userProfile = {};
         ordersListenerAttached = false; selectedVehicleType = null;
         if(profileUnsubscribe) profileUnsubscribe();
-        stopShipdayPolling();
-        renderOrders(null);
-        renderDriverStatus(null);
         closeDriverModal();
         closeChat();
         document.getElementById('signin-gate').classList.add('visible');
@@ -1820,6 +1817,24 @@ function renderAvatarBtn() {
         if (userProfile.photoURL) sbBtn.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar">`;
         else sbBtn.innerHTML = `<span class="av-init" id="sb-avatar-init">${initials(userProfile.name)}</span>`;
     }
+}
+
+function updatePaymentSheetUI(payMethod) {
+    // Basic Stub for keeping consistency
+    const el = document.getElementById('payment-sheet-wallet-bal');
+    if (el) {
+        const bal = typeof userProfile.walletBalance === 'number' ? userProfile.walletBalance.toFixed(2) : '0.00';
+        el.innerText = `Available: R${bal}`;
+    }
+}
+
+function checkPhoneWarning() {
+    const show = currentUser && !userProfile.phone;
+    const warns = ['phone-warn', 'sb-phone-warn'];
+    warns.forEach(w => {
+        const el = document.getElementById(w);
+        if (el) el.style.display = show ? 'flex' : 'none';
+    });
 }
 
 /* ─── Profile body template ─── */
@@ -1847,1364 +1862,179 @@ function profileBodyHTML(ctx) {
     <div class="drawer-section-title">Account</div>
     <div class="info-row">
         <div class="info-row-icon"><i class="fa-solid fa-user"></i></div>
-        <div class="info-row-text"><div class="ir-label">Full name</div><div class="ir-value">${userProfile.name||'—'}</div></div>
+        <div class="info-row-text"><div class="ir-label">Name</div><div class="ir-value">${userProfile.name||'—'}</div></div>
     </div>
     <div class="info-row">
         <div class="info-row-icon"><i class="fa-solid fa-envelope"></i></div>
-        <div class="info-row-text"><div class="ir-label">Email</div><div class="ir-value">${userProfile.email||'—'}</div></div>
+        <div class="info-row-text"><div class="ir-label">Email</div><div class="ir-value">${userProfile.email}</div></div>
     </div>
-    <div class="info-row">
-        <div class="info-row-icon"><i class="fa-solid fa-phone"></i></div>
-        <div class="info-row-text"><div class="ir-label">Mobile</div><div class="ir-value">${userProfile.phone||'Not set'}</div></div>
+    
+    <div class="drawer-section-title">Legal</div>
+    <div class="info-row" style="cursor:pointer;" onclick="openTerms()">
+        <div class="info-row-icon"><i class="fa-solid fa-file-contract"></i></div>
+        <div class="info-row-text"><div class="ir-label">Terms & Privacy</div><div class="ir-value">View policies</div></div>
     </div>
-
-    <div class="drawer-section-title">Drive with Pace Parcels</div>
-    <div class="driver-cta" id="driver-cta-${ctx}" onclick="openDriverModal()">
-        <div class="driver-cta-icon"><i class="fa-solid fa-truck-pickup"></i></div>
-        <div class="driver-cta-text"><div class="driver-cta-title">Become a driver</div><div class="driver-cta-sub">Earn with your bakkie or motorbike</div></div>
-        <i class="fa-solid fa-chevron-right driver-cta-arrow"></i>
-    </div>
-    <div class="driver-status-card" id="driver-status-card-${ctx}" style="display:none;"></div>
-
-    <button class="logout-btn" onclick="signOut()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out</button>`;
-}
-
-/* ─── Driver form body template ─── */
-function driverFormBodyHTML(ctx) {
-    return `
-    <div class="dm-field">
-        <label class="dm-label">Vehicle type</label>
-        <div class="vehicle-type-row">
-            <div class="vehicle-pill" id="vt-bakkie-${ctx}" onclick="selectVehicleType('Bakkie','${ctx}')">
-                <i class="fa-solid fa-truck-pickup"></i><span>Bakkie</span>
-            </div>
-            <div class="vehicle-pill" id="vt-motorbike-${ctx}" onclick="selectVehicleType('Motorbike','${ctx}')">
-                <i class="fa-solid fa-motorcycle"></i><span>Motorbike</span>
-            </div>
-        </div>
-    </div>
-    <div class="dm-field"><label class="dm-label">Full name</label><input id="dm-name-${ctx}" class="dm-input" type="text" placeholder="As on your ID"></div>
-    <div class="dm-field"><label class="dm-label">Mobile number</label><input id="dm-phone-${ctx}" class="dm-input" type="tel" placeholder="+27 60 123 4567" inputmode="tel"></div>
-    <div class="dm-field"><label class="dm-label">ID number</label><input id="dm-id-${ctx}" class="dm-input" type="text" placeholder="13-digit SA ID number" inputmode="numeric"></div>
-    <div class="dm-field"><label class="dm-label">Driver's license number</label><input id="dm-license-${ctx}" class="dm-input" type="text" placeholder="License number"></div>
-    <div class="dm-field"><label class="dm-label">Vehicle make &amp; model</label><input id="dm-vehicle-model-${ctx}" class="dm-input" type="text" placeholder="e.g. Toyota Hilux 2019"></div>
-    <div class="dm-field"><label class="dm-label">License plate</label><input id="dm-plate-${ctx}" class="dm-input" type="text" placeholder="e.g. CA 123-456"></div>
-    <div class="dm-field" style="margin-bottom:16px;"><label class="dm-label">City / area of operation</label><input id="dm-city-${ctx}" class="dm-input" type="text" placeholder="e.g. Johannesburg"></div>
-
-    <div class="dm-disclaimer">
-        <div class="dm-disclaimer-title">
-            <i class="fa-solid fa-shield-halved"></i>
-            Background check &amp; data consent
-        </div>
-        <p>Pace Parcels will conduct a background check on your provided information, including your ID number and driver's license, to verify your identity and driving record before approving your application.</p>
-        <p>Your personal information will be collected, stored, and processed in accordance with the <strong>Protection of Personal Information Act (POPIA), Act 4 of 2013</strong>. Your data will only be used for verification, driver onboarding, and operational communication purposes. You may request access to or deletion of your data at any time by contacting us.</p>
-        <label class="dm-checkbox-label">
-            <input type="checkbox" id="dm-consent-${ctx}" onchange="updateDriverSubmitBtn('${ctx}')">
-            <span class="dm-checkbox-text">
-                I consent to a background check on my personal information and understand that my data will be handled in accordance with POPIA.
-                <span>I confirm the information provided is accurate and complete.</span>
-            </span>
-        </label>
-    </div>`;
+    <button class="logout-btn" onclick="signOut()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out</button>
+    `;
 }
 
 function renderProfileUI() {
-    ['mobile','sb'].forEach(ctx => {
-        const aw = document.getElementById(`drawer-avatar-wrap-${ctx}`);
-        if(aw) {
-            if (userProfile.photoURL) aw.innerHTML = `<img src="${userProfile.photoURL}" alt="avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
-            else aw.innerHTML = `<span class="av-init-lg" id="drawer-avatar-init-${ctx}" style="color: #18181b;">${initials(userProfile.name)}</span>`;
+    const ctx = isDesktop() ? 'sb' : 'mobile';
+    
+    // Update Drawers / Views
+    const pMobile = document.getElementById('profile-body-mobile');
+    const pSb = document.getElementById('profile-body-sb');
+    
+    if (pMobile) pMobile.innerHTML = profileBodyHTML('mobile');
+    if (pSb) pSb.innerHTML = profileBodyHTML('sb');
+
+    // Update Avatar/Name in specific spots
+    if (!isDesktop()) {
+        const wrap = document.getElementById('drawer-avatar-wrap-mobile');
+        if (wrap) {
+            if (userProfile.photoURL) wrap.innerHTML = `<img src="${userProfile.photoURL}" alt="Avatar">`;
+            else wrap.innerHTML = `<span class="av-init-lg" style="color:#18181b;">${initials(userProfile.name)}</span>`;
         }
-        
-        const nm = document.getElementById(`drawer-name-${ctx}`);    if(nm) nm.textContent = userProfile.name||'—';
-        const em = document.getElementById(`drawer-email-${ctx}`);   if(em) em.textContent = userProfile.email||'—';
-        
-        const pb = document.getElementById(`profile-body-${ctx}`);
-        if(pb) pb.innerHTML = profileBodyHTML(ctx);
-        const dfb = document.getElementById(`driver-form-body-${ctx}`);
-        if(dfb) dfb.innerHTML = driverFormBodyHTML(ctx);
-        const pinp = document.getElementById(`phone-input-${ctx}`);
-        if(pinp) pinp.value = userProfile.phone||'';
-        const dmn = document.getElementById(`dm-name-${ctx}`);
-        const dmp = document.getElementById(`dm-phone-${ctx}`);
-        if(dmn) dmn.value = userProfile.name||'';
-        if(dmp) dmp.value = userProfile.phone||'';
-    });
-    if(typeof userMarker !== 'undefined' && userMarker) refreshMapMarker();
-}
-
-function checkPhoneWarning() {
-    ['phone-warn','sb-phone-warn'].forEach(id=>{ 
-        const el=document.getElementById(id); 
-        if(el) {
-            el.style.display = (!userProfile.phone || userProfile.phone.trim() === '') ? 'flex' : 'none'; 
+        document.getElementById('drawer-name-mobile').innerText = userProfile.name || 'Pace User';
+        document.getElementById('drawer-email-mobile').innerText = userProfile.email || '';
+    } else {
+        const wrap = document.getElementById('drawer-avatar-wrap-sb');
+        if (wrap) {
+            if (userProfile.photoURL) wrap.innerHTML = `<img src="${userProfile.photoURL}" alt="Avatar">`;
+            else wrap.innerHTML = `<span class="av-init-lg">${initials(userProfile.name)}</span>`;
         }
-    });
-}
-
-/* ─── Wallet Recharge Logic ─── */
-window.openRechargeModal = function() {
-    document.getElementById('recharge-amount').value = '';
-    document.getElementById('recharge-modal-overlay').classList.add('open');
-};
-window.closeRechargeModal = function() {
-    document.getElementById('recharge-modal-overlay').classList.remove('open');
-};
-window.closeRechargeModalOnOverlay = function(e) {
-    if (e.target.id === 'recharge-modal-overlay') closeRechargeModal();
-};
-
-window.confirmRecharge = async function() {
-    const amtInput = document.getElementById('recharge-amount').value;
-    const amount = parseFloat(amtInput);
-    if (isNaN(amount) || amount < 10) {
-        showToast('error', 'Invalid amount', 'Minimum recharge is R10.');
-        return;
-    }
-
-    const btn = document.getElementById('confirm-recharge-btn');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
-
-    try {
-        const userEmail = userProfile.email || currentUser.email || 'customer@pacelogistics.co.za';
-        const payResult = await processPaystackPayment(amount, userEmail);
-
-        const currentBalance = typeof userProfile.walletBalance === 'number' ? userProfile.walletBalance : 0;
-        const newBalance = currentBalance + amount;
-
-        await update(ref(database, `users/${currentUser.uid}`), {
-            walletBalance: newBalance
-        });
-
-        showToast('success', 'Wallet recharged', `Successfully added R${amount.toFixed(2)} to your wallet.`);
-        closeRechargeModal();
-    } catch(err) {
-        if(!err.cancelled) showToast('error', 'Recharge failed', err.message || 'Could not complete payment.');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = 'Proceed to Pay';
-    }
-};
-
-/* ─── Support Chat Logic ─── */
-let chatListenerAttached = false;
-let chatRef = null;
-
-window.openChat = function() {
-    if (!currentUser) { showToast('error', 'Not signed in', 'Please sign in to use chat.'); return; }
-    document.getElementById('chat-modal-overlay').classList.add('open');
-    attachChatListener();
-};
-
-window.closeChat = function() {
-    document.getElementById('chat-modal-overlay').classList.remove('open');
-};
-
-window.closeChatOnOverlay = function(e) {
-    if (e.target.id === 'chat-modal-overlay') closeChat();
-};
-
-function attachChatListener() {
-    if (chatListenerAttached || !currentUser) return;
-    chatListenerAttached = true;
-    chatRef = ref(database, `chats/${currentUser.uid}`);
-    onValue(chatRef, (snap) => {
-        const data = snap.val();
-        renderChatMessages(data);
-    });
-}
-
-function renderChatMessages(data) {
-    const body = document.getElementById('chat-body');
-    if (!data) {
-        body.innerHTML = `
-            <div style="text-align:center; padding: 40px 20px; color: #a1a1aa; font-size: 13px;">
-                <i class="fa-regular fa-comments" style="font-size: 38px; margin-bottom: 14px; display:block;"></i>
-                Send us a message and we'll help you out!
-            </div>`;
-        return;
-    }
-
-    const messages = Object.values(data).sort((a, b) => a.timestamp - b.timestamp);
-    body.innerHTML = messages.map(m => {
-        const isUser = m.sender === 'user';
-        const timeStr = new Date(m.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        return `
-            <div class="chat-msg-row ${isUser ? 'user' : 'support'}">
-                <div class="chat-bubble">${m.text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
-                <div class="chat-time">${timeStr}</div>
-            </div>
-        `;
-    }).join('');
-    
-    setTimeout(() => { body.scrollTop = body.scrollHeight; }, 50);
-}
-
-window.sendChatMessage = async function() {
-    const input = document.getElementById('chat-input');
-    const btn = document.getElementById('chat-send-btn');
-    const text = input.value.trim();
-    
-    if (!text || !currentUser) return;
-    
-    input.disabled = true;
-    btn.disabled = true;
-    
-    try {
-        await set(push(ref(database, `chats/${currentUser.uid}`)), {
-            sender: 'user',
-            text: text,
-            timestamp: Date.now()
-        });
-        input.value = '';
-    } catch (e) {
-        showToast('error', 'Message failed', 'Could not send message.');
-    } finally {
-        input.disabled = false;
-        btn.disabled = false;
-        input.focus();
-    }
-};
-
-window.handleChatKeyPress = function(e) {
-    if (e.key === 'Enter') sendChatMessage();
-};
-
-/* ─── Orders & Realtime Shipday Sync ─── */
-let shipdayPollInterval = null;
-
-function startShipdayPolling() {
-    if (shipdayPollInterval) clearInterval(shipdayPollInterval);
-    syncActiveOrdersWithShipday(); 
-    shipdayPollInterval = setInterval(syncActiveOrdersWithShipday, 12000); 
-}
-
-function stopShipdayPolling() {
-    if (shipdayPollInterval) clearInterval(shipdayPollInterval);
-}
-
-async function syncActiveOrdersWithShipday() {
-    if(!currentUser) return;
-    try {
-        const snap = await get(query(ref(database,'orders'), orderByChild('userId'), equalTo(currentUser.uid)));
-        if(!snap.exists()) return;
-        const ordersObj = snap.val();
-        
-        const activeOrders = Object.entries(ordersObj).filter(([k, o]) => o.status !== 'delivered' && o.status !== 'cancelled');
-        if (activeOrders.length === 0) return;
-
-        activeOrders.forEach(async ([key, o]) => {
-            if (!o.orderNumber) return;
-            try {
-                const res = await fetch(`https://api.shipday.com/orders?orderNumber=${o.orderNumber}`, {
-                    headers: {"Authorization": `Basic ${SHIPDAY_KEY}`}
-                });
-                if (res.ok) {
-                    const sdData = await res.json();
-                    if (sdData && sdData.length > 0) {
-                        const sdState = sdData[0].orderState;
-                        const mappedState = mapShipdayState(sdState);
-                        if (mappedState && mappedState !== o.status) {
-                            await update(ref(database, `orders/${key}`), { status: mappedState });
-                        }
-                    }
-                }
-            } catch(e) { console.warn("Shipday individual sync error", e); }
-        });
-    } catch(e) { console.error("Shipday sync error", e); }
-}
-
-function mapShipdayState(state) {
-    const s = (state || '').toUpperCase();
-    if (['UNASSIGNED'].includes(s)) return 'placed';
-    if (['ASSIGNED', 'STARTED', 'ACCEPTED'].includes(s)) return 'assigned'; 
-    if (['PICKED_UP', 'READY_TO_DELIVER', 'IN_TRANSIT'].includes(s)) return 'in_transit'; 
-    if (['ALREADY_DELIVERED', 'DELIVERED', 'COMPLETED'].includes(s)) return 'delivered';
-    if (['FAILED', 'CANCELED', 'CANCELLED', 'INCOMPLETED'].includes(s)) return 'cancelled';
-    return null;
-}
-
-function attachOrdersListener() {
-    if (ordersListenerAttached || !currentUser) return;
-    ordersListenerAttached = true;
-    const q = query(ref(database,'orders'), orderByChild('userId'), equalTo(currentUser.uid));
-    onValue(q, snap => renderOrders(snap.val()));
-    startShipdayPolling(); 
-}
-
-const STATUS_META = {
-    placed:     {label:'Order placed',    badge:'badge-placed',    step:0},
-    assigned:   {label:'Driver assigned', badge:'badge-assigned',  step:1},
-    picked_up:  {label:'Picked up',       badge:'badge-transit',   step:2},
-    in_transit: {label:'In transit',      badge:'badge-transit',   step:2},
-    delivered:  {label:'Delivered',       badge:'badge-delivered', step:3},
-    cancelled:  {label:'Cancelled',       badge:'badge-cancelled', step:-1}
-};
-const STATUS_STEPS = ['Placed','Assigned','Picked up','Delivered'];
-function shortAddr(a) { return (a||'').split(',')[0]; }
-function formatOrderDate(ts) {
-    const d=new Date(ts);
-    return d.toLocaleDateString('en-ZA',{day:'numeric',month:'short'})+' · '+d.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'});
-}
-function orderCardHTML(o) {
-    const meta=STATUS_META[o.status]||STATUS_META.placed;
-    const pct=meta.step<0?0:(meta.step/(STATUS_STEPS.length-1))*100;
-    const steps=STATUS_STEPS.map((s,i)=>`<div class="step ${i<=meta.step?'done':''}"><span class="step-dot"></span><span class="step-label">${s}</span></div>`).join('');
-    const pkgName=(o.orderItem&&o.orderItem[0]&&o.orderItem[0].name)||'Package';
-    return `<div class="order-card">
-        <div class="order-card-top"><span class="order-id">${o.orderNumber||''}</span><span class="order-badge ${meta.badge}">${meta.label}</span></div>
-        <div class="order-route"><span class="order-route-pt">${shortAddr(o.restaurantAddress)}</span><i class="fa-solid fa-arrow-right-long"></i><span class="order-route-pt">${shortAddr(o.customerAddress)}</span></div>
-        ${meta.step>=0?`<div class="order-progress"><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div><div class="progress-steps">${steps}</div></div>`:''}
-        <div class="order-footer"><span>${pkgName}</span><span>${formatOrderDate(o.timestamp)}</span><span class="order-price">R${o.totalOrderCost??'—'}</span></div>
-    </div>`;
-}
-function renderOrders(obj) {
-    const orders = obj ? Object.values(obj).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0)) : [];
-    ['mobile','sb'].forEach(ctx => {
-        const listEl  = document.getElementById(`track-list-${ctx}`);
-        const emptyEl = document.getElementById(`track-empty-${ctx}`);
-        if (!listEl || !emptyEl) return;
-        if (!orders.length) { listEl.innerHTML=''; listEl.style.display='none'; emptyEl.style.display='block'; }
-        else { emptyEl.style.display='none'; listEl.style.display='flex'; listEl.innerHTML=orders.map(orderCardHTML).join(''); }
-    });
-}
-
-/* ─── Panel navigation ─── */
-window.openProfile  = function() {
-    if (currentUser) renderProfileUI();
-    document.getElementById('profile-overlay').classList.add('open');
-    document.getElementById('profile-drawer').classList.add('open');
-};
-window.closeProfile = function() {
-    document.getElementById('profile-overlay').classList.remove('open');
-    document.getElementById('profile-drawer').classList.remove('open');
-};
-
-window.desktopShowMain    = function() { showDesktopPanel('main'); };
-window.desktopShowProfile = function() { openProfile(); };
-
-function showDesktopPanel(name) {
-    const el = document.getElementById(`sb-panel-${name}`);
-    if (el) el.style.display = 'block';
-}
-
-function renderDriverFormBodyForCtx(ctx) {
-    const dfb = document.getElementById(`driver-form-body-${ctx}`);
-    if (dfb) {
-        dfb.innerHTML = driverFormBodyHTML(ctx);
-        const dmn = document.getElementById(`dm-name-${ctx}`);
-        const dmp = document.getElementById(`dm-phone-${ctx}`);
-        if(dmn) dmn.value = userProfile.name||'';
-        if(dmp) dmp.value = userProfile.phone||'';
+        document.getElementById('drawer-name-sb').innerText = userProfile.name || 'Pace User';
+        document.getElementById('drawer-email-sb').innerText = userProfile.email || '';
     }
 }
 
-/* ─── Driver application ─── */
-window.openDriverModal = function() {
-    if (!currentUser) { showToast('error','Not signed in','Please sign in first.'); return; }
-    renderDriverFormBodyForCtx('mobile');
-    document.getElementById('driver-modal-overlay').classList.add('open');
-};
-window.closeDriverModal = function() { document.getElementById('driver-modal-overlay').classList.remove('open'); };
-window.closeDriverModalOnOverlay = function(e) { if(e.target.id==='driver-modal-overlay') closeDriverModal(); };
-
-window.selectVehicleType = function(type, ctx) {
-    selectedVehicleType = type;
-    ['mobile','sb'].forEach(c => {
-        const b = document.getElementById(`vt-bakkie-${c}`);
-        const m = document.getElementById(`vt-motorbike-${c}`);
-        if(b) b.classList.toggle('active', type==='Bakkie');
-        if(m) m.classList.toggle('active', type==='Motorbike');
-    });
-};
-
-window.updateDriverSubmitBtn = function(ctx) {
-    const checkbox = document.getElementById(`dm-consent-${ctx}`);
-    const btn = document.getElementById(`dm-submit-btn-${ctx}`);
-    if (btn) btn.disabled = !(checkbox && checkbox.checked);
-};
-
-function initDriverSubmitBtns() {
-    ['mobile','sb'].forEach(ctx => {
-        const btn = document.getElementById(`dm-submit-btn-${ctx}`);
-        if(btn) btn.disabled = true;
-    });
-}
-
-window.submitDriverApplication = async function(ctx) {
-    if (!currentUser) { showToast('error','Not signed in','Please sign in first.'); return; }
-    const g = id => { const el=document.getElementById(`${id}-${ctx}`); return el?el.value.trim():''; };
-    const name    = g('dm-name');
-    const phone   = g('dm-phone');
-    const idNum   = g('dm-id');
-    const license = g('dm-license');
-    const vehicle = g('dm-vehicle-model');
-    const plate   = g('dm-plate');
-    const city    = g('dm-city');
-    const consent = document.getElementById(`dm-consent-${ctx}`);
+/* ─── VOUCHER LOGIC (Tops up Wallet directly) ─── */
+window.applyVoucherSheet = async function() {
+    const codeInput = document.getElementById('voucher-code-sheet');
+    const code = codeInput ? codeInput.value.trim().toUpperCase() : '';
     
-    if (!selectedVehicleType) { showToast('error','Select a vehicle type','Choose Bakkie or Motorbike.'); return; }
-    if (!name||!phone||!idNum||!license||!vehicle||!plate||!city) { showToast('error','Missing details','Please fill in every field.'); return; }
-    if (!consent||!consent.checked) { showToast('error','Consent required','Please read and accept the background check and POPIA consent.'); return; }
-    const btn = document.getElementById(`dm-submit-btn-${ctx}`);
-    btn.disabled=true; btn.textContent='Submitting…';
-    
-    try {
-        const application = {
-            uid:currentUser.uid, name, phone, idNumber:idNum, license,
-            vehicleType:selectedVehicleType, vehicleModel:vehicle,
-            licensePlate:plate, city, email:userProfile.email||currentUser.email||'',
-            status:'pending', timestamp:Date.now(), popiaConcsentGiven:true
-        };
-        await set(ref(database,`driverApplications/${currentUser.uid}`),application);
-        showToast('success','Application submitted',"We'll be in touch on your provided number soon.");
-        if(ctx==='mobile') closeDriverModal();
-        else desktopShowProfile();
-        renderDriverStatus(application);
-    } catch(e) {
-        console.error(e);
-        showToast('error','Submission failed',e.message||'Something went wrong.');
-        btn.disabled=false; btn.textContent='Submit application';
+    if (!code) { 
+        showToast('error', 'Empty code', 'Please enter a voucher code.'); 
+        return; 
     }
-};
-
-const DRIVER_STATUS_META = {
-    pending:  {icon:'fa-clock',        title:'Application pending',        sub:()=>"We're reviewing your details."},
-    approved: {icon:'fa-circle-check', title:"You're an approved driver",  sub:(a)=>`${a.vehicleType} · ${a.licensePlate}`},
-    rejected: {icon:'fa-circle-xmark', title:'Application not approved',   sub:()=>'Contact support for details.'}
-};
-function renderDriverStatus(app) {
-    ['mobile','sb'].forEach(ctx => {
-        const cta    = document.getElementById(`driver-cta-${ctx}`);
-        const status = document.getElementById(`driver-status-card-${ctx}`);
-        if (!cta||!status) return;
-        if (!app) { cta.style.display='flex'; status.style.display='none'; return; }
-        cta.style.display='none'; status.style.display='flex';
-        status.className=`driver-status-card ${app.status||'pending'}`;
-        const meta=DRIVER_STATUS_META[app.status]||DRIVER_STATUS_META.pending;
-        status.innerHTML=`<div class="driver-status-icon"><i class="fa-solid ${meta.icon}"></i></div>
-            <div class="driver-status-text"><div class="driver-status-title">${meta.title}</div><div class="driver-status-sub">${meta.sub(app)}</div></div>`;
-    });
-}
-async function loadDriverApplication() {
-    if (!currentUser) return;
-    try {
-        const snap = await get(ref(database,`driverApplications/${currentUser.uid}`));
-        renderDriverStatus(snap.exists()?snap.val():null);
-    } catch(e) { renderDriverStatus(null); }
-}
-
-/* ─── Cash & Payment Methods logic ─── */
-let activeCtxForPayment = 'mobile';
-
-window.openCashModal = function() {
-    document.getElementById('cash-modal-overlay').classList.add('open');
-};
-window.closeCashModal = function() {
-    document.getElementById('cash-modal-overlay').classList.remove('open');
-};
-window.closeCashModalOnOverlay = function(e) {
-    if (e.target.id === 'cash-modal-overlay') closeCashModal();
-};
-
-window.openPaymentSheet = function(ctx) {
-    activeCtxForPayment = ctx;
-    document.getElementById('payment-sheet-overlay').classList.add('open');
-    updatePaymentSheetUI(selectedPayment[ctx]);
-};
-
-window.closePaymentSheet = function() {
-    document.getElementById('payment-sheet-overlay').classList.remove('open');
-};
-
-window.closePaymentSheetOnOverlay = function(e) {
-    if (e.target.id === 'payment-sheet-overlay') closePaymentSheet();
-};
-
-window.setDigitalPaymentMethod = function(method) {
-    updatePaymentSheetUI(method);
-    selectedPayment[activeCtxForPayment] = method;
-    updatePaystackTestNote();
-    updateSubmitBtn();
-    setTimeout(() => { closePaymentSheet(); }, 250);
-};
-
-function updatePaymentSheetUI(method) {
-    const isPaystack = method === 'paystack';
-    const isWallet = method === 'wallet';
-    
-    const optPaystack = document.getElementById('opt-paystack');
-    const checkPaystack = document.getElementById('check-paystack');
-    if(optPaystack) optPaystack.classList.toggle('active', isPaystack);
-    if(checkPaystack) checkPaystack.style.display = isPaystack ? 'block' : 'none';
-
-    const optWallet = document.getElementById('opt-wallet');
-    const checkWallet = document.getElementById('check-wallet');
-    if(optWallet) optWallet.classList.toggle('active', isWallet);
-    if(checkWallet) checkWallet.style.display = isWallet ? 'block' : 'none';
-
-    const balEl = document.getElementById('payment-sheet-wallet-bal');
-    if(balEl) {
-        const bal = typeof userProfile.walletBalance === 'number' ? userProfile.walletBalance : 0;
-        balEl.textContent = `Available: R${bal.toFixed(2)}`;
+    if (!currentUser) { 
+        showToast('error', 'Not logged in', 'Please log in to redeem vouchers.'); 
+        return; 
     }
-}
 
-window.updatePaystackTestNote = function() {
-    const note = document.getElementById('paystack-test-note');
-    if(!note) return;
-    note.style.display = 'none';
-    const currentMethod = selectedPayment[activeCtxForPayment];
-    if(currentMethod === 'paystack' && PAYSTACK_PUBLIC_KEY && PAYSTACK_PUBLIC_KEY.startsWith('pk_test_')) {
-        note.style.display = 'flex';
-    }
-};
-
-function updateSubmitBtn() {
-    const hp=!!selectedCoords.pickup;
-    const hd=!!selectedCoords.dropoff;
-    const hk=!!selectedPkg;
-    
-    ['mobile','sb'].forEach(ctx=>{
-        const btnId   = ctx==='mobile'?'submitBtn':'submitBtn-sb';
-        const labelId = ctx==='mobile'?'submitLabel':'submitLabel-sb';
-        const btn   = document.getElementById(btnId);
-        const label = document.getElementById(labelId);
-        
-        if(!btn||!label) return;
-        
-        if(!hp||!hd) { 
-            btn.className=ctx==='sb'?'submit-btn-el':''; label.textContent='Set pickup & destination'; btn.disabled=true; 
-            btn.style.display = 'flex'; 
-        }
-        else if(!hk) { 
-            btn.className=ctx==='sb'?'submit-btn-el':''; label.textContent='Select a package size'; btn.disabled=true; 
-            btn.style.display = 'flex'; 
-        }
-        else {
-            let total = calculateTotalPrice();
-            let discount = appliedVoucherDiscount[ctx] || 0;
-            total = Math.max(0, total - discount);
-            
-            btn.className=ctx==='sb'?'submit-btn-el ready':'ready';
-            
-            if(selectedPayment[ctx]==='paystack') {
-                label.innerHTML=`<i class="fa-solid fa-credit-card"></i> Pay R${total} with Paystack`;
-            } else if(selectedPayment[ctx]==='wallet') {
-                label.innerHTML=`<i class="fa-solid fa-wallet"></i> Pay R${total} from Wallet`;
-            } else {
-                label.textContent=`Book ${selectedPkg.name} · R${total}`;
-            }
-            btn.style.display = 'flex';
-            btn.disabled=false;
-            
-            ['route-price','sb-route-price'].forEach(id=>{ const routeEl=document.getElementById(id); if(routeEl) routeEl.textContent=`R${total}`; });
-        }
-    });
-}
-
-/* ─── Voucher Handling (Sheet) ─── */
-window.applyVoucherSheet = function() {
-    const input = document.getElementById('voucher-code-sheet');
     const btn = document.getElementById('voucher-btn-sheet');
-    const code = input.value.trim().toUpperCase();
-    
-    if(!code) return;
-    
-    if (code === 'FREE50' || code === 'PACE') {
-        const discount = 50;
-        appliedVoucherDiscount.mobile = discount;
-        appliedVoucherDiscount.sb = discount;
-        
-        btn.innerHTML = '<i class="fa-solid fa-check"></i> Applied'; 
-        btn.style.background = '#15803d';
-        input.disabled = true;
-        
-        showToast('success', 'Voucher applied', `R${discount} off your delivery.`);
-        updateSubmitBtn();
-    } else { showToast('error', 'Invalid voucher', 'The code you entered is not valid.'); }
-};
+    btn.disabled = true;
+    const originalText = btn.innerText;
+    btn.innerText = '...';
 
-/* ─── Online Drivers Tracking ─── */
-let driverMarkers = {};
-let driversInterval = null;
-
-async function fetchAndDisplayDrivers() {
-    if (!SHIPDAY_KEY) return;
     try {
-        const res = await fetch("https://api.shipday.com/carriers", {
-            method: "GET",
-            headers: {
-                "Authorization": `Basic ${SHIPDAY_KEY}`,
-                "Content-Type": "application/json"
-            }
-        });
+        // Query Firebase for the specific voucher code under "vouchers/{code}"
+        const voucherRef = ref(database, `vouchers/${code}`);
+        const snap = await get(voucherRef);
         
-        if (!res.ok) throw new Error("Failed to fetch from Shipday API");
-        
-        const carriers = await res.json();
-        const currentDriverIds = new Set();
-        
-        if (Array.isArray(carriers)) {
-            carriers.forEach(carrier => {
-                const loc = carrier.carrierLocation || carrier.location || {};
-                const lat = carrier.latitude || loc.latitude;
-                const lng = carrier.longitude || loc.longitude;
-                
-                const isOnline = carrier.isOnShift === true;
-                
-                if (lat && lng && isOnline) {
-                    const id = (carrier.carrierId || carrier.id).toString();
-                    currentDriverIds.add(id);
-                    updateDriverMarker(carrier, lng, lat, id);
-                }
-            });
-        }
-        
-        Object.keys(driverMarkers).forEach(id => {
-            if (!currentDriverIds.has(id)) {
-                driverMarkers[id].remove();
-                delete driverMarkers[id];
-            }
-        });
-        
-    } catch(e) {
-        console.warn("Live driver fetch issue:", e.message);
-    }
-}
-
-function updateDriverMarker(carrier, lng, lat, id) {
-    if (driverMarkers[id]) {
-        driverMarkers[id].setLngLat([lng, lat]);
-    } else {
-        const el = document.createElement('div');
-        el.className = 'driver-marker';
-        el.innerHTML = '<i class="fa-solid fa-car-side"></i>';
-        
-        const popup = new mapboxgl.Popup({ offset: 25, closeButton: false, closeOnClick: true })
-            .setHTML(`<div style="font-size: 12px; font-weight: 700; color: #18181b; padding: 4px;">${carrier.name || 'Pace Driver'} <br><span style="color:#15803d; font-size:10px;">● Online</span></div>`);
-        
-        driverMarkers[id] = new mapboxgl.Marker({ element: el })
-            .setLngLat([lng, lat])
-            .setPopup(popup)
-            .addTo(map);
-    }
-}
-
-function startDriverTracking() {
-    fetchAndDisplayDrivers(); 
-    if (!driversInterval) driversInterval = setInterval(fetchAndDisplayDrivers, 10000); 
-}
-
-function stopDriverTracking() {
-    if (driversInterval) {
-        clearInterval(driversInterval);
-        driversInterval = null;
-    }
-    Object.values(driverMarkers).forEach(marker => marker.remove());
-    driverMarkers = {};
-}
-
-/* ─── Map ─── */
-mapboxgl.accessToken = MAPBOX_TOKEN;
-let map, userMarker;
-let mapInitialised = false;
-
-function initMap() {
-    if (mapInitialised) return;
-    mapInitialised = true;
-    const leftOffset = isDesktop() ? 380 : 0;
-    map = new mapboxgl.Map({
-        container:'map', style:'mapbox://styles/mapbox/light-v11',
-        center:[28.0473,-26.2041], zoom:12, attributionControl:false
-    });
-    map.setPadding(isDesktop()
-        ? {top:60,bottom:60,left:60,right:60}
-        : {top:170,bottom:340,left:16,right:16});
-    map.on('load',()=>{
-        if(navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                pos=>{ 
-                    const{longitude:lng,latitude:lat}=pos.coords; 
-                    map.flyTo({center:[lng,lat],zoom:13,duration:1400}); 
-                    placeUserMarker(lng,lat); 
-                    setLocationFromDrag('pickup', lng, lat);
-                },
-                ()=>{
-                    placeUserMarker(28.0473,-26.2041);
-                    setLocationFromDrag('pickup', 28.0473,-26.2041);
-                }
-            );
+        if (!snap.exists()) {
+            showToast('error', 'Invalid Voucher', 'The voucher code you entered does not exist.');
         } else {
-            placeUserMarker(28.0473,-26.2041);
-            setLocationFromDrag('pickup', 28.0473,-26.2041);
-        }
-    });
-    setupSearch('pickup','mobile'); setupSearch('dropoff','mobile');
-    setupSearch('pickup','sb');     setupSearch('dropoff','sb');
-    updateSubmitBtn();
-
-    startDriverTracking();
-}
-
-async function setLocationFromDrag(type, lng, lat) {
-    try {
-        const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_TOKEN}`);
-        const data = await res.json();
-        
-        if (data.features && data.features.length > 0) {
-            const placeName = data.features[0].place_name;
-            ['mobile', 'sb'].forEach(ctx => {
-                const inp = document.getElementById(searchInputId(type, ctx));
-                const clr = document.getElementById(searchClearId(type, ctx));
-                if (inp) inp.value = placeName;
-                if (clr) clr.classList.add('visible');
-            });
-            selectedCoords[type] = [lng, lat];
-            updateSubmitBtn();
-        }
-    } catch(e) { console.warn('Geocoding failed for drag event', e); }
-}
-
-function buildAvatarEl() {
-    const wrap = document.createElement('div'); wrap.className = 'user-marker-wrap';
-    const pulse = document.createElement('div'); pulse.className = 'user-marker-pulse';
-    const av = document.createElement('div'); av.className = 'user-marker-avatar';
-    
-    if(userProfile.photoURL) {
-        const img = document.createElement('img'); img.src = userProfile.photoURL;
-        img.onerror = () => { img.remove(); const sp = document.createElement('span'); sp.className = 'av-init'; sp.textContent = initials(userProfile.name); av.appendChild(sp); };
-        av.appendChild(img);
-    } else { const sp = document.createElement('span'); sp.className = 'av-init'; sp.textContent = initials(userProfile.name); av.appendChild(sp); }
-    
-    const caret = document.createElement('div'); caret.className = 'user-marker-caret';
-    
-    wrap.appendChild(pulse); wrap.appendChild(av); wrap.appendChild(caret);
-
-    wrap.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        if (!userMarker) return;
-        const lngLat = userMarker.getLngLat();
-        selectedCoords['pickup'] = [lngLat.lng, lngLat.lat];
-        await setLocationFromDrag('pickup', lngLat.lng, lngLat.lat);
-        if(selectedCoords.pickup && selectedCoords.dropoff) { drawRoute(); fitBothMarkers(); }
-    });
-    return wrap;
-}
-
-function placeUserMarker(lng,lat) {
-    if(userMarker) {
-        userMarker.setLngLat([lng,lat]);
-    } else {
-        userMarker = new mapboxgl.Marker({ element: buildAvatarEl(), anchor: 'bottom', draggable: true }).setLngLat([lng,lat]).addTo(map);
-        userMarker.on('dragend', async () => {
-            const ll = userMarker.getLngLat();
-            selectedCoords['pickup'] = [ll.lng, ll.lat];
-            await setLocationFromDrag('pickup', ll.lng, ll.lat);
-            if(selectedCoords.pickup && selectedCoords.dropoff) { drawRoute(); fitBothMarkers(); }
-        });
-    }
-    selectedCoords['pickup'] = [lng, lat];
-}
-
-function refreshMapMarker() { if(!userMarker) return; const ll=userMarker.getLngLat(); placeUserMarker(ll.lng,ll.lat); }
-
-/* ─── Route Computation Helpers ─── */
-function computeDistances(coords) {
-    let distances = [0];
-    let total = 0;
-    for (let i = 1; i < coords.length; i++) {
-        let dx = coords[i][0] - coords[i-1][0];
-        let dy = coords[i][1] - coords[i-1][1];
-        let d = Math.sqrt(dx*dx + dy*dy);
-        total += d;
-        distances.push(total);
-    }
-    return { distances, total };
-}
-
-function getPulseSlice(coords, distances, total, startFrac, endFrac) {
-    if (total === 0 || startFrac >= 1 || endFrac <= 0) return [];
-    startFrac = Math.max(0, startFrac);
-    endFrac = Math.min(1, endFrac);
-
-    let startDist = startFrac * total;
-    let endDist = endFrac * total;
-    let slice = [];
-    let addedStart = false;
-
-    for (let i = 0; i < coords.length; i++) {
-        let d = distances[i];
-
-        if (d >= startDist && !addedStart) {
-            if (i > 0 && d > startDist) {
-                let prevD = distances[i-1];
-                let r = (startDist - prevD) / (d - prevD);
-                let x = coords[i-1][0] + r * (coords[i][0] - coords[i-1][0]);
-                let y = coords[i-1][1] + r * (coords[i][1] - coords[i-1][1]);
-                slice.push([x, y]);
-            } else {
-                slice.push(coords[i]);
-            }
-            addedStart = true;
-        }
-
-        if (d > startDist && d < endDist) {
-            slice.push(coords[i]);
-        }
-
-        if (d >= endDist) {
-            if (i > 0 && d > endDist) {
-                let prevD = distances[i-1];
-                let r = (endDist - prevD) / (d - prevD);
-                let x = coords[i-1][0] + r * (coords[i][0] - coords[i-1][0]);
-                let y = coords[i-1][1] + r * (coords[i][1] - coords[i-1][1]);
-                slice.push([x, y]);
-            } else if (d === endDist) {
-                slice.push(coords[i]);
-            }
-            break;
-        }
-    }
-    return slice;
-}
-
-function startPulseAnimation() {
-    let startTimestamp = null;
-    const duration = 1000; // 1 second pulse
-    const pulseLen = 0.25; 
-    
-    function step(timestamp) {
-        if (!startTimestamp) startTimestamp = timestamp;
-        const elapsed = timestamp - startTimestamp;
-        
-        const t = (elapsed % duration) / duration; 
-        const tScaled = t * (1 + pulseLen);
-        const s = tScaled - pulseLen;
-        const e = tScaled;
-
-        const slice = getPulseSlice(allRouteCoords, routeDists.distances, routeDists.total, s, e);
-        
-        if (map.getSource('route-pulse')) {
-            map.getSource('route-pulse').setData({
-                type: 'Feature',
-                geometry: { type: 'LineString', coordinates: slice }
-            });
-        }
-        pulseAnimationId = requestAnimationFrame(step);
-    }
-    pulseAnimationId = requestAnimationFrame(step);
-}
-
-async function drawRoute() {
-    if (!userMarker || !selectedCoords.dropoff) return;
-    const p = userMarker.getLngLat();
-    const d = { lng: selectedCoords.dropoff[0], lat: selectedCoords.dropoff[1] };
-    try {
-        const res = await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${p.lng},${p.lat};${d.lng},${d.lat}?geometries=geojson&access_token=${MAPBOX_TOKEN}`);
-        const data = await res.json();
-        if(!data.routes?.[0]) return;
-        
-        const route = data.routes[0];
-        routeDistKm = parseFloat((route.distance/1000).toFixed(1));
-        const mins = Math.ceil(route.duration/60);
-        const timeStr = mins >= 60 ? `${Math.floor(mins/60)}h ${mins%60}m` : `${mins} min`;
-        
-        setRouteBarValues(routeDistKm + ' km', timeStr);
-        updateRoutePrice();
-        updateFoodPackageAvailability();
-        document.getElementById('route-bar').classList.add('visible');
-        document.getElementById('sb-route-bar').classList.add('visible');
-
-        if (data.waypoints && data.waypoints.length >= 2) {
-            const snappedStart = data.waypoints[0].location;
-            const snappedEnd = data.waypoints[data.waypoints.length - 1].location;
+            const voucherData = snap.val();
             
-            userMarker.setLngLat(snappedStart);
-            
-            // Sync the internal state so bookings use the snapped coordinates
-            selectedCoords.pickup = snappedStart;
-            selectedCoords.dropoff = snappedEnd;
-        }
-
-        allRouteCoords = route.geometry.coordinates;
-        routeDists = computeDistances(allRouteCoords);
-
-        if(!map.getSource('route')) {
-            map.addSource('route', { type: 'geojson', data: { type: 'Feature', geometry: { type: 'LineString', coordinates: [] } } });
-            map.addLayer({
-                id: 'route',
-                type: 'line',
-                source: 'route',
-                layout: { 'line-join': 'round', 'line-cap': 'round' },
-                paint: { 'line-color': '#18181b', 'line-width': 4.5, 'line-opacity': 0.5 }
-            });
-        }
-        
-        if(!map.getSource('route-pulse')) {
-            map.addSource('route-pulse', { type: 'geojson', data: { type: 'Feature', geometry: { type: 'LineString', coordinates: [] } } });
-            map.addLayer({
-                id: 'route-pulse',
-                type: 'line',
-                source: 'route-pulse',
-                layout: { 'line-join': 'round', 'line-cap': 'round' },
-                paint: { 'line-color': '#3b82f6', 'line-width': 5.5, 'line-opacity': 1 }
-            });
-        }
-
-        if (routeAnimationId) cancelAnimationFrame(routeAnimationId);
-        if (pulseAnimationId) cancelAnimationFrame(pulseAnimationId);
-
-        const currentCoords = [];
-        let i = 0;
-        const speed = Math.max(1, Math.floor(allRouteCoords.length / 40)); 
-
-        function animateLine() {
-            if (i < allRouteCoords.length) {
-                for (let j = 0; j < speed && i < allRouteCoords.length; j++) {
-                    currentCoords.push(allRouteCoords[i]);
-                    i++;
-                }
-                map.getSource('route').setData({ type: 'Feature', geometry: { type: 'LineString', coordinates: currentCoords } });
-                routeAnimationId = requestAnimationFrame(animateLine);
+            // Check if active or previously used by this specific user
+            if (voucherData.active === false) {
+                showToast('error', 'Inactive Voucher', 'This voucher has expired or is no longer active.');
+            } else if (voucherData.usedBy && voucherData.usedBy[currentUser.uid]) {
+                showToast('error', 'Already Redeemed', 'You have already used this voucher code.');
             } else {
-                map.getSource('route').setData({ type: 'Feature', geometry: { type: 'LineString', coordinates: allRouteCoords } });
-                startPulseAnimation();
+                // Valid! Add value to wallet
+                const amount = parseFloat(voucherData.value) || 0;
+                const currentBalance = parseFloat(userProfile.walletBalance) || 0;
+                const newBalance = currentBalance + amount;
+                
+                // Update User Wallet Profile
+                await update(ref(database, `users/${currentUser.uid}`), {
+                    walletBalance: newBalance
+                });
+                
+                // Update Voucher Database (Register this user as having used it)
+                let voucherUpdates = {};
+                voucherUpdates[`usedBy/${currentUser.uid}`] = true;
+                
+                // If the voucher is strictly a one-time global use, deactivate it for everyone
+                if (voucherData.singleUse === true) {
+                    voucherUpdates['active'] = false;
+                }
+                
+                await update(voucherRef, voucherUpdates);
+                
+                showToast('success', 'Voucher Redeemed!', `R${amount.toFixed(2)} was successfully added to your Pace Wallet.`);
+                codeInput.value = '';
+                
+                // Update UI visually
+                renderProfileUI();
+                updatePaymentSheetUI();
             }
         }
-        
-        animateLine();
-        updateSubmitBtn();
-        
-    } catch(e) { console.error('Route error',e); }
-}
-
-function setRouteBarValues(dist, time) {
-    ['route-dist','sb-route-dist'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=dist; });
-    ['route-time','sb-route-time'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=time; });
-}
-
-function updateRoutePrice() { if(selectedPkg) updateSubmitBtn(); }
-
-function fitBothMarkers() {
-    if (!userMarker || !selectedCoords.dropoff) return;
-    const p=userMarker.getLngLat();
-    const d={ lng: selectedCoords.dropoff[0], lat: selectedCoords.dropoff[1] };
-    map.fitBounds(new mapboxgl.LngLatBounds([p.lng,p.lat],[d.lng,d.lat]),
-        {padding:isDesktop()?{top:80,bottom:80,left:80,right:80}:{top:200,bottom:360,left:40,right:40},duration:900});
-}
-
-/* ─── Search ─── */
-function searchInputId(type,ctx)  { return ctx==='mobile' ? `input-${type}` : `input-${type}-sb`; }
-function searchSuggId(type,ctx)   { return ctx==='mobile' ? `sugg-${type}`  : `sugg-${type}-sb`; }
-function searchClearId(type,ctx)  { return ctx==='mobile' ? `clear-${type}` : `clear-${type}-sb`; }
-const suggKey = (type,ctx) => `${type}_${ctx}`;
-
-function setupSearch(type, ctx) {
-    const inputEl = document.getElementById(searchInputId(type,ctx));
-    const suggEl  = document.getElementById(searchSuggId(type,ctx));
-    const clearEl = document.getElementById(searchClearId(type,ctx));
-    if(!inputEl) return;
-    inputEl.addEventListener('input',()=>{
-        const q=inputEl.value.trim();
-        clearEl.classList.toggle('visible',q.length>0);
-        if(q.length<2) { suggEl.style.display='none'; return; }
-        clearTimeout(debounceTimers[suggKey(type,ctx)]);
-        debounceTimers[suggKey(type,ctx)]=setTimeout(()=>fetchSuggestions(type,ctx,q),300);
-    });
-    document.addEventListener('click',e=>{ if(!inputEl.contains(e.target)&&!suggEl.contains(e.target)) suggEl.style.display='none'; });
-}
-
-async function fetchSuggestions(type,ctx,q) {
-    try {
-        const res=await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?access_token=${MAPBOX_TOKEN}&autocomplete=true&limit=5&country=ZA`);
-        const data=await res.json();
-        suggFeatures[suggKey(type,ctx)]=data.features||[];
-        renderSuggestions(type,ctx);
-    } catch(e){}
-}
-
-function renderSuggestions(type,ctx) {
-    const suggEl=document.getElementById(searchSuggId(type,ctx));
-    const feats=suggFeatures[suggKey(type,ctx)]||[];
-    if(!feats.length) { suggEl.style.display='none'; return; }
-    suggEl.innerHTML=feats.map((f,i)=>{
-        const name=f.text||f.place_name.split(',')[0];
-        const sub=f.place_name.replace(name+', ','').slice(0,52);
-        return `<div class="suggestion-item" onclick="selectSuggestion('${type}','${ctx}',${i})">
-            <div class="sugg-icon"><i class="fa-solid fa-location-dot"></i></div>
-            <div><div class="sugg-text-main">${name}</div><div class="sugg-text-sub">${sub}</div></div>
-        </div>`;
-    }).join('');
-    suggEl.style.display='block';
-}
-
-window.selectSuggestion = function(type,ctx,idx) {
-    const f=suggFeatures[suggKey(type,ctx)][idx];
-    const [lng,lat]=f.center;
-    
-    ['mobile', 'sb'].forEach(c => {
-        const i = document.getElementById(searchInputId(type, c));
-        const clr = document.getElementById(searchClearId(type, c));
-        if(i) i.value = f.place_name;
-        if(clr) clr.classList.add('visible');
-    });
-    
-    document.getElementById(searchSuggId(type,ctx)).style.display='none';
-    selectedCoords[type]=[lng,lat];
-    
-    if (type === 'pickup') placeUserMarker(lng, lat);
-    
-    updateSubmitBtn();
-    if (selectedCoords.pickup && selectedCoords.dropoff) { drawRoute(); fitBothMarkers(); }
-};
-
-window.clearInput = function(type,ctx) {
-    ['mobile','sb'].forEach(c=>{
-        const inp=document.getElementById(searchInputId(type,c)); if(inp) inp.value='';
-        const clr=document.getElementById(searchClearId(type,c)); if(clr) clr.classList.remove('visible');
-        const sug=document.getElementById(searchSuggId(type,c)); if(sug) sug.style.display='none';
-    });
-    selectedCoords[type]=null;
-    
-    if (routeAnimationId) {
-        cancelAnimationFrame(routeAnimationId);
-        routeAnimationId = null;
-    }
-    if (pulseAnimationId) {
-        cancelAnimationFrame(pulseAnimationId);
-        pulseAnimationId = null;
-    }
-    
-    if(map?.getSource('route')) map.getSource('route').setData({type:'Feature',geometry:{type:'LineString',coordinates:[]}});
-    if(map?.getSource('route-pulse')) map.getSource('route-pulse').setData({type:'Feature',geometry:{type:'LineString',coordinates:[]}});
-    
-    document.getElementById('route-bar').classList.remove('visible');
-    document.getElementById('sb-route-bar').classList.remove('visible');
-    routeDistKm=0;
-    updateFoodPackageAvailability();
-    updateSubmitBtn();
-};
-
-/* ─── Package selection ─── */
-window.selectPackage = function(el,key,ctx) {
-    if(el.classList.contains('disabled')) return;
-    
-    el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-    
-    const meta = PACKAGE_META[key];
-    if(!meta) return;
-    document.querySelectorAll('.pkg-card').forEach(c=>c.classList.remove('active'));
-    ['mobile','sb'].forEach(c=>{ const card=document.getElementById(`pkg-${key}-${c}`); if(card) card.classList.add('active'); });
-    document.querySelectorAll('.pkg-card').forEach(c=>{
-        if(c.querySelector('.pkg-name')&&c.querySelector('.pkg-name').textContent===meta.name) c.classList.add('active');
-    });
-    selectedPkg={key,name:meta.name,base:pkgBasePrices[key]};
-    updateRoutePrice();
-    updateSubmitBtn();
-};
-
-/* ─── Live pricing ─── */
-function renderPackagePrices() {
-    Object.keys(PACKAGE_META).forEach(key=>{
-        const price = pkgBasePrices[key];
-        ['mobile','sb'].forEach(ctx=>{
-            const el=document.getElementById(`pkg-price-${key}-${ctx}`);
-            if(el) el.textContent=`R${price}`;
-        });
-    });
-    if(selectedPkg && selectedPkg.key && pkgBasePrices[selectedPkg.key]!==undefined) {
-        selectedPkg.base = pkgBasePrices[selectedPkg.key];
-        updateRoutePrice();
-        updateSubmitBtn();
-    }
-}
-
-function initPricingListener() {
-    onValue(ref(database,'pricing/packages'), snap => {
-        const val = snap.exists() ? snap.val() : null;
-        if(val) {
-            Object.keys(PACKAGE_META).forEach(key=>{
-                if(typeof val[key]==='number' && val[key]>=0) pkgBasePrices[key]=val[key];
-            });
-        }
-        if(val && typeof val.perKmRate==='number' && val.perKmRate>=0) PER_KM_RATE = val.perKmRate;
-        renderPackagePrices();
-    }, (err)=>console.warn('Pricing listener failed:',err.message));
-}
-
-window.scrollPkg = function(direction) {
-    const container = document.getElementById('sb-pkg-scroll');
-    if (!container) return;
-    
-    const focused = container.querySelector('.pkg-card.focused');
-    if (focused) {
-        let target = direction === 'left' ? focused.previousElementSibling : focused.nextElementSibling;
-        while(target && !target.classList.contains('pkg-card')) {
-            target = direction === 'left' ? target.previousElementSibling : target.nextElementSibling;
-        }
-        if (target) target.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-    } else {
-         const jumpDistance = direction === 'left' ? -140 : 140; 
-         container.scrollBy({ left: jumpDistance, behavior: 'smooth' });
+    } catch (e) {
+        showToast('error', 'System Error', 'Failed to apply voucher. Please try again later.');
+        console.error("Voucher Error: ", e);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = originalText;
     }
 };
 
-const FOOD_MAX_KM = 10;
-function updateFoodPackageAvailability() {
-    ['mobile','sb'].forEach(ctx=>{
-        const card  =document.getElementById(`pkg-food-${ctx}`);
-        const weight=document.getElementById(`pkg-food-weight-${ctx}`);
-        if(!card) return;
-        const tooFar=routeDistKm>FOOD_MAX_KM;
-        card.classList.toggle('disabled',tooFar);
-        if(weight) weight.textContent=tooFar?`Over ${FOOD_MAX_KM}km away`:'Restaurant orders';
-        if(tooFar&&selectedPkg&&selectedPkg.name==='Food Delivery') {
-            card.classList.remove('active'); selectedPkg=null; updateSubmitBtn();
-            showToast('info','Food delivery unavailable',`Pickup and dropoff must be within ${FOOD_MAX_KM}km.`);
-        }
-    });
-}
-
-/* ─── Package Stack Carousel Init ─── */
-function initPackageCarousel() {
-    const scrollers = document.querySelectorAll('.pkg-scroll');
-    scrollers.forEach(container => {
-        const updateFocus = () => {
-            const rect = container.getBoundingClientRect();
-            const containerCenter = rect.left + rect.width / 2;
-            let closestCard = null;
-            let closestDistance = Infinity;
-
-            const cards = container.querySelectorAll('.pkg-card');
-            cards.forEach(card => {
-                const cardRect = card.getBoundingClientRect();
-                const cardCenter = cardRect.left + cardRect.width / 2;
-                const distance = Math.abs(containerCenter - cardCenter);
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closestCard = card;
-                }
-            });
-
-            cards.forEach(card => {
-                if (card === closestCard) {
-                    card.classList.add('focused');
-                } else {
-                    card.classList.remove('focused');
-                }
-            });
-        };
-
-        container.addEventListener('scroll', updateFocus);
-        setTimeout(updateFocus, 100);
-        window.addEventListener('resize', updateFocus);
-
-        // Scroll to the center card (Index 3 / Document) initially
-        setTimeout(() => {
-            const cards = container.querySelectorAll('.pkg-card');
-            if (cards.length >= 3) {
-                const targetCard = cards[Math.floor(cards.length / 2)];
-                const containerCenter = container.clientWidth / 2;
-                const cardCenter = targetCard.offsetLeft + targetCard.offsetWidth / 2;
-                container.scrollLeft = cardCenter - containerCenter;
-                updateFocus();
-            }
-        }, 150);
-    });
-}
-
-/* ─── Sheet / tab ─── */
-let sheetCollapsed=false;
-window.toggleSheet = ()=>{ 
-    sheetCollapsed=!sheetCollapsed; 
-    document.getElementById('sheet').classList.toggle('collapsed',sheetCollapsed); 
+/* ─── Generic UI Toggles & Stubs ─── */
+window.toggleSheet = () => {
+    const s = document.getElementById('sheet');
+    s.classList.toggle('collapsed');
 };
-window.switchTab = function(tab) { 
-    const s = tab === 'send'; 
-    const p = tab === 'profile';
-    
-    document.getElementById('view-send').style.display = s ? 'block' : 'none'; 
-    document.getElementById('view-track').style.display = tab === 'track' ? 'block' : 'none'; 
-    document.getElementById('view-profile').style.display = p ? 'block' : 'none'; 
+window.switchTab = (tab) => {
+    document.getElementById('view-send').style.display = tab === 'send' ? 'block' : 'none';
+    document.getElementById('view-track').style.display = tab === 'track' ? 'block' : 'none';
+    document.getElementById('view-profile').style.display = tab === 'profile' ? 'block' : 'none';
     
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    const activeNav = document.getElementById('nav-item-' + tab);
-    if(activeNav) activeNav.classList.add('active');
-    
+    document.getElementById('nav-item-' + tab).classList.add('active');
+
     const sheet = document.getElementById('sheet');
-    const topBar = document.getElementById('top-bar');
-    if (p) {
-        sheet.classList.add('full-view');
+    if (tab === 'profile') {
         sheet.classList.remove('collapsed');
-        if (topBar) topBar.style.display = 'none'; 
-        if (currentUser) renderProfileUI();
+        sheet.classList.add('full-view');
+        renderProfileUI();
     } else {
         sheet.classList.remove('full-view');
-        if (topBar) topBar.style.display = ''; 
-        if(!s) syncActiveOrdersWithShipday(); 
     }
 };
-
-window.sbSwitchTab = tab=>{ 
-    const s = tab === 'send'; 
-    document.getElementById('sb-view-send').style.display = s ? 'block' : 'none'; 
-    document.getElementById('sb-view-track').style.display = s ? 'none' : 'block'; 
-    document.getElementById('sb-tab-send').classList.toggle('active', s); 
-    document.getElementById('sb-tab-track').classList.toggle('active', !s); 
-    if(!s) syncActiveOrdersWithShipday(); 
+window.sbSwitchTab = (tab) => {
+    document.getElementById('sb-view-send').style.display = tab === 'send' ? 'block' : 'none';
+    document.getElementById('sb-view-track').style.display = tab === 'track' ? 'block' : 'none';
+    document.getElementById('sb-tab-send').classList.toggle('active', tab==='send');
+    document.getElementById('sb-tab-track').classList.toggle('active', tab==='track');
 };
-
-/* ─── Paystack SDK ─── */
-async function processPaystackPayment(amountRands, email) {
-    return new Promise((resolve, reject) => {
-        if (!PAYSTACK_PUBLIC_KEY) { reject(new Error('Paystack key not loaded. Please try again.')); return; }
-        if (typeof PaystackPop === 'undefined') { reject(new Error('Paystack SDK not loaded. Please check your connection and refresh.')); return; }
-
-        const handler = PaystackPop.setup({
-            key: PAYSTACK_PUBLIC_KEY, email: email, amount: amountRands * 100, currency: 'ZAR',
-            ref: 'CG-' + Math.floor(Math.random() * 1000000000),
-            callback: function(response) { resolve({ token: response.reference, testMode: PAYSTACK_PUBLIC_KEY.startsWith('pk_test_') }); },
-            onClose: function() { reject({ cancelled: true }); }
-        });
-        handler.openIframe();
-    });
-}
-
-/* ─── Booking ─── */
-async function doBookOrder(paymentMeta) {
-    let succeeded=false;
-    const ctx = isDesktop()?'sb':'mobile';
-    const pickupInput  = document.getElementById(ctx==='sb'?'input-pickup-sb':'input-pickup');
-    const dropoffInput = document.getElementById(ctx==='sb'?'input-dropoff-sb':'input-dropoff');
-    try {
-        const orderId="CG-"+Math.floor(1000+Math.random()*9000);
-        
-        let totalToCharge = calculateTotalPrice();
-        let discount = appliedVoucherDiscount[ctx] || 0;
-        totalToCharge = Math.max(0, totalToCharge - discount);
-        
-        const pickup  = pickupInput ? pickupInput.value : '';
-        const dropoff = dropoffInput? dropoffInput.value: '';
-        const payload={
-            orderNumber:orderId, userId:currentUser.uid,
-            customerName:userProfile.name||currentUser.displayName||'User',
-            customerEmail:userProfile.email||currentUser.email||'',
-            customerPhoneNumber:userProfile.phone||'Not provided',
-            customerAddress:dropoff, restaurantName:"Pace Parcels Dispatch", restaurantAddress:pickup,
-            orderItem:[{name:selectedPkg.name,unitPrice:totalToCharge,quantity:1}],
-            totalOrderCost:totalToCharge, distanceKm:routeDistKm,
-            pickupCoords:selectedCoords.pickup, dropoffCoords:selectedCoords.dropoff,
-            status:'placed', paymentMethod:paymentMeta.method,
-            paymentToken:paymentMeta.token||null, paymentTestMode:!!paymentMeta.testMode,
-            timestamp:Date.now()
-        };
-        
-        await set(push(ref(database,'orders')),payload);
-        const sdRes=await fetch("https://api.shipday.com/orders",{method:"POST",headers:{"Authorization":`Basic ${SHIPDAY_KEY}`,"Content-Type":"application/json"},body:JSON.stringify(payload)});
-        if(!sdRes.ok) throw new Error("Shipday:"+sdRes.status);
-        
-        showToast('success',`Order ${orderId} confirmed!`,`${selectedPkg.name} · ${(pickup||'').split(',')[0]} → ${(dropoff||'').split(',')[0]}`);
-        if(!userProfile.phone) setTimeout(()=>showToast('info','Add your phone number','Open your profile to add a contact number for the driver.'),1500);
-        succeeded=true;
-    } catch(e) {
-        console.error(e);
-        if(e.message&&e.message.startsWith('Shipday')) { showToast('info','Order saved','Dispatch sync pending — our team will follow up.'); succeeded=true; }
-        else showToast('error','Booking failed',e.message||'Something went wrong.');
-    } finally {
-        if(succeeded) resetBookingForm();
-        else updateSubmitBtn();
-    }
-    return succeeded;
-}
-
-window.confirmBooking = async function() {
-    if(!selectedPkg||!selectedCoords.pickup||!selectedCoords.dropoff) return;
-    if(!currentUser) { showToast('error','Not signed in','Please sign in first.'); return; }
-    const ctx = isDesktop() ? 'sb' : 'mobile';
-    const btn   = document.getElementById(ctx === 'sb' ? 'submitBtn-sb' : 'submitBtn');
-    const label = document.getElementById(ctx === 'sb' ? 'submitLabel-sb' : 'submitLabel');
-
-    let total = calculateTotalPrice();
-    let discount = appliedVoucherDiscount[ctx] || 0;
-    total = Math.max(0, total - discount);
-
-    if(selectedPayment[ctx]==='paystack') {
-        try {
-            const mobileSearchCard = document.getElementById('top-bar');
-            if (mobileSearchCard && ctx === 'mobile') mobileSearchCard.style.display = 'none';
-
-            const paystackCloseWatcher = setInterval(() => {
-                const isPaystackOpen = document.querySelector('iframe[name="paystack-checkout"]');
-                if (!isPaystackOpen) {
-                    if (mobileSearchCard && ctx === 'mobile') mobileSearchCard.style.display = '';
-                    clearInterval(paystackCloseWatcher);
-                }
-            }, 500);
-
-            const userEmail = userProfile.email || currentUser.email || 'customer@pacelogistics.co.za';
-            const payResult = await processPaystackPayment(total, userEmail);
-            
-            label.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
-            btn.disabled=true;
-            showToast('success','Card authorised','Completing your booking…');
-            await doBookOrder({method:'paystack',token:payResult.token,testMode:payResult.testMode});
-        } catch(err) { 
-            if(err&&err.cancelled) return; 
-            showToast('error','Payment failed',err.message||'Could not complete Paystack payment.'); 
-        }
-    } else if (selectedPayment[ctx] === 'wallet') {
-        const currentBalance = typeof userProfile.walletBalance === 'number' ? userProfile.walletBalance : 0;
-        
-        if (currentBalance < total) {
-            showToast('error', 'Insufficient funds', 'Please top up your wallet or choose another payment method.');
-            return;
-        }
-        
-        btn.disabled = true;
-        label.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Processing…';
-        
-        try {
-            // Deduct from wallet balance in DB
-            await update(ref(database, `users/${currentUser.uid}`), {
-                walletBalance: currentBalance - total
-            });
-            
-            showToast('success', 'Payment successful', 'Booking your delivery…');
-            await doBookOrder({method: 'wallet', token: 'wallet_tx', testMode: false});
-        } catch(err) {
-            showToast('error', 'Payment failed', 'Could not process wallet transaction.');
-            updateSubmitBtn();
-        }
+window.desktopShowProfile = () => { document.getElementById('profile-overlay').classList.add('open'); document.getElementById('profile-drawer').classList.add('open'); };
+window.closeProfile = () => { document.getElementById('profile-overlay').classList.remove('open'); document.getElementById('profile-drawer').classList.remove('open'); };
+window.desktopShowMain = () => {};
+window.openPaymentSheet = (ctx) => { activeCtxForPayment = ctx; document.getElementById('payment-sheet-overlay').classList.add('open'); updatePaymentSheetUI(); };
+window.closePaymentSheet = () => { document.getElementById('payment-sheet-overlay').classList.remove('open'); };
+window.closePaymentSheetOnOverlay = (e) => { if(e.target.id==='payment-sheet-overlay') closePaymentSheet(); };
+window.openCashModal = () => { closePaymentSheet(); document.getElementById('cash-modal-overlay').classList.add('open'); };
+window.closeCashModal = () => { document.getElementById('cash-modal-overlay').classList.remove('open'); };
+window.closeCashModalOnOverlay = (e) => { if(e.target.id==='cash-modal-overlay') closeCashModal(); };
+window.openRechargeModal = () => { closeProfile(); document.getElementById('recharge-modal-overlay').classList.add('open'); };
+window.closeRechargeModal = () => { document.getElementById('recharge-modal-overlay').classList.remove('open'); };
+window.closeRechargeModalOnOverlay = (e) => { if (e.target.id === 'recharge-modal-overlay') closeRechargeModal(); };
+window.openChat = () => { document.getElementById('chat-modal-overlay').classList.add('open'); };
+window.closeChat = () => { document.getElementById('chat-modal-overlay').classList.remove('open'); };
+window.closeChatOnOverlay = (e) => { if(e.target.id==='chat-modal-overlay') closeChat(); };
+window.closeDriverModal = () => { document.getElementById('driver-modal-overlay').classList.remove('open'); };
+window.closeDriverModalOnOverlay = (e) => { if(e.target.id==='driver-modal-overlay') closeDriverModal(); };
+window.updatePaystackTestNote = () => {
+    if(PAYSTACK_PUBLIC_KEY && PAYSTACK_PUBLIC_KEY.includes('test')) {
+        document.getElementById('paystack-test-note').style.display = 'flex';
     }
 }
-
-function resetBookingForm() {
-    clearInput('pickup','mobile'); clearInput('dropoff','mobile');
-    document.querySelectorAll('.pkg-card').forEach(c=>c.classList.remove('active'));
-    selectedPkg=null; routeDistKm=0;
-    setRouteBarValues('—','—');
-    ['route-price','sb-route-price'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='—';});
-    
-    appliedVoucherDiscount = { mobile: 0, sb: 0 };
-    const vb = document.getElementById('voucher-btn-sheet');
-    const vi = document.getElementById('voucher-code-sheet');
-    if(vb) { vb.innerText = 'Apply'; vb.style.background = '#18181b'; }
-    if(vi) { vi.value = ''; vi.disabled = false; }
-    
-    ['mobile', 'sb'].forEach(c => {
-        selectedPayment[c] = 'paystack';
-    });
-    
-    updatePaymentSheetUI('paystack');
-    updateSubmitBtn();
-}
-
-renderPackagePrices();
-initPricingListener();
-initPackageCarousel();
-setTimeout(hideSplash,3000);
+window.scrollPkg = (dir) => {
+    const el = document.getElementById('sb-pkg-scroll');
+    el.scrollBy({ left: dir==='left'?-140:140, behavior: 'smooth' });
+};
 </script>
 </body>
 </html>
