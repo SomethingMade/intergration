@@ -1,11 +1,13 @@
 {
-  "name": "simple-api",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
+  "name": "webmessenger-functions",
+  "description": "Cloud Functions for Web Messenger push notifications",
+  "engines": {
+    "node": "20"
   },
+  "main": "index.js",
   "dependencies": {
-    "express": "^4.19.2"
-  }
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0"
+  },
+  "private": true
 }
