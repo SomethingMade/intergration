@@ -17,6 +17,7 @@
             --accent-purple: #5E5CE6;
             --gradient-brand: linear-gradient(135deg, #0A84FF 0%, #5E5CE6 100%);
             --bg-base: #000000;
+            --bg-base-rgb: 0, 0, 0;
             --bg-surface: #1C1C1E;
             --bg-alt: #111111;
             --border-color: #38383A;
@@ -27,6 +28,7 @@
         @media(prefers-color-scheme: light) {
             :root {
                 --bg-base: #FFFFFF;
+                --bg-base-rgb: 255, 255, 255;
                 --bg-surface: #F7F8FA;
                 --bg-alt: #FAFAFA;
                 --border-color: #F0F0F0;
@@ -56,7 +58,7 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(var(--bg-base), 0.8);
+            background: rgba(var(--bg-base-rgb), 0.8);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-color);
@@ -385,6 +387,31 @@
             width: 100%; height: 100%; border-radius: 50%; background: #0A84FF;
         }
 
+        /* iOS Add-to-Home-Screen instructions sheet */
+        .ios-sheet-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .ios-sheet-overlay.active { display: flex; }
+        .ios-sheet {
+            background: var(--bg-surface);
+            width: 100%;
+            max-width: 480px;
+            border-radius: 20px 20px 0 0;
+            padding: 24px 24px 32px;
+            animation: slideUp 0.25s ease-out;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .ios-sheet h3 { font-size: 17px; font-weight: 700; margin-bottom: 16px; }
+        .ios-sheet-step { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-secondary); margin-bottom: 14px; }
+        .ios-sheet-step .step-badge { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--gradient-brand); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+        .ios-sheet-close { margin-top: 8px; width: 100%; text-align: center; }
+
         /* Responsive Breakpoints */
         @media (max-width: 992px) {
             .hero {
@@ -470,7 +497,7 @@
             <p>Vynix Messenger combines beautiful responsive layout styling with premium speed to bridge your conversations safely on mobile and desktop web workspaces.</p>
             <div class="hero-actions">
                 <a href="https://somethingmade.github.io/network/#tab-chats" class="btn-pill btn-primary">Start Messaging</a>
-                <!-- Hidden by default, shown via JS if PWA is installable -->
+                <!-- Hidden by default, shown via JS once install is possible (or on iOS) -->
                 <button class="btn-pill btn-outline install-btn" style="display: none;">Install App</button>
             </div>
         </div>
@@ -569,7 +596,7 @@
         <p>Experience an ultra-fast layout system designed perfectly for zero lag, deep contrast themes, and advanced media mechanics.</p>
         <div style="display: flex; gap:16px; justify-content: center; flex-wrap: wrap;">
             <a href="https://somethingmade.github.io/network/#tab-chats" class="btn-pill btn-outline" style="background: white; color: black;">Launch Web App</a>
-            <!-- Hidden by default, shown via JS if PWA is installable -->
+            <!-- Hidden by default, shown via JS once install is possible (or on iOS) -->
             <button class="btn-pill btn-primary install-btn" style="display: none; background: #000; color: #FFF; border: 1px solid rgba(255,255,255,0.2);">Install App</button>
         </div>
     </section>
@@ -579,9 +606,46 @@
         <p>&copy; 2026 Vynix Web Messenger Workspace System. All rights reserved.</p>
     </footer>
 
+    <!-- iOS "Add to Home Screen" instructions (Safari doesn't support beforeinstallprompt) -->
+    <div class="ios-sheet-overlay" id="ios-sheet-overlay">
+        <div class="ios-sheet">
+            <h3>Install Vynix on your iPhone</h3>
+            <div class="ios-sheet-step">
+                <div class="step-badge">1</div>
+                <div>Tap the <strong>Share</strong> icon in Safari's toolbar</div>
+            </div>
+            <div class="ios-sheet-step">
+                <div class="step-badge">2</div>
+                <div>Scroll down and tap <strong>Add to Home Screen</strong></div>
+            </div>
+            <div class="ios-sheet-step">
+                <div class="step-badge">3</div>
+                <div>Tap <strong>Add</strong> — Vynix opens straight into your chats from now on</div>
+            </div>
+            <button class="btn-pill btn-primary ios-sheet-close" id="ios-sheet-close" style="width:100%;">Got it</button>
+        </div>
+    </div>
+
     <!-- PWA Install Logic & Service Worker Registration -->
     <script>
-        // Register the Service Worker
+        const MESSENGER_URL = 'https://somethingmade.github.io/network/#tab-chats';
+
+        function isIos() {
+            return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+        }
+        function isStandalone() {
+            return (window.navigator.standalone === true) || window.matchMedia('(display-mode: standalone)').matches;
+        }
+
+        // If this was already installed and launched as an app, don't show the marketing
+        // page at all — go straight into the messenger.
+        if (isStandalone()) {
+            window.location.replace(MESSENGER_URL);
+        }
+
+        // Register the (minimal) service worker for this origin — required for Chrome/Android
+        // to consider this site installable. The actual messenger has its own separate
+        // service worker at its own origin, which takes over once you launch into it.
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
@@ -594,48 +658,55 @@
             });
         }
 
-        // Handle PWA Install Prompt
-        let deferredPrompt;
         const installButtons = document.querySelectorAll('.install-btn');
+        const iosSheetOverlay = document.getElementById('ios-sheet-overlay');
+
+        // iOS never fires beforeinstallprompt, so show the button immediately there
+        // and route it to manual instructions instead.
+        if (isIos() && !isStandalone()) {
+            installButtons.forEach(btn => { btn.style.display = 'inline-block'; });
+        }
+
+        // Handle PWA Install Prompt (Chrome / Edge / Android)
+        let deferredPrompt;
 
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent the mini-infobar from appearing on mobile
             e.preventDefault();
-            // Stash the event so it can be triggered later
             deferredPrompt = e;
-            
-            // Update UI to notify the user they can install the PWA
-            installButtons.forEach(btn => {
-                btn.style.display = 'inline-block';
-            });
+            installButtons.forEach(btn => { btn.style.display = 'inline-block'; });
         });
 
         installButtons.forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                // Hide the button(s) immediately after clicking
-                installButtons.forEach(button => button.style.display = 'none');
-                
+            btn.addEventListener('click', async () => {
+                if (isIos()) {
+                    iosSheetOverlay.classList.add('active');
+                    return;
+                }
+
                 if (deferredPrompt) {
-                    // Show the native install prompt
+                    installButtons.forEach(button => button.style.display = 'none');
                     deferredPrompt.prompt();
-                    
-                    // Wait for the user to respond to the prompt
                     const { outcome } = await deferredPrompt.userChoice;
                     console.log(`User response to the install prompt: ${outcome}`);
-                    
-                    // Clear the deferred prompt variable, it can only be used once.
                     deferredPrompt = null;
+                } else {
+                    // Browser doesn't support install prompts (or criteria not met yet) —
+                    // fall back to just launching the web app.
+                    window.location.href = MESSENGER_URL;
                 }
             });
         });
 
-        // Optional: Log when the app is successfully installed
+        document.getElementById('ios-sheet-close').addEventListener('click', () => {
+            iosSheetOverlay.classList.remove('active');
+        });
+        iosSheetOverlay.addEventListener('click', (e) => {
+            if (e.target === iosSheetOverlay) iosSheetOverlay.classList.remove('active');
+        });
+
         window.addEventListener('appinstalled', () => {
             console.log('Vynix Messenger was successfully installed as a PWA.');
-            // Ensure buttons disappear if installed via browser menu instead of our button
-            installButtons.forEach(btn => {
-                btn.style.display = 'none';
-            });
+            installButtons.forEach(btn => { btn.style.display = 'none'; });
         });
     </script>
 </body>
