@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>Vynix Messenger — Next-Gen Real-Time Communication</title>
     
-    <!-- PWA Manifest & Theme Color -->
-    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0A84FF">
     <link rel="apple-touch-icon" href="https://i.postimg.cc/G2mGF81c/1000057023-removebg-preview.png">
 
@@ -142,6 +140,8 @@
         .btn-outline:hover {
             background: var(--bg-surface);
         }
+
+        .btn-pill svg.inline-icon { width: 16px; height: 16px; vertical-align: -3px; margin-right: 6px; }
 
         /* Hero Section */
         .hero {
@@ -497,8 +497,7 @@
             <p>Vynix Messenger combines beautiful responsive layout styling with premium speed to bridge your conversations safely on mobile and desktop web workspaces.</p>
             <div class="hero-actions">
                 <a href="https://somethingmade.github.io/network/#tab-chats" class="btn-pill btn-primary">Start Messaging</a>
-                <!-- Hidden by default, shown via JS once install is possible (or on iOS) -->
-                <button class="btn-pill btn-outline install-btn" style="display: none;">Install App</button>
+                <button class="btn-pill btn-outline apk-download-btn"><svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Download for Android</button>
             </div>
         </div>
         <div class="hero-mockup">
@@ -596,8 +595,7 @@
         <p>Experience an ultra-fast layout system designed perfectly for zero lag, deep contrast themes, and advanced media mechanics.</p>
         <div style="display: flex; gap:16px; justify-content: center; flex-wrap: wrap;">
             <a href="https://somethingmade.github.io/network/#tab-chats" class="btn-pill btn-outline" style="background: white; color: black;">Launch Web App</a>
-            <!-- Hidden by default, shown via JS once install is possible (or on iOS) -->
-            <button class="btn-pill btn-primary install-btn" style="display: none; background: #000; color: #FFF; border: 1px solid rgba(255,255,255,0.2);">Install App</button>
+            <button class="btn-pill btn-primary apk-download-btn" style="background: #000; color: #FFF; border: 1px solid rgba(255,255,255,0.2);"><svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Download APK</button>
         </div>
     </section>
 
@@ -606,107 +604,52 @@
         <p>&copy; 2026 Vynix Web Messenger Workspace System. All rights reserved.</p>
     </footer>
 
-    <!-- iOS "Add to Home Screen" instructions (Safari doesn't support beforeinstallprompt) -->
-    <div class="ios-sheet-overlay" id="ios-sheet-overlay">
+    <!-- Shown when a non-Android visitor taps the APK download button -->
+    <div class="ios-sheet-overlay" id="apk-notice-overlay">
         <div class="ios-sheet">
-            <h3>Install Vynix on your iPhone</h3>
+            <h3>This download is for Android</h3>
             <div class="ios-sheet-step">
-                <div class="step-badge">1</div>
-                <div>Tap the <strong>Share</strong> icon in Safari's toolbar</div>
+                <div class="step-badge">i</div>
+                <div>The APK installs directly on Android phones and tablets. On other devices, use the web app instead — it works the same way, no download needed.</div>
             </div>
-            <div class="ios-sheet-step">
-                <div class="step-badge">2</div>
-                <div>Scroll down and tap <strong>Add to Home Screen</strong></div>
-            </div>
-            <div class="ios-sheet-step">
-                <div class="step-badge">3</div>
-                <div>Tap <strong>Add</strong> — Vynix opens straight into your chats from now on</div>
-            </div>
-            <button class="btn-pill btn-primary ios-sheet-close" id="ios-sheet-close" style="width:100%;">Got it</button>
+            <button class="btn-pill btn-outline ios-sheet-close" id="apk-notice-close" style="width:100%; margin-top:4px;">Got it</button>
+            <a href="https://somethingmade.github.io/network/#tab-chats" class="btn-pill btn-primary" style="width:100%; text-align:center; margin-top:10px; display:block;">Open Web App Instead</a>
         </div>
     </div>
 
-    <!-- PWA Install Logic & Service Worker Registration -->
+    <!-- Direct APK download logic -->
     <script>
+        // Replace with your Firebase Storage download URL (console → Storage → file → Download URL).
+        // Make sure the file's metadata has Content-Disposition: attachment so it downloads
+        // instead of opening in-browser, since this URL is on a different origin than this page.
+        const APK_URL = 'https://firebasestorage.googleapis.com/v0/b/newstart-64c43.firebasestorage.app/o/vynix%20messanger.apk?alt=media&token=7371aac7-7683-4774-927e-801b15f05806';
         const MESSENGER_URL = 'https://somethingmade.github.io/network/#tab-chats';
 
-        function isIos() {
-            return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
-        }
-        function isStandalone() {
-            return (window.navigator.standalone === true) || window.matchMedia('(display-mode: standalone)').matches;
+        function isAndroid() {
+            return /android/.test(window.navigator.userAgent.toLowerCase());
         }
 
-        // If this was already installed and launched as an app, don't show the marketing
-        // page at all — go straight into the messenger.
-        if (isStandalone()) {
-            window.location.replace(MESSENGER_URL);
-        }
+        const downloadButtons = document.querySelectorAll('.apk-download-btn');
+        const apkNoticeOverlay = document.getElementById('apk-notice-overlay');
 
-        // Register the (minimal) service worker for this origin — required for Chrome/Android
-        // to consider this site installable. The actual messenger has its own separate
-        // service worker at its own origin, which takes over once you launch into it.
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registered with scope:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.error('ServiceWorker registration failed:', error);
-                    });
-            });
-        }
-
-        const installButtons = document.querySelectorAll('.install-btn');
-        const iosSheetOverlay = document.getElementById('ios-sheet-overlay');
-
-        // iOS never fires beforeinstallprompt, so show the button immediately there
-        // and route it to manual instructions instead.
-        if (isIos() && !isStandalone()) {
-            installButtons.forEach(btn => { btn.style.display = 'inline-block'; });
-        }
-
-        // Handle PWA Install Prompt (Chrome / Edge / Android)
-        let deferredPrompt;
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installButtons.forEach(btn => { btn.style.display = 'inline-block'; });
-        });
-
-        installButtons.forEach(btn => {
-            btn.addEventListener('click', async () => {
-                if (isIos()) {
-                    iosSheetOverlay.classList.add('active');
+        downloadButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (!isAndroid()) {
+                    apkNoticeOverlay.classList.add('active');
                     return;
                 }
-
-                if (deferredPrompt) {
-                    installButtons.forEach(button => button.style.display = 'none');
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    console.log(`User response to the install prompt: ${outcome}`);
-                    deferredPrompt = null;
-                } else {
-                    // Browser doesn't support install prompts (or criteria not met yet) —
-                    // fall back to just launching the web app.
-                    window.location.href = MESSENGER_URL;
-                }
+                // Cross-origin links ignore the `download` attribute in most browsers, so we
+                // rely on the file's Content-Disposition metadata (set in Firebase Storage)
+                // to trigger a real download instead of navigating/opening it.
+                window.location.href = APK_URL;
             });
         });
 
-        document.getElementById('ios-sheet-close').addEventListener('click', () => {
-            iosSheetOverlay.classList.remove('active');
+        document.getElementById('apk-notice-close').addEventListener('click', () => {
+            apkNoticeOverlay.classList.remove('active');
         });
-        iosSheetOverlay.addEventListener('click', (e) => {
-            if (e.target === iosSheetOverlay) iosSheetOverlay.classList.remove('active');
-        });
-
-        window.addEventListener('appinstalled', () => {
-            console.log('Vynix Messenger was successfully installed as a PWA.');
-            installButtons.forEach(btn => { btn.style.display = 'none'; });
+        apkNoticeOverlay.addEventListener('click', (e) => {
+            if (e.target === apkNoticeOverlay) apkNoticeOverlay.classList.remove('active');
         });
     </script>
 </body>
