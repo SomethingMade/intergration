@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>Vynix Messenger — Next-Gen Real-Time Communication</title>
     
-    <meta name="theme-color" content="#E65100">
+    <meta name="theme-color" content="#0A84FF">
     <link rel="apple-touch-icon" href="https://i.postimg.cc/G2mGF81c/1000057023-removebg-preview.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary-orange: #E65100;
-            --accent-orange: #FF7A00;
-            --gradient-brand: linear-gradient(135deg, #FF7A00 0%, #E65100 100%);
+            --primary-blue: #0A84FF;
+            --accent-purple: #5E5CE6;
+            --gradient-brand: linear-gradient(135deg, #0A84FF 0%, #5E5CE6 100%);
             --bg-base: #000000;
             --bg-base-rgb: 0, 0, 0;
             --bg-surface: #1C1C1E;
@@ -104,7 +104,7 @@
         }
 
         .nav-links a:hover {
-            color: var(--primary-orange);
+            color: var(--primary-blue);
         }
 
         .btn-pill {
@@ -125,7 +125,7 @@
         .btn-primary {
             background: var(--gradient-brand);
             color: white;
-            box-shadow: 0 6px 16px rgba(230, 81, 0, 0.2);
+            box-shadow: 0 6px 16px rgba(10, 132, 255, 0.2);
         }
 
         .btn-primary:hover {
@@ -166,7 +166,7 @@
             line-height: 1.15;
             letter-spacing: -1.5px;
             margin-bottom: 20px;
-            background: linear-gradient(135deg, var(--text-primary) 30%, var(--primary-orange) 100%);
+            background: linear-gradient(135deg, var(--text-primary) 30%, var(--primary-blue) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -267,8 +267,8 @@
             width: 44px;
             height: 44px;
             border-radius: 12px;
-            background: rgba(230, 81, 0, 0.1);
-            color: var(--primary-orange);
+            background: rgba(10, 132, 255, 0.1);
+            color: var(--primary-blue);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -488,6 +488,7 @@
 </head>
 <body>
 
+    <!-- Header / Nav -->
     <header>
         <div class="nav-container">
             <a href="#" class="logo">
@@ -502,6 +503,7 @@
         </div>
     </header>
 
+    <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
             <h1>Secure, real-time connection on Android.</h1>
@@ -515,10 +517,12 @@
         </div>
         <div class="hero-mockup">
             <div class="mockup-bg-gradient"></div>
-            <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=800&auto=format&fit=crop" alt="Vynix Messenger Interface" class="hero-image">
+            <!-- Updated Hero Image -->
+            <img src="https://i.postimg.cc/1XV8Sp7v/Screenshot-20260707-220238.jpg" alt="Vynix Messenger Interface" class="hero-image">
         </div>
     </section>
 
+    <!-- Features Grid Section -->
     <section class="features" id="features">
         <div class="section-header">
             <h2>Engaging communication layout system</h2>
@@ -559,6 +563,7 @@
         </div>
     </section>
 
+    <!-- How it works -->
     <section class="how-it-works" id="how-it-works">
         <div class="section-header">
             <h2>Three steps to get moving</h2>
@@ -583,6 +588,7 @@
         </div>
     </section>
 
+    <!-- CTA Section -->
     <section class="cta-footer">
         <h2>Ready to upgrade your messaging workspace?</h2>
         <p>Experience an ultra-fast layout system designed perfectly for zero lag, deep contrast themes, and advanced media mechanics.</p>
@@ -594,10 +600,12 @@
         </div>
     </section>
 
+    <!-- Footer -->
     <footer>
         <p>&copy; 2026 Vynix Messenger. All rights reserved.</p>
     </footer>
 
+    <!-- Overlay for non-Android users -->
     <div class="ios-sheet-overlay" id="non-android-overlay">
         <div class="ios-sheet">
             <h3>Android Exclusive</h3>
