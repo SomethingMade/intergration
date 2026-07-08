@@ -71,23 +71,25 @@
             align-items: center;
         }
 
+        /* Increased Logo Visibility */
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-weight: 600;
-            font-size: 18px;
+            gap: 14px;
+            font-weight: 700;
+            font-size: 22px; /* Increased size */
             letter-spacing: -0.5px;
             text-decoration: none;
             color: var(--text-primary);
         }
 
         .logo img {
-            height: 24px;
+            height: 36px; /* Increased size */
             width: auto;
             object-fit: contain;
             display: block;
-            filter: grayscale(100%) contrast(200%);
+            /* Removed grayscale to make it pop with the primary buttons */
+            filter: drop-shadow(0 2px 8px rgba(10, 132, 255, 0.2)); 
         }
 
         .nav-links {
@@ -108,9 +110,10 @@
             color: var(--text-primary);
         }
 
+        /* Buttons */
         .btn-pill {
             padding: 12px 24px;
-            border-radius: 50px; /* Restored pill shape */
+            border-radius: 50px; 
             font-size: 14px;
             font-weight: 500;
             text-decoration: none;
@@ -124,8 +127,8 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #0A84FF 0%, #000000 100%); /* Blue to Black Gradient */
-            color: #FFFFFF; /* Forced white text to contrast the dark gradient */
+            background: linear-gradient(135deg, #0A84FF 0%, #000000 100%); 
+            color: #FFFFFF; 
             box-shadow: 0 4px 14px rgba(10, 132, 255, 0.15);
         }
 
@@ -151,7 +154,7 @@
             margin-right: 8px; 
         }
 
-        /* Hero Section (Centered & Image Removed) */
+        /* Hero Section */
         .hero {
             padding: 200px 24px 120px;
             max-width: 800px;
@@ -303,7 +306,7 @@
             line-height: 1.6;
         }
 
-        /* CTA Footer */
+        /* CTA Footer Section */
         .cta-footer {
             background: var(--bg-surface);
             padding: 120px 24px;
@@ -327,18 +330,41 @@
             margin-right: auto;
         }
 
+        /* Main Footer */
         footer {
             background: var(--bg-base);
-            padding: 40px 24px;
+            padding: 60px 24px 40px;
             text-align: center;
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-secondary);
             border-top: 1px solid var(--border-color);
             letter-spacing: 0.5px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            align-items: center;
         }
 
-        /* iOS / Non-Android Modal */
-        .ios-sheet-overlay {
+        .footer-links {
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+            font-weight: 500;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        /* Reusable Modal Structure */
+        .modal-overlay {
             position: fixed;
             inset: 0;
             background: rgba(var(--bg-base-rgb), 0.8);
@@ -348,20 +374,53 @@
             display: none;
             align-items: center;
             justify-content: center;
+            padding: 24px;
         }
 
-        .ios-sheet-overlay.active { 
+        .modal-overlay.active { 
             display: flex; 
         }
 
-        .ios-sheet {
+        .modal-box {
             background: var(--bg-surface);
             width: 100%;
-            max-width: 400px;
+            max-width: 500px;
+            max-height: 85vh;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 32px;
             animation: fadeIn 0.2s ease-out;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-box h3 { 
+            font-size: 18px; 
+            font-weight: 600; 
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .modal-content { 
+            font-size: 14px; 
+            color: var(--text-secondary); 
+            margin-bottom: 24px; 
+            line-height: 1.6;
+            overflow-y: auto;
+            padding-right: 8px; /* Room for scrollbar */
+        }
+
+        .modal-content p {
+            margin-bottom: 12px;
+        }
+
+        .modal-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
         }
 
         @keyframes fadeIn { 
@@ -369,57 +428,22 @@
             to { opacity: 1; transform: scale(1); } 
         }
 
-        .ios-sheet h3 { 
-            font-size: 18px; 
-            font-weight: 600; 
-            margin-bottom: 16px;
-            letter-spacing: -0.5px;
-        }
-
-        .ios-sheet-step { 
-            font-size: 14px; 
-            color: var(--text-secondary); 
-            margin-bottom: 24px; 
-            line-height: 1.6;
-        }
-
         /* Responsive Breakpoints */
         @media (max-width: 992px) {
-            .hero-content h1 {
-                font-size: 48px;
-            }
-            .steps-container {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
+            .hero-content h1 { font-size: 48px; }
+            .steps-container { grid-template-columns: 1fr; gap: 40px; }
         }
 
         @media (max-width: 568px) {
-            .nav-links a:not(.btn-pill) {
-                display: none; 
-            }
-            .nav-container {
-                padding: 16px;
-            }
-            .hero {
-                padding: 140px 16px 80px;
-            }
-            .hero-content h1 {
-                font-size: 40px;
-                letter-spacing: -1.5px;
-            }
-            .hero-content p {
-                font-size: 16px;
-            }
-            .hero-actions .btn-pill {
-                width: 100%;
-            }
-            .section-header h2, .cta-footer h2 {
-                font-size: 28px;
-            }
-            .features, .how-it-works, .cta-footer {
-                padding: 80px 16px;
-            }
+            .nav-links a:not(.btn-pill) { display: none; }
+            .nav-container { padding: 16px; }
+            .hero { padding: 140px 16px 80px; }
+            .hero-content h1 { font-size: 40px; letter-spacing: -1.5px; }
+            .hero-content p { font-size: 16px; }
+            .hero-actions .btn-pill { width: 100%; }
+            .section-header h2, .cta-footer h2 { font-size: 28px; }
+            .features, .how-it-works, .cta-footer { padding: 80px 16px; }
+            .footer-links { gap: 16px; flex-direction: column; }
         }
     </style>
 </head>
@@ -465,7 +489,6 @@
                 <h3>Voice Notes Tracker</h3>
                 <p>Record, preview, and track audio interactions instantly with responsive progressive inline tracking bars.</p>
             </div>
-
             <div class="feature-card">
                 <div class="feature-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
@@ -473,7 +496,6 @@
                 <h3>Immersive Media & Stories</h3>
                 <p>Share status stories instantly, react with floating hearts, text responses, and get instant view telemetry logs.</p>
             </div>
-
             <div class="feature-card">
                 <div class="feature-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
@@ -481,7 +503,6 @@
                 <h3>Advanced Managed Groups</h3>
                 <p>Instantly establish public context discovery clusters or isolated private structures using clean invite IDs.</p>
             </div>
-
             <div class="feature-card">
                 <div class="feature-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2"></path></svg>
@@ -528,30 +549,70 @@
     </section>
 
     <footer>
+        <div class="footer-links">
+            <a href="#" class="legal-trigger" data-policy="privacy">Privacy Policy</a>
+            <a href="#" class="legal-trigger" data-policy="terms">Terms & Conditions</a>
+            <a href="#" class="legal-trigger" data-policy="cookies">Cookie Policy</a>
+        </div>
         <p>&copy; 2026 Vynix Messenger. All rights reserved.</p>
     </footer>
 
-    <div class="ios-sheet-overlay" id="non-android-overlay">
-        <div class="ios-sheet">
+    <div class="modal-overlay" id="non-android-overlay">
+        <div class="modal-box">
             <h3>Android Exclusive</h3>
-            <div class="ios-sheet-step">
+            <div class="modal-content">
                 Vynix Messenger is currently optimized exclusively for Android devices. Please visit this page on your Android smartphone or tablet to download the APK.
             </div>
-            <button class="btn-pill btn-outline ios-sheet-close" id="close-overlay" style="width:100%;">Understood</button>
+            <button class="btn-pill btn-outline close-modal" data-target="non-android-overlay" style="width:100%;">Understood</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="legal-overlay">
+        <div class="modal-box">
+            <h3 id="legal-modal-title">Policy</h3>
+            <div class="modal-content" id="legal-modal-body">
+                </div>
+            <button class="btn-pill btn-outline close-modal" data-target="legal-overlay" style="width:100%;">Close</button>
         </div>
     </div>
 
     <script>
+        // 1. Core Config
         const APK_URL = 'https://firebasestorage.googleapis.com/v0/b/newstart-64c43.firebasestorage.app/o/vynix%20messanger.apk?alt=media&token=7371aac7-7683-4774-927e-801b15f05806';
 
+        const legalContent = {
+            privacy: {
+                title: "Privacy Policy",
+                body: "<p>We take your privacy seriously. Vynix Messenger employs local-first architecture to protect your real-time communications. Metadata generation is strictly minimized.</p><p>We do not track, sell, or farm your personal data to third parties. By using our service, you consent to our secure data handling practices as outlined in our full documentation.</p>"
+            },
+            terms: {
+                title: "Terms & Conditions",
+                body: "<p>By accessing and downloading Vynix Messenger, you agree to be bound by these Terms of Service. You must use the service lawfully and respect the intellectual property of Vynix.</p><p>We reserve the right to suspend or terminate service access for nodes that violate our community guidelines, engage in spam, or perform abusive network behaviors.</p>"
+            },
+            cookies: {
+                title: "Cookie Policy",
+                body: "<p>Vynix Messenger uses essential local storage on your device strictly to maintain secure session states, authentication workflows, and UI preferences.</p><p>We do not deploy third-party advertising or tracking cookies on our primary application interfaces.</p>"
+            }
+        };
+
+        // 2. DOM Elements
+        const downloadButtons = document.querySelectorAll('.apk-download-btn');
+        const legalTriggers = document.querySelectorAll('.legal-trigger');
+        const closeButtons = document.querySelectorAll('.close-modal');
+        const overlays = document.querySelectorAll('.modal-overlay');
+        
+        const nonAndroidOverlay = document.getElementById('non-android-overlay');
+        const legalOverlay = document.getElementById('legal-overlay');
+        const legalTitle = document.getElementById('legal-modal-title');
+        const legalBody = document.getElementById('legal-modal-body');
+
+        // 3. Helper Functions
         function isAndroid() {
             return /android/.test(window.navigator.userAgent.toLowerCase());
         }
 
-        const downloadButtons = document.querySelectorAll('.apk-download-btn');
-        const nonAndroidOverlay = document.getElementById('non-android-overlay');
-        const closeOverlayBtn = document.getElementById('close-overlay');
-
+        // 4. Event Listeners
+        // APK Downloads
         downloadButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 if (!isAndroid()) {
@@ -562,14 +623,34 @@
             });
         });
 
-        closeOverlayBtn.addEventListener('click', () => {
-            nonAndroidOverlay.classList.remove('active');
+        // Legal Modal Triggers
+        legalTriggers.forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                const policyKey = trigger.getAttribute('data-policy');
+                if (legalContent[policyKey]) {
+                    legalTitle.innerHTML = legalContent[policyKey].title;
+                    legalBody.innerHTML = legalContent[policyKey].body;
+                    legalOverlay.classList.add('active');
+                }
+            });
         });
 
-        nonAndroidOverlay.addEventListener('click', (e) => {
-            if (e.target === nonAndroidOverlay) {
-                nonAndroidOverlay.classList.remove('active');
-            }
+        // Close Buttons for Modals
+        closeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-target');
+                document.getElementById(targetId).classList.remove('active');
+            });
+        });
+
+        // Close when clicking outside modal box
+        overlays.forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                }
+            });
         });
     </script>
 </body>
