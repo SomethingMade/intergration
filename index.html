@@ -437,7 +437,45 @@
             align-items: flex-end;
         }
 
+        /* Trigger button now sits inside a ring stage so the pulse rings
+           can animate independently behind the button without affecting layout */
+        .vertex-trigger-stage {
+            position: relative;
+            width: 60px;
+            height: 60px;
+        }
+
+        .vertex-pulse-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 1.5px solid #0A84FF;
+            opacity: 0;
+            pointer-events: none;
+            animation: vertexPulseWave 2.8s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+        }
+
+        .vertex-pulse-ring.ring-2 { animation-delay: 0.9s; }
+        .vertex-pulse-ring.ring-3 { animation-delay: 1.8s; }
+
+        @keyframes vertexPulseWave {
+            0% {
+                transform: scale(1);
+                opacity: 0.55;
+                border-color: #0A84FF;
+            }
+            70% {
+                opacity: 0.12;
+            }
+            100% {
+                transform: scale(1.9);
+                opacity: 0;
+                border-color: #5E5CE6;
+            }
+        }
+
         .vertex-trigger-btn {
+            position: relative;
             width: 60px;
             height: 60px;
             border-radius: 50%;
@@ -450,6 +488,17 @@
             align-items: center;
             justify-content: center;
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: vertexBreathe 2.8s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes vertexBreathe {
+            0%, 100% {
+                box-shadow: 0 8px 32px rgba(10, 132, 255, 0.4);
+            }
+            50% {
+                box-shadow: 0 8px 40px rgba(94, 92, 230, 0.6);
+            }
         }
 
         .vertex-trigger-btn:hover {
@@ -464,6 +513,17 @@
 
         .vertex-trigger-btn.active svg {
             transform: rotate(45deg);
+        }
+
+        /* Pause the ambient animations while the panel is open so the
+           button reads as "settled" rather than distracting from the chat */
+        .vertex-trigger-btn.active {
+            animation: none;
+        }
+
+        .vertex-trigger-stage.panel-open .vertex-pulse-ring {
+            animation-play-state: paused;
+            opacity: 0;
         }
 
         .vertex-chat-panel {
@@ -657,6 +717,13 @@
             .vertex-chat-panel { width: calc(100vw - 40px); height: 480px; right: 0; }
             .vertex-chat-wrapper { bottom: 20px; right: 20px; }
         }
+
+        @media (prefers-reduced-motion: reduce) {
+            .vertex-pulse-ring,
+            .vertex-trigger-btn {
+                animation: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -796,9 +863,14 @@
             </div>
         </div>
 
-        <button class="vertex-trigger-btn" id="vertexTriggerBtn" title="Open AI Support Chat">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-        </button>
+        <div class="vertex-trigger-stage" id="vertexTriggerStage">
+            <div class="vertex-pulse-ring ring-1"></div>
+            <div class="vertex-pulse-ring ring-2"></div>
+            <div class="vertex-pulse-ring ring-3"></div>
+            <button class="vertex-trigger-btn" id="vertexTriggerBtn" title="Open AI Support Chat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            </button>
+        </div>
     </div>
 
     <footer>
@@ -832,6 +904,7 @@
         // 1. Firebase Initialization for Live Goza AI Support
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBQSPwpVbGrdCuOoyitAeWQHIeipj2MgIY",
@@ -845,10 +918,20 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
-        // Generate a random guest session ID for this landing page visit
-        const guestSessionId = 'guest_' + Math.random().toString(36).substr(2, 9);
-        const AI_FIRESTORE_COLLECTION = `ai_discussions/${guestSessionId}/messages`;
+        // AI_FIRESTORE_COLLECTION is set once anonymous auth resolves, so the
+        // doc path's uid segment always matches request.auth.uid in rules:
+        //   match /ai_discussions/{uid}/messages/{messageId} {
+        //     allow read, write: if request.auth != null && request.auth.uid == uid;
+        //   }
+        let AI_FIRESTORE_COLLECTION = null;
+
+        signInAnonymously(auth).then((cred) => {
+            AI_FIRESTORE_COLLECTION = `ai_discussions/${cred.user.uid}/messages`;
+        }).catch((err) => {
+            console.error('Anonymous auth failed', err);
+        });
 
         // 2. Core Config
         const APK_URL = 'https://firebasestorage.googleapis.com/v0/b/newstart-64c43.firebasestorage.app/o/vynix%20messanger.apk?alt=media&token=7371aac7-7683-4774-927e-801b15f05806';
@@ -880,6 +963,7 @@
         const legalBody = document.getElementById('legal-modal-body');
 
         // Vertex UI elements
+        const vertexTriggerStage = document.getElementById('vertexTriggerStage');
         const vertexTriggerBtn = document.getElementById('vertexTriggerBtn');
         const vertexChatPanel = document.getElementById('vertexChatPanel');
         const vertexChatLogs = document.getElementById('vertexChatLogs');
@@ -936,6 +1020,7 @@
             const isOpen = vertexChatPanel.style.display === 'flex';
             vertexChatPanel.style.display = isOpen ? 'none' : 'flex';
             vertexTriggerBtn.classList.toggle('active', !isOpen);
+            vertexTriggerStage.classList.toggle('panel-open', !isOpen);
             if (!isOpen) {
                 vertexChatLogs.scrollTop = vertexChatLogs.scrollHeight;
             }
@@ -966,6 +1051,13 @@
         }
 
         async function triggerAiResponse(promptText) {
+            // Guard against the rare case where a message is sent before
+            // anonymous auth has resolved and the collection path is set
+            if (!AI_FIRESTORE_COLLECTION) {
+                createMessageBubble("Still connecting… give it a second and try again.", 'ai');
+                return;
+            }
+
             const typingId = 'typing_' + Date.now();
             createMessageBubble('TYPING', 'ai', typingId);
             
