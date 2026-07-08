@@ -11,17 +11,14 @@
     
     <style>
         :root {
-            /* x.ai inspired monochrome palette */
+            /* x.ai inspired monochrome palette base */
             --bg-base: #000000;
             --bg-base-rgb: 0, 0, 0;
             --bg-surface: #0a0a0a;
             --bg-alt: #050505;
             --border-color: #222222;
-            --border-hover: #444444;
             --text-primary: #FFFFFF;
             --text-secondary: #888888;
-            --accent-fg: #000000;
-            --accent-bg: #FFFFFF;
         }
 
         @media(prefers-color-scheme: light) {
@@ -31,11 +28,8 @@
                 --bg-surface: #FAFAFA;
                 --bg-alt: #F5F5F5;
                 --border-color: #EAEAEA;
-                --border-hover: #CCCCCC;
                 --text-primary: #000000;
                 --text-secondary: #666666;
-                --accent-fg: #FFFFFF;
-                --accent-bg: #000000;
             }
         }
 
@@ -115,8 +109,8 @@
         }
 
         .btn-pill {
-            padding: 10px 20px;
-            border-radius: 4px; /* Sharper, more professional corners */
+            padding: 12px 24px;
+            border-radius: 50px; /* Restored pill shape */
             font-size: 14px;
             font-weight: 500;
             text-decoration: none;
@@ -130,12 +124,15 @@
         }
 
         .btn-primary {
-            background: var(--accent-bg);
-            color: var(--accent-fg);
+            background: linear-gradient(135deg, #0A84FF 0%, #000000 100%); /* Blue to Black Gradient */
+            color: #FFFFFF; /* Forced white text to contrast the dark gradient */
+            box-shadow: 0 4px 14px rgba(10, 132, 255, 0.15);
         }
 
         .btn-primary:hover {
-            opacity: 0.85;
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(10, 132, 255, 0.25);
         }
 
         .btn-outline {
@@ -154,15 +151,15 @@
             margin-right: 8px; 
         }
 
-        /* Hero Section */
+        /* Hero Section (Centered & Image Removed) */
         .hero {
-            padding: 160px 24px 80px;
-            max-width: 1200px;
+            padding: 200px 24px 120px;
+            max-width: 800px;
             margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
+            display: flex;
+            flex-direction: column;
             align-items: center;
+            text-align: center;
         }
 
         .hero-content h1 {
@@ -177,8 +174,8 @@
         .hero-content p {
             font-size: 18px;
             color: var(--text-secondary);
-            margin-bottom: 40px;
-            max-width: 480px;
+            margin: 0 auto 40px;
+            max-width: 520px;
             line-height: 1.5;
         }
 
@@ -186,27 +183,7 @@
             display: flex;
             gap: 16px;
             flex-wrap: wrap;
-        }
-
-        .hero-mockup {
-            position: relative;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            width: 100%;
-        }
-
-        .hero-image {
-            width: 100%;
-            max-width: 340px;
-            height: auto;
-            border-radius: 24px;
-            z-index: 2;
-            border: 1px solid var(--border-color);
-            object-fit: cover;
-            aspect-ratio: 9/19;
-            box-shadow: 0 20px 40px rgba(var(--bg-base-rgb), 0.8);
-            filter: grayscale(20%); /* Subtle mute to match aesthetic */
+            justify-content: center;
         }
 
         /* Features Section */
@@ -220,6 +197,7 @@
         .section-header {
             max-width: 1200px;
             margin: 0 auto 60px;
+            text-align: center;
         }
 
         .section-header h2 {
@@ -234,6 +212,7 @@
             color: var(--text-secondary);
             font-size: 18px;
             max-width: 600px;
+            margin: 0 auto;
         }
 
         .features-grid {
@@ -241,7 +220,7 @@
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1px; /* Creates stark grid lines */
+            gap: 1px;
             background: var(--border-color);
             border: 1px solid var(--border-color);
         }
@@ -406,14 +385,6 @@
 
         /* Responsive Breakpoints */
         @media (max-width: 992px) {
-            .hero {
-                grid-template-columns: 1fr;
-                padding-top: 120px;
-                gap: 48px;
-            }
-            .hero-mockup {
-                justify-content: center;
-            }
             .hero-content h1 {
                 font-size: 48px;
             }
@@ -431,7 +402,7 @@
                 padding: 16px;
             }
             .hero {
-                padding: 100px 16px 40px;
+                padding: 140px 16px 80px;
             }
             .hero-content h1 {
                 font-size: 40px;
@@ -454,7 +425,6 @@
 </head>
 <body>
 
-    <!-- Header / Nav -->
     <header>
         <div class="nav-container">
             <a href="#" class="logo">
@@ -469,7 +439,6 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
             <h1>Secure, real-time connection on Android.</h1>
@@ -481,12 +450,8 @@
                 </button>
             </div>
         </div>
-        <div class="hero-mockup">
-            <img src="https://i.postimg.cc/1XV8Sp7v/Screenshot-20260707-220238.jpg" alt="Vynix Messenger Interface" class="hero-image">
-        </div>
     </section>
 
-    <!-- Features Grid Section -->
     <section class="features" id="features">
         <div class="section-header">
             <h2>Engaging communication layout system</h2>
@@ -527,7 +492,6 @@
         </div>
     </section>
 
-    <!-- How it works -->
     <section class="how-it-works" id="how-it-works">
         <div class="section-header">
             <h2>Three steps to get moving</h2>
@@ -552,7 +516,6 @@
         </div>
     </section>
 
-    <!-- CTA Section -->
     <section class="cta-footer">
         <h2>Ready to upgrade your messaging workspace?</h2>
         <p>Experience an ultra-fast layout system designed perfectly for zero lag, deep contrast themes, and advanced media mechanics.</p>
@@ -564,12 +527,10 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer>
         <p>&copy; 2026 Vynix Messenger. All rights reserved.</p>
     </footer>
 
-    <!-- Overlay for non-Android users -->
     <div class="ios-sheet-overlay" id="non-android-overlay">
         <div class="ios-sheet">
             <h3>Android Exclusive</h3>
