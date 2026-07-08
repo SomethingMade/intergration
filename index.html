@@ -437,112 +437,134 @@
             align-items: flex-end;
         }
 
-        /* Trigger button now sits inside a ring stage so the pulse rings
-           can animate independently behind the button without affecting layout */
-        .vertex-trigger-stage {
-            position: relative;
-            width: 60px;
-            height: 60px;
-        }
-
-        .vertex-pulse-ring {
-            position: absolute;
+        /* Backdrop dims the page while the chat portal is open */
+        .vertex-backdrop {
+            position: fixed;
             inset: 0;
-            border-radius: 50%;
-            border: 1.5px solid #0A84FF;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
             opacity: 0;
             pointer-events: none;
-            animation: vertexPulseWave 2.8s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+            transition: opacity 0.35s ease;
+            z-index: 4999;
         }
 
-        .vertex-pulse-ring.ring-2 { animation-delay: 0.9s; }
-        .vertex-pulse-ring.ring-3 { animation-delay: 1.8s; }
-
-        @keyframes vertexPulseWave {
-            0% {
-                transform: scale(1);
-                opacity: 0.55;
-                border-color: #0A84FF;
-            }
-            70% {
-                opacity: 0.12;
-            }
-            100% {
-                transform: scale(1.9);
-                opacity: 0;
-                border-color: #5E5CE6;
-            }
+        .vertex-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
         }
 
-        .vertex-trigger-btn {
+        /* Pill-shaped trigger with an animated voice-wave icon */
+        .vertex-trigger-pill {
             position: relative;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #0A84FF 0%, #5E5CE6 100%);
-            border: none;
-            color: white;
-            cursor: pointer;
-            box-shadow: 0 8px 32px rgba(10, 132, 255, 0.4);
             display: flex;
             align-items: center;
-            justify-content: center;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            animation: vertexBreathe 2.8s ease-in-out infinite;
-            z-index: 1;
+            gap: 12px;
+            padding: 15px 24px 15px 20px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            color: #fff;
+            background: linear-gradient(120deg, #0A84FF 0%, #5E5CE6 45%, #BF5AF2 100%);
+            background-size: 220% 220%;
+            animation: vertexNebulaShift 6s ease infinite;
+            box-shadow: 0 8px 30px rgba(94, 92, 230, 0.45);
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            transition: opacity 0.25s ease, transform 0.25s ease;
         }
 
-        @keyframes vertexBreathe {
-            0%, 100% {
-                box-shadow: 0 8px 32px rgba(10, 132, 255, 0.4);
-            }
-            50% {
-                box-shadow: 0 8px 40px rgba(94, 92, 230, 0.6);
-            }
+        .vertex-trigger-pill:hover {
+            transform: translateY(-1px);
         }
 
-        .vertex-trigger-btn:hover {
-            transform: scale(1.06);
-        }
-
-        .vertex-trigger-btn svg {
-            width: 26px;
-            height: 26px;
-            transition: transform 0.3s ease;
-        }
-
-        .vertex-trigger-btn.active svg {
-            transform: rotate(45deg);
-        }
-
-        /* Pause the ambient animations while the panel is open so the
-           button reads as "settled" rather than distracting from the chat */
-        .vertex-trigger-btn.active {
-            animation: none;
-        }
-
-        .vertex-trigger-stage.panel-open .vertex-pulse-ring {
-            animation-play-state: paused;
+        .vertex-trigger-pill.hidden-for-morph {
             opacity: 0;
+            transform: scale(0.85);
+            pointer-events: none;
+        }
+
+        @keyframes vertexNebulaShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .vertex-pill-wave {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            height: 18px;
+        }
+
+        .vertex-pill-wave span {
+            width: 3px;
+            background: #fff;
+            border-radius: 2px;
+            animation: vertexPillWaveMotion 1s ease-in-out infinite;
+        }
+
+        .vertex-pill-wave span:nth-child(1) { height: 6px;  animation-delay: 0s; }
+        .vertex-pill-wave span:nth-child(2) { height: 14px; animation-delay: 0.15s; }
+        .vertex-pill-wave span:nth-child(3) { height: 18px; animation-delay: 0.3s; }
+        .vertex-pill-wave span:nth-child(4) { height: 10px; animation-delay: 0.45s; }
+
+        @keyframes vertexPillWaveMotion {
+            0%, 100% { transform: scaleY(0.4); }
+            50% { transform: scaleY(1); }
+        }
+
+        /* Nebula morph orb — the shared element that travels from the pill's
+           position to screen-center and expands into the chat panel's shape */
+        .vertex-morph {
+            position: fixed;
+            z-index: 5001;
+            pointer-events: none;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            background:
+                radial-gradient(circle at 30% 30%, rgba(191, 90, 242, 0.95), transparent 60%),
+                radial-gradient(circle at 70% 70%, rgba(10, 132, 255, 0.95), transparent 60%),
+                radial-gradient(circle at 50% 50%, rgba(94, 92, 230, 0.95), transparent 70%),
+                linear-gradient(135deg, #0A84FF, #5E5CE6);
+            background-size: 200% 200%, 200% 200%, 200% 200%, 100% 100%;
+            box-shadow: 0 0 80px rgba(94, 92, 230, 0.55);
+        }
+
+        .vertex-morph.animating {
+            visibility: visible;
+            animation: vertexNebulaSwirl 1.6s ease-in-out infinite;
+        }
+
+        @keyframes vertexNebulaSwirl {
+            0%   { background-position: 0% 0%, 100% 100%, 50% 50%, 0% 0%; }
+            50%  { background-position: 100% 100%, 0% 0%, 60% 40%, 100% 100%; }
+            100% { background-position: 0% 0%, 100% 100%, 50% 50%, 0% 0%; }
         }
 
         .vertex-chat-panel {
-            width: 380px;
-            height: 540px;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 560px;
             background: var(--bg-surface);
             border: 1px solid var(--border-color);
             border-radius: 20px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-            margin-bottom: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
             display: none;
             flex-direction: column;
             overflow: hidden;
-            animation: paneEntrance 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            z-index: 5002;
+            transition: opacity 0.3s ease;
         }
 
-        @keyframes paneEntrance {
-            from { opacity: 0; transform: translateY(20px) scale(0.96); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        .vertex-chat-panel.visible {
+            opacity: 1;
         }
 
         .vertex-panel-header {
@@ -553,6 +575,26 @@
             align-items: center;
             gap: 12px;
             border-bottom: 1px solid var(--border-color);
+        }
+
+        .vertex-panel-close {
+            margin-left: auto;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .vertex-panel-close:hover {
+            background: rgba(255, 255, 255, 0.24);
         }
 
         .vertex-panel-header img {
@@ -714,13 +756,15 @@
             .section-header h2, .cta-footer h2 { font-size: 28px; }
             .features, .how-it-works, .cta-footer { padding: 80px 16px; }
             .footer-links { gap: 16px; flex-direction: column; }
-            .vertex-chat-panel { width: calc(100vw - 40px); height: 480px; right: 0; }
             .vertex-chat-wrapper { bottom: 20px; right: 20px; }
+            .vertex-trigger-pill span.vertex-pill-label { display: none; }
+            .vertex-trigger-pill { padding: 15px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .vertex-pulse-ring,
-            .vertex-trigger-btn {
+            .vertex-trigger-pill,
+            .vertex-morph.animating,
+            .vertex-pill-wave span {
                 animation: none !important;
             }
         }
@@ -827,6 +871,8 @@
         </div>
     </section>
 
+    <div class="vertex-backdrop" id="vertexBackdrop"></div>
+
     <div class="vertex-chat-wrapper">
         <div class="vertex-chat-panel" id="vertexChatPanel">
             <div class="vertex-panel-header">
@@ -835,6 +881,9 @@
                     <h4>Gemini Goza AI</h4>
                     <p>vertex-node // active</p>
                 </div>
+                <button class="vertex-panel-close" id="vertexCloseBtn" aria-label="Close chat" title="Close">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
             </div>
             <div class="vertex-chat-logs" id="vertexChatLogs">
                 <div class="vertex-msg ai">
@@ -863,14 +912,14 @@
             </div>
         </div>
 
-        <div class="vertex-trigger-stage" id="vertexTriggerStage">
-            <div class="vertex-pulse-ring ring-1"></div>
-            <div class="vertex-pulse-ring ring-2"></div>
-            <div class="vertex-pulse-ring ring-3"></div>
-            <button class="vertex-trigger-btn" id="vertexTriggerBtn" title="Open AI Support Chat">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-            </button>
-        </div>
+        <div class="vertex-morph" id="vertexMorph"></div>
+
+        <button class="vertex-trigger-pill" id="vertexTriggerBtn" title="Open AI Support Chat">
+            <span class="vertex-pill-wave">
+                <span></span><span></span><span></span><span></span>
+            </span>
+            <span class="vertex-pill-label">Chat with Goza</span>
+        </button>
     </div>
 
     <footer>
@@ -963,8 +1012,10 @@
         const legalBody = document.getElementById('legal-modal-body');
 
         // Vertex UI elements
-        const vertexTriggerStage = document.getElementById('vertexTriggerStage');
         const vertexTriggerBtn = document.getElementById('vertexTriggerBtn');
+        const vertexCloseBtn = document.getElementById('vertexCloseBtn');
+        const vertexMorph = document.getElementById('vertexMorph');
+        const vertexBackdrop = document.getElementById('vertexBackdrop');
         const vertexChatPanel = document.getElementById('vertexChatPanel');
         const vertexChatLogs = document.getElementById('vertexChatLogs');
         const vertexTextInput = document.getElementById('vertexTextInput');
@@ -1016,15 +1067,114 @@
         });
 
         // 6. Gemini Goza Interactive Support Logics (Real-Time Firestore Implementation)
-        vertexTriggerBtn.addEventListener('click', () => {
-            const isOpen = vertexChatPanel.style.display === 'flex';
-            vertexChatPanel.style.display = isOpen ? 'none' : 'flex';
-            vertexTriggerBtn.classList.toggle('active', !isOpen);
-            vertexTriggerStage.classList.toggle('panel-open', !isOpen);
-            if (!isOpen) {
+
+        // Nebula portal transition: the pill trigger collapses into a swirling
+        // orb that travels from its docked position to screen-center and
+        // expands into the chat panel's shape, then hands off to the panel.
+        const MORPH_MS = 620;
+        let panelOpen = false;
+        let isMorphing = false;
+
+        function getPanelTargetRect() {
+            const isMobile = window.innerWidth <= 568;
+            const width = isMobile ? Math.min(420, window.innerWidth - 32) : 400;
+            const height = isMobile ? Math.min(580, window.innerHeight - 100) : 560;
+            return {
+                width,
+                height,
+                left: (window.innerWidth - width) / 2,
+                top: (window.innerHeight - height) / 2
+            };
+        }
+
+        function setMorphRect(rect, borderRadius) {
+            vertexMorph.style.left = rect.left + 'px';
+            vertexMorph.style.top = rect.top + 'px';
+            vertexMorph.style.width = rect.width + 'px';
+            vertexMorph.style.height = rect.height + 'px';
+            vertexMorph.style.borderRadius = borderRadius;
+        }
+
+        function openChat() {
+            if (isMorphing || panelOpen) return;
+            isMorphing = true;
+
+            const btnRect = vertexTriggerBtn.getBoundingClientRect();
+            const target = getPanelTargetRect();
+
+            // Pre-size the panel so its finished dimensions match the morph's landing rect
+            vertexChatPanel.style.width = target.width + 'px';
+            vertexChatPanel.style.height = target.height + 'px';
+
+            // Snap the orb onto the pill's exact position/size first, no transition
+            vertexMorph.style.transition = 'none';
+            setMorphRect(btnRect, '999px');
+            vertexMorph.style.opacity = '1';
+            vertexMorph.classList.add('animating');
+
+            vertexTriggerBtn.classList.add('hidden-for-morph');
+            vertexBackdrop.classList.add('active');
+
+            requestAnimationFrame(() => {
+                vertexMorph.style.transition =
+                    `left ${MORPH_MS}ms cubic-bezier(.16,1,.3,1), top ${MORPH_MS}ms cubic-bezier(.16,1,.3,1), ` +
+                    `width ${MORPH_MS}ms cubic-bezier(.16,1,.3,1), height ${MORPH_MS}ms cubic-bezier(.16,1,.3,1), ` +
+                    `border-radius ${MORPH_MS}ms cubic-bezier(.16,1,.3,1)`;
+                setMorphRect(target, '24px');
+            });
+
+            const onEnd = () => {
+                vertexMorph.removeEventListener('transitionend', onEnd);
+                vertexMorph.classList.remove('animating');
+                vertexMorph.style.opacity = '0';
+                vertexChatPanel.style.display = 'flex';
+                requestAnimationFrame(() => vertexChatPanel.classList.add('visible'));
+                panelOpen = true;
+                isMorphing = false;
                 vertexChatLogs.scrollTop = vertexChatLogs.scrollHeight;
-            }
-        });
+                vertexTextInput.focus();
+            };
+            vertexMorph.addEventListener('transitionend', onEnd, { once: true });
+        }
+
+        function closeChat() {
+            if (isMorphing || !panelOpen) return;
+            isMorphing = true;
+
+            const panelRect = vertexChatPanel.getBoundingClientRect();
+            const btnRect = vertexTriggerBtn.getBoundingClientRect();
+
+            vertexChatPanel.classList.remove('visible');
+
+            vertexMorph.style.transition = 'none';
+            setMorphRect(panelRect, '24px');
+            vertexMorph.style.opacity = '1';
+            vertexMorph.classList.add('animating');
+
+            requestAnimationFrame(() => {
+                vertexChatPanel.style.display = 'none';
+                vertexMorph.style.transition =
+                    `left ${MORPH_MS}ms cubic-bezier(.4,0,.2,1), top ${MORPH_MS}ms cubic-bezier(.4,0,.2,1), ` +
+                    `width ${MORPH_MS}ms cubic-bezier(.4,0,.2,1), height ${MORPH_MS}ms cubic-bezier(.4,0,.2,1), ` +
+                    `border-radius ${MORPH_MS}ms cubic-bezier(.4,0,.2,1)`;
+                setMorphRect(btnRect, '999px');
+            });
+
+            const onEnd = () => {
+                vertexMorph.removeEventListener('transitionend', onEnd);
+                vertexMorph.classList.remove('animating');
+                vertexMorph.style.opacity = '0';
+                vertexTriggerBtn.classList.remove('hidden-for-morph');
+                vertexBackdrop.classList.remove('active');
+                panelOpen = false;
+                isMorphing = false;
+            };
+            vertexMorph.addEventListener('transitionend', onEnd, { once: true });
+        }
+
+        vertexTriggerBtn.addEventListener('click', openChat);
+        vertexCloseBtn.addEventListener('click', closeChat);
+        vertexBackdrop.addEventListener('click', closeChat);
 
         function createMessageBubble(content, sender, id = null) {
             const bubble = document.createElement('div');
