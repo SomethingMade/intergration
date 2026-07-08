@@ -491,28 +491,14 @@
             50% { background-position: 100% 50%; }
         }
 
-        .vertex-pill-wave {
+        .vertex-pill-icon {
             display: flex;
             align-items: center;
-            gap: 3px;
+        }
+
+        .vertex-pill-icon svg {
+            width: 18px;
             height: 18px;
-        }
-
-        .vertex-pill-wave span {
-            width: 3px;
-            background: #fff;
-            border-radius: 2px;
-            animation: vertexPillWaveMotion 1s ease-in-out infinite;
-        }
-
-        .vertex-pill-wave span:nth-child(1) { height: 6px;  animation-delay: 0s; }
-        .vertex-pill-wave span:nth-child(2) { height: 14px; animation-delay: 0.15s; }
-        .vertex-pill-wave span:nth-child(3) { height: 18px; animation-delay: 0.3s; }
-        .vertex-pill-wave span:nth-child(4) { height: 10px; animation-delay: 0.45s; }
-
-        @keyframes vertexPillWaveMotion {
-            0%, 100% { transform: scaleY(0.4); }
-            50% { transform: scaleY(1); }
         }
 
         /* Nebula morph orb — the shared element that travels from the pill's
@@ -660,37 +646,6 @@
             40% { transform: scale(1); } 
         }
 
-        /* Animated Voice Wave Construction */
-        .vertex-voice-panel {
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            padding: 12px;
-            background: var(--bg-surface);
-            border-top: 1px solid var(--border-color);
-            height: 54px;
-        }
-
-        .voice-bar {
-            width: 3px;
-            height: 6px;
-            background: #0A84FF;
-            border-radius: 50px;
-            animation: voiceWaveMotion 1s ease-in-out infinite alternate;
-        }
-
-        .voice-bar:nth-child(2) { animation-delay: 0.1s; height: 16px; }
-        .voice-bar:nth-child(3) { animation-delay: 0.2s; height: 26px; background: #5E5CE6; }
-        .voice-bar:nth-child(4) { animation-delay: 0.3s; height: 32px; background: #5E5CE6; }
-        .voice-bar:nth-child(5) { animation-delay: 0.4s; height: 20px; }
-        .voice-bar:nth-child(6) { animation-delay: 0.5s; height: 10px; }
-
-        @keyframes voiceWaveMotion {
-            0% { transform: scaleY(0.3); }
-            100% { transform: scaleY(1.1); }
-        }
-
         .vertex-input-row {
             padding: 12px 16px;
             background: var(--bg-surface);
@@ -735,11 +690,6 @@
             color: white;
         }
 
-        .vertex-action-btn.mic-btn.listening {
-            background: #FF453A;
-            color: white;
-        }
-
         /* Responsive Breakpoints */
         @media (max-width: 992px) {
             .hero-content h1 { font-size: 48px; }
@@ -763,8 +713,7 @@
 
         @media (prefers-reduced-motion: reduce) {
             .vertex-trigger-pill,
-            .vertex-morph.animating,
-            .vertex-pill-wave span {
+            .vertex-morph.animating {
                 animation: none !important;
             }
         }
@@ -890,21 +839,8 @@
                     Hi there! I'm your Vynix Support Assistant, powered by Gemini Goza on Vertex AI. How can I help you sync up today?
                 </div>
             </div>
-            
-            <div class="vertex-voice-panel" id="vertexVoicePanel">
-                <div class="voice-bar"></div>
-                <div class="voice-bar"></div>
-                <div class="voice-bar"></div>
-                <div class="voice-bar"></div>
-                <div class="voice-bar"></div>
-                <div class="voice-bar"></div>
-                <div class="voice-bar"></div>
-            </div>
 
             <div class="vertex-input-row">
-                <button class="vertex-action-btn mic-btn" id="vertexMicBtn" title="Speak to Gemini Goza">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
-                </button>
                 <input type="text" id="vertexTextInput" placeholder="Ask about downloads, security, setup...">
                 <button class="vertex-action-btn send-btn" id="vertexSendBtn">
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
@@ -915,8 +851,8 @@
         <div class="vertex-morph" id="vertexMorph"></div>
 
         <button class="vertex-trigger-pill" id="vertexTriggerBtn" title="Open AI Support Chat">
-            <span class="vertex-pill-wave">
-                <span></span><span></span><span></span><span></span>
+            <span class="vertex-pill-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
             </span>
             <span class="vertex-pill-label">Chat with Goza</span>
         </button>
@@ -1020,8 +956,6 @@
         const vertexChatLogs = document.getElementById('vertexChatLogs');
         const vertexTextInput = document.getElementById('vertexTextInput');
         const vertexSendBtn = document.getElementById('vertexSendBtn');
-        const vertexMicBtn = document.getElementById('vertexMicBtn');
-        const vertexVoicePanel = document.getElementById('vertexVoicePanel');
 
         // 4. Helper Functions
         function isAndroid() {
@@ -1132,7 +1066,6 @@
                 panelOpen = true;
                 isMorphing = false;
                 vertexChatLogs.scrollTop = vertexChatLogs.scrollHeight;
-                vertexTextInput.focus();
             };
             vertexMorph.addEventListener('transitionend', onEnd, { once: true });
         }
@@ -1251,7 +1184,6 @@
         function resetInputState() {
             vertexTextInput.disabled = false;
             vertexSendBtn.style.opacity = '1';
-            vertexTextInput.focus();
         }
 
         // Send Text Trigger
@@ -1266,29 +1198,6 @@
 
         vertexTextInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') vertexSendBtn.click();
-        });
-
-        // Animated Voice Processing Simulation
-        let voiceSessionActive = false;
-        vertexMicBtn.addEventListener('click', () => {
-            if (vertexTextInput.disabled && !voiceSessionActive) return; // Prevent mic if waiting for text response
-            
-            voiceSessionActive = !voiceSessionActive;
-            
-            if (voiceSessionActive) {
-                vertexMicBtn.classList.add('listening');
-                vertexVoicePanel.style.display = 'flex';
-                vertexTextInput.placeholder = "Listening to audio streams...";
-                vertexTextInput.disabled = true;
-            } else {
-                vertexMicBtn.classList.remove('listening');
-                vertexVoicePanel.style.display = 'none';
-                vertexTextInput.placeholder = "Ask about downloads, security, setup...";
-                vertexTextInput.disabled = false;
-                
-                createMessageBubble("🎤 [Audio Transmission Encoded]", 'user');
-                triggerAiResponse("Please provide brief instructions on how to download the Vynix Android App based on your deployment documentation.");
-            }
         });
     </script>
 </body>
