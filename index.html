@@ -5,33 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>Vynix Messenger — Next-Gen Real-Time Communication</title>
     
-    <meta name="theme-color" content="#0A84FF">
+    <meta name="theme-color" content="#000000">
     <link rel="apple-touch-icon" href="https://i.postimg.cc/G2mGF81c/1000057023-removebg-preview.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary-blue: #0A84FF;
-            --accent-purple: #5E5CE6;
-            --gradient-brand: linear-gradient(135deg, #0A84FF 0%, #5E5CE6 100%);
+            /* x.ai inspired monochrome palette */
             --bg-base: #000000;
             --bg-base-rgb: 0, 0, 0;
-            --bg-surface: #1C1C1E;
-            --bg-alt: #111111;
-            --border-color: #38383A;
-            --text-primary: #F2F2F7;
-            --text-secondary: #98989D;
+            --bg-surface: #0a0a0a;
+            --bg-alt: #050505;
+            --border-color: #222222;
+            --border-hover: #444444;
+            --text-primary: #FFFFFF;
+            --text-secondary: #888888;
+            --accent-fg: #000000;
+            --accent-bg: #FFFFFF;
         }
 
         @media(prefers-color-scheme: light) {
             :root {
                 --bg-base: #FFFFFF;
                 --bg-base-rgb: 255, 255, 255;
-                --bg-surface: #F7F8FA;
-                --bg-alt: #FAFAFA;
-                --border-color: #F0F0F0;
-                --text-primary: #111111;
-                --text-secondary: #888888;
+                --bg-surface: #FAFAFA;
+                --bg-alt: #F5F5F5;
+                --border-color: #EAEAEA;
+                --border-hover: #CCCCCC;
+                --text-primary: #000000;
+                --text-secondary: #666666;
+                --accent-fg: #FFFFFF;
+                --accent-bg: #000000;
             }
         }
 
@@ -39,7 +43,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             scroll-behavior: smooth;
         }
 
@@ -49,6 +53,7 @@
             overflow-x: hidden;
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         /* Navbar */
@@ -56,9 +61,9 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(var(--bg-base-rgb), 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(var(--bg-base-rgb), 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
             z-index: 1000;
         }
@@ -66,7 +71,7 @@
         .nav-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 14px 24px;
+            padding: 16px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -75,23 +80,25 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-weight: 700;
-            font-size: 20px;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 18px;
+            letter-spacing: -0.5px;
             text-decoration: none;
             color: var(--text-primary);
         }
 
         .logo img {
-            height: 32px;
+            height: 24px;
             width: auto;
             object-fit: contain;
             display: block;
+            filter: grayscale(100%) contrast(200%);
         }
 
         .nav-links {
             display: flex;
-            gap: 24px;
+            gap: 32px;
             align-items: center;
         }
 
@@ -99,22 +106,22 @@
             text-decoration: none;
             color: var(--text-secondary);
             font-weight: 500;
-            font-size: 15px;
+            font-size: 14px;
             transition: color 0.2s;
         }
 
         .nav-links a:hover {
-            color: var(--primary-blue);
+            color: var(--text-primary);
         }
 
         .btn-pill {
             padding: 10px 20px;
-            border-radius: 50px;
+            border-radius: 4px; /* Sharper, more professional corners */
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 500;
             text-decoration: none;
             transition: all 0.2s ease;
-            border: none;
+            border: 1px solid transparent;
             cursor: pointer;
             white-space: nowrap;
             display: inline-flex;
@@ -123,14 +130,12 @@
         }
 
         .btn-primary {
-            background: var(--gradient-brand);
-            color: white;
-            box-shadow: 0 6px 16px rgba(10, 132, 255, 0.2);
+            background: var(--accent-bg);
+            color: var(--accent-fg);
         }
 
         .btn-primary:hover {
-            opacity: 0.94;
-            transform: translateY(-1px);
+            opacity: 0.85;
         }
 
         .btn-outline {
@@ -140,106 +145,95 @@
         }
 
         .btn-outline:hover {
-            background: var(--bg-surface);
+            border-color: var(--text-primary);
         }
 
         .btn-pill svg.inline-icon { 
-            width: 18px; 
-            height: 18px; 
+            width: 16px; 
+            height: 16px; 
             margin-right: 8px; 
         }
 
         /* Hero Section */
         .hero {
-            padding: 140px 24px 60px;
+            padding: 160px 24px 80px;
             max-width: 1200px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
-            gap: 40px;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
             align-items: center;
         }
 
         .hero-content h1 {
-            font-size: 52px;
-            font-weight: 800;
-            line-height: 1.15;
-            letter-spacing: -1.5px;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, var(--text-primary) 30%, var(--primary-blue) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 56px;
+            font-weight: 600;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 24px;
+            color: var(--text-primary);
         }
 
         .hero-content p {
             font-size: 18px;
             color: var(--text-secondary);
-            margin-bottom: 32px;
-            max-width: 520px;
+            margin-bottom: 40px;
+            max-width: 480px;
+            line-height: 1.5;
         }
 
         .hero-actions {
             display: flex;
-            gap: 14px;
+            gap: 16px;
             flex-wrap: wrap;
         }
 
         .hero-mockup {
             position: relative;
             display: flex;
-            justify-content: center;
+            justify-content: flex-end;
             align-items: center;
             width: 100%;
         }
 
-        .mockup-bg-gradient {
-            position: absolute;
-            width: 100%;
-            max-width: 380px;
-            height: 380px;
-            background: var(--gradient-brand);
-            filter: blur(100px);
-            opacity: 0.15;
-            z-index: 1;
-            border-radius: 50%;
-        }
-
         .hero-image {
             width: 100%;
-            max-width: 320px;
+            max-width: 340px;
             height: auto;
-            border-radius: 32px;
+            border-radius: 24px;
             z-index: 2;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
-            border: 8px solid var(--bg-surface);
+            border: 1px solid var(--border-color);
             object-fit: cover;
             aspect-ratio: 9/19;
+            box-shadow: 0 20px 40px rgba(var(--bg-base-rgb), 0.8);
+            filter: grayscale(20%); /* Subtle mute to match aesthetic */
         }
 
         /* Features Section */
         .features {
-            background: var(--bg-alt);
-            padding: 80px 24px;
+            background: var(--bg-surface);
+            padding: 100px 24px;
             border-top: 1px solid var(--border-color);
             border-bottom: 1px solid var(--border-color);
         }
 
         .section-header {
-            text-align: center;
-            max-width: 600px;
-            margin: 0 auto 52px;
+            max-width: 1200px;
+            margin: 0 auto 60px;
         }
 
         .section-header h2 {
-            font-size: 34px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            margin-bottom: 14px;
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+            color: var(--text-primary);
         }
 
         .section-header p {
             color: var(--text-secondary);
-            font-size: 16px;
+            font-size: 18px;
+            max-width: 600px;
         }
 
         .features-grid {
@@ -247,54 +241,51 @@
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 24px;
+            gap: 1px; /* Creates stark grid lines */
+            background: var(--border-color);
+            border: 1px solid var(--border-color);
         }
 
         .feature-card {
-            background: var(--bg-base);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 28px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            background: var(--bg-surface);
+            padding: 40px 32px;
+            transition: background 0.2s;
         }
 
         .feature-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+            background: var(--bg-alt);
         }
 
         .feature-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: rgba(10, 132, 255, 0.1);
-            color: var(--primary-blue);
+            width: 32px;
+            height: 32px;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .feature-icon svg {
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
         }
 
         .feature-card h3 {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
         }
 
         .feature-card p {
             color: var(--text-secondary);
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         /* How it Works Section */
         .how-it-works {
-            padding: 80px 24px;
+            padding: 100px 24px;
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -302,82 +293,81 @@
         .steps-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 32px;
-            margin-top: 40px;
+            gap: 48px;
+            margin-top: 60px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 48px;
         }
 
         .step-item {
-            text-align: center;
+            text-align: left;
         }
 
         .step-number {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--gradient-brand);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            margin: 0 auto 20px;
-            font-size: 15px;
+            font-size: 13px;
+            font-family: monospace;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            letter-spacing: 1px;
         }
 
         .step-item h3 {
             font-size: 18px;
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
         }
 
         .step-item p {
             color: var(--text-secondary);
-            font-size: 14px;
-            max-width: 280px;
-            margin: 0 auto;
+            font-size: 15px;
+            line-height: 1.6;
         }
 
         /* CTA Footer */
         .cta-footer {
-            background: var(--gradient-brand);
-            color: white;
-            padding: 80px 24px;
+            background: var(--bg-surface);
+            padding: 120px 24px;
             text-align: center;
+            border-top: 1px solid var(--border-color);
         }
 
         .cta-footer h2 {
-            font-size: 36px;
-            font-weight: 800;
-            margin-bottom: 14px;
-            letter-spacing: -1px;
+            font-size: 40px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            letter-spacing: -1.5px;
         }
 
         .cta-footer p {
-            font-size: 16px;
-            opacity: 0.9;
-            margin-bottom: 28px;
-            max-width: 500px;
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            max-width: 540px;
             margin-left: auto;
             margin-right: auto;
         }
 
         footer {
-            background: var(--bg-alt);
-            padding: 28px 24px;
+            background: var(--bg-base);
+            padding: 40px 24px;
             text-align: center;
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-secondary);
             border-top: 1px solid var(--border-color);
+            letter-spacing: 0.5px;
         }
 
         /* iOS / Non-Android Modal */
         .ios-sheet-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(var(--bg-base-rgb), 0.8);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             z-index: 2000;
             display: none;
-            align-items: flex-end;
+            align-items: center;
             justify-content: center;
         }
 
@@ -388,64 +378,44 @@
         .ios-sheet {
             background: var(--bg-surface);
             width: 100%;
-            max-width: 480px;
-            border-radius: 20px 20px 0 0;
-            padding: 24px 24px 32px;
-            animation: slideUp 0.25s ease-out;
+            max-width: 400px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 32px;
+            animation: fadeIn 0.2s ease-out;
         }
 
-        @keyframes slideUp { 
-            from { transform: translateY(100%); } 
-            to { transform: translateY(0); } 
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: scale(0.98); } 
+            to { opacity: 1; transform: scale(1); } 
         }
 
         .ios-sheet h3 { 
-            font-size: 17px; 
-            font-weight: 700; 
-            margin-bottom: 16px; 
+            font-size: 18px; 
+            font-weight: 600; 
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
         }
 
         .ios-sheet-step { 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
             font-size: 14px; 
             color: var(--text-secondary); 
-            margin-bottom: 14px; 
-            line-height: 1.5;
-        }
-
-        .ios-sheet-step .step-badge { 
-            flex-shrink: 0; 
-            width: 26px; 
-            height: 26px; 
-            border-radius: 50%; 
-            background: var(--gradient-brand); 
-            color: #fff; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 12px; 
-            font-weight: 700; 
+            margin-bottom: 24px; 
+            line-height: 1.6;
         }
 
         /* Responsive Breakpoints */
         @media (max-width: 992px) {
             .hero {
                 grid-template-columns: 1fr;
-                text-align: center;
-                padding-top: 110px;
+                padding-top: 120px;
                 gap: 48px;
             }
-            .hero-content h1 {
-                font-size: 42px;
-            }
-            .hero-content p {
-                margin-left: auto;
-                margin-right: auto;
-            }
-            .hero-actions {
+            .hero-mockup {
                 justify-content: center;
+            }
+            .hero-content h1 {
+                font-size: 48px;
             }
             .steps-container {
                 grid-template-columns: 1fr;
@@ -458,30 +428,26 @@
                 display: none; 
             }
             .nav-container {
-                padding: 12px 16px;
+                padding: 16px;
             }
             .hero {
                 padding: 100px 16px 40px;
             }
             .hero-content h1 {
-                font-size: 32px;
-                letter-spacing: -0.8px;
+                font-size: 40px;
+                letter-spacing: -1.5px;
             }
             .hero-content p {
-                font-size: 15px;
+                font-size: 16px;
             }
             .hero-actions .btn-pill {
                 width: 100%;
-                text-align: center;
             }
-            .section-header h2 {
-                font-size: 26px;
-            }
-            .cta-footer h2 {
+            .section-header h2, .cta-footer h2 {
                 font-size: 28px;
             }
             .features, .how-it-works, .cta-footer {
-                padding: 60px 16px;
+                padding: 80px 16px;
             }
         }
     </style>
@@ -516,8 +482,6 @@
             </div>
         </div>
         <div class="hero-mockup">
-            <div class="mockup-bg-gradient"></div>
-            <!-- Updated Hero Image -->
             <img src="https://i.postimg.cc/1XV8Sp7v/Screenshot-20260707-220238.jpg" alt="Vynix Messenger Interface" class="hero-image">
         </div>
     </section>
@@ -531,7 +495,7 @@
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
                 </div>
                 <h3>Voice Notes Tracker</h3>
                 <p>Record, preview, and track audio interactions instantly with responsive progressive inline tracking bars.</p>
@@ -539,7 +503,7 @@
 
             <div class="feature-card">
                 <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                 </div>
                 <h3>Immersive Media & Stories</h3>
                 <p>Share status stories instantly, react with floating hearts, text responses, and get instant view telemetry logs.</p>
@@ -547,7 +511,7 @@
 
             <div class="feature-card">
                 <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
                 </div>
                 <h3>Advanced Managed Groups</h3>
                 <p>Instantly establish public context discovery clusters or isolated private structures using clean invite IDs.</p>
@@ -555,7 +519,7 @@
 
             <div class="feature-card">
                 <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2"></path></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2"></path></svg>
                 </div>
                 <h3>True Adaptive Engine</h3>
                 <p>Seamless synchronization configuration matching standard system light themes and contrast dark themes smoothly.</p>
@@ -571,17 +535,17 @@
         </div>
         <div class="steps-container">
             <div class="step-item">
-                <div class="step-number">1</div>
+                <div class="step-number">01 //</div>
                 <h3>Authentication</h3>
                 <p>Sign in using flexible secure phone OTP workflows, verification emails, or simple single-tap Google access routing.</p>
             </div>
             <div class="step-item">
-                <div class="step-number">2</div>
+                <div class="step-number">02 //</div>
                 <h3>Claim Username Handle</h3>
                 <p>Establish a private unique profile identifier handle (`@username`) so peers discover you without leaking phone metadata.</p>
             </div>
             <div class="step-item">
-                <div class="step-number">3</div>
+                <div class="step-number">03 //</div>
                 <h3>Connect seamlessly</h3>
                 <p>Create global messaging lines, transfer documents, trigger inline message replies, or forward files safely.</p>
             </div>
@@ -593,7 +557,7 @@
         <h2>Ready to upgrade your messaging workspace?</h2>
         <p>Experience an ultra-fast layout system designed perfectly for zero lag, deep contrast themes, and advanced media mechanics.</p>
         <div style="display: flex; gap:16px; justify-content: center; flex-wrap: wrap;">
-            <button class="btn-pill btn-primary apk-download-btn" style="background: #000; color: #FFF; border: 1px solid rgba(255,255,255,0.2);">
+            <button class="btn-pill btn-primary apk-download-btn">
                 <svg class="inline-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.6 9.48l1.84-3.18a.401.401 0 0 0-.14-.55.4.4 0 0 0-.55.14l-1.86 3.22a9.2 9.2 0 0 0-7.76 0L7.27 5.89a.4.4 0 0 0-.55-.14.4.4 0 0 0-.14.55L8.4 9.48C5.29 11.24 3.15 14.4 3 18h18c-.15-3.6-2.29-6.76-5.4-8.52zM8.5 15.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm7 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"></path></svg>
                 Download APK Now
             </button>
@@ -610,15 +574,13 @@
         <div class="ios-sheet">
             <h3>Android Exclusive</h3>
             <div class="ios-sheet-step">
-                <div class="step-badge">i</div>
-                <div>Vynix Messenger is currently optimized exclusively for Android devices. Please visit this page on your Android smartphone or tablet to download the APK.</div>
+                Vynix Messenger is currently optimized exclusively for Android devices. Please visit this page on your Android smartphone or tablet to download the APK.
             </div>
-            <button class="btn-pill btn-outline ios-sheet-close" id="close-overlay" style="width:100%; margin-top:14px;">Understood</button>
+            <button class="btn-pill btn-outline ios-sheet-close" id="close-overlay" style="width:100%;">Understood</button>
         </div>
     </div>
 
     <script>
-        // Direct Firebase Storage URL for Vynix Messenger APK
         const APK_URL = 'https://firebasestorage.googleapis.com/v0/b/newstart-64c43.firebasestorage.app/o/vynix%20messanger.apk?alt=media&token=7371aac7-7683-4774-927e-801b15f05806';
 
         function isAndroid() {
@@ -629,7 +591,6 @@
         const nonAndroidOverlay = document.getElementById('non-android-overlay');
         const closeOverlayBtn = document.getElementById('close-overlay');
 
-        // Handle APK downloads
         downloadButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 if (!isAndroid()) {
@@ -640,7 +601,6 @@
             });
         });
 
-        // Close overlay logic
         closeOverlayBtn.addEventListener('click', () => {
             nonAndroidOverlay.classList.remove('active');
         });
