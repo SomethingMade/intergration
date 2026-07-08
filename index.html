@@ -71,24 +71,22 @@
             align-items: center;
         }
 
-        /* Increased Logo Visibility */
         .logo {
             display: flex;
             align-items: center;
             gap: 14px;
             font-weight: 700;
-            font-size: 22px; /* Increased size */
+            font-size: 22px;
             letter-spacing: -0.5px;
             text-decoration: none;
             color: var(--text-primary);
         }
 
         .logo img {
-            height: 36px; /* Increased size */
+            height: 36px;
             width: auto;
             object-fit: contain;
             display: block;
-            /* Removed grayscale to make it pop with the primary buttons */
             filter: drop-shadow(0 2px 8px rgba(10, 132, 255, 0.2)); 
         }
 
@@ -407,7 +405,7 @@
             margin-bottom: 24px; 
             line-height: 1.6;
             overflow-y: auto;
-            padding-right: 8px; /* Room for scrollbar */
+            padding-right: 8px;
         }
 
         .modal-content p {
@@ -523,6 +521,7 @@
             flex-direction: column;
             gap: 12px;
             background: var(--bg-alt);
+            scroll-behavior: smooth;
         }
 
         .vertex-msg {
@@ -547,6 +546,16 @@
             background: #0A84FF;
             color: white;
             border-bottom-right-radius: 4px;
+        }
+
+        /* Typing Dots */
+        .typing-dots { display: flex; gap: 4px; align-items: center; justify-content: center; height: 20px; }
+        .typing-dot { width: 6px; height: 6px; background: var(--text-secondary); border-radius: 50%; animation: typingBounce 1.4s infinite ease-in-out both; }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typingBounce { 
+            0%, 80%, 100% { transform: scale(0); } 
+            40% { transform: scale(1); } 
         }
 
         /* Animated Voice Wave Construction */
@@ -751,7 +760,6 @@
         </div>
     </section>
 
-    <!-- Gemini Goza Chat Layout Injected -->
     <div class="vertex-chat-wrapper">
         <div class="vertex-chat-panel" id="vertexChatPanel">
             <div class="vertex-panel-header">
@@ -767,7 +775,6 @@
                 </div>
             </div>
             
-            <!-- Voice wave markup -->
             <div class="vertex-voice-panel" id="vertexVoicePanel">
                 <div class="voice-bar"></div>
                 <div class="voice-bar"></div>
@@ -816,14 +823,34 @@
     <div class="modal-overlay" id="legal-overlay">
         <div class="modal-box">
             <h3 id="legal-modal-title">Policy</h3>
-            <div class="modal-content" id="legal-modal-body">
-                </div>
+            <div class="modal-content" id="legal-modal-body"></div>
             <button class="btn-pill btn-outline close-modal" data-target="legal-overlay" style="width:100%;">Close</button>
         </div>
     </div>
 
-    <script>
-        // 1. Core Config
+    <script type="module">
+        // 1. Firebase Initialization for Live Goza AI Support
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBQSPwpVbGrdCuOoyitAeWQHIeipj2MgIY",
+            authDomain: "newstart-64c43.firebaseapp.com",
+            databaseURL: "https://newstart-64c43-default-rtdb.firebaseio.com",
+            projectId: "newstart-64c43",
+            storageBucket: "newstart-64c43.firebasestorage.app",
+            messagingSenderId: "941619830061",
+            appId: "1:941619830061:web:de9e0f791eb8f6eacf87a4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Generate a random guest session ID for this landing page visit
+        const guestSessionId = 'guest_' + Math.random().toString(36).substr(2, 9);
+        const AI_FIRESTORE_COLLECTION = `ai_discussions/${guestSessionId}/messages`;
+
+        // 2. Core Config
         const APK_URL = 'https://firebasestorage.googleapis.com/v0/b/newstart-64c43.firebasestorage.app/o/vynix%20messanger.apk?alt=media&token=7371aac7-7683-4774-927e-801b15f05806';
 
         const legalContent = {
@@ -841,7 +868,7 @@
             }
         };
 
-        // 2. DOM Elements
+        // 3. DOM Elements
         const downloadButtons = document.querySelectorAll('.apk-download-btn');
         const legalTriggers = document.querySelectorAll('.legal-trigger');
         const closeButtons = document.querySelectorAll('.close-modal');
@@ -861,13 +888,12 @@
         const vertexMicBtn = document.getElementById('vertexMicBtn');
         const vertexVoicePanel = document.getElementById('vertexVoicePanel');
 
-        // 3. Helper Functions
+        // 4. Helper Functions
         function isAndroid() {
             return /android/.test(window.navigator.userAgent.toLowerCase());
         }
 
-        // 4. Event Listeners
-        // APK Downloads
+        // 5. Event Listeners (APK Downloads & Modals)
         downloadButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 if (!isAndroid()) {
@@ -878,7 +904,6 @@
             });
         });
 
-        // Legal Modal Triggers
         legalTriggers.forEach(trigger => {
             trigger.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -891,7 +916,6 @@
             });
         });
 
-        // Close Buttons for Modals
         closeButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 const targetId = btn.getAttribute('data-target');
@@ -899,7 +923,6 @@
             });
         });
 
-        // Close when clicking outside modal box
         overlays.forEach(overlay => {
             overlay.addEventListener('click', (e) => {
                 if (e.target === overlay) {
@@ -908,7 +931,7 @@
             });
         });
 
-        // 5. Gemini Goza Interactive Support Logics
+        // 6. Gemini Goza Interactive Support Logics (Real-Time Firestore Implementation)
         vertexTriggerBtn.addEventListener('click', () => {
             const isOpen = vertexChatPanel.style.display === 'flex';
             vertexChatPanel.style.display = isOpen ? 'none' : 'flex';
@@ -918,36 +941,81 @@
             }
         });
 
-        function createMessageBubble(text, sender) {
+        function createMessageBubble(content, sender, id = null) {
             const bubble = document.createElement('div');
             bubble.classList.add('vertex-msg', sender);
-            bubble.innerText = text;
+            if (id) bubble.id = id;
+            
+            if (content === 'TYPING') {
+                bubble.innerHTML = `<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+            } else {
+                bubble.innerText = content;
+            }
+            
             vertexChatLogs.appendChild(bubble);
             vertexChatLogs.scrollTop = vertexChatLogs.scrollHeight;
+            return bubble;
         }
 
-        function triggerAiResponse(promptText) {
-            // Simulated response mapping from Goza Engine via Vertex API setup
-            setTimeout(() => {
-                let response = "I processed that request. For deployment protocols or APK updates, please use the primary layout indicators on this viewport.";
-                const inputLower = promptText.toLowerCase();
+        function updateMessageBubble(id, content) {
+            const bubble = document.getElementById(id);
+            if (bubble) {
+                bubble.innerText = content;
+                vertexChatLogs.scrollTop = vertexChatLogs.scrollHeight;
+            }
+        }
 
-                if (inputLower.includes('download') || inputLower.includes('apk')) {
-                    response = "You can download the secure Vynix Messenger APK instantly using any 'Download' action pill displayed on this page. Note that it is exclusively optimized for Android nodes.";
-                } else if (inputLower.includes('secure') || inputLower.includes('privacy')) {
-                    response = "Vynix leverages local-first encryption primitives. Your metadata is fully localized, keeping structural logs clear from server farms.";
-                } else if (inputLower.includes('hello') || inputLower.includes('hi')) {
-                    response = "Hello context node! How can I assist you with your Vynix messenger deployment today?";
-                }
+        async function triggerAiResponse(promptText) {
+            const typingId = 'typing_' + Date.now();
+            createMessageBubble('TYPING', 'ai', typingId);
+            
+            // Disable input while generating response
+            vertexTextInput.disabled = true;
+            vertexSendBtn.style.opacity = '0.5';
 
-                createMessageBubble(response, 'ai');
-            }, 1000);
+            try {
+                // Send Prompt to Firestore (Watched by Gemini Extension)
+                const docRef = await addDoc(collection(db, AI_FIRESTORE_COLLECTION), {
+                    prompt: promptText,
+                    createTime: serverTimestamp()
+                });
+
+                // Listen for Response from Gemini Extension
+                const unsub = onSnapshot(docRef, (snap) => {
+                    const data = snap.data();
+                    if (!data) return;
+
+                    if (data.status && data.status.state === 'COMPLETED' && data.response) {
+                        unsub();
+                        updateMessageBubble(typingId, data.response);
+                        resetInputState();
+                    } else if (data.status && data.status.state === 'ERRORED') {
+                        unsub();
+                        updateMessageBubble(typingId, data.status.error ? `Error: ${data.status.error}` : "I couldn't process that right now. Please try again.");
+                        resetInputState();
+                    }
+                }, (err) => {
+                    console.error('Goza AI snapshot listener error', err);
+                    updateMessageBubble(typingId, "Connection error. Please try again.");
+                    resetInputState();
+                });
+            } catch (err) {
+                console.error('Goza AI addDoc failed', err);
+                updateMessageBubble(typingId, "Couldn't send that. Check your connection.");
+                resetInputState();
+            }
+        }
+        
+        function resetInputState() {
+            vertexTextInput.disabled = false;
+            vertexSendBtn.style.opacity = '1';
+            vertexTextInput.focus();
         }
 
         // Send Text Trigger
         vertexSendBtn.addEventListener('click', () => {
             const query = vertexTextInput.value.trim();
-            if (!query) return;
+            if (!query || vertexTextInput.disabled) return;
 
             createMessageBubble(query, 'user');
             vertexTextInput.value = '';
@@ -961,6 +1029,8 @@
         // Animated Voice Processing Simulation
         let voiceSessionActive = false;
         vertexMicBtn.addEventListener('click', () => {
+            if (vertexTextInput.disabled && !voiceSessionActive) return; // Prevent mic if waiting for text response
+            
             voiceSessionActive = !voiceSessionActive;
             
             if (voiceSessionActive) {
@@ -974,9 +1044,8 @@
                 vertexTextInput.placeholder = "Ask about downloads, security, setup...";
                 vertexTextInput.disabled = false;
                 
-                // Simulate voice-to-text resolution logic
-                createMessageBubble("🎤 [Simulated Voice Transmission Received]", 'user');
-                triggerAiResponse("voice audio connection");
+                createMessageBubble("🎤 [Audio Transmission Encoded]", 'user');
+                triggerAiResponse("Please provide brief instructions on how to download the Vynix Android App based on your deployment documentation.");
             }
         });
     </script>
