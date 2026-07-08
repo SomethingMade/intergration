@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>Vynix Messenger — Next-Gen Real-Time Communication</title>
+    
+    <!-- PWA Manifest & Theme Color -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0A84FF">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/G2mGF81c/1000057023-removebg-preview.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -111,6 +117,7 @@
             border: none;
             cursor: pointer;
             white-space: nowrap;
+            display: inline-block;
         }
 
         .btn-primary {
@@ -378,7 +385,7 @@
             width: 100%; height: 100%; border-radius: 50%; background: #0A84FF;
         }
 
-        /* Responsive Breakpoints & Mobile Optimization */
+        /* Responsive Breakpoints */
         @media (max-width: 992px) {
             .hero {
                 grid-template-columns: 1fr;
@@ -404,7 +411,7 @@
 
         @media (max-width: 568px) {
             .nav-links a:not(.btn-pill) {
-                display: none; /* Hide secondary links on narrow viewports to save row constraints */
+                display: none; 
             }
             .nav-container {
                 padding: 12px 16px;
@@ -463,7 +470,8 @@
             <p>Vynix Messenger combines beautiful responsive layout styling with premium speed to bridge your conversations safely on mobile and desktop web workspaces.</p>
             <div class="hero-actions">
                 <a href="#" class="btn-pill btn-primary">Start Messaging</a>
-                <a href="#features" class="btn-pill btn-outline">Explore Features</a>
+                <!-- Hidden by default, shown via JS if PWA is installable -->
+                <button class="btn-pill btn-outline install-btn" style="display: none;">Install App</button>
             </div>
         </div>
         <div class="hero-mockup">
@@ -559,8 +567,10 @@
     <section class="cta-footer">
         <h2>Ready to upgrade your messaging workspace?</h2>
         <p>Experience an ultra-fast layout system designed perfectly for zero lag, deep contrast themes, and advanced media mechanics.</p>
-        <div style="display: flex; gap:16px; justify-content: center;">
+        <div style="display: flex; gap:16px; justify-content: center; flex-wrap: wrap;">
             <a href="#" class="btn-pill btn-outline" style="background: white; color: black;">Launch Free App</a>
+            <!-- Hidden by default, shown via JS if PWA is installable -->
+            <button class="btn-pill btn-primary install-btn" style="display: none; background: #000; color: #FFF; border: 1px solid rgba(255,255,255,0.2);">Install App</button>
         </div>
     </section>
 
@@ -569,5 +579,64 @@
         <p>&copy; 2026 Vynix Web Messenger Workspace System. All rights reserved.</p>
     </footer>
 
+    <!-- PWA Install Logic & Service Worker Registration -->
+    <script>
+        // Register the Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+
+        // Handle PWA Install Prompt
+        let deferredPrompt;
+        const installButtons = document.querySelectorAll('.install-btn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            
+            // Update UI to notify the user they can install the PWA
+            installButtons.forEach(btn => {
+                btn.style.display = 'inline-block';
+            });
+        });
+
+        installButtons.forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                // Hide the button(s) immediately after clicking
+                installButtons.forEach(button => button.style.display = 'none');
+                
+                if (deferredPrompt) {
+                    // Show the native install prompt
+                    deferredPrompt.prompt();
+                    
+                    // Wait for the user to respond to the prompt
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`User response to the install prompt: ${outcome}`);
+                    
+                    // Clear the deferred prompt variable, it can only be used once.
+                    deferredPrompt = null;
+                }
+            });
+        });
+
+        // Optional: Log when the app is successfully installed
+        window.addEventListener('appinstalled', () => {
+            console.log('Vynix Messenger was successfully installed as a PWA.');
+            // Ensure buttons disappear if installed via browser menu instead of our button
+            installButtons.forEach(btn => {
+                btn.style.display = 'none';
+            });
+        });
+    </script>
 </body>
 </html>
