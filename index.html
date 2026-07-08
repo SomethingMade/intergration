@@ -497,8 +497,29 @@
         }
 
         .vertex-pill-icon svg {
-            width: 18px;
+            width: 28px;
             height: 18px;
+            overflow: visible;
+        }
+
+        .vertex-loop-track {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.3);
+            stroke-width: 2.6;
+            stroke-linecap: round;
+        }
+
+        .vertex-loop-flow {
+            fill: none;
+            stroke: #fff;
+            stroke-width: 2.6;
+            stroke-linecap: round;
+            stroke-dasharray: 22 78;
+            animation: vertexLoopFlow 1.6s linear infinite;
+        }
+
+        @keyframes vertexLoopFlow {
+            to { stroke-dashoffset: -100; }
         }
 
         /* Nebula morph orb — the shared element that travels from the pill's
@@ -713,7 +734,8 @@
 
         @media (prefers-reduced-motion: reduce) {
             .vertex-trigger-pill,
-            .vertex-morph.animating {
+            .vertex-morph.animating,
+            .vertex-loop-flow {
                 animation: none !important;
             }
         }
@@ -852,7 +874,10 @@
 
         <button class="vertex-trigger-pill" id="vertexTriggerBtn" title="Open AI Support Chat">
             <span class="vertex-pill-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <svg viewBox="0 0 32 20">
+                    <path class="vertex-loop-track" pathLength="100" d="M8,10 C8,4 13,4 16,10 C19,16 24,16 24,10 C24,4 19,4 16,10 C13,16 8,16 8,10 Z"></path>
+                    <path class="vertex-loop-flow" pathLength="100" d="M8,10 C8,4 13,4 16,10 C19,16 24,16 24,10 C24,4 19,4 16,10 C13,16 8,16 8,10 Z"></path>
+                </svg>
             </span>
             <span class="vertex-pill-label">Chat with Goza</span>
         </button>
