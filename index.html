@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>Vynix Messenger — Next-Gen Real-Time Communication</title>
     
-    <meta name="theme-color" content="#0A84FF">
+    <meta name="theme-color" content="#E65100">
     <link rel="apple-touch-icon" href="https://i.postimg.cc/G2mGF81c/1000057023-removebg-preview.png">
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --primary-blue: #0A84FF;
-            --accent-purple: #5E5CE6;
-            --gradient-brand: linear-gradient(135deg, #0A84FF 0%, #5E5CE6 100%);
+            --primary-orange: #E65100;
+            --accent-orange: #FF7A00;
+            --gradient-brand: linear-gradient(135deg, #FF7A00 0%, #E65100 100%);
             --bg-base: #000000;
             --bg-base-rgb: 0, 0, 0;
             --bg-surface: #1C1C1E;
@@ -104,7 +104,7 @@
         }
 
         .nav-links a:hover {
-            color: var(--primary-blue);
+            color: var(--primary-orange);
         }
 
         .btn-pill {
@@ -117,13 +117,15 @@
             border: none;
             cursor: pointer;
             white-space: nowrap;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-primary {
             background: var(--gradient-brand);
             color: white;
-            box-shadow: 0 6px 16px rgba(10, 132, 255, 0.2);
+            box-shadow: 0 6px 16px rgba(230, 81, 0, 0.2);
         }
 
         .btn-primary:hover {
@@ -141,7 +143,11 @@
             background: var(--bg-surface);
         }
 
-        .btn-pill svg.inline-icon { width: 16px; height: 16px; vertical-align: -3px; margin-right: 6px; }
+        .btn-pill svg.inline-icon { 
+            width: 18px; 
+            height: 18px; 
+            margin-right: 8px; 
+        }
 
         /* Hero Section */
         .hero {
@@ -160,7 +166,7 @@
             line-height: 1.15;
             letter-spacing: -1.5px;
             margin-bottom: 20px;
-            background: linear-gradient(135deg, var(--text-primary) 30%, var(--primary-blue) 100%);
+            background: linear-gradient(135deg, var(--text-primary) 30%, var(--primary-orange) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -198,15 +204,16 @@
             border-radius: 50%;
         }
 
-        .app-preview-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: 28px;
-            padding: 20px;
+        .hero-image {
             width: 100%;
-            max-width: 400px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+            max-width: 320px;
+            height: auto;
+            border-radius: 32px;
             z-index: 2;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            border: 8px solid var(--bg-surface);
+            object-fit: cover;
+            aspect-ratio: 9/19;
         }
 
         /* Features Section */
@@ -260,8 +267,8 @@
             width: 44px;
             height: 44px;
             border-radius: 12px;
-            background: rgba(10, 132, 255, 0.1);
-            color: var(--primary-blue);
+            background: rgba(230, 81, 0, 0.1);
+            color: var(--primary-orange);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -363,31 +370,7 @@
             border-top: 1px solid var(--border-color);
         }
 
-        /* Mockup elements */
-        .mock-chat-bubble {
-            padding: 10px 14px;
-            border-radius: 18px;
-            font-size: 13px;
-            margin-bottom: 10px;
-            width: fit-content;
-            max-width: 85%;
-        }
-        .mock-chat-bubble.in { background: #E5E7EB; color: #111; border-bottom-left-radius: 4px;}
-        @media(prefers-color-scheme: dark) { .mock-chat-bubble.in { background: #2C2C2E; color: #FFF; } }
-        .mock-chat-bubble.out { background: var(--gradient-brand); color: #FFF; border-bottom-right-radius: 4px; margin-left: auto; }
-
-        .mock-story-ring {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            padding: 2px;
-            background: linear-gradient(135deg, #FFB800 0%, #FF453A 50%, #5E5CE6 100%);
-        }
-        .mock-story-inner {
-            width: 100%; height: 100%; border-radius: 50%; background: #0A84FF;
-        }
-
-        /* iOS Add-to-Home-Screen instructions sheet */
+        /* iOS / Non-Android Modal */
         .ios-sheet-overlay {
             position: fixed;
             inset: 0;
@@ -397,7 +380,11 @@
             align-items: flex-end;
             justify-content: center;
         }
-        .ios-sheet-overlay.active { display: flex; }
+
+        .ios-sheet-overlay.active { 
+            display: flex; 
+        }
+
         .ios-sheet {
             background: var(--bg-surface);
             width: 100%;
@@ -406,11 +393,41 @@
             padding: 24px 24px 32px;
             animation: slideUp 0.25s ease-out;
         }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .ios-sheet h3 { font-size: 17px; font-weight: 700; margin-bottom: 16px; }
-        .ios-sheet-step { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-secondary); margin-bottom: 14px; }
-        .ios-sheet-step .step-badge { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--gradient-brand); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
-        .ios-sheet-close { margin-top: 8px; width: 100%; text-align: center; }
+
+        @keyframes slideUp { 
+            from { transform: translateY(100%); } 
+            to { transform: translateY(0); } 
+        }
+
+        .ios-sheet h3 { 
+            font-size: 17px; 
+            font-weight: 700; 
+            margin-bottom: 16px; 
+        }
+
+        .ios-sheet-step { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            font-size: 14px; 
+            color: var(--text-secondary); 
+            margin-bottom: 14px; 
+            line-height: 1.5;
+        }
+
+        .ios-sheet-step .step-badge { 
+            flex-shrink: 0; 
+            width: 26px; 
+            height: 26px; 
+            border-radius: 50%; 
+            background: var(--gradient-brand); 
+            color: #fff; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 12px; 
+            font-weight: 700; 
+        }
 
         /* Responsive Breakpoints */
         @media (max-width: 992px) {
@@ -457,10 +474,6 @@
                 width: 100%;
                 text-align: center;
             }
-            .app-preview-card {
-                padding: 16px;
-                border-radius: 20px;
-            }
             .section-header h2 {
                 font-size: 26px;
             }
@@ -475,61 +488,43 @@
 </head>
 <body>
 
-    <!-- Header / Nav -->
     <header>
         <div class="nav-container">
-            <a href="https://somethingmade.github.io/network/#tab-chats" class="logo">
+            <a href="#" class="logo">
                 <img src="https://i.postimg.cc/mDCTJNwh/1000057023-removebg-preview.png" alt="Vynix Logo">
                 <span>Vynix</span>
             </a>
             <nav class="nav-links">
                 <a href="#features">Features</a>
                 <a href="#how-it-works">How it Works</a>
-                <a href="https://somethingmade.github.io/network/#tab-chats" class="btn-pill btn-primary">Launch Web</a>
+                <button class="btn-pill btn-primary apk-download-btn">Download APK</button>
             </nav>
         </div>
     </header>
 
-    <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>Secure, real-time connection across devices.</h1>
-            <p>Vynix Messenger combines beautiful responsive layout styling with premium speed to bridge your conversations safely on mobile and desktop web workspaces.</p>
+            <h1>Secure, real-time connection on Android.</h1>
+            <p>Vynix Messenger combines beautiful responsive styling with premium speed to bridge your conversations safely on your mobile device.</p>
             <div class="hero-actions">
-                <a href="https://somethingmade.github.io/network/#tab-chats" class="btn-pill btn-primary">Start Messaging</a>
-                <button class="btn-pill btn-outline apk-download-btn"><svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Download for Android</button>
+                <button class="btn-pill btn-primary apk-download-btn">
+                    <svg class="inline-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.6 9.48l1.84-3.18a.401.401 0 0 0-.14-.55.4.4 0 0 0-.55.14l-1.86 3.22a9.2 9.2 0 0 0-7.76 0L7.27 5.89a.4.4 0 0 0-.55-.14.4.4 0 0 0-.14.55L8.4 9.48C5.29 11.24 3.15 14.4 3 18h18c-.15-3.6-2.29-6.76-5.4-8.52zM8.5 15.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm7 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"></path></svg>
+                    Download for Android
+                </button>
             </div>
         </div>
         <div class="hero-mockup">
             <div class="mockup-bg-gradient"></div>
-            <div class="app-preview-card">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
-                    <div class="mock-story-ring"><div class="mock-story-inner"></div></div>
-                    <div>
-                        <div style="font-weight: 600; font-size: 14px;">Vynix Support Handle</div>
-                        <div style="font-size: 11px; color: #34C759;">Online • Typing...</div>
-                    </div>
-                </div>
-                <div class="mock-chat-bubble in">Hey there! Welcome to Vynix Messenger. Check out our real-time updates! 👋</div>
-                <div class="mock-chat-bubble out">Wow, this styling looks incredibly fast and fluid.</div>
-                <div class="mock-chat-bubble in" style="font-style: italic; opacity: 0.8; font-size: 12px;">❤️ Reacted by Friend</div>
-                
-                <div style="display: flex; gap: 8px; margin-top: 20px;">
-                    <div style="flex:1; height:36px; border-radius:18px; background:var(--bg-alt); border: 1px solid var(--border-color); padding:0 14px; font-size:12px; display:flex; align-items:center; color:var(--text-secondary);">Type your message...</div>
-                    <div style="width:36px; height:36px; border-radius:50%; background:var(--gradient-brand); display:flex; align-items:center; justify-content:center; color:white; font-size:12px;">➔</div>
-                </div>
-            </div>
+            <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=800&auto=format&fit=crop" alt="Vynix Messenger Interface" class="hero-image">
         </div>
     </section>
 
-    <!-- Features Grid Section -->
     <section class="features" id="features">
         <div class="section-header">
             <h2>Engaging communication layout system</h2>
-            <p>Built with lightweight architecture and dynamic variables, maximizing your day-to-day data privacy and connectivity speeds.</p>
+            <p>Built with lightweight architecture and dynamic variables, maximizing your day-to-day data privacy and connectivity speeds exclusively for Android.</p>
         </div>
         <div class="features-grid">
-            
             <div class="feature-card">
                 <div class="feature-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
@@ -564,7 +559,6 @@
         </div>
     </section>
 
-    <!-- How it works -->
     <section class="how-it-works" id="how-it-works">
         <div class="section-header">
             <h2>Three steps to get moving</h2>
@@ -589,67 +583,64 @@
         </div>
     </section>
 
-    <!-- CTA Section -->
     <section class="cta-footer">
         <h2>Ready to upgrade your messaging workspace?</h2>
         <p>Experience an ultra-fast layout system designed perfectly for zero lag, deep contrast themes, and advanced media mechanics.</p>
         <div style="display: flex; gap:16px; justify-content: center; flex-wrap: wrap;">
-            <a href="https://somethingmade.github.io/network/#tab-chats" class="btn-pill btn-outline" style="background: white; color: black;">Launch Web App</a>
-            <button class="btn-pill btn-primary apk-download-btn" style="background: #000; color: #FFF; border: 1px solid rgba(255,255,255,0.2);"><svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Download APK</button>
+            <button class="btn-pill btn-primary apk-download-btn" style="background: #000; color: #FFF; border: 1px solid rgba(255,255,255,0.2);">
+                <svg class="inline-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.6 9.48l1.84-3.18a.401.401 0 0 0-.14-.55.4.4 0 0 0-.55.14l-1.86 3.22a9.2 9.2 0 0 0-7.76 0L7.27 5.89a.4.4 0 0 0-.55-.14.4.4 0 0 0-.14.55L8.4 9.48C5.29 11.24 3.15 14.4 3 18h18c-.15-3.6-2.29-6.76-5.4-8.52zM8.5 15.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm7 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"></path></svg>
+                Download APK Now
+            </button>
         </div>
     </section>
 
-    <!-- Footer -->
     <footer>
-        <p>&copy; 2026 Vynix Web Messenger Workspace System. All rights reserved.</p>
+        <p>&copy; 2026 Vynix Messenger. All rights reserved.</p>
     </footer>
 
-    <!-- Shown when a non-Android visitor taps the APK download button -->
-    <div class="ios-sheet-overlay" id="apk-notice-overlay">
+    <div class="ios-sheet-overlay" id="non-android-overlay">
         <div class="ios-sheet">
-            <h3>This download is for Android</h3>
+            <h3>Android Exclusive</h3>
             <div class="ios-sheet-step">
                 <div class="step-badge">i</div>
-                <div>The APK installs directly on Android phones and tablets. On other devices, use the web app instead — it works the same way, no download needed.</div>
+                <div>Vynix Messenger is currently optimized exclusively for Android devices. Please visit this page on your Android smartphone or tablet to download the APK.</div>
             </div>
-            <button class="btn-pill btn-outline ios-sheet-close" id="apk-notice-close" style="width:100%; margin-top:4px;">Got it</button>
-            <a href="https://somethingmade.github.io/network/#tab-chats" class="btn-pill btn-primary" style="width:100%; text-align:center; margin-top:10px; display:block;">Open Web App Instead</a>
+            <button class="btn-pill btn-outline ios-sheet-close" id="close-overlay" style="width:100%; margin-top:14px;">Understood</button>
         </div>
     </div>
 
-    <!-- Direct APK download logic -->
     <script>
-        // Replace with your Firebase Storage download URL (console → Storage → file → Download URL).
-        // Make sure the file's metadata has Content-Disposition: attachment so it downloads
-        // instead of opening in-browser, since this URL is on a different origin than this page.
+        // Direct Firebase Storage URL for Vynix Messenger APK
         const APK_URL = 'https://firebasestorage.googleapis.com/v0/b/newstart-64c43.firebasestorage.app/o/vynix%20messanger.apk?alt=media&token=7371aac7-7683-4774-927e-801b15f05806';
-        const MESSENGER_URL = 'https://somethingmade.github.io/network/#tab-chats';
 
         function isAndroid() {
             return /android/.test(window.navigator.userAgent.toLowerCase());
         }
 
         const downloadButtons = document.querySelectorAll('.apk-download-btn');
-        const apkNoticeOverlay = document.getElementById('apk-notice-overlay');
+        const nonAndroidOverlay = document.getElementById('non-android-overlay');
+        const closeOverlayBtn = document.getElementById('close-overlay');
 
+        // Handle APK downloads
         downloadButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 if (!isAndroid()) {
-                    apkNoticeOverlay.classList.add('active');
+                    nonAndroidOverlay.classList.add('active');
                     return;
                 }
-                // Cross-origin links ignore the `download` attribute in most browsers, so we
-                // rely on the file's Content-Disposition metadata (set in Firebase Storage)
-                // to trigger a real download instead of navigating/opening it.
                 window.location.href = APK_URL;
             });
         });
 
-        document.getElementById('apk-notice-close').addEventListener('click', () => {
-            apkNoticeOverlay.classList.remove('active');
+        // Close overlay logic
+        closeOverlayBtn.addEventListener('click', () => {
+            nonAndroidOverlay.classList.remove('active');
         });
-        apkNoticeOverlay.addEventListener('click', (e) => {
-            if (e.target === apkNoticeOverlay) apkNoticeOverlay.classList.remove('active');
+
+        nonAndroidOverlay.addEventListener('click', (e) => {
+            if (e.target === nonAndroidOverlay) {
+                nonAndroidOverlay.classList.remove('active');
+            }
         });
     </script>
 </body>
