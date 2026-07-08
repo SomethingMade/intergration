@@ -460,8 +460,8 @@
             position: relative;
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 15px 24px 15px 20px;
+            gap: 14px;
+            padding: 20px 32px 20px 26px;
             border-radius: 999px;
             border: none;
             cursor: pointer;
@@ -469,8 +469,8 @@
             background: linear-gradient(120deg, #0A84FF 0%, #5E5CE6 45%, #BF5AF2 100%);
             background-size: 220% 220%;
             animation: vertexNebulaShift 6s ease infinite;
-            box-shadow: 0 8px 30px rgba(94, 92, 230, 0.45);
-            font-size: 14px;
+            box-shadow: 0 10px 36px rgba(94, 92, 230, 0.5);
+            font-size: 16px;
             font-weight: 600;
             letter-spacing: -0.2px;
             transition: opacity 0.25s ease, transform 0.25s ease;
@@ -497,8 +497,8 @@
         }
 
         .vertex-pill-icon svg {
-            width: 28px;
-            height: 18px;
+            width: 34px;
+            height: 22px;
             overflow: visible;
         }
 
@@ -604,10 +604,16 @@
             background: rgba(255, 255, 255, 0.24);
         }
 
-        .vertex-panel-header img {
-            width: 32px;
-            height: 32px;
-            object-fit: contain;
+        .vertex-header-icon {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .vertex-header-icon svg {
+            width: 42px;
+            height: 27px;
+            overflow: visible;
         }
 
         .vertex-header-meta h4 {
@@ -729,7 +735,7 @@
             .footer-links { gap: 16px; flex-direction: column; }
             .vertex-chat-wrapper { bottom: 20px; right: 20px; }
             .vertex-trigger-pill span.vertex-pill-label { display: none; }
-            .vertex-trigger-pill { padding: 15px; }
+            .vertex-trigger-pill { padding: 18px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -847,7 +853,12 @@
     <div class="vertex-chat-wrapper">
         <div class="vertex-chat-panel" id="vertexChatPanel">
             <div class="vertex-panel-header">
-                <img src="https://i.postimg.cc/mDCTJNwh/1000057023-removebg-preview.png" alt="Gemini Goza Node">
+                <span class="vertex-header-icon">
+                    <svg viewBox="0 0 32 20">
+                        <path class="vertex-loop-track" pathLength="100" d="M8,10 C8,4 13,4 16,10 C19,16 24,16 24,10 C24,4 19,4 16,10 C13,16 8,16 8,10 Z"></path>
+                        <path class="vertex-loop-flow" pathLength="100" d="M8,10 C8,4 13,4 16,10 C19,16 24,16 24,10 C24,4 19,4 16,10 C13,16 8,16 8,10 Z"></path>
+                    </svg>
+                </span>
                 <div class="vertex-header-meta">
                     <h4>Gemini Goza AI</h4>
                     <p>vertex-node // active</p>
