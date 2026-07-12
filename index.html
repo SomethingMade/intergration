@@ -60,6 +60,11 @@
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
             z-index: 1000;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        header.scrolled {
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
         }
 
         .nav-container {
@@ -97,11 +102,28 @@
         }
 
         .nav-links a {
+            position: relative;
             text-decoration: none;
             color: var(--text-secondary);
             font-weight: 500;
             font-size: 14px;
             transition: color 0.2s;
+            padding-bottom: 2px;
+        }
+
+        .nav-links a:not(.btn-pill)::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -4px;
+            width: 0;
+            height: 1.5px;
+            background: #0A84FF;
+            transition: width 0.25s ease;
+        }
+
+        .nav-links a:not(.btn-pill):hover::after {
+            width: 100%;
         }
 
         .nav-links a:hover {
@@ -125,15 +147,35 @@
         }
 
         .btn-primary {
+            position: relative;
+            overflow: hidden;
             background: linear-gradient(135deg, #0A84FF 0%, #000000 100%); 
             color: #FFFFFF; 
             box-shadow: 0 4px 14px rgba(10, 132, 255, 0.15);
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -60%;
+            width: 40%; height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.25), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.6s ease;
+        }
+
+        .btn-primary:hover::after {
+            left: 130%;
         }
 
         .btn-primary:hover {
             opacity: 0.9;
             transform: translateY(-1px);
             box-shadow: 0 6px 20px rgba(10, 132, 255, 0.25);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0) scale(0.97);
         }
 
         .btn-outline {
@@ -146,6 +188,10 @@
             border-color: var(--text-primary);
         }
 
+        .btn-outline:active {
+            transform: scale(0.97);
+        }
+
         .btn-pill svg.inline-icon { 
             width: 16px; 
             height: 16px; 
@@ -154,6 +200,7 @@
 
         /* Hero Section */
         .hero {
+            position: relative;
             padding: 200px 24px 120px;
             max-width: 800px;
             margin: 0 auto;
@@ -161,7 +208,25 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
+            overflow: hidden;
         }
+
+        .hero-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.28;
+            pointer-events: none;
+            animation: heroOrbFloat ease-in-out infinite;
+            z-index: 0;
+        }
+        .hero-orb-1 { width: 380px; height: 380px; background: #0A84FF; top: -120px; left: -100px; animation-duration: 14s; }
+        .hero-orb-2 { width: 320px; height: 320px; background: #5E5CE6; top: -60px; right: -90px; animation-duration: 17s; animation-delay: -5s; }
+        @keyframes heroOrbFloat { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(24px,20px) scale(1.08); } }
+
+        .hero-content { position: relative; z-index: 1; opacity: 0; animation: heroFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards; }
+
+        @keyframes heroFadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 
         .hero-content h1 {
             font-size: 56px;
@@ -172,12 +237,25 @@
             color: var(--text-primary);
         }
 
+        .hero-content h1 .accent-gradient {
+            background: linear-gradient(120deg, #0A84FF 0%, #5E5CE6 50%, #BF5AF2 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: heroGradientShift 6s ease infinite;
+        }
+
+        @keyframes heroGradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
         .hero-content p {
             font-size: 18px;
             color: var(--text-secondary);
             margin: 0 auto 40px;
             max-width: 520px;
             line-height: 1.5;
+            opacity: 0;
+            animation: heroFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards 0.12s;
         }
 
         .hero-actions {
@@ -185,6 +263,16 @@
             gap: 16px;
             flex-wrap: wrap;
             justify-content: center;
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            animation: heroFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards 0.24s;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .hero-orb { animation: none !important; }
+            .hero-content, .hero-content p, .hero-actions { animation: none !important; opacity: 1 !important; }
+            .hero-content h1 .accent-gradient { animation: none !important; }
         }
 
         /* Features Section */
@@ -227,27 +315,38 @@
         }
 
         .feature-card {
+            position: relative;
             background: var(--bg-surface);
             padding: 40px 32px;
-            transition: background 0.2s;
+            transition: background 0.25s ease, transform 0.25s ease;
         }
 
         .feature-card:hover {
             background: var(--bg-alt);
+            transform: translateY(-3px);
         }
 
         .feature-icon {
-            width: 32px;
-            height: 32px;
-            color: var(--text-primary);
+            width: 44px;
+            height: 44px;
+            color: #fff;
             display: flex;
             align-items: center;
+            justify-content: center;
             margin-bottom: 24px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0A84FF 0%, #5E5CE6 100%);
+            box-shadow: 0 6px 16px rgba(10, 132, 255, 0.25);
+            transition: transform 0.25s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.08) rotate(-4deg);
         }
 
         .feature-icon svg {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
         }
 
         .feature-card h3 {
@@ -261,6 +360,22 @@
             color: var(--text-secondary);
             font-size: 14px;
             line-height: 1.6;
+        }
+
+        /* Scroll-reveal: sections/cards fade + rise into place the first time
+           they enter the viewport (see IntersectionObserver in the script). */
+        .reveal-up {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1);
+        }
+        .reveal-up.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .reveal-up { opacity: 1 !important; transform: none !important; transition: none !important; }
+            .feature-card, .feature-icon { transition: none !important; }
         }
 
         /* How it Works Section */
@@ -281,6 +396,14 @@
 
         .step-item {
             text-align: left;
+            padding-left: 4px;
+            border-left: 2px solid var(--border-color);
+            padding-left: 20px;
+            transition: border-color 0.25s ease;
+        }
+
+        .step-item:hover {
+            border-left-color: #0A84FF;
         }
 
         .step-number {
@@ -289,6 +412,11 @@
             color: var(--text-secondary);
             margin-bottom: 24px;
             letter-spacing: 1px;
+            transition: color 0.25s ease;
+        }
+
+        .step-item:hover .step-number {
+            color: #0A84FF;
         }
 
         .step-item h3 {
@@ -306,10 +434,31 @@
 
         /* CTA Footer Section */
         .cta-footer {
+            position: relative;
             background: var(--bg-surface);
             padding: 120px 24px;
             text-align: center;
             border-top: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .cta-glow {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 600px; height: 300px;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(ellipse at center, rgba(10,132,255,0.16), transparent 70%);
+            filter: blur(20px);
+            animation: ctaGlowPulse 5s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes ctaGlowPulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+        @media (prefers-reduced-motion: reduce) { .cta-glow { animation: none !important; } }
+
+        .cta-footer h2, .cta-footer p, .cta-footer > div {
+            position: relative;
+            z-index: 1;
         }
 
         .cta-footer h2 {
@@ -765,8 +914,10 @@
     </header>
 
     <section class="hero">
+        <div class="hero-orb hero-orb-1"></div>
+        <div class="hero-orb hero-orb-2"></div>
         <div class="hero-content">
-            <h1>Secure, real-time connection on Android.</h1>
+            <h1>Secure, real-time connection <span class="accent-gradient">on Android</span>.</h1>
             <p>Vynix Messenger combines beautiful responsive styling with premium speed to bridge your conversations safely on your mobile device.</p>
             <div class="hero-actions">
                 <button class="btn-pill btn-primary apk-download-btn">
@@ -778,33 +929,33 @@
     </section>
 
     <section class="features" id="features">
-        <div class="section-header">
+        <div class="section-header reveal-up">
             <h2>Engaging communication layout system</h2>
             <p>Built with lightweight architecture and dynamic variables, maximizing your day-to-day data privacy and connectivity speeds exclusively for Android.</p>
         </div>
         <div class="features-grid">
-            <div class="feature-card">
+            <div class="feature-card reveal-up">
                 <div class="feature-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
                 </div>
                 <h3>Voice Notes Tracker</h3>
                 <p>Record, preview, and track audio interactions instantly with responsive progressive inline tracking bars.</p>
             </div>
-            <div class="feature-card">
+            <div class="feature-card reveal-up">
                 <div class="feature-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                 </div>
                 <h3>Immersive Media & Stories</h3>
                 <p>Share status stories instantly, react with floating hearts, text responses, and get instant view telemetry logs.</p>
             </div>
-            <div class="feature-card">
+            <div class="feature-card reveal-up">
                 <div class="feature-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
                 </div>
                 <h3>Advanced Managed Groups</h3>
                 <p>Instantly establish public context discovery clusters or isolated private structures using clean invite IDs.</p>
             </div>
-            <div class="feature-card">
+            <div class="feature-card reveal-up">
                 <div class="feature-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2"></path></svg>
                 </div>
@@ -815,22 +966,22 @@
     </section>
 
     <section class="how-it-works" id="how-it-works">
-        <div class="section-header">
+        <div class="section-header reveal-up">
             <h2>Three steps to get moving</h2>
             <p>No bulky installation configurations. Secure messaging is active in under a single minute.</p>
         </div>
         <div class="steps-container">
-            <div class="step-item">
+            <div class="step-item reveal-up">
                 <div class="step-number">01 //</div>
                 <h3>Authentication</h3>
                 <p>Sign in using flexible secure phone OTP workflows, verification emails, or simple single-tap Google access routing.</p>
             </div>
-            <div class="step-item">
+            <div class="step-item reveal-up">
                 <div class="step-number">02 //</div>
                 <h3>Claim Username Handle</h3>
                 <p>Establish a private unique profile identifier handle (`@username`) so peers discover you without leaking phone metadata.</p>
             </div>
-            <div class="step-item">
+            <div class="step-item reveal-up">
                 <div class="step-number">03 //</div>
                 <h3>Connect seamlessly</h3>
                 <p>Create global messaging lines, transfer documents, trigger inline message replies, or forward files safely.</p>
@@ -839,9 +990,10 @@
     </section>
 
     <section class="cta-footer">
-        <h2>Ready to upgrade your messaging workspace?</h2>
-        <p>Experience an ultra-fast layout system designed perfectly for zero lag, deep contrast themes, and advanced media mechanics.</p>
-        <div style="display: flex; gap:16px; justify-content: center; flex-wrap: wrap;">
+        <div class="cta-glow"></div>
+        <h2 class="reveal-up">Ready to upgrade your messaging workspace?</h2>
+        <p class="reveal-up">Experience an ultra-fast layout system designed perfectly for zero lag, deep contrast themes, and advanced media mechanics.</p>
+        <div class="reveal-up" style="display: flex; gap:16px; justify-content: center; flex-wrap: wrap;">
             <button class="btn-pill btn-primary apk-download-btn">
                 <svg class="inline-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.6 9.48l1.84-3.18a.401.401 0 0 0-.14-.55.4.4 0 0 0-.55.14l-1.86 3.22a9.2 9.2 0 0 0-7.76 0L7.27 5.89a.4.4 0 0 0-.55-.14.4.4 0 0 0-.14.55L8.4 9.48C5.29 11.24 3.15 14.4 3 18h18c-.15-3.6-2.29-6.76-5.4-8.52zM8.5 15.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm7 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"></path></svg>
                 Download APK Now
@@ -1230,6 +1382,29 @@
         vertexTextInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') vertexSendBtn.click();
         });
+        // 7. Scroll-reveal animations for sections/cards/steps
+        const revealEls = document.querySelectorAll('.reveal-up');
+        if ('IntersectionObserver' in window && revealEls.length) {
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach((entry, i) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => entry.target.classList.add('in-view'), i * 60);
+                        revealObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+            revealEls.forEach(el => revealObserver.observe(el));
+        } else {
+            revealEls.forEach(el => el.classList.add('in-view'));
+        }
+
+        // Subtle shadow on the fixed navbar once the page has scrolled
+        const siteHeader = document.querySelector('header');
+        if (siteHeader) {
+            window.addEventListener('scroll', () => {
+                siteHeader.classList.toggle('scrolled', window.scrollY > 8);
+            }, { passive: true });
+        }
     </script>
 </body>
 </html>
