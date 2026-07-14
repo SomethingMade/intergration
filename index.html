@@ -731,6 +731,15 @@
             display: flex;
             flex-direction: column;
             align-items: flex-end;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .vertex-chat-wrapper.veiled {
+            opacity: 0;
+            transform: translateY(16px) scale(0.92);
+            pointer-events: none;
         }
 
         .vertex-backdrop {
@@ -1488,6 +1497,20 @@
             revealEls.forEach(el => revealObserver.observe(el));
         } else {
             revealEls.forEach(el => el.classList.add('in-view'));
+        }
+
+        // Veil the floating chat button while the hero section is in view,
+        // so the hero visually "covers" it until the user scrolls past.
+        const heroSection = document.querySelector('.hero');
+        const vertexChatWrapper = document.querySelector('.vertex-chat-wrapper');
+        if (heroSection && vertexChatWrapper && 'IntersectionObserver' in window) {
+            const heroObserver = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (panelOpen) return; // never hide while the chat is open
+                    vertexChatWrapper.classList.toggle('veiled', entry.isIntersecting);
+                });
+            }, { threshold: 0 });
+            heroObserver.observe(heroSection);
         }
 
         // Header scroll effect
