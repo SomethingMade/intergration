@@ -157,6 +157,10 @@
         .hamburger.active .line2 { opacity: 0; }
         .hamburger.active .line3 { transform: translateY(-6px) rotate(-45deg); }
 
+        #companies, #software, #how-it-works, #contact {
+            scroll-margin-top: 90px;
+        }
+
         /* Buttons */
         .btn-pill {
             padding: 13px 28px;
@@ -1004,6 +1008,7 @@
                 <a href="#companies">Companies</a>
                 <a href="#software">Software</a>
                 <a href="#how-it-works">Process</a>
+                <a href="#contact">Contact</a>
             </nav>
         </div>
     </header>
@@ -1263,6 +1268,29 @@
                 mobileMenuBtn.classList.remove('active');
                 document.body.style.overflow = '';
             });
+        });
+
+        function closeMobileMenu() {
+            navLinksContainer.classList.remove('active');
+            mobileMenuBtn.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Close on outside click (tap anywhere outside the open menu/hamburger)
+        document.addEventListener('click', (e) => {
+            if (!navLinksContainer.classList.contains('active')) return;
+            if (navLinksContainer.contains(e.target) || mobileMenuBtn.contains(e.target)) return;
+            closeMobileMenu();
+        });
+
+        // Close on Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeMobileMenu();
+        });
+
+        // Close automatically if the viewport is resized/rotated past the mobile breakpoint
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) closeMobileMenu();
         });
 
         // Event Listeners for Legal Modals
