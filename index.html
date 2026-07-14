@@ -905,14 +905,20 @@
     <header>
         <div class="nav-container">
             <a href="#" class="logo">
-                <svg width="140" height="34" viewBox="0 0 140 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4 6L16 28L28 6" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="16" cy="28" r="3" fill="#ffffff"/>
-                    <circle cx="4" cy="6" r="3" fill="#ffffff"/>
-                    <circle cx="28" cy="6" r="3" fill="#ffffff"/>
-                    <text x="42" y="25" fill="currentColor" font-family="'Inter', sans-serif" font-weight="800" font-size="22" letter-spacing="3">VYNIX</text>
-                </svg>
-            </a>
+    <svg width="140" height="40" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Minimalist V Shape -->
+        <path d="M12 6L28 34L44 6" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        
+        <!-- Overlaid Loop Icon in the Center of the V -->
+        <g transform="translate(16, 5)">
+            <path class="vertex-loop-track" pathLength="100" d="M8,10 C8,4 13,4 16,10 C19,16 24,16 24,10 C24,4 19,4 16,10 C13,16 8,16 8,10 Z" stroke="var(--accent)" stroke-width="3"></path>
+        </g>
+        
+        <!-- Brand Name -->
+        <text x="60" y="28" fill="currentColor" font-family="'Inter', sans-serif" font-weight="800" font-size="24" letter-spacing="2">VYNIX</text>
+    </svg>
+</a>
+
             <nav class="nav-links">
                 <a href="#companies">Companies</a>
                 <a href="#software">Software</a>
