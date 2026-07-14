@@ -56,15 +56,16 @@
             position: fixed;
             top: 0;
             width: 100%;
+            background: transparent;
+            z-index: 1000;
+            transition: background 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        header.scrolled {
             background: rgba(var(--bg-base-rgb), 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
-            z-index: 1000;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        header.scrolled {
             box-shadow: 0 4px 24px rgba(0,0,0,0.06);
         }
 
@@ -905,19 +906,14 @@
     <header>
         <div class="nav-container">
             <a href="#" class="logo">
-    <svg width="140" height="40" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Minimalist V Shape -->
-        <path d="M12 6L28 34L44 6" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        
-        <!-- Overlaid Loop Icon in the Center of the V -->
-        <g transform="translate(16, 5)">
-            <path class="vertex-loop-track" pathLength="100" d="M8,10 C8,4 13,4 16,10 C19,16 24,16 24,10 C24,4 19,4 16,10 C13,16 8,16 8,10 Z" stroke="var(--accent)" stroke-width="3"></path>
-        </g>
-        
-        <!-- Brand Name -->
-        <text x="60" y="28" fill="currentColor" font-family="'Inter', sans-serif" font-weight="800" font-size="24" letter-spacing="2">VYNIX</text>
-    </svg>
-</a>
+                <svg width="48" height="40" viewBox="0 0 48 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 6L28 34L44 6" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    
+                    <g transform="translate(16, 5)">
+                        <path class="vertex-loop-track" pathLength="100" d="M8,10 C8,4 13,4 16,10 C19,16 24,16 24,10 C24,4 19,4 16,10 C13,16 8,16 8,10 Z" stroke="var(--accent)" stroke-width="3"></path>
+                    </g>
+                </svg>
+            </a>
 
             <nav class="nav-links">
                 <a href="#companies">Companies</a>
@@ -930,9 +926,7 @@
 
     <section class="hero">
         <div class="hero-video-wrapper">
-            <!-- Ensure autoplay, muted, and playsinline are present -->
             <video id="bg-video" autoplay loop muted playsinline class="hero-video">
-                <!-- Fallback robust tech video link for testing visibility -->
                 <source src="video.mp4" type="video/mp4">
             </video>
             <div class="video-overlay"></div>
