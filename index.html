@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Vynix — The company behind Xoxo</title>
+    <title>Vynix — Technology & Software Development</title>
     
     <meta name="theme-color" content="#000000">
-    <link rel="apple-touch-icon" href="https://i.postimg.cc/G2mGF81c/1000057023-removebg-preview.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
     
     <style>
@@ -82,21 +81,9 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-family: var(--font-brand);
-            font-weight: 400;
-            font-size: 15px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
+            gap: 8px;
             text-decoration: none;
             color: var(--text-primary);
-        }
-
-        .logo img {
-            height: 28px;
-            width: auto;
-            object-fit: contain;
-            display: block;
         }
 
         .nav-links {
@@ -198,13 +185,7 @@
             transform: scale(0.97);
         }
 
-        .btn-pill svg.inline-icon { 
-            width: 16px; 
-            height: 16px; 
-            margin-right: 8px; 
-        }
-
-        /* Small tracked monospace label used above headings, SpaceX-style */
+        /* Small tracked monospace label */
         .eyebrow {
             font-family: var(--font-mono);
             font-size: 12px;
@@ -230,15 +211,41 @@
 
         .eyebrow.left { justify-content: flex-start; }
 
+        /* Hero Video Architecture */
+        .hero-video-wrapper {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .hero-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            pointer-events: none;
+            opacity: 0.6; /* Dims the video naturally */
+        }
+
+        .video-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(var(--bg-base-rgb), 0.3), rgba(var(--bg-base-rgb), 0.95));
+            z-index: 1;
+        }
+
         /* Hero Section */
         .hero {
             position: relative;
             padding: 200px 24px 120px;
-            max-width: 800px;
-            margin: 0 auto;
+            min-height: 90vh;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             text-align: center;
             overflow: hidden;
         }
@@ -250,13 +257,13 @@
             opacity: 0.28;
             pointer-events: none;
             animation: heroOrbFloat ease-in-out infinite;
-            z-index: 0;
+            z-index: 2;
         }
         .hero-orb-1 { width: 380px; height: 380px; background: var(--accent); top: -120px; left: -100px; animation-duration: 14s; opacity: 0.16; }
         .hero-orb-2 { width: 320px; height: 320px; background: #ffffff; top: -60px; right: -90px; animation-duration: 17s; animation-delay: -5s; opacity: 0.06; }
         @keyframes heroOrbFloat { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(24px,20px) scale(1.08); } }
 
-        .hero-content { position: relative; z-index: 1; opacity: 0; animation: heroFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards; }
+        .hero-content { position: relative; z-index: 3; opacity: 0; animation: heroFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards; }
 
         @keyframes heroFadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -275,8 +282,6 @@
             color: var(--text-secondary);
         }
 
-        @keyframes heroGradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-
         .hero-content p {
             font-size: 18px;
             color: var(--text-secondary);
@@ -293,15 +298,9 @@
             flex-wrap: wrap;
             justify-content: center;
             position: relative;
-            z-index: 1;
+            z-index: 3;
             opacity: 0;
             animation: heroFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards 0.24s;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .hero-orb { animation: none !important; }
-            .hero-content, .hero-content p, .hero-actions { animation: none !important; opacity: 1 !important; }
-            .hero-content h1 .accent-gradient { animation: none !important; }
         }
 
         /* Features Section */
@@ -392,7 +391,7 @@
             line-height: 1.6;
         }
 
-        /* Companies Section — the "portfolio" grid, SpaceX mission-card style */
+        /* Companies Section */
         .companies {
             padding: 100px 24px;
             max-width: 1200px;
@@ -490,12 +489,8 @@
 
         .company-card.is-live .company-link { color: var(--accent); }
 
-        .company-card:not(.is-live) {
-            cursor: default;
-        }
-
+        .company-card:not(.is-live) { cursor: default; }
         .company-card:not(.is-live) .company-link { color: var(--border-color); }
-
 
         .reveal-up {
             opacity: 0;
@@ -505,10 +500,6 @@
         .reveal-up.in-view {
             opacity: 1;
             transform: translateY(0);
-        }
-        @media (prefers-reduced-motion: reduce) {
-            .reveal-up { opacity: 1 !important; transform: none !important; transition: none !important; }
-            .feature-card, .feature-icon { transition: none !important; }
         }
 
         /* How it Works Section */
@@ -529,7 +520,6 @@
 
         .step-item {
             text-align: left;
-            padding-left: 4px;
             border-left: 2px solid var(--border-color);
             padding-left: 20px;
             transition: border-color 0.25s ease;
@@ -587,7 +577,6 @@
             z-index: 0;
         }
         @keyframes ctaGlowPulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
-        @media (prefers-reduced-motion: reduce) { .cta-glow { animation: none !important; } }
 
         .cta-footer h2, .cta-footer p, .cta-footer > div {
             position: relative;
@@ -692,25 +681,12 @@
             padding-right: 8px;
         }
 
-        .modal-content p {
-            margin-bottom: 12px;
-        }
-
-        .modal-content::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .modal-content::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
-
         @keyframes fadeIn { 
             from { opacity: 0; transform: scale(0.98); } 
             to { opacity: 1; transform: scale(1); } 
         }
 
-        /* ── GEMINI GOZA FLOATING CHAT SYSTEM ── */
+        /* GEMINI GOZA FLOATING CHAT SYSTEM */
         .vertex-chat-wrapper {
             position: fixed;
             bottom: 30px;
@@ -721,7 +697,6 @@
             align-items: flex-end;
         }
 
-        /* Backdrop dims the page while the chat portal is open */
         .vertex-backdrop {
             position: fixed;
             inset: 0;
@@ -734,12 +709,8 @@
             z-index: 4999;
         }
 
-        .vertex-backdrop.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .vertex-backdrop.active { opacity: 1; pointer-events: auto; }
 
-        /* Pill-shaped trigger with an animated voice-wave icon */
         .vertex-trigger-pill {
             position: relative;
             display: flex;
@@ -758,50 +729,16 @@
             transition: opacity 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
         }
 
-        .vertex-trigger-pill:hover {
-            transform: translateY(-1px);
-            border-color: var(--text-secondary);
-        }
+        .vertex-trigger-pill:hover { transform: translateY(-1px); border-color: var(--text-secondary); }
+        .vertex-trigger-pill.hidden-for-morph { opacity: 0; transform: scale(0.85); pointer-events: none; }
 
-        .vertex-trigger-pill.hidden-for-morph {
-            opacity: 0;
-            transform: scale(0.85);
-            pointer-events: none;
-        }
+        .vertex-pill-icon { display: flex; align-items: center; }
+        .vertex-pill-icon svg { width: 34px; height: 22px; overflow: visible; }
 
-        .vertex-pill-icon {
-            display: flex;
-            align-items: center;
-        }
+        .vertex-loop-track { fill: none; stroke: var(--border-color); stroke-width: 2.6; stroke-linecap: round; }
+        .vertex-loop-flow { fill: none; stroke: var(--accent); stroke-width: 2.6; stroke-linecap: round; stroke-dasharray: 22 78; animation: vertexLoopFlow 1.6s linear infinite; }
+        @keyframes vertexLoopFlow { to { stroke-dashoffset: -100; } }
 
-        .vertex-pill-icon svg {
-            width: 34px;
-            height: 22px;
-            overflow: visible;
-        }
-
-        .vertex-loop-track {
-            fill: none;
-            stroke: var(--border-color);
-            stroke-width: 2.6;
-            stroke-linecap: round;
-        }
-
-        .vertex-loop-flow {
-            fill: none;
-            stroke: var(--accent);
-            stroke-width: 2.6;
-            stroke-linecap: round;
-            stroke-dasharray: 22 78;
-            animation: vertexLoopFlow 1.6s linear infinite;
-        }
-
-        @keyframes vertexLoopFlow {
-            to { stroke-dashoffset: -100; }
-        }
-
-        /* Morph orb — the shared element that travels from the pill's
-           position to screen-center and expands into the chat panel's shape */
         .vertex-morph {
             position: fixed;
             z-index: 5001;
@@ -814,16 +751,7 @@
             box-shadow: 0 0 60px rgba(10, 132, 255, 0.2);
         }
 
-        .vertex-morph.animating {
-            visibility: visible;
-        }
-
-
-        @keyframes vertexNebulaSwirl {
-            0%   { background-position: 0% 0%, 100% 100%, 50% 50%, 0% 0%; }
-            50%  { background-position: 100% 100%, 0% 0%, 60% 40%, 100% 100%; }
-            100% { background-position: 0% 0%, 100% 100%, 50% 50%, 0% 0%; }
-        }
+        .vertex-morph.animating { visibility: visible; }
 
         .vertex-chat-panel {
             position: fixed;
@@ -844,9 +772,7 @@
             transition: opacity 0.3s ease;
         }
 
-        .vertex-chat-panel.visible {
-            opacity: 1;
-        }
+        .vertex-chat-panel.visible { opacity: 1; }
 
         .vertex-panel-header {
             padding: 20px;
@@ -874,33 +800,12 @@
             flex-shrink: 0;
         }
 
-        .vertex-panel-close:hover {
-            background: var(--bg-alt);
-        }
+        .vertex-panel-close:hover { background: var(--bg-alt); }
 
-        .vertex-header-icon {
-            display: flex;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .vertex-header-icon svg {
-            width: 42px;
-            height: 27px;
-            overflow: visible;
-        }
-
-        .vertex-header-meta h4 {
-            font-size: 15px;
-            font-weight: 600;
-            letter-spacing: -0.2px;
-        }
-
-        .vertex-header-meta p {
-            font-size: 11px;
-            color: var(--text-secondary);
-            font-family: var(--font-mono);
-        }
+        .vertex-header-icon { display: flex; align-items: center; flex-shrink: 0; }
+        .vertex-header-icon svg { width: 42px; height: 27px; overflow: visible; }
+        .vertex-header-meta h4 { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; }
+        .vertex-header-meta p { font-size: 11px; color: var(--text-secondary); font-family: var(--font-mono); }
 
         .vertex-chat-logs {
             flex: 1;
@@ -913,39 +818,16 @@
             scroll-behavior: smooth;
         }
 
-        .vertex-msg {
-            max-width: 80%;
-            padding: 10px 14px;
-            font-size: 14px;
-            line-height: 1.4;
-            border-radius: 14px;
-            word-wrap: break-word;
-        }
-
-        .vertex-msg.ai {
-            align-self: flex-start;
-            background: var(--bg-surface);
-            color: var(--text-primary);
-            border-bottom-left-radius: 4px;
-            border: 1px solid var(--border-color);
-        }
-
-        .vertex-msg.user {
-            align-self: flex-end;
-            background: var(--accent);
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
+        .vertex-msg { max-width: 80%; padding: 10px 14px; font-size: 14px; line-height: 1.4; border-radius: 14px; word-wrap: break-word; }
+        .vertex-msg.ai { align-self: flex-start; background: var(--bg-surface); color: var(--text-primary); border-bottom-left-radius: 4px; border: 1px solid var(--border-color); }
+        .vertex-msg.user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 4px; }
 
         /* Typing Dots */
         .typing-dots { display: flex; gap: 4px; align-items: center; justify-content: center; height: 20px; }
         .typing-dot { width: 6px; height: 6px; background: var(--text-secondary); border-radius: 50%; animation: typingBounce 1.4s infinite ease-in-out both; }
         .typing-dot:nth-child(1) { animation-delay: -0.32s; }
         .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes typingBounce { 
-            0%, 80%, 100% { transform: scale(0); } 
-            40% { transform: scale(1); } 
-        }
+        @keyframes typingBounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
         .vertex-input-row {
             padding: 12px 16px;
@@ -981,17 +863,10 @@
             transition: background 0.2s, color 0.2s;
         }
 
-        .vertex-action-btn:hover {
-            background: var(--border-color);
-            color: var(--text-primary);
-        }
+        .vertex-action-btn:hover { background: var(--border-color); color: var(--text-primary); }
+        .vertex-action-btn.send-btn { background: var(--accent); color: white; }
 
-        .vertex-action-btn.send-btn {
-            background: var(--accent);
-            color: white;
-        }
-
-        /* Responsive Breakpoints */
+        /* Responsive */
         @media (max-width: 992px) {
             .hero-content h1 { font-size: 34px; }
             .steps-container { grid-template-columns: 1fr; gap: 40px; }
@@ -1013,11 +888,10 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .vertex-trigger-pill,
-            .vertex-morph.animating,
-            .vertex-loop-flow {
-                animation: none !important;
-            }
+            .vertex-trigger-pill, .vertex-morph.animating, .vertex-loop-flow { animation: none !important; }
+            .hero-orb { animation: none !important; }
+            .hero-content, .hero-content p, .hero-actions { animation: none !important; opacity: 1 !important; }
+            .reveal-up { opacity: 1 !important; transform: none !important; transition: none !important; }
         }
     </style>
 </head>
@@ -1026,32 +900,39 @@
     <header>
         <div class="nav-container">
             <a href="#" class="logo">
-                <img src="https://i.postimg.cc/mDCTJNwh/1000057023-removebg-preview.png" alt="Vynix Logo">
-                <span>Vynix</span>
+                <svg width="130" height="30" viewBox="0 0 130 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M 5 22 Q 60 -8 125 18" stroke="var(--accent)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <text x="0" y="24" fill="currentColor" font-family="'Michroma', sans-serif" font-size="22" letter-spacing="2">VYNIX</text>
+                </svg>
             </a>
             <nav class="nav-links">
                 <a href="#companies">Companies</a>
-                <a href="#xoxo">Xoxo</a>
-                <a href="#how-it-works">How it Works</a>
-                <a href="/pricing">Pricing</a>
-                <button class="btn-pill btn-primary apk-download-btn">Download Xoxo</button>
+                <a href="#software">Software</a>
+                <a href="#how-it-works">Process</a>
+                <a href="#contact" class="btn-pill btn-primary">Partner with Us</a>
             </nav>
         </div>
     </header>
 
     <section class="hero">
+        <div class="hero-video-wrapper">
+            <!-- Ensure you replace the src below with your actual Firebase Storage video URL -->
+            <video autoplay loop muted playsinline class="hero-video">
+                <source src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
+            </video>
+            <div class="video-overlay"></div>
+        </div>
+
         <div class="hero-orb hero-orb-1"></div>
         <div class="hero-orb hero-orb-2"></div>
+        
         <div class="hero-content">
-            <div class="eyebrow">A MULTI-COMPANY TECHNOLOGY GROUP</div>
+            <div class="eyebrow left">A MULTI-COMPANY TECHNOLOGY GROUP</div>
             <h1>We build the platforms <span class="accent-gradient">people live on</span></h1>
-            <p>Vynix designs, builds, and operates a portfolio of independent products — starting with Xoxo, our real-time messaging company for Android.</p>
+            <p>Vynix designs, builds, and operates a portfolio of independent software products, engineered from the ground up to solve complex problems at scale.</p>
             <div class="hero-actions">
-                <a href="#companies" class="btn-pill btn-outline">Our Companies</a>
-                <button class="btn-pill btn-primary apk-download-btn">
-                    <svg class="inline-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.6 9.48l1.84-3.18a.401.401 0 0 0-.14-.55.4.4 0 0 0-.55.14l-1.86 3.22a9.2 9.2 0 0 0-7.76 0L7.27 5.89a.4.4 0 0 0-.55-.14.4.4 0 0 0-.14.55L8.4 9.48C5.29 11.24 3.15 14.4 3 18h18c-.15-3.6-2.29-6.76-5.4-8.52zM8.5 15.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm7 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"></path></svg>
-                    Download Xoxo for Android
-                </button>
+                <a href="#companies" class="btn-pill btn-primary">Explore Our Work</a>
+                <a href="#how-it-works" class="btn-pill btn-outline">Our Process</a>
             </div>
         </div>
     </section>
@@ -1063,35 +944,35 @@
             <p>Vynix is the parent company behind a growing portfolio of independent products, each built and operated to solve a distinct problem at scale.</p>
         </div>
         <div class="companies-grid">
-            <a href="#xoxo" class="company-card is-live reveal-up">
+            <a href="#software" class="company-card is-live reveal-up">
                 <span class="company-status">Live</span>
                 <div class="company-name">Xoxo</div>
-                <div class="company-tagline">Real-time messaging</div>
-                <p class="company-desc">Secure, real-time chat, stories, and groups — built for speed and privacy, available now on Android.</p>
+                <div class="company-tagline">Real-time messaging platform</div>
+                <p class="company-desc">Secure, real-time chat, stories, and managed groups — built for speed, privacy, and deep enterprise integration.</p>
                 <span class="company-link">Explore Xoxo &rarr;</span>
             </a>
             <div class="company-card reveal-up">
                 <span class="company-status">In development</span>
                 <div class="company-name">Project 02</div>
-                <div class="company-tagline">Details coming soon</div>
-                <p class="company-desc">Our next venture is currently in development. Follow Vynix for updates as it takes shape.</p>
+                <div class="company-tagline">Data Architecture</div>
+                <p class="company-desc">Our next venture focusing on rapid data ingestion and telemetry systems is currently in active development.</p>
                 <span class="company-link">TBA</span>
             </div>
             <div class="company-card reveal-up">
                 <span class="company-status">In development</span>
                 <div class="company-name">Project 03</div>
-                <div class="company-tagline">Details coming soon</div>
-                <p class="company-desc">A third company is on our roadmap. Details will be announced when the time is right.</p>
+                <div class="company-tagline">Machine Learning</div>
+                <p class="company-desc">A third AI-centric initiative is on our roadmap. Details will be announced when the foundation is established.</p>
                 <span class="company-link">TBA</span>
             </div>
         </div>
     </section>
 
-    <section class="features" id="xoxo">
+    <section class="features" id="software">
         <div class="section-header reveal-up">
-            <div class="eyebrow">XOXO</div>
+            <div class="eyebrow">XOXO INFRASTRUCTURE</div>
             <h2>Engaging communication layout system</h2>
-            <p>Built with lightweight architecture and dynamic variables, maximizing your day-to-day data privacy and connectivity speeds exclusively for Android.</p>
+            <p>Built with lightweight architecture and dynamic variables, maximizing your day-to-day data privacy and connectivity speeds globally.</p>
         </div>
         <div class="features-grid">
             <div class="feature-card reveal-up">
@@ -1105,61 +986,60 @@
                 <div class="feature-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                 </div>
-                <h3>Immersive Media & Stories</h3>
-                <p>Share status stories instantly, react with floating hearts, text responses, and get instant view telemetry logs.</p>
+                <h3>Immersive Media</h3>
+                <p>Distribute media packages securely, log analytical view telemetry, and maintain high-fidelity pipelines.</p>
             </div>
             <div class="feature-card reveal-up">
                 <div class="feature-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
                 </div>
-                <h3>Advanced Managed Groups</h3>
-                <p>Instantly establish public context discovery clusters or isolated private structures using clean invite IDs.</p>
+                <h3>Advanced Group Matrices</h3>
+                <p>Instantly establish public context discovery clusters or isolated private structures using encrypted relational data.</p>
             </div>
             <div class="feature-card reveal-up">
                 <div class="feature-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2"></path></svg>
                 </div>
                 <h3>True Adaptive Engine</h3>
-                <p>Seamless synchronization configuration matching standard system light themes and contrast dark themes smoothly.</p>
+                <p>Seamless synchronization configuration matching standard system themes and scaling globally without disruption.</p>
             </div>
         </div>
     </section>
 
     <section class="how-it-works" id="how-it-works">
         <div class="section-header reveal-up">
-            <div class="eyebrow">GETTING STARTED</div>
-            <h2>Three steps to get moving</h2>
-            <p>No bulky installation configurations. Secure messaging on Xoxo is active in under a single minute.</p>
+            <div class="eyebrow">OUR PROCESS</div>
+            <h2>How we build software</h2>
+            <p>Our development lifecycle focuses heavily on resilient architecture, rapid iterations, and deploying scalable software environments.</p>
         </div>
         <div class="steps-container">
             <div class="step-item reveal-up">
                 <div class="step-number">01 //</div>
-                <h3>Authentication</h3>
-                <p>Sign in using flexible secure phone OTP workflows, verification emails, or simple single-tap Google access routing.</p>
+                <h3>Architecture & Logic</h3>
+                <p>We map out robust database schemas, secure authentication workflows, and system requirements prior to committing code.</p>
             </div>
             <div class="step-item reveal-up">
                 <div class="step-number">02 //</div>
-                <h3>Claim Username Handle</h3>
-                <p>Establish a private unique profile identifier handle (`@username`) so peers discover you without leaking phone metadata.</p>
+                <h3>Development Sprints</h3>
+                <p>Engineering modules with modern stacks, emphasizing clean API integrations and responsive, accessible user interfaces.</p>
             </div>
             <div class="step-item reveal-up">
                 <div class="step-number">03 //</div>
-                <h3>Connect seamlessly</h3>
-                <p>Create global messaging lines, transfer documents, trigger inline message replies, or forward files safely.</p>
+                <h3>Deployment & Scale</h3>
+                <p>We leverage highly available cloud infrastructures to push code safely and scale automatically alongside traffic demands.</p>
             </div>
         </div>
     </section>
 
-    <section class="cta-footer">
+    <section class="cta-footer" id="contact">
         <div class="cta-glow"></div>
-        <div class="eyebrow">XOXO · A VYNIX COMPANY</div>
-        <h2 class="reveal-up">Ready to upgrade your messaging workspace?</h2>
-        <p class="reveal-up">Experience an ultra-fast layout system designed perfectly for zero lag, deep contrast themes, and advanced media mechanics.</p>
+        <div class="eyebrow">WORK WITH VYNIX</div>
+        <h2 class="reveal-up">Ready to build your next platform?</h2>
+        <p class="reveal-up">Partner with our engineering team to construct robust, high-performance web and software applications.</p>
         <div class="reveal-up" style="display: flex; gap:16px; justify-content: center; flex-wrap: wrap;">
-            <button class="btn-pill btn-primary apk-download-btn">
-                <svg class="inline-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.6 9.48l1.84-3.18a.401.401 0 0 0-.14-.55.4.4 0 0 0-.55.14l-1.86 3.22a9.2 9.2 0 0 0-7.76 0L7.27 5.89a.4.4 0 0 0-.55-.14.4.4 0 0 0-.14.55L8.4 9.48C5.29 11.24 3.15 14.4 3 18h18c-.15-3.6-2.29-6.76-5.4-8.52zM8.5 15.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm7 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"></path></svg>
-                Download Xoxo APK Now
-            </button>
+            <a href="mailto:hello@vynix.com" class="btn-pill btn-primary">
+                Contact Our Team
+            </a>
         </div>
     </section>
 
@@ -1184,12 +1064,12 @@
             </div>
             <div class="vertex-chat-logs" id="vertexChatLogs">
                 <div class="vertex-msg ai">
-                    Hi there! I'm the Vynix Assistant, powered by Gemini on Vertex AI. Ask me anything about Xoxo — downloads, security, or setup.
+                    Hi there! I'm the Vynix Assistant, powered by Gemini on Vertex AI. Ask me anything about our software solutions, infrastructure, or partnership process.
                 </div>
             </div>
 
             <div class="vertex-input-row">
-                <input type="text" id="vertexTextInput" placeholder="Ask about downloads, security, setup...">
+                <input type="text" id="vertexTextInput" placeholder="Ask about our software, infrastructure, setup...">
                 <button class="vertex-action-btn send-btn" id="vertexSendBtn">
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                 </button>
@@ -1211,24 +1091,13 @@
 
     <footer>
         <div class="footer-links">
-            <a href="/pricing">Pricing</a>
+            <a href="/services">Services</a>
             <a href="/privacy">Privacy Policy</a>
             <a href="/terms">Terms & Conditions</a>
-            <a href="/refunds">Refund Policy</a>
             <a href="#" class="legal-trigger" data-policy="cookies">Cookie Policy</a>
         </div>
-        <p>&copy; 2026 Vynix. All rights reserved. Xoxo is a Vynix company.</p>
+        <p>&copy; 2026 Vynix Technology Group. All rights reserved.</p>
     </footer>
-
-    <div class="modal-overlay" id="non-android-overlay">
-        <div class="modal-box">
-            <h3>Android Exclusive</h3>
-            <div class="modal-content">
-                Xoxo is currently optimized exclusively for Android devices. Please visit this page on your Android smartphone or tablet to download the APK.
-            </div>
-            <button class="btn-pill btn-outline close-modal" data-target="non-android-overlay" style="width:100%;">Understood</button>
-        </div>
-    </div>
 
     <div class="modal-overlay" id="legal-overlay">
         <div class="modal-box">
@@ -1239,7 +1108,7 @@
     </div>
 
     <script type="module">
-        // 1. Firebase Initialization for Live Goza AI Support
+        // Firebase Initialization for Live Goza AI Support
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
@@ -1258,11 +1127,6 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // AI_FIRESTORE_COLLECTION is set once anonymous auth resolves, so the
-        // doc path's uid segment always matches request.auth.uid in rules:
-        //   match /ai_discussions/{uid}/messages/{messageId} {
-        //     allow read, write: if request.auth != null && request.auth.uid == uid;
-        //   }
         let AI_FIRESTORE_COLLECTION = null;
 
         signInAnonymously(auth).then((cred) => {
@@ -1271,23 +1135,17 @@
             console.error('Anonymous auth failed', err);
         });
 
-        // 2. Core Config
-        const APK_URL = 'https://firebasestorage.googleapis.com/v0/b/newstart-64c43.firebasestorage.app/o/vynix%20messanger.apk?alt=media&token=7371aac7-7683-4774-927e-801b15f05806';
-
         const legalContent = {
             cookies: {
                 title: "Cookie Policy",
-                body: "<p>Xoxo, a Vynix company, uses essential local storage on your device strictly to maintain secure session states, authentication workflows, and UI preferences.</p><p>We do not deploy third-party advertising or tracking cookies on our primary application interfaces.</p>"
+                body: "<p>Vynix uses essential local storage strictly to maintain secure session states, authentication workflows, and UI preferences.</p><p>We do not deploy third-party advertising or tracking cookies on our primary application interfaces.</p>"
             }
         };
 
-        // 3. DOM Elements
-        const downloadButtons = document.querySelectorAll('.apk-download-btn');
+        // DOM Elements
         const legalTriggers = document.querySelectorAll('.legal-trigger');
         const closeButtons = document.querySelectorAll('.close-modal');
         const overlays = document.querySelectorAll('.modal-overlay');
-        
-        const nonAndroidOverlay = document.getElementById('non-android-overlay');
         const legalOverlay = document.getElementById('legal-overlay');
         const legalTitle = document.getElementById('legal-modal-title');
         const legalBody = document.getElementById('legal-modal-body');
@@ -1302,22 +1160,7 @@
         const vertexTextInput = document.getElementById('vertexTextInput');
         const vertexSendBtn = document.getElementById('vertexSendBtn');
 
-        // 4. Helper Functions
-        function isAndroid() {
-            return /android/.test(window.navigator.userAgent.toLowerCase());
-        }
-
-        // 5. Event Listeners (APK Downloads & Modals)
-        downloadButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (!isAndroid()) {
-                    nonAndroidOverlay.classList.add('active');
-                    return;
-                }
-                window.location.href = APK_URL;
-            });
-        });
-
+        // Event Listeners for Modals
         legalTriggers.forEach(trigger => {
             trigger.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -1345,11 +1188,7 @@
             });
         });
 
-        // 6. Gemini Goza Interactive Support Logics (Real-Time Firestore Implementation)
-
-        // Nebula portal transition: the pill trigger collapses into a swirling
-        // orb that travels from its docked position to screen-center and
-        // expands into the chat panel's shape, then hands off to the panel.
+        // Gemini Goza Interactive Support Logics
         const MORPH_MS = 620;
         let panelOpen = false;
         let isMorphing = false;
@@ -1381,11 +1220,9 @@
             const btnRect = vertexTriggerBtn.getBoundingClientRect();
             const target = getPanelTargetRect();
 
-            // Pre-size the panel so its finished dimensions match the morph's landing rect
             vertexChatPanel.style.width = target.width + 'px';
             vertexChatPanel.style.height = target.height + 'px';
 
-            // Snap the orb onto the pill's exact position/size first, no transition
             vertexMorph.style.transition = 'none';
             setMorphRect(btnRect, '999px');
             vertexMorph.style.opacity = '1';
@@ -1479,8 +1316,6 @@
         }
 
         async function triggerAiResponse(promptText) {
-            // Guard against the rare case where a message is sent before
-            // anonymous auth has resolved and the collection path is set
             if (!AI_FIRESTORE_COLLECTION) {
                 createMessageBubble("Still connecting… give it a second and try again.", 'ai');
                 return;
@@ -1489,18 +1324,15 @@
             const typingId = 'typing_' + Date.now();
             createMessageBubble('TYPING', 'ai', typingId);
             
-            // Disable input while generating response
             vertexTextInput.disabled = true;
             vertexSendBtn.style.opacity = '0.5';
 
             try {
-                // Send Prompt to Firestore (Watched by Gemini Extension)
                 const docRef = await addDoc(collection(db, AI_FIRESTORE_COLLECTION), {
                     prompt: promptText,
                     createTime: serverTimestamp()
                 });
 
-                // Listen for Response from Gemini Extension
                 const unsub = onSnapshot(docRef, (snap) => {
                     const data = snap.data();
                     if (!data) return;
@@ -1531,7 +1363,6 @@
             vertexSendBtn.style.opacity = '1';
         }
 
-        // Send Text Trigger
         vertexSendBtn.addEventListener('click', () => {
             const query = vertexTextInput.value.trim();
             if (!query || vertexTextInput.disabled) return;
@@ -1544,7 +1375,8 @@
         vertexTextInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') vertexSendBtn.click();
         });
-        // 7. Scroll-reveal animations for sections/cards/steps
+
+        // Scroll-reveal animations
         const revealEls = document.querySelectorAll('.reveal-up');
         if ('IntersectionObserver' in window && revealEls.length) {
             const revealObserver = new IntersectionObserver((entries) => {
@@ -1560,7 +1392,7 @@
             revealEls.forEach(el => el.classList.add('in-view'));
         }
 
-        // Subtle shadow on the fixed navbar once the page has scrolled
+        // Header scroll effect
         const siteHeader = document.querySelector('header');
         if (siteHeader) {
             window.addEventListener('scroll', () => {
