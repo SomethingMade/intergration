@@ -6,11 +6,10 @@
     <title>Vynix — Technology & Software Development</title>
     
     <meta name="theme-color" content="#000000">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Michroma&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            /* SpaceX-inspired: near-monochrome, high-contrast, one restrained accent */
             --bg-base: #000000;
             --bg-base-rgb: 0, 0, 0;
             --bg-surface: #0a0a0a;
@@ -19,7 +18,7 @@
             --text-primary: #FFFFFF;
             --text-secondary: #8a8a8a;
             --accent: #0A84FF;
-            --font-brand: 'Michroma', sans-serif;
+            --font-brand: 'Inter', sans-serif;
             --font-mono: 'SF Mono', 'Courier New', monospace;
         }
 
@@ -84,6 +83,11 @@
             gap: 8px;
             text-decoration: none;
             color: var(--text-primary);
+            transition: opacity 0.2s;
+        }
+
+        .logo:hover {
+            opacity: 0.8;
         }
 
         .nav-links {
@@ -219,6 +223,7 @@
             height: 100%;
             z-index: 0;
             overflow: hidden;
+            background: #000;
         }
 
         .hero-video {
@@ -227,13 +232,13 @@
             object-fit: cover;
             object-position: center;
             pointer-events: none;
-            opacity: 0.6; /* Dims the video naturally */
+            opacity: 1; 
         }
 
         .video-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, rgba(var(--bg-base-rgb), 0.3), rgba(var(--bg-base-rgb), 0.95));
+            background: linear-gradient(to bottom, rgba(var(--bg-base-rgb), 0.4), rgba(var(--bg-base-rgb), 0.95));
             z-index: 1;
         }
 
@@ -268,7 +273,7 @@
         @keyframes heroFadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 
         .hero-content h1 {
-            font-family: var(--font-brand);
+            font-family: 'Michroma', sans-serif;
             font-size: 40px;
             font-weight: 400;
             line-height: 1.25;
@@ -318,7 +323,7 @@
         }
 
         .section-header h2 {
-            font-family: var(--font-brand);
+            font-family: 'Michroma', sans-serif;
             font-size: 24px;
             font-weight: 400;
             letter-spacing: 0.5px;
@@ -450,7 +455,7 @@
         .company-card.is-live .company-status::before { background: #34C759; box-shadow: 0 0 8px #34C759; }
 
         .company-name {
-            font-family: var(--font-brand);
+            font-family: 'Michroma', sans-serif;
             font-size: 26px;
             font-weight: 400;
             letter-spacing: 1px;
@@ -584,7 +589,7 @@
         }
 
         .cta-footer h2 {
-            font-family: var(--font-brand);
+            font-family: 'Michroma', sans-serif;
             font-size: 28px;
             font-weight: 400;
             text-transform: uppercase;
@@ -900,9 +905,12 @@
     <header>
         <div class="nav-container">
             <a href="#" class="logo">
-                <svg width="130" height="30" viewBox="0 0 130 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M 5 22 Q 60 -8 125 18" stroke="var(--accent)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                    <text x="0" y="24" fill="currentColor" font-family="'Michroma', sans-serif" font-size="22" letter-spacing="2">VYNIX</text>
+                <svg width="140" height="34" viewBox="0 0 140 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 6L16 28L28 6" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="16" cy="28" r="3" fill="#ffffff"/>
+                    <circle cx="4" cy="6" r="3" fill="#ffffff"/>
+                    <circle cx="28" cy="6" r="3" fill="#ffffff"/>
+                    <text x="42" y="25" fill="currentColor" font-family="'Inter', sans-serif" font-weight="800" font-size="22" letter-spacing="3">VYNIX</text>
                 </svg>
             </a>
             <nav class="nav-links">
@@ -916,9 +924,10 @@
 
     <section class="hero">
         <div class="hero-video-wrapper">
-            <!-- Ensure you replace the src below with your actual Firebase Storage video URL -->
-            <video autoplay loop muted playsinline class="hero-video">
-                <source src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
+            <!-- Ensure autoplay, muted, and playsinline are present -->
+            <video id="bg-video" autoplay loop muted playsinline class="hero-video">
+                <!-- Fallback robust tech video link for testing visibility -->
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-a-city-3194-large.mp4" type="video/mp4">
             </video>
             <div class="video-overlay"></div>
         </div>
@@ -1399,6 +1408,16 @@
                 siteHeader.classList.toggle('scrolled', window.scrollY > 8);
             }, { passive: true });
         }
+
+        // Force the video to play on load just in case the browser pauses it
+        document.addEventListener("DOMContentLoaded", () => {
+            const bgVideo = document.getElementById('bg-video');
+            if (bgVideo) {
+                bgVideo.play().catch(error => {
+                    console.log("Browser blocked autoplay. User interaction required.", error);
+                });
+            }
+        });
     </script>
 </body>
 </html>
