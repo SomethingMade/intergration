@@ -277,7 +277,7 @@
         .hero {
             position: relative;
             padding: 200px 24px 120px;
-            min-height: 90vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -1031,10 +1031,10 @@
         <div class="companies-grid">
             <a href="#software" class="company-card is-live reveal-up">
                 <span class="company-status">Live</span>
-                <div class="company-name">Xoxo</div>
+                <div class="company-name">Xoxa Messenger</div>
                 <div class="company-tagline">Real-time messaging platform</div>
                 <p class="company-desc">Secure, real-time chat, stories, and managed groups — built for speed, privacy, and deep enterprise integration.</p>
-                <span class="company-link">Explore Xoxo &rarr;</span>
+                <span class="company-link">Explore Xoxa &rarr;</span>
             </a>
             <div class="company-card reveal-up">
                 <span class="company-status">In development</span>
@@ -1055,7 +1055,7 @@
 
     <section class="features" id="software">
         <div class="section-header reveal-up">
-            <div class="eyebrow">XOXO INFRASTRUCTURE</div>
+            <div class="eyebrow">XOXA INFRASTRUCTURE</div>
             <h2>Engaging communication layout system</h2>
             <p>Built with lightweight architecture and dynamic variables, maximizing your day-to-day data privacy and connectivity speeds globally.</p>
         </div>
@@ -1499,19 +1499,9 @@
             revealEls.forEach(el => el.classList.add('in-view'));
         }
 
-        // Veil the floating chat button while the hero section is in view,
-        // so the hero visually "covers" it until the user scrolls past.
-        const heroSection = document.querySelector('.hero');
-        const vertexChatWrapper = document.querySelector('.vertex-chat-wrapper');
-        if (heroSection && vertexChatWrapper && 'IntersectionObserver' in window) {
-            const heroObserver = new IntersectionObserver((entries) => {
-                entries.forEach((entry) => {
-                    if (panelOpen) return; // never hide while the chat is open
-                    vertexChatWrapper.classList.toggle('veiled', entry.isIntersecting);
-                });
-            }, { threshold: 0 });
-            heroObserver.observe(heroSection);
-        }
+        // Floating chat button now overlays the hero section at all times
+        // (previously it veiled itself while the hero was in view — removed
+        // per request so it stays visible/clickable over the hero too).
 
         // Header scroll effect
         const siteHeader = document.querySelector('header');
