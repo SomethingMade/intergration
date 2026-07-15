@@ -921,6 +921,15 @@
             .steps-container { grid-template-columns: 1fr; gap: 40px; }
         }
 
+        /* Mobile nav panel chrome — hidden on desktop, activated below 768px */
+        .nav-close,
+        .nav-links-footer {
+            display: none;
+        }
+        .nav-links-list {
+            display: contents;
+        }
+
         @media (max-width: 768px) {
             .hamburger {
                 display: block;
@@ -928,27 +937,116 @@
 
             .nav-links {
                 position: fixed;
-                top: 0;
-                right: -100%;
+                inset: 0;
                 width: 100%;
-                height: 100vh;
-                background: rgba(var(--bg-base-rgb), 0.98);
-                backdrop-filter: blur(12px);
-                -webkit-backdrop-filter: blur(12px);
+                height: 100dvh;
+                background: var(--bg-base);
+                border-left: 1px solid var(--border-color);
                 flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                align-items: stretch;
+                padding: 96px 28px 28px;
+                transform: translateX(100%);
+                transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
                 z-index: 1001; /* Below logo and hamburger */
+                counter-reset: navindex;
             }
 
             .nav-links.active {
-                right: 0;
+                transform: translateX(0);
+            }
+
+            .nav-close {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                width: 40px;
+                height: 40px;
+                background: none;
+                border: 1px solid var(--border-color);
+                border-radius: 3px;
+                color: var(--text-primary);
+                cursor: pointer;
+            }
+            .nav-close svg { width: 16px; height: 16px; }
+            .nav-close:active { transform: scale(0.94); }
+
+            .nav-links-list {
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                overflow-y: auto;
+                margin: 0;
             }
 
             .nav-links a {
-                font-size: 18px;
-                margin-bottom: 24px;
+                position: relative;
+                display: flex;
+                align-items: baseline;
+                gap: 14px;
+                padding: 20px 4px;
+                margin-bottom: 0;
+                border-bottom: 1px solid var(--border-color);
+                font-size: 22px;
+                font-weight: 600;
+                letter-spacing: -0.3px;
+                color: var(--text-primary);
+                opacity: 0;
+                transform: translateX(14px);
+                transition: opacity 0.4s ease, transform 0.4s ease, color 0.2s ease, padding-left 0.25s ease;
+            }
+
+            .nav-links a::before {
+                counter-increment: navindex;
+                content: "0" counter(navindex);
+                font-family: var(--font-mono);
+                font-size: 12px;
+                font-weight: 600;
+                letter-spacing: 1px;
+                color: var(--text-secondary);
+                transition: color 0.2s ease;
+            }
+
+            .nav-links a::after {
+                content: none;
+            }
+
+            .nav-links.active a {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            .nav-links.active a:nth-child(1) { transition-delay: 0.08s; }
+            .nav-links.active a:nth-child(2) { transition-delay: 0.14s; }
+            .nav-links.active a:nth-child(3) { transition-delay: 0.20s; }
+            .nav-links.active a:nth-child(4) { transition-delay: 0.26s; }
+
+            .nav-links a:hover,
+            .nav-links a:active {
+                color: var(--accent);
+                padding-left: 10px;
+            }
+            .nav-links a:hover::before {
+                color: var(--accent);
+            }
+
+            .nav-links-footer {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                padding-top: 24px;
+            }
+            .nav-links-footer .eyebrow {
+                margin-bottom: 0;
+            }
+            .nav-links-footer a {
+                font-family: var(--font-mono);
+                font-size: 13px;
+                color: var(--text-secondary);
+                text-decoration: none;
+                letter-spacing: 0.3px;
             }
         }
 
@@ -1005,10 +1103,22 @@
             </button>
 
             <nav class="nav-links" id="nav-links">
-                <a href="#companies">Companies</a>
-                <a href="#software">Software</a>
-                <a href="#how-it-works">Process</a>
-                <a href="#contact">Contact</a>
+                <button class="nav-close" id="nav-close-btn" aria-label="Close Menu">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="5" x2="19" y2="19"></line>
+                        <line x1="19" y1="5" x2="5" y2="19"></line>
+                    </svg>
+                </button>
+                <div class="nav-links-list">
+                    <a href="#companies">Companies</a>
+                    <a href="#software">Software</a>
+                    <a href="#how-it-works">Process</a>
+                    <a href="#contact">Contact</a>
+                </div>
+                <div class="nav-links-footer">
+                    <span class="eyebrow left">Get In Touch</span>
+                    <a href="mailto:hello@vynix.com">hello@vynix.com</a>
+                </div>
             </nav>
         </div>
     </header>
@@ -1189,9 +1299,9 @@
 
     <footer>
         <div class="footer-links">
-            <a href="/services">Services</a>
-            <a href="/privacy">Privacy Policy</a>
-            <a href="/terms">Terms & Conditions</a>
+            <a href="#" class="legal-trigger" data-policy="services">Services</a>
+            <a href="#" class="legal-trigger" data-policy="privacy">Privacy Policy</a>
+            <a href="#" class="legal-trigger" data-policy="terms">Terms & Conditions</a>
             <a href="#" class="legal-trigger" data-policy="cookies">Cookie Policy</a>
         </div>
         <p>&copy; 2026 Vynix Technology Group. All rights reserved.</p>
@@ -1234,6 +1344,18 @@
         });
 
         const legalContent = {
+            services: {
+                title: "Services",
+                body: "<p>Vynix operates as a holding company for a portfolio of independent software products, each engineered and maintained by a dedicated product team.</p><p>Beyond our own ventures, our engineering team is available for select partner engagements spanning product architecture, real-time systems, and full-stack development. Reach out via <a href=\"mailto:hello@vynix.com\">hello@vynix.com</a> to discuss a project.</p>"
+            },
+            privacy: {
+                title: "Privacy Policy",
+                body: "<p>Vynix and its product companies collect only the data required to operate secure, reliable services — account details, authentication credentials, and usage telemetry needed for performance and safety.</p><p>We do not sell personal data to third parties. Data is stored using industry-standard encryption and access controls, and you may request access to or deletion of your data at any time by contacting <a href=\"mailto:hello@vynix.com\">hello@vynix.com</a>.</p>"
+            },
+            terms: {
+                title: "Terms & Conditions",
+                body: "<p>By using any Vynix product, you agree to use the service lawfully and not to attempt to disrupt, reverse-engineer, or abuse the platform's infrastructure.</p><p>Vynix products are provided on an as-is basis without warranty of uninterrupted availability. We may update these terms as our products evolve; continued use of a Vynix product constitutes acceptance of the current terms.</p>"
+            },
             cookies: {
                 title: "Cookie Policy",
                 body: "<p>Vynix uses essential local storage strictly to maintain secure session states, authentication workflows, and UI preferences.</p><p>We do not deploy third-party advertising or tracking cookies on our primary application interfaces.</p>"
@@ -1251,6 +1373,7 @@
         // Navigation & Mobile Menu Elements
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const navLinksContainer = document.getElementById('nav-links');
+        const navCloseBtn = document.getElementById('nav-close-btn');
         const navLinks = navLinksContainer.querySelectorAll('a');
 
         function setMobileMenuOpen(open) {
@@ -1265,6 +1388,12 @@
         mobileMenuBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             setMobileMenuOpen(!navLinksContainer.classList.contains('active'));
+        });
+
+        // Explicit close (X) button inside the mobile nav panel
+        navCloseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setMobileMenuOpen(false);
         });
 
         // Nav links navigate normally (same-page anchors: #companies, #software, etc.)
