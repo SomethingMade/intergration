@@ -130,6 +130,60 @@
             color: var(--text-primary);
         }
 
+        /* Header launch countdown pill — hardcoded black so it stays
+           visible regardless of light/dark theme or scroll state */
+        .header-countdown-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #000000;
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 30px;
+            padding: 7px 14px;
+            white-space: nowrap;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .header-countdown-pill:hover {
+            border-color: rgba(255,255,255,0.32);
+        }
+
+        .header-countdown-pill .hc-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+            flex-shrink: 0;
+            animation: heroDotPulse 2s ease-in-out infinite;
+        }
+
+        .header-countdown-pill .hc-label {
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: #ffffff;
+        }
+
+        .header-countdown-pill .hc-value {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: #ffffff;
+        }
+
+        @media (max-width: 760px) {
+            .header-countdown-pill .hc-label { display: none; }
+            .header-countdown-pill { padding: 6px 11px; }
+        }
+
+        @media (max-width: 400px) {
+            .header-countdown-pill { display: none; }
+        }
+
         /* Hamburger Menu Button */
         .hamburger {
             display: none;
@@ -1141,6 +1195,12 @@
                 </svg>
             </a>
 
+            <a href="#companies" class="header-countdown-pill" aria-label="Silo launches soon">
+                <span class="hc-dot"></span>
+                <span class="hc-label">Silo launches in</span>
+                <span class="hc-value" id="headerCountdown">30d 00h 00m 00s</span>
+            </a>
+
             <button class="hamburger" id="mobile-menu-btn" aria-label="Toggle Menu">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="3" y1="12" x2="21" y2="12" class="line1"></line>
@@ -1745,13 +1805,15 @@
         function updateSiloCountdown() {
             const heroEl = document.getElementById('heroCountdown');
             const cardEl = document.getElementById('siloCardCountdown');
-            if (!heroEl && !cardEl) return;
+            const headerEl = document.getElementById('headerCountdown');
+            if (!heroEl && !cardEl && !headerEl) return;
 
             const diffMs = SILO_LAUNCH_AT.getTime() - Date.now();
 
             if (diffMs <= 0) {
                 if (heroEl) heroEl.textContent = 'Now live';
                 if (cardEl) cardEl.textContent = 'Now live \u2192';
+                if (headerEl) headerEl.textContent = 'Now live';
                 clearInterval(siloCountdownTimer);
                 return;
             }
@@ -1765,6 +1827,7 @@
 
             if (heroEl) heroEl.textContent = compact;
             if (cardEl) cardEl.textContent = `Launches in ${compact}`;
+            if (headerEl) headerEl.textContent = compact;
         }
 
         updateSiloCountdown();
