@@ -1253,44 +1253,43 @@
         const navLinksContainer = document.getElementById('nav-links');
         const navLinks = navLinksContainer.querySelectorAll('a');
 
-        // Mobile Menu Toggle Logic
-        mobileMenuBtn.addEventListener('click', () => {
-            navLinksContainer.classList.toggle('active');
-            mobileMenuBtn.classList.toggle('active');
-            // Prevent body scroll when menu is open
-            document.body.style.overflow = navLinksContainer.classList.contains('active') ? 'hidden' : '';
+        function setMobileMenuOpen(open) {
+            navLinksContainer.classList.toggle('active', open);
+            mobileMenuBtn.classList.toggle('active', open);
+            mobileMenuBtn.setAttribute('aria-expanded', String(open));
+            document.body.style.overflow = open ? 'hidden' : '';
+        }
+
+        // Toggle on hamburger click. stopPropagation so this exact click can never
+        // also be seen — and mis-handled — by the outside-click listener below.
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setMobileMenuOpen(!navLinksContainer.classList.contains('active'));
         });
 
-        // Close menu when a link is clicked
+        // Nav links navigate normally (same-page anchors: #companies, #software, etc.)
+        // — we just close the menu out of the way first so the destination is visible.
         navLinks.forEach(link => {
             link.addEventListener('click', () => {
-                navLinksContainer.classList.remove('active');
-                mobileMenuBtn.classList.remove('active');
-                document.body.style.overflow = '';
+                setMobileMenuOpen(false);
             });
         });
 
-        function closeMobileMenu() {
-            navLinksContainer.classList.remove('active');
-            mobileMenuBtn.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        // Close on outside click (tap anywhere outside the open menu/hamburger)
+        // Close on outside click/tap
         document.addEventListener('click', (e) => {
             if (!navLinksContainer.classList.contains('active')) return;
-            if (navLinksContainer.contains(e.target) || mobileMenuBtn.contains(e.target)) return;
-            closeMobileMenu();
+            if (navLinksContainer.contains(e.target)) return;
+            setMobileMenuOpen(false);
         });
 
         // Close on Escape
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeMobileMenu();
+            if (e.key === 'Escape') setMobileMenuOpen(false);
         });
 
         // Close automatically if the viewport is resized/rotated past the mobile breakpoint
         window.addEventListener('resize', () => {
-            if (window.innerWidth > 768) closeMobileMenu();
+            if (window.innerWidth > 768) setMobileMenuOpen(false);
         });
 
         // Event Listeners for Legal Modals
@@ -1559,3 +1558,4 @@
     </script>
 </body>
 </html>
+
