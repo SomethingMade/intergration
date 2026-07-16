@@ -321,7 +321,30 @@
             object-fit: cover;
             object-position: center;
             pointer-events: none;
-            opacity: 1; 
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .hero-video-fallback {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            opacity: 0;
+            z-index: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        /* When the video is deemed unreliable (error / stalled / slow to start),
+           fade it out and fade the static image in on top of it. */
+        .hero-video-wrapper.use-fallback .hero-video {
+            opacity: 0;
+        }
+
+        .hero-video-wrapper.use-fallback .hero-video-fallback {
+            opacity: 1;
         }
 
         .video-overlay {
@@ -1235,10 +1258,11 @@
     </header>
 
     <section class="hero">
-        <div class="hero-video-wrapper">
-            <video id="bg-video" autoplay loop muted playsinline class="hero-video">
+        <div class="hero-video-wrapper" id="heroVideoWrapper">
+            <video id="bg-video" autoplay loop muted playsinline preload="auto" class="hero-video">
                 <source src="video.mp4" type="video/mp4">
             </video>
+            <img id="bg-video-fallback" class="hero-video-fallback" src="hero-fallback.jpg" alt="" aria-hidden="true">
             <div class="video-overlay"></div>
         </div>
 
@@ -1792,14 +1816,69 @@
             }, { passive: true });
         }
 
-        // Force the video to play on load just in case the browser pauses it
+        // Hero video reliability check: fall back to a static image if the
+        // video errors out, takes too long to start, or stalls/buffers
+        // mid-playback (e.g. slow connection). Automatically recovers back
+        // to the video if it starts playing smoothly again.
         document.addEventListener("DOMContentLoaded", () => {
             const bgVideo = document.getElementById('bg-video');
-            if (bgVideo) {
-                bgVideo.play().catch(error => {
-                    console.log("Browser blocked autoplay. User interaction required.", error);
-                });
-            }
+            const wrapper = document.getElementById('heroVideoWrapper');
+            if (!bgVideo || !wrapper) return;
+
+            const START_TIMEOUT_MS = 3500;   // how long we'll wait for first frame
+            const STALL_TIMEOUT_MS = 2000;    // how long a mid-playback stall is tolerated
+
+            let hasPlayedOnce = false;
+            let startTimer = null;
+            let stallTimer = null;
+
+            const showFallback = () => wrapper.classList.add('use-fallback');
+            const hideFallback = () => wrapper.classList.remove('use-fallback');
+
+            const clearStartTimer = () => {
+                if (startTimer) { clearTimeout(startTimer); startTimer = null; }
+            };
+            const clearStallTimer = () => {
+                if (stallTimer) { clearTimeout(stallTimer); stallTimer = null; }
+            };
+
+            // If the video hasn't produced a frame within START_TIMEOUT_MS,
+            // assume it's lagging and show the image instead.
+            startTimer = setTimeout(() => {
+                if (!hasPlayedOnce) showFallback();
+            }, START_TIMEOUT_MS);
+
+            bgVideo.addEventListener('playing', () => {
+                hasPlayedOnce = true;
+                clearStartTimer();
+                clearStallTimer();
+                hideFallback();
+            });
+
+            // 'waiting' fires when playback pauses to buffer (i.e. lagging).
+            // Give it a short grace period to recover before switching over.
+            bgVideo.addEventListener('waiting', () => {
+                clearStallTimer();
+                stallTimer = setTimeout(showFallback, STALL_TIMEOUT_MS);
+            });
+
+            bgVideo.addEventListener('stalled', () => {
+                clearStallTimer();
+                stallTimer = setTimeout(showFallback, STALL_TIMEOUT_MS);
+            });
+
+            bgVideo.addEventListener('error', () => {
+                clearStartTimer();
+                clearStallTimer();
+                showFallback();
+            });
+
+            // Try to play; if the browser blocks autoplay entirely, fall
+            // back to the image immediately rather than showing a frozen video.
+            bgVideo.play().catch(error => {
+                console.log("Browser blocked autoplay. User interaction required.", error);
+                showFallback();
+            });
         });
 
         // Silo public launch countdown — fixed target, 30 days from when this was set.
@@ -1840,4 +1919,3 @@
     </script>
 </body>
 </html>
-
