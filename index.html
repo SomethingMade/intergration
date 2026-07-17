@@ -1222,10 +1222,10 @@
                 </svg>
             </a>
 
-            <a href="#companies" class="header-countdown-pill" aria-label="Silo launches soon">
+            <a href="#companies" class="header-countdown-pill" aria-label="Silo is open for partnerships">
                 <span class="hc-dot"></span>
-                <span class="hc-label">Silo launches in</span>
-                <span class="hc-value" id="headerCountdown">30d 00h 00m 00s</span>
+                <span class="hc-label">Silo is live —</span>
+                <span class="hc-value">Partner with us</span>
             </a>
 
             <button class="hamburger" id="mobile-menu-btn" aria-label="Toggle Menu">
@@ -1262,7 +1262,7 @@
             <video id="bg-video" autoplay loop muted playsinline preload="auto" class="hero-video">
                 <source src="video.mp4" type="video/mp4">
             </video>
-            <img id="bg-video-fallback" class="hero-video-fallback" src="hero-fallback.jpg" alt="" aria-hidden="true">
+            <img id="bg-video-fallback" class="hero-video-fallback" src="https://i.postimg.cc/XJ3C8C9t/image.png" alt="" aria-hidden="true">
             <div class="video-overlay"></div>
         </div>
 
@@ -1275,8 +1275,7 @@
             <p>Vynix designs, builds, and operates a portfolio of independent software products, engineered from the ground up to solve complex problems at scale.</p>
             <div class="hero-launch-badge">
                 <span class="hero-launch-dot"></span>
-                <span class="hero-launch-text">Silo opens to companies in</span>
-                <span class="hero-launch-countdown" id="heroCountdown">30d 00h 00m 00s</span>
+                <span class="hero-launch-text">Silo is open for companies to partner with us</span>
             </div>
             <div class="hero-actions">
                 <a href="#companies" class="btn-pill btn-primary">Explore Our Work</a>
@@ -1299,13 +1298,13 @@
                 <p class="company-desc">Secure, real-time chat, stories, and managed groups — built for speed, privacy, and deep enterprise integration.</p>
                 <span class="company-link">Explore Xoxa &rarr;</span>
             </a>
-            <div class="company-card reveal-up">
-                <span class="company-status">In development</span>
+            <a href="#contact" class="company-card is-live reveal-up">
+                <span class="company-status">Live</span>
                 <div class="company-name">Silo</div>
                 <div class="company-tagline">Managed Cloud Storage</div>
                 <p class="company-desc">Multi-tenant object storage for companies — secure, metered, and billed by usage, with dedicated dashboards and API access.</p>
-                <span class="company-link" id="siloCardCountdown">Launches in 30d 00h 00m 00s</span>
-            </div>
+                <span class="company-link">Partner with Silo &rarr;</span>
+            </a>
             <div class="company-card reveal-up">
                 <span class="company-status">In development</span>
                 <div class="company-name">Project 03</div>
@@ -1880,42 +1879,6 @@
                 showFallback();
             });
         });
-
-        // Silo public launch countdown — fixed target, 30 days from when this was set.
-        // Update SILO_LAUNCH_AT directly if the date ever needs to move.
-        const SILO_LAUNCH_AT = new Date('2026-08-14T20:36:31+02:00');
-        let siloCountdownTimer;
-
-        function updateSiloCountdown() {
-            const heroEl = document.getElementById('heroCountdown');
-            const cardEl = document.getElementById('siloCardCountdown');
-            const headerEl = document.getElementById('headerCountdown');
-            if (!heroEl && !cardEl && !headerEl) return;
-
-            const diffMs = SILO_LAUNCH_AT.getTime() - Date.now();
-
-            if (diffMs <= 0) {
-                if (heroEl) heroEl.textContent = 'Now live';
-                if (cardEl) cardEl.textContent = 'Now live \u2192';
-                if (headerEl) headerEl.textContent = 'Now live';
-                clearInterval(siloCountdownTimer);
-                return;
-            }
-
-            const pad = n => String(n).padStart(2, '0');
-            const days = Math.floor(diffMs / 86400000);
-            const hours = pad(Math.floor((diffMs % 86400000) / 3600000));
-            const minutes = pad(Math.floor((diffMs % 3600000) / 60000));
-            const seconds = pad(Math.floor((diffMs % 60000) / 1000));
-            const compact = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-
-            if (heroEl) heroEl.textContent = compact;
-            if (cardEl) cardEl.textContent = `Launches in ${compact}`;
-            if (headerEl) headerEl.textContent = compact;
-        }
-
-        updateSiloCountdown();
-        siloCountdownTimer = setInterval(updateSiloCountdown, 1000);
     </script>
 </body>
 </html>
