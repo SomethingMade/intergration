@@ -932,9 +932,8 @@
 
         .vertex-chat-panel {
             position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
+            left: 0;
+            top: 0;
             width: 400px;
             height: 560px;
             background: var(--bg-surface);
@@ -1008,6 +1007,7 @@
 
         .vertex-input-row {
             padding: 12px 16px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
             background: var(--bg-surface);
             border-top: 1px solid var(--border-color);
             display: flex;
@@ -1606,13 +1606,27 @@
 
         function getPanelTargetRect() {
             const isMobile = window.innerWidth <= 568;
-            const width = isMobile ? Math.min(420, window.innerWidth - 32) : 400;
-            const height = isMobile ? Math.min(580, window.innerHeight - 100) : 560;
+
+            if (isMobile) {
+                const width = window.innerWidth;
+                const height = Math.min(window.innerHeight * 0.82, window.innerHeight - 40);
+                return {
+                    width,
+                    height,
+                    left: 0,
+                    top: window.innerHeight - height,
+                    radius: '20px 20px 0 0'
+                };
+            }
+
+            const width = 400;
+            const height = 560;
             return {
                 width,
                 height,
                 left: (window.innerWidth - width) / 2,
-                top: (window.innerHeight - height) / 2
+                top: (window.innerHeight - height) / 2,
+                radius: '20px'
             };
         }
 
@@ -1633,6 +1647,9 @@
 
             vertexChatPanel.style.width = target.width + 'px';
             vertexChatPanel.style.height = target.height + 'px';
+            vertexChatPanel.style.left = target.left + 'px';
+            vertexChatPanel.style.top = target.top + 'px';
+            vertexChatPanel.style.borderRadius = target.radius;
 
             vertexMorph.style.transition = 'none';
             setMorphRect(btnRect, '999px');
@@ -1647,7 +1664,7 @@
                     `left ${MORPH_MS}ms cubic-bezier(.16,1,.3,1), top ${MORPH_MS}ms cubic-bezier(.16,1,.3,1), ` +
                     `width ${MORPH_MS}ms cubic-bezier(.16,1,.3,1), height ${MORPH_MS}ms cubic-bezier(.16,1,.3,1), ` +
                     `border-radius ${MORPH_MS}ms cubic-bezier(.16,1,.3,1)`;
-                setMorphRect(target, '24px');
+                setMorphRect(target, target.radius);
             });
 
             const onEnd = () => {
