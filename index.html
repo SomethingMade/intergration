@@ -2,1567 +2,522 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vynix — Technology & Software Development</title>
-    
-    <meta name="theme-color" content="#000000">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Michroma&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-base: #000000;
-            --bg-base-rgb: 0, 0, 0;
             --bg-surface: #0a0a0a;
-            --bg-alt: #050505;
-            --border-color: #222222;
+            --bg-card: rgba(25, 25, 25, 0.4);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.2);
             --text-primary: #FFFFFF;
-            --text-secondary: #8a8a8a;
-            --accent: #0A84FF;
-            --font-brand: 'Inter', sans-serif;
-            --font-mono: 'SF Mono', 'Courier New', monospace;
-        }
-
-        @media(prefers-color-scheme: light) {
-            :root {
-                --bg-base: #FFFFFF;
-                --bg-base-rgb: 255, 255, 255;
-                --bg-surface: #FAFAFA;
-                --bg-alt: #F5F5F5;
-                --border-color: #EAEAEA;
-                --text-primary: #000000;
-                --text-secondary: #666666;
-            }
+            --text-secondary: #888899;
+            --accent-1: #0A84FF;
+            --accent-2: #8B5CF6;
+            --font-brand: 'Inter', -apple-system, sans-serif;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             scroll-behavior: smooth;
         }
 
         body {
             background-color: var(--bg-base);
             color: var(--text-primary);
-            overflow-x: hidden;
+            font-family: var(--font-brand);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
         }
 
-        /* Navbar */
-        header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: transparent;
-            z-index: 1000;
-            transition: background 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        /* Typography */
+        h1, h2, h3 {
+            letter-spacing: -0.03em;
+            line-height: 1.1;
         }
 
-        header.scrolled {
-            background: rgba(var(--bg-base-rgb), 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+        .gradient-text {
+            background: linear-gradient(135deg, var(--text-primary) 0%, #666 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .accent-text {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .nav-container {
+        /* Layout */
+        .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 16px 24px;
+            padding: 0 24px;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 48px);
+            max-width: 1152px;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 100px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            color: var(--text-primary);
-            transition: opacity 0.2s;
-            position: relative;
-            z-index: 1002; /* Stay above mobile menu */
-        }
-
-        .logo:hover {
-            opacity: 0.8;
+            padding: 12px 24px;
+            z-index: 1000;
         }
 
         .nav-links {
             display: flex;
             gap: 32px;
-            align-items: center;
         }
 
         .nav-links a {
-            position: relative;
-            text-decoration: none;
             color: var(--text-secondary);
-            font-weight: 600;
-            font-size: 12.5px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: color 0.2s;
-            padding-bottom: 2px;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: -4px;
-            width: 0;
-            height: 1.5px;
-            background: var(--text-primary);
-            transition: width 0.25s ease;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s ease;
         }
 
         .nav-links a:hover {
             color: var(--text-primary);
         }
 
-        /* Header launch countdown pill — hardcoded black so it stays
-           visible regardless of light/dark theme or scroll state */
-        .header-countdown-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #000000;
-            border: 1px solid rgba(255,255,255,0.16);
-            border-radius: 30px;
-            padding: 7px 14px;
-            white-space: nowrap;
-            text-decoration: none;
-            flex-shrink: 0;
-        }
-
-        .header-countdown-pill:hover {
-            border-color: rgba(255,255,255,0.32);
-        }
-
-        .header-countdown-pill .hc-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--accent);
-            box-shadow: 0 0 8px var(--accent);
-            flex-shrink: 0;
-            animation: heroDotPulse 2s ease-in-out infinite;
-        }
-
-        .header-countdown-pill .hc-label {
-            font-size: 10.5px;
-            font-weight: 700;
-            letter-spacing: 0.6px;
-            text-transform: uppercase;
-            color: #ffffff;
-        }
-
-        .header-countdown-pill .hc-value {
-            font-family: var(--font-mono);
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            color: #ffffff;
-        }
-
-        @media (max-width: 760px) {
-            .header-countdown-pill .hc-label { display: none; }
-            .header-countdown-pill { padding: 6px 11px; }
-        }
-
-        @media (max-width: 400px) {
-            .header-countdown-pill { display: none; }
-        }
-
-        /* Hamburger Menu Button */
-        .hamburger {
-            display: none;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 8px;
-            color: var(--text-primary);
-            position: relative;
-            z-index: 1002; /* Stay above mobile menu */
-        }
-
-        .hamburger svg {
-            width: 24px;
-            height: 24px;
-            transition: transform 0.3s ease;
-        }
-
-        .hamburger line {
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            transform-origin: center;
-        }
-
-        .hamburger.active .line1 { transform: translateY(6px) rotate(45deg); }
-        .hamburger.active .line2 { opacity: 0; }
-        .hamburger.active .line3 { transform: translateY(-6px) rotate(-45deg); }
-
-        #companies, #software, #how-it-works, #contact {
-            scroll-margin-top: 90px;
-        }
-
         /* Buttons */
-        .btn-pill {
-            padding: 13px 28px;
-            border-radius: 3px;
-            font-size: 12.5px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+        .btn {
+            padding: 10px 24px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 500;
             text-decoration: none;
-            transition: all 0.2s ease;
-            border: 1px solid transparent;
-            cursor: pointer;
-            white-space: nowrap;
+            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 9px;
-        }
-
-        .btn-pill svg {
-            flex-shrink: 0;
+            gap: 8px;
+            cursor: pointer;
+            white-space: nowrap;
         }
 
         .btn-primary {
-            position: relative;
-            overflow: hidden;
             background: var(--text-primary);
             color: var(--bg-base);
-        }
-
-        .btn-primary::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -60%;
-            width: 40%; height: 100%;
-            background: linear-gradient(120deg, transparent, rgba(128,128,128,0.25), transparent);
-            transform: skewX(-20deg);
-            transition: left 0.6s ease;
-        }
-
-        .btn-primary:hover::after {
-            left: 130%;
+            border: 1px solid transparent;
         }
 
         .btn-primary:hover {
-            opacity: 0.85;
+            background: #e0e0e0;
             transform: translateY(-1px);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0) scale(0.97);
         }
 
         .btn-outline {
             background: transparent;
-            border: 1px solid var(--border-color);
             color: var(--text-primary);
+            border: 1px solid var(--border-color);
         }
 
         .btn-outline:hover {
-            border-color: var(--text-primary);
+            border-color: var(--border-hover);
+            background: rgba(255, 255, 255, 0.05);
         }
 
-        .btn-outline:active {
-            transform: scale(0.97);
-        }
-
-        /* Small tracked monospace label */
-        .eyebrow {
-            font-family: var(--font-mono);
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            margin-bottom: 16px;
+        .nav-actions {
             display: flex;
+            gap: 12px;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .eyebrow::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--accent);
-            flex-shrink: 0;
-        }
-
-        .eyebrow.left { justify-content: flex-start; }
-
-        /* Hero Video Architecture */
-        .hero-video-wrapper {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            overflow: hidden;
-            background: #000;
-        }
-
-        .hero-video {
-            display: block;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            pointer-events: none;
-            opacity: 1;
-            transition: opacity 0.5s ease;
-        }
-
-        .hero-video-fallback {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            opacity: 0;
-            z-index: 0;
-            transition: opacity 0.5s ease;
-        }
-
-        /* When the video is deemed unreliable (error / stalled / slow to start),
-           fade it out and fade the static image in on top of it. */
-        .hero-video-wrapper.use-fallback .hero-video {
-            opacity: 0;
-        }
-
-        .hero-video-wrapper.use-fallback .hero-video-fallback {
-            opacity: 1;
-        }
-
-        .video-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to bottom, rgba(var(--bg-base-rgb), 0.4), rgba(var(--bg-base-rgb), 0.95));
-            z-index: 1;
         }
 
         /* Hero Section */
         .hero {
-            position: relative;
-            padding: 200px 24px 120px;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            overflow: hidden;
+            position: relative;
+            padding-top: 80px;
         }
 
-        .hero-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(90px);
-            opacity: 0.28;
-            pointer-events: none;
-            animation: heroOrbFloat ease-in-out infinite;
-            z-index: 2;
-        }
-        .hero-orb-1 { width: 380px; height: 380px; background: var(--accent); top: -120px; left: -100px; animation-duration: 14s; opacity: 0.16; }
-        .hero-orb-2 { width: 320px; height: 320px; background: #ffffff; top: -60px; right: -90px; animation-duration: 17s; animation-delay: -5s; opacity: 0.06; }
-        @keyframes heroOrbFloat { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(24px,20px) scale(1.08); } }
-
-        /* Hero Animated Planet */
-        .hero-planet {
-            position: absolute;
-            width: 260px;
-            height: 260px;
-            top: 15%;
-            right: 12%;
-            border-radius: 50%;
-            /* 3D sphere gradient matching the Vynix logo colors */
-            background: radial-gradient(circle at 30% 30%, #8B5CF6, #0A84FF 50%, #000000 85%);
-            box-shadow:
-                inset -20px -20px 40px rgba(0, 0, 0, 0.9),
-                0 0 60px rgba(10, 132, 255, 0.2);
-            z-index: 2; /* Same layer as the background orbs */
-            pointer-events: none;
-            animation: planetFloat 18s ease-in-out infinite;
-        }
-
-        /* Planet Ring */
-        .hero-planet::before {
+        .hero::before {
             content: '';
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 420px;
-            height: 100px;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, rgba(10,132,255,0.05) 50%, rgba(0,0,0,0) 70%);
+            filter: blur(60px);
+            z-index: -1;
             border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.08);
-            border-top-color: transparent;
-            border-bottom-color: rgba(139, 92, 246, 0.6);
-            transform: translate(-50%, -50%) rotate(25deg);
-            box-shadow: 0 10px 20px rgba(10, 132, 255, 0.15);
-            transition: all 0.3s ease;
         }
 
-        /* Planet Atmosphere/Glow */
-        .hero-planet::after {
-            content: '';
-            position: absolute;
-            inset: -3px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 50% 50%, transparent 50%, rgba(10, 132, 255, 0.2) 100%);
-            filter: blur(5px);
-        }
-
-        /* Float Animation */
-        @keyframes planetFloat {
-            0%, 100% {
-                transform: translateY(0) rotate(0deg) scale(1);
-            }
-            50% {
-                transform: translateY(-35px) rotate(4deg) scale(1.03);
-            }
-        }
-
-        .hero-content { position: relative; z-index: 3; opacity: 0; animation: heroFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards; }
-
-        @keyframes heroFadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-
-        .hero-content h1 {
-            font-family: 'Michroma', sans-serif;
-            font-size: 40px;
-            font-weight: 400;
-            line-height: 1.25;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
+        .hero h1 {
+            font-size: clamp(40px, 6vw, 72px);
+            font-weight: 700;
             margin-bottom: 24px;
-            color: var(--text-primary);
+            max-width: 900px;
         }
 
-        .hero-content h1 .accent-gradient {
-            color: var(--accent);
-        }
-
-        .hero-content p {
-            font-size: 18px;
+        .hero p {
+            font-size: clamp(16px, 2vw, 20px);
             color: var(--text-secondary);
+            max-width: 600px;
             margin: 0 auto 40px;
-            max-width: 520px;
-            line-height: 1.5;
-            opacity: 0;
-            animation: heroFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards 0.12s;
         }
 
-        .hero-launch-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 30px;
-            margin-bottom: 22px;
-            opacity: 0;
-            animation: heroFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards 0.06s;
-        }
-
-        .hero-launch-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--accent);
-            box-shadow: 0 0 8px var(--accent);
-            flex-shrink: 0;
-            animation: heroDotPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes heroDotPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.35; }
-        }
-
-        .hero-launch-text {
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.4px;
-            color: var(--text-secondary);
-        }
-
-        .hero-launch-countdown {
-            font-family: var(--font-mono);
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-primary);
-            letter-spacing: 0.3px;
-        }
-
-        @media (max-width: 600px) {
-            .hero-launch-badge { flex-wrap: wrap; padding: 8px 14px; }
-            .hero-launch-text { font-size: 11px; }
-        }
-
-        .hero-actions {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            justify-content: center;
-            position: relative;
-            z-index: 3;
-            opacity: 0;
-            animation: heroFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards 0.24s;
-        }
-
-        /* Features Section */
-        .features {
-            background: var(--bg-surface);
-            padding: 100px 24px;
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
+        /* Bento Grid Companies */
+        .section-padding {
+            padding: 120px 0;
         }
 
         .section-header {
-            max-width: 1200px;
-            margin: 0 auto 60px;
-            text-align: center;
+            margin-bottom: 64px;
         }
 
         .section-header h2 {
-            font-family: 'Michroma', sans-serif;
-            font-size: 24px;
-            font-weight: 400;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
+            font-size: 32px;
             margin-bottom: 16px;
-            color: var(--text-primary);
         }
 
         .section-header p {
             color: var(--text-secondary);
-            font-size: 16px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .section-header .btn-pill {
-            margin-top: 28px;
-        }
-
-        .features-grid {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1px;
-            background: var(--border-color);
-            border: 1px solid var(--border-color);
-        }
-
-        .feature-card {
-            position: relative;
-            background: var(--bg-surface);
-            padding: 40px 32px;
-            transition: background 0.25s ease, transform 0.25s ease;
-        }
-
-        .feature-card:hover {
-            background: var(--bg-alt);
-            transform: translateY(-3px);
-        }
-
-        .feature-icon {
-            width: 44px;
-            height: 44px;
-            color: var(--bg-base);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 24px;
-            border-radius: 4px;
-            background: var(--text-primary);
-            transition: transform 0.25s ease;
-        }
-
-        .feature-card:hover .feature-icon {
-            transform: scale(1.08) rotate(-4deg);
-        }
-
-        .feature-icon svg {
-            width: 22px;
-            height: 22px;
-        }
-
-        .feature-card h3 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            letter-spacing: -0.3px;
-        }
-
-        .feature-card p {
-            color: var(--text-secondary);
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        /* Companies Section */
-        .companies {
-            padding: 100px 24px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .companies-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1px;
-            background: var(--border-color);
-            border: 1px solid var(--border-color);
-            margin-top: 60px;
-        }
-
-        .company-card {
-            position: relative;
-            background: var(--bg-base);
-            padding: 40px 32px;
-            min-height: 260px;
-            display: flex;
-            flex-direction: column;
-            text-decoration: none;
-            color: inherit;
-            transition: background 0.25s ease;
-        }
-
-        .company-card.is-live:hover {
-            background: var(--bg-surface);
-        }
-
-        .company-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-family: var(--font-mono);
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            margin-bottom: auto;
-            padding-bottom: 28px;
-        }
-
-        .company-status::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--border-color);
-            flex-shrink: 0;
-        }
-
-        .company-card.is-live .company-status { color: #34C759; }
-        .company-card.is-live .company-status::before { background: #34C759; box-shadow: 0 0 8px #34C759; }
-
-        .company-name {
-            font-family: 'Michroma', sans-serif;
-            font-size: 26px;
-            font-weight: 400;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-            color: var(--text-primary);
-        }
-
-        .company-card:not(.is-live) .company-name { color: var(--text-secondary); }
-
-        .company-tagline {
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            margin-bottom: 16px;
-        }
-
-        .company-desc {
-            font-size: 14.5px;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 24px;
-        }
-
-        .company-link {
-            font-family: var(--font-mono);
-            font-size: 12.5px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            color: var(--text-primary);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .company-card.is-live .company-link { color: var(--accent); }
-
-        .company-card:not(.is-live) { cursor: default; }
-        .company-card:not(.is-live) .company-link { color: var(--border-color); }
-
-        .reveal-up {
-            opacity: 0;
-            transform: translateY(24px);
-            transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1);
-        }
-        .reveal-up.in-view {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* How it Works Section */
-        .how-it-works {
-            padding: 100px 24px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .steps-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 48px;
-            margin-top: 60px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 48px;
-        }
-
-        .step-item {
-            text-align: left;
-            border-left: 2px solid var(--border-color);
-            padding-left: 20px;
-            transition: border-color 0.25s ease;
-        }
-
-        .step-item:hover {
-            border-left-color: var(--accent);
-        }
-
-        .step-number {
-            font-size: 13px;
-            font-family: monospace;
-            color: var(--text-secondary);
-            margin-bottom: 24px;
-            letter-spacing: 1px;
-            transition: color 0.25s ease;
-        }
-
-        .step-item:hover .step-number {
-            color: var(--accent);
-        }
-
-        .step-item h3 {
             font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            letter-spacing: -0.5px;
+            max-width: 600px;
         }
 
-        .step-item p {
-            color: var(--text-secondary);
-            font-size: 15px;
-            line-height: 1.6;
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
         }
 
-        /* CTA Footer Section */
-        .cta-footer {
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 48px;
+            transition: transform 0.3s ease, border-color 0.3s ease;
             position: relative;
-            background: var(--bg-surface);
-            padding: 120px 24px;
-            text-align: center;
-            border-top: 1px solid var(--border-color);
             overflow: hidden;
         }
 
-        .cta-glow {
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-hover);
+        }
+
+        .card::after {
+            content: '';
             position: absolute;
-            top: 50%; left: 50%;
-            width: 600px; height: 300px;
-            transform: translate(-50%, -50%);
-            background: radial-gradient(ellipse at center, rgba(10,132,255,0.16), transparent 70%);
-            filter: blur(20px);
-            animation: ctaGlowPulse 5s ease-in-out infinite;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.03), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.3s;
             pointer-events: none;
-            z-index: 0;
-        }
-        @keyframes ctaGlowPulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
-
-        .cta-footer h2, .cta-footer p, .cta-footer > div {
-            position: relative;
-            z-index: 1;
         }
 
-        .cta-footer h2 {
-            font-family: 'Michroma', sans-serif;
-            font-size: 28px;
-            font-weight: 400;
+        .card:hover::after {
+            opacity: 1;
+        }
+
+        .card-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
             text-transform: uppercase;
-            margin-bottom: 20px;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            margin-bottom: 24px;
         }
 
-        .cta-footer p {
-            font-size: 18px;
-            color: var(--text-secondary);
-            margin-bottom: 40px;
-            max-width: 540px;
-            margin-left: auto;
-            margin-right: auto;
+        .tag-live { background: rgba(52, 199, 89, 0.1); color: #34C759; }
+        .tag-dev { background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); }
+
+        .card h3 {
+            font-size: 28px;
+            margin-bottom: 12px;
         }
 
-        /* Main Footer */
-        footer {
-            background: var(--bg-base);
-            padding: 60px 24px 40px;
-            text-align: center;
-            font-size: 13px;
+        .card p {
             color: var(--text-secondary);
-            border-top: 1px solid var(--border-color);
-            letter-spacing: 0.5px;
-            display: flex;
-            flex-direction: column;
+            font-size: 15px;
+            margin-bottom: 32px;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
             gap: 24px;
-            align-items: center;
         }
 
-        .footer-links {
-            display: flex;
-            gap: 32px;
-            justify-content: center;
-            flex-wrap: wrap;
+        .feature-card {
+            padding: 32px 24px;
+            border-top: 1px solid var(--border-color);
+            transition: border-color 0.3s;
         }
 
-        .footer-links a {
+        .feature-card:hover {
+            border-top-color: var(--accent-1);
+        }
+
+        .feature-card h4 {
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
             color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.2s ease;
-            font-weight: 500;
         }
 
-        .footer-links a:hover {
-            color: var(--text-primary);
+        /* Process Steps */
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        
+        .process-step {
+            position: relative;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
         }
 
-        /* Reusable Modal Structure */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(var(--bg-base-rgb), 0.8);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            z-index: 2000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-        }
-
-        .modal-overlay.active { 
-            display: flex; 
-        }
-
-        .modal-box {
-            background: var(--bg-surface);
-            width: 100%;
-            max-width: 500px;
-            max-height: 85vh;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 32px;
-            animation: fadeIn 0.2s ease-out;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .modal-box h3 { 
-            font-size: 18px; 
-            font-weight: 600; 
+        .process-num {
+            font-family: monospace;
+            color: var(--accent-1);
             margin-bottom: 16px;
-            letter-spacing: -0.5px;
+            font-size: 14px;
         }
 
-        .modal-content { 
-            font-size: 14px; 
-            color: var(--text-secondary); 
-            margin-bottom: 24px; 
-            line-height: 1.6;
-            overflow-y: auto;
-            padding-right: 8px;
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 64px 0;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 14px;
         }
 
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: scale(0.98); } 
-            to { opacity: 1; transform: scale(1); } 
-        }
-
-        /* Responsive Breakpoints */
         @media (max-width: 992px) {
-            .hero-content h1 { font-size: 34px; }
-            .steps-container { grid-template-columns: 1fr; gap: 40px; }
+            .bento-grid, .features-grid, .process-grid { grid-template-columns: 1fr; }
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            nav { width: calc(100% - 32px); padding: 12px 16px; }
+            .nav-links { display: none; }
+            .nav-actions .btn-primary { display: none; } /* Hide contact on mobile to fit download */
         }
-
-        /* Mobile nav panel chrome — hidden on desktop, activated below 768px */
-        .nav-close,
-        .nav-links-footer {
-            display: none;
-        }
-        .nav-links-list {
-            display: contents;
-        }
-
-        @media (max-width: 768px) {
-            .hamburger {
-                display: block;
-            }
-
-            .nav-links {
-                position: fixed;
-                inset: 0;
-                width: 100%;
-                height: 100dvh;
-                background: var(--bg-base);
-                border-left: 1px solid var(--border-color);
-                flex-direction: column;
-                align-items: stretch;
-                padding: 96px 28px 28px;
-                transform: translateX(100%);
-                transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-                z-index: 1001; /* Below logo and hamburger */
-                counter-reset: navindex;
-            }
-
-            .nav-links.active {
-                transform: translateX(0);
-            }
-
-            .nav-close {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                position: absolute;
-                top: 20px;
-                right: 20px;
-                width: 40px;
-                height: 40px;
-                background: none;
-                border: 1px solid var(--border-color);
-                border-radius: 3px;
-                color: var(--text-primary);
-                cursor: pointer;
-            }
-            .nav-close svg { width: 16px; height: 16px; }
-            .nav-close:active { transform: scale(0.94); }
-
-            .nav-links-list {
-                display: flex;
-                flex-direction: column;
-                flex: 1;
-                overflow-y: auto;
-                margin: 0;
-            }
-
-            .nav-links a {
-                position: relative;
-                display: flex;
-                align-items: baseline;
-                gap: 14px;
-                padding: 20px 4px;
-                margin-bottom: 0;
-                border-bottom: 1px solid var(--border-color);
-                font-size: 22px;
-                font-weight: 600;
-                letter-spacing: -0.3px;
-                color: var(--text-primary);
-                opacity: 0;
-                transform: translateX(14px);
-                transition: opacity 0.4s ease, transform 0.4s ease, color 0.2s ease, padding-left 0.25s ease;
-            }
-
-            .nav-links a::before {
-                counter-increment: navindex;
-                content: "0" counter(navindex);
-                font-family: var(--font-mono);
-                font-size: 12px;
-                font-weight: 600;
-                letter-spacing: 1px;
-                color: var(--text-secondary);
-                transition: color 0.2s ease;
-            }
-
-            .nav-links a::after {
-                content: none;
-            }
-
-            .nav-links.active a {
-                opacity: 1;
-                transform: translateX(0);
-            }
-
-            .nav-links.active a:nth-child(1) { transition-delay: 0.08s; }
-            .nav-links.active a:nth-child(2) { transition-delay: 0.14s; }
-            .nav-links.active a:nth-child(3) { transition-delay: 0.20s; }
-            .nav-links.active a:nth-child(4) { transition-delay: 0.26s; }
-
-            .nav-links a:hover,
-            .nav-links a:active {
-                color: var(--accent);
-                padding-left: 10px;
-            }
-            .nav-links a:hover::before {
-                color: var(--accent);
-            }
-
-            .nav-links-footer {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-                padding-top: 24px;
-            }
-            .nav-links-footer .eyebrow {
-                margin-bottom: 0;
-            }
-            .nav-links-footer a {
-                font-family: var(--font-mono);
-                font-size: 13px;
-                color: var(--text-secondary);
-                text-decoration: none;
-                letter-spacing: 0.3px;
-            }
-
-            /* Responsive Animated Planet */
-            .hero-planet {
-                width: 140px;
-                height: 140px;
-                top: 8%;
-                right: -5%;
-                opacity: 0.65;
-            }
-            .hero-planet::before {
-                width: 220px;
-                height: 50px;
-            }
-        }
-
-        @media (max-width: 568px) {
-            .nav-container { padding: 16px; }
-            .hero { padding: 140px 16px 80px; }
-            .hero-content h1 { font-size: 26px; letter-spacing: 0.3px; }
-            .hero-content p { font-size: 16px; }
-            .hero-actions .btn-pill { width: 100%; }
-            .section-header h2, .cta-footer h2 { font-size: 19px; }
-            .features, .how-it-works, .cta-footer { padding: 80px 16px; }
-            .footer-links { gap: 16px; flex-direction: column; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .hero-orb { animation: none !important; }
-            .hero-planet { animation: none !important; }
-            .hero-content, .hero-content p, .hero-actions { animation: none !important; opacity: 1 !important; }
-            .reveal-up { opacity: 1 !important; transform: none !important; transition: none !important; }
+        
+        @media (max-width: 600px) {
+            .features-grid { grid-template-columns: 1fr; }
+            .card { padding: 32px 24px; }
+            .nav-actions .btn-outline { padding: 8px 16px; font-size: 12px; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="nav-container">
-            <a href="#" class="logo">
-                <svg width="48" height="40" viewBox="0 0 48 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="vynixLogoGrad" x1="0" y1="0" x2="1" y2="1">
-                            <stop offset="0%" stop-color="#0A84FF"/>
-                            <stop offset="100%" stop-color="#8B5CF6"/>
-                        </linearGradient>
-                    </defs>
-                    <line x1="24" y1="18" x2="10" y2="8" stroke="url(#vynixLogoGrad)" stroke-width="2"/>
-                    <line x1="24" y1="18" x2="38" y2="8" stroke="url(#vynixLogoGrad)" stroke-width="2"/>
-                    <line x1="24" y1="18" x2="24" y2="34" stroke="url(#vynixLogoGrad)" stroke-width="2"/>
-                    <circle cx="10" cy="8" r="4" fill="url(#vynixLogoGrad)" opacity="0.85"/>
-                    <circle cx="38" cy="8" r="4" fill="url(#vynixLogoGrad)" opacity="0.85"/>
-                    <circle cx="24" cy="34" r="4" fill="url(#vynixLogoGrad)" opacity="0.85"/>
-                    <circle cx="24" cy="18" r="6.5" fill="url(#vynixLogoGrad)"/>
-                </svg>
-            </a>
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo">
+            <!-- Exact Original SVG Logo -->
+            <svg width="48" height="40" viewBox="0 0 48 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="vynixLogoGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#0A84FF"/>
+                        <stop offset="100%" stop-color="#8B5CF6"/>
+                    </linearGradient>
+                </defs>
+                <line x1="24" y1="18" x2="10" y2="8" stroke="url(#vynixLogoGrad)" stroke-width="2"/>
+                <line x1="24" y1="18" x2="38" y2="8" stroke="url(#vynixLogoGrad)" stroke-width="2"/>
+                <line x1="24" y1="18" x2="24" y2="34" stroke="url(#vynixLogoGrad)" stroke-width="2"/>
+                <circle cx="10" cy="8" r="4" fill="url(#vynixLogoGrad)" opacity="0.85"/>
+                <circle cx="38" cy="8" r="4" fill="url(#vynixLogoGrad)" opacity="0.85"/>
+                <circle cx="24" cy="34" r="4" fill="url(#vynixLogoGrad)" opacity="0.85"/>
+                <circle cx="24" cy="18" r="6.5" fill="url(#vynixLogoGrad)"/>
+            </svg>
+        </a>
+        
+        <div class="nav-links">
+            <a href="#ventures">Ventures</a>
+            <a href="#latch">Latch</a>
+            <a href="#xoxa">Xoxa</a>
+            <a href="#process">Process</a>
+        </div>
 
-            <a href="https://firebasestorage.googleapis.com/v0/b/newstart-64c43.firebasestorage.app/o/xoxa%20chatz.apk?alt=media&token=e5e2c6f9-b78c-4b06-bb49-b6e84d8712b2" target="_blank" rel="noopener noreferrer" class="header-countdown-pill" aria-label="Download Xoxa for Android">
-                <svg class="hc-android-icon" viewBox="0 0 24 24" width="14" height="14" fill="#3DDC84" aria-hidden="true">
+        <div class="nav-actions">
+            <a href="https://firebasestorage.googleapis.com/v0/b/newstart-64c43.firebasestorage.app/o/xoxa%20chatz.apk?alt=media&token=e5e2c6f9-b78c-4b06-bb49-b6e84d8712b2" target="_blank" rel="noopener noreferrer" class="btn btn-outline" aria-label="Download Xoxa for Android">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="#3DDC84" aria-hidden="true">
                     <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4483-.9993.9993-.9993c.5511 0 .9993.4483.9993.9993.0001.5511-.4482.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4483-.9993.9993-.9993c.551 0 .9993.4483.9993.9993 0 .5511-.4483.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.2439 13.8533 7.8508 12 7.8508s-3.5902.3931-5.1367 1.0989L4.841 5.4467a.4161.4161 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3435-4.1021-2.6892-7.5743-6.1185-9.4396"/>
                 </svg>
-                <span class="hc-value">Download for Android</span>
+                Xoxa APK
             </a>
-
-            <button class="hamburger" id="mobile-menu-btn" aria-label="Toggle Menu">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="3" y1="12" x2="21" y2="12" class="line1"></line>
-                    <line x1="3" y1="6" x2="21" y2="6" class="line2"></line>
-                    <line x1="3" y1="18" x2="21" y2="18" class="line3"></line>
-                </svg>
-            </button>
-
-            <nav class="nav-links" id="nav-links">
-                <button class="nav-close" id="nav-close-btn" aria-label="Close Menu">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="5" y1="5" x2="19" y2="19"></line>
-                        <line x1="19" y1="5" x2="5" y2="19"></line>
-                    </svg>
-                </button>
-                <div class="nav-links-list">
-                    <a href="#companies">Companies</a>
-                    <a href="#latch">Latch</a>
-                    <a href="#software">Software</a>
-                    <a href="#how-it-works">Process</a>
-                    <a href="#contact">Contact</a>
-                </div>
-                <div class="nav-links-footer">
-                    <span class="eyebrow left">Get In Touch</span>
-                    <a href="mailto:hello@vynix.com">hello@vynix.com</a>
-                </div>
-            </nav>
+            <a href="mailto:hello@vynix.com" class="btn btn-primary">Contact Us</a>
         </div>
-    </header>
+    </nav>
 
-    <section class="hero">
-        <div class="hero-video-wrapper" id="heroVideoWrapper">
-            <video id="bg-video" autoplay loop muted playsinline preload="auto" class="hero-video">
-                <source src="video.mp4" type="video/mp4">
-            </video>
-            <img id="bg-video-fallback" class="hero-video-fallback" src="https://i.postimg.cc/XJ3C8C9t/image.png" alt="" aria-hidden="true">
-            <div class="video-overlay"></div>
-        </div>
-
-        <div class="hero-orb hero-orb-1"></div>
-        <div class="hero-orb hero-orb-2"></div>
-        
-        <!-- Animated Planet added below the orbs -->
-        <div class="hero-planet"></div>
-        
-        <div class="hero-content">
-            <h1>We build the platforms <span class="accent-gradient">people live on</span></h1>
+    <!-- Hero -->
+    <section class="hero container">
+        <div>
+            <h1 class="gradient-text">We build the platforms <br><span class="accent-text">people live on</span></h1>
             <p>Vynix designs, builds, and operates a portfolio of independent software products, engineered from the ground up to solve complex problems at scale.</p>
-            <div class="hero-actions">
-                <a href="#companies" class="btn-pill btn-primary">Explore Our Work</a>
-                <a href="#how-it-works" class="btn-pill btn-outline">Our Process</a>
+            <div style="display: flex; gap: 16px; justify-content: center;">
+                <a href="#ventures" class="btn btn-primary">Explore Our Work</a>
+                <a href="#process" class="btn btn-outline">Our Process</a>
             </div>
         </div>
     </section>
 
-    <section class="companies" id="companies">
-        <div class="section-header reveal-up">
-            <div class="eyebrow">OUR COMPANIES</div>
+    <!-- Companies / Ventures -->
+    <section id="ventures" class="section-padding container">
+        <div class="section-header">
             <h2>One team. Multiple ventures.</h2>
             <p>Vynix is the parent company behind a growing portfolio of independent products, each built and operated to solve a distinct problem at scale.</p>
         </div>
-        <div class="companies-grid">
-            <a href="#software" class="company-card is-live reveal-up">
-                <span class="company-status">Live</span>
-                <div class="company-name">Xoxa Messenger</div>
-                <div class="company-tagline">Real-time messaging platform</div>
-                <p class="company-desc">Secure, real-time chat, stories, and managed groups — built for speed, privacy, and deep enterprise integration.</p>
-                <span class="company-link">Explore Xoxa &rarr;</span>
-            </a>
-            <a href="#contact" class="company-card is-live reveal-up">
-                <span class="company-status">Live</span>
-                <div class="company-name">Silo</div>
-                <div class="company-tagline">Managed Cloud Storage</div>
-                <p class="company-desc">Multi-tenant object storage for companies — secure, metered, and billed by usage, with dedicated dashboards and API access.</p>
-                <span class="company-link">Partner with Silo &rarr;</span>
-            </a>
-            <a href="#latch" class="company-card is-live reveal-up">
-                <span class="company-status">Live</span>
-                <div class="company-name">Latch</div>
-                <div class="company-tagline">Employee Identity Verification</div>
-                <p class="company-desc">Verify the identity of every new hire before day one — document checks, liveness matching, and a compliance-ready audit trail, delivered through a simple API.</p>
-                <span class="company-link">Explore Latch &rarr;</span>
-            </a>
-            <div class="company-card reveal-up">
-                <span class="company-status">In development</span>
-                <div class="company-name">Project 03</div>
-                <div class="company-tagline">Machine Learning</div>
-                <p class="company-desc">A third AI-centric initiative is on our roadmap. Details will be announced when the foundation is established.</p>
-                <span class="company-link">TBA</span>
+
+        <div class="bento-grid">
+            <div class="card">
+                <span class="card-tag tag-live">Live</span>
+                <h3>Xoxa Messenger</h3>
+                <p><strong>Real-time messaging platform:</strong> Secure, real-time chat, stories, and managed groups — built for speed, privacy, and deep enterprise integration.</p>
+                <a href="#xoxa" class="btn btn-outline">Explore Xoxa →</a>
+            </div>
+
+            <div class="card">
+                <span class="card-tag tag-live">Live</span>
+                <h3>Silo</h3>
+                <p><strong>Managed Cloud Storage:</strong> Multi-tenant object storage for companies — secure, metered, and billed by usage, with dedicated dashboards and API access.</p>
+                <a href="#" class="btn btn-outline">Partner with Silo →</a>
+            </div>
+
+            <div class="card">
+                <span class="card-tag tag-live">Live</span>
+                <h3>Latch</h3>
+                <p><strong>Employee Identity Verification:</strong> Verify the identity of every new hire before day one — document checks, liveness matching, and a compliance-ready audit trail.</p>
+                <a href="#latch" class="btn btn-outline">Explore Latch →</a>
+            </div>
+
+            <div class="card">
+                <span class="card-tag tag-dev">In Development</span>
+                <h3>Project 03</h3>
+                <p><strong>Machine Learning:</strong> A third AI-centric initiative is on our roadmap. Details will be announced when the foundation is established.</p>
+                <span style="color: var(--text-secondary); font-size: 14px; font-weight: 500;">TBA</span>
             </div>
         </div>
     </section>
 
-    <section class="features" id="latch">
-        <div class="section-header reveal-up">
-            <div class="eyebrow">LATCH · IDENTITY VERIFICATION</div>
-            <h2>Know who you're hiring, before day one</h2>
-            <p>Latch verifies the identity of every new hire during onboarding — document checks, biometric matching, and a compliance-ready record, all through a single API call.</p>
-            <a href="mailto:hello@vynix.com" class="btn-pill btn-primary">Get Latch for Your Team</a>
+    <!-- Latch Features -->
+    <section id="latch" class="section-padding container">
+        <div class="section-header">
+            <h2 class="accent-text">Identity Verification Engine</h2>
+            <p>Latch verifies the identity of every new hire during onboarding, delivered through a simple API call.</p>
         </div>
         <div class="features-grid">
-            <div class="feature-card reveal-up">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="8.5" cy="10.5" r="2"></circle><path d="M4 18c0-2 2-3.5 4.5-3.5S13 16 13 18"></path><line x1="14" y1="9" x2="18" y2="9"></line><line x1="14" y1="13" x2="18" y2="13"></line></svg>
-                </div>
-                <h3>Document Verification</h3>
-                <p>New hires scan a passport, driver's license, or national ID. We extract and validate the data and check the document for authenticity across a broad range of countries and formats.</p>
+            <div class="feature-card">
+                <h4>Document Verification</h4>
+                <p>Extract, validate, and check documents for authenticity across a broad range of formats.</p>
             </div>
-            <div class="feature-card reveal-up">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="10" r="3"></circle><path d="M6.5 18.5C7.5 16 9.5 15 12 15s4.5 1 5.5 3.5"></path></svg>
-                </div>
-                <h3>Liveness &amp; Face Match</h3>
-                <p>A quick selfie confirms the person completing onboarding is the same person on the document — not a stolen identity, a photo, or a deepfake.</p>
+            <div class="feature-card">
+                <h4>Liveness & Face Match</h4>
+                <p>A quick selfie confirms the person completing onboarding is the same person on the document.</p>
             </div>
-            <div class="feature-card reveal-up">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s7-5.5 7-12a7 7 0 0 0-14 0c0 6.5 7 12 7 12z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
-                </div>
-                <h3>Proof of Address</h3>
-                <p>For remote and distributed hires, confirm where someone actually lives — useful for payroll, tax, and jurisdiction-specific compliance requirements.</p>
+            <div class="feature-card">
+                <h4>Proof of Address</h4>
+                <p>Confirm where someone actually lives for payroll, tax, and jurisdiction-specific compliance.</p>
             </div>
-            <div class="feature-card reveal-up">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3h6a1 1 0 0 1 1 1v1H8V4a1 1 0 0 1 1-1z"></path><rect x="5" y="5" width="14" height="16" rx="2"></rect><path d="M9 13l2 2 4-4"></path></svg>
-                </div>
-                <h3>Compliance Dashboard</h3>
-                <p>Every check produces a timestamped, storable record. HR and compliance teams get a single dashboard to track verification status across every hire.</p>
+            <div class="feature-card">
+                <h4>Compliance Dashboard</h4>
+                <p>Every check produces a timestamped record to track verification status across every hire.</p>
             </div>
         </div>
     </section>
 
-    <section class="features" id="software">
-        <div class="section-header reveal-up">
-            <div class="eyebrow">XOXA INFRASTRUCTURE</div>
-            <h2>Engaging communication layout system</h2>
-            <p>Built with lightweight architecture and dynamic variables, maximizing your day-to-day data privacy and connectivity speeds globally.</p>
-            <a href="https://firebasestorage.googleapis.com/v0/b/newstart-64c43.firebasestorage.app/o/xoxa%20chatz.apk?alt=media&token=e5e2c6f9-b78c-4b06-bb49-b6e84d8712b2" target="_blank" rel="noopener noreferrer" class="btn-pill btn-primary">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.523 15.34a1.06 1.06 0 1 1 0-2.12 1.06 1.06 0 0 1 0 2.12zm-11.046 0a1.06 1.06 0 1 1 0-2.12 1.06 1.06 0 0 1 0 2.12zm11.4-6.02-1.86-3.23a.35.35 0 0 1 .128-.478.35.35 0 0 1 .478.128l1.885 3.264a11.24 11.24 0 0 1 4.99 9.02H0a11.24 11.24 0 0 1 4.99-9.02L3.105 5.74a.35.35 0 0 1 .478-.128.35.35 0 0 1 .128.478L1.85 9.32a11.16 11.16 0 0 1 9.65-4.61c3.71 0 7.02 1.78 9.377 4.61z"/></svg>
+    <!-- Xoxa Features -->
+    <section id="xoxa" class="section-padding container">
+        <div class="section-header">
+            <h2 class="accent-text">Xoxa Infrastructure</h2>
+            <p style="margin-bottom: 24px;">Built with lightweight architecture and dynamic variables, maximizing privacy and connectivity speeds.</p>
+            <a href="https://firebasestorage.googleapis.com/v0/b/newstart-64c43.firebasestorage.app/o/xoxa%20chatz.apk?alt=media&token=e5e2c6f9-b78c-4b06-bb49-b6e84d8712b2" target="_blank" rel="noopener noreferrer" class="btn btn-primary" aria-label="Download Xoxa for Android">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                    <path d="M17.523 15.34a1.06 1.06 0 1 1 0-2.12 1.06 1.06 0 0 1 0 2.12zm-11.046 0a1.06 1.06 0 1 1 0-2.12 1.06 1.06 0 0 1 0 2.12zm11.4-6.02-1.86-3.23a.35.35 0 0 1 .128-.478.35.35 0 0 1 .478.128l1.885 3.264a11.24 11.24 0 0 1 4.99 9.02H0a11.24 11.24 0 0 1 4.99-9.02L3.105 5.74a.35.35 0 0 1 .478-.128.35.35 0 0 1 .128.478L1.85 9.32a11.16 11.16 0 0 1 9.65-4.61c3.71 0 7.02 1.78 9.377 4.61z"/>
+                </svg>
                 Download for Android
             </a>
         </div>
         <div class="features-grid">
-            <div class="feature-card reveal-up">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
-                </div>
-                <h3>Voice Notes Tracker</h3>
-                <p>Record, preview, and track audio interactions instantly with responsive progressive inline tracking bars.</p>
+            <div class="feature-card">
+                <h4>Voice Notes Tracker</h4>
+                <p>Record, preview, and track audio interactions instantly with inline tracking bars.</p>
             </div>
-            <div class="feature-card reveal-up">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                </div>
-                <h3>Immersive Media</h3>
-                <p>Distribute media packages securely, log analytical view telemetry, and maintain high-fidelity pipelines.</p>
+            <div class="feature-card">
+                <h4>Immersive Media</h4>
+                <p>Distribute media securely, log telemetry, and maintain high-fidelity pipelines.</p>
             </div>
-            <div class="feature-card reveal-up">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
-                </div>
-                <h3>Advanced Group Matrices</h3>
-                <p>Instantly establish public context discovery clusters or isolated private structures using encrypted relational data.</p>
+            <div class="feature-card">
+                <h4>Advanced Group Matrices</h4>
+                <p>Establish public context discovery clusters or isolated private structures instantly.</p>
             </div>
-            <div class="feature-card reveal-up">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2"></path></svg>
-                </div>
-                <h3>True Adaptive Engine</h3>
-                <p>Seamless synchronization configuration matching standard system themes and scaling globally without disruption.</p>
+            <div class="feature-card">
+                <h4>True Adaptive Engine</h4>
+                <p>Seamless synchronization scaling globally without disruption across system themes.</p>
             </div>
         </div>
     </section>
 
-    <section class="how-it-works" id="how-it-works">
-        <div class="section-header reveal-up">
-            <div class="eyebrow">OUR PROCESS</div>
+    <!-- Process -->
+    <section id="process" class="section-padding container">
+        <div class="section-header">
             <h2>How we build software</h2>
-            <p>Our development lifecycle focuses heavily on resilient architecture, rapid iterations, and deploying scalable software environments.</p>
+            <p>Our lifecycle focuses on resilient architecture, rapid iterations, and deploying scalable environments.</p>
         </div>
-        <div class="steps-container">
-            <div class="step-item reveal-up">
-                <div class="step-number">01 //</div>
-                <h3>Architecture & Logic</h3>
-                <p>We map out robust database schemas, secure authentication workflows, and system requirements prior to committing code.</p>
+        <div class="process-grid">
+            <div class="process-step">
+                <div class="process-num">01</div>
+                <h4>Architecture & Logic</h4>
+                <p style="color: var(--text-secondary); font-size: 15px; margin-top: 12px;">We map out robust database schemas, secure authentication workflows, and system requirements.</p>
             </div>
-            <div class="step-item reveal-up">
-                <div class="step-number">02 //</div>
-                <h3>Development Sprints</h3>
-                <p>Engineering modules with modern stacks, emphasizing clean API integrations and responsive, accessible user interfaces.</p>
+            <div class="process-step">
+                <div class="process-num">02</div>
+                <h4>Development Sprints</h4>
+                <p style="color: var(--text-secondary); font-size: 15px; margin-top: 12px;">Engineering modules with modern stacks, emphasizing clean API integrations and accessible UIs.</p>
             </div>
-            <div class="step-item reveal-up">
-                <div class="step-number">03 //</div>
-                <h3>Deployment & Scale</h3>
-                <p>We leverage highly available cloud infrastructures to push code safely and scale automatically alongside traffic demands.</p>
+            <div class="process-step">
+                <div class="process-num">03</div>
+                <h4>Deployment & Scale</h4>
+                <p style="color: var(--text-secondary); font-size: 15px; margin-top: 12px;">Leveraging highly available cloud infrastructures to push code safely and scale automatically.</p>
             </div>
-        </div>
-    </section>
-
-    <section class="cta-footer" id="contact">
-        <div class="cta-glow"></div>
-        <div class="eyebrow">WORK WITH VYNIX</div>
-        <h2 class="reveal-up">Ready to build your next platform?</h2>
-        <p class="reveal-up">Partner with our engineering team to construct robust, high-performance web and software applications.</p>
-        <div class="reveal-up" style="display: flex; gap:16px; justify-content: center; flex-wrap: wrap;">
-            <a href="mailto:hello@vynix.com" class="btn-pill btn-primary">
-                Contact Our Team
-            </a>
         </div>
     </section>
 
+    <!-- Footer -->
     <footer>
-        <div class="footer-links">
-            <a href="#" class="legal-trigger" data-policy="services">Services</a>
-            <a href="#" class="legal-trigger" data-policy="privacy">Privacy Policy</a>
-            <a href="#" class="legal-trigger" data-policy="terms">Terms & Conditions</a>
-            <a href="#" class="legal-trigger" data-policy="cookies">Cookie Policy</a>
-        </div>
         <p>&copy; 2026 Vynix Technology Group. All rights reserved.</p>
     </footer>
 
-    <div class="modal-overlay" id="legal-overlay">
-        <div class="modal-box">
-            <h3 id="legal-modal-title">Policy</h3>
-            <div class="modal-content" id="legal-modal-body"></div>
-            <button class="btn-pill btn-outline close-modal" data-target="legal-overlay" style="width:100%;">Close</button>
-        </div>
-    </div>
-
-    <script type="module">
-        // Firebase Initialization for Live Goza AI Support
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBQSPwpVbGrdCuOoyitAeWQHIeipj2MgIY",
-            authDomain: "newstart-64c43.firebaseapp.com",
-            databaseURL: "https://newstart-64c43-default-rtdb.firebaseio.com",
-            projectId: "newstart-64c43",
-            storageBucket: "newstart-64c43.firebasestorage.app",
-            messagingSenderId: "941619830061",
-            appId: "1:941619830061:web:de9e0f791eb8f6eacf87a4"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        let AI_FIRESTORE_COLLECTION = null;
-
-        signInAnonymously(auth).then((cred) => {
-            AI_FIRESTORE_COLLECTION = `ai_discussions/${cred.user.uid}/messages`;
-        }).catch((err) => {
-            console.error('Anonymous auth failed', err);
-        });
-
-        const legalContent = {
-            services: {
-                title: "Services",
-                body: "<p>Vynix operates as a holding company for a portfolio of independent software products, each engineered and maintained by a dedicated product team.</p><p>Beyond our own ventures, our engineering team is available for select partner engagements spanning product architecture, real-time systems, and full-stack development. Reach out via <a href=\"mailto:hello@vynix.com\">hello@vynix.com</a> to discuss a project.</p>"
-            },
-            privacy: {
-                title: "Privacy Policy",
-                body: "<p>Vynix and its product companies collect only the data required to operate secure, reliable services — account details, authentication credentials, and usage telemetry needed for performance and safety.</p><p>We do not sell personal data to third parties. Data is stored using industry-standard encryption and access controls, and you may request access to or deletion of your data at any time by contacting <a href=\"mailto:hello@vynix.com\">hello@vynix.com</a>.</p>"
-            },
-            terms: {
-                title: "Terms & Conditions",
-                body: "<p>By using any Vynix product, you agree to use the service lawfully and not to attempt to disrupt, reverse-engineer, or abuse the platform's infrastructure.</p><p>Vynix products are provided on an as-is basis without warranty of uninterrupted availability. We may update these terms as our products evolve; continued use of a Vynix product constitutes acceptance of the current terms.</p>"
-            },
-            cookies: {
-                title: "Cookie Policy",
-                body: "<p>Vynix uses essential local storage strictly to maintain secure session states, authentication workflows, and UI preferences.</p><p>We do not deploy third-party advertising or tracking cookies on our primary application interfaces.</p>"
-            }
-        };
-
-        // DOM Elements
-        const legalTriggers = document.querySelectorAll('.legal-trigger');
-        const closeButtons = document.querySelectorAll('.close-modal');
-        const overlays = document.querySelectorAll('.modal-overlay');
-        const legalOverlay = document.getElementById('legal-overlay');
-        const legalTitle = document.getElementById('legal-modal-title');
-        const legalBody = document.getElementById('legal-modal-body');
-
-        // Navigation & Mobile Menu Elements
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const navLinksContainer = document.getElementById('nav-links');
-        const navCloseBtn = document.getElementById('nav-close-btn');
-        const navLinks = navLinksContainer.querySelectorAll('a');
-
-        function setMobileMenuOpen(open) {
-            navLinksContainer.classList.toggle('active', open);
-            mobileMenuBtn.classList.toggle('active', open);
-            mobileMenuBtn.setAttribute('aria-expanded', String(open));
-            document.body.style.overflow = open ? 'hidden' : '';
-        }
-
-        // Toggle on hamburger click. stopPropagation so this exact click can never
-        // also be seen — and mis-handled — by the outside-click listener below.
-        mobileMenuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            setMobileMenuOpen(!navLinksContainer.classList.contains('active'));
-        });
-
-        // Explicit close (X) button inside the mobile nav panel
-        navCloseBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            setMobileMenuOpen(false);
-        });
-
-        // Nav links navigate normally (same-page anchors: #companies, #software, etc.)
-        // — we just close the menu out of the way first so the destination is visible.
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                setMobileMenuOpen(false);
-            });
-        });
-
-        // Close on outside click/tap
-        document.addEventListener('click', (e) => {
-            if (!navLinksContainer.classList.contains('active')) return;
-            if (navLinksContainer.contains(e.target)) return;
-            setMobileMenuOpen(false);
-        });
-
-        // Close on Escape
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') setMobileMenuOpen(false);
-        });
-
-        // Close automatically if the viewport is resized/rotated past the mobile breakpoint
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 768) setMobileMenuOpen(false);
-        });
-
-        // Event Listeners for Legal Modals
-        legalTriggers.forEach(trigger => {
-            trigger.addEventListener('click', (e) => {
-                e.preventDefault();
-                const policyKey = trigger.getAttribute('data-policy');
-                if (legalContent[policyKey]) {
-                    legalTitle.innerHTML = legalContent[policyKey].title;
-                    legalBody.innerHTML = legalContent[policyKey].body;
-                    legalOverlay.classList.add('active');
-                }
-            });
-        });
-
-        closeButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetId = btn.getAttribute('data-target');
-                document.getElementById(targetId).classList.remove('active');
-            });
-        });
-
-        overlays.forEach(overlay => {
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) {
-                    overlay.classList.remove('active');
-                }
-            });
-        });
-
-        // Scroll-reveal animations
-        const revealEls = document.querySelectorAll('.reveal-up');
-        if ('IntersectionObserver' in window && revealEls.length) {
-            const revealObserver = new IntersectionObserver((entries) => {
-                entries.forEach((entry, i) => {
-                    if (entry.isIntersecting) {
-                        setTimeout(() => entry.target.classList.add('in-view'), i * 60);
-                        revealObserver.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
-            revealEls.forEach(el => revealObserver.observe(el));
-        } else {
-            revealEls.forEach(el => el.classList.add('in-view'));
-        }
-
-        // Floating chat button now overlays the hero section at all times
-        // (previously it veiled itself while the hero was in view — removed
-        // per request so it stays visible/clickable over the hero too).
-
-        // Header scroll effect
-        const siteHeader = document.querySelector('header');
-        if (siteHeader) {
-            window.addEventListener('scroll', () => {
-                siteHeader.classList.toggle('scrolled', window.scrollY > 8);
-            }, { passive: true });
-        }
-
-        // Hero video reliability check: fall back to a static image if the
-        // video errors out, takes too long to start, or stalls/buffers
-        // mid-playback (e.g. slow connection). Automatically recovers back
-        // to the video if it starts playing smoothly again.
-        document.addEventListener("DOMContentLoaded", () => {
-            const bgVideo = document.getElementById('bg-video');
-            const wrapper = document.getElementById('heroVideoWrapper');
-            if (!bgVideo || !wrapper) return;
-
-            const START_TIMEOUT_MS = 3500;   // how long we'll wait for first frame
-            const STALL_TIMEOUT_MS = 2000;    // how long a mid-playback stall is tolerated
-
-            let hasPlayedOnce = false;
-            let startTimer = null;
-            let stallTimer = null;
-
-            const showFallback = () => wrapper.classList.add('use-fallback');
-            const hideFallback = () => wrapper.classList.remove('use-fallback');
-
-            const clearStartTimer = () => {
-                if (startTimer) { clearTimeout(startTimer); startTimer = null; }
-            };
-            const clearStallTimer = () => {
-                if (stallTimer) { clearTimeout(stallTimer); stallTimer = null; }
-            };
-
-            // If the video hasn't produced a frame within START_TIMEOUT_MS,
-            // assume it's lagging and show the image instead.
-            startTimer = setTimeout(() => {
-                if (!hasPlayedOnce) showFallback();
-            }, START_TIMEOUT_MS);
-
-            bgVideo.addEventListener('playing', () => {
-                hasPlayedOnce = true;
-                clearStartTimer();
-                clearStallTimer();
-                hideFallback();
-            });
-
-            // 'waiting' fires when playback pauses to buffer (i.e. lagging).
-            // Give it a short grace period to recover before switching over.
-            bgVideo.addEventListener('waiting', () => {
-                clearStallTimer();
-                stallTimer = setTimeout(showFallback, STALL_TIMEOUT_MS);
-            });
-
-            bgVideo.addEventListener('stalled', () => {
-                clearStallTimer();
-                stallTimer = setTimeout(showFallback, STALL_TIMEOUT_MS);
-            });
-
-            bgVideo.addEventListener('error', () => {
-                clearStartTimer();
-                clearStallTimer();
-                showFallback();
-            });
-
-            // Try to play; if the browser blocks autoplay entirely, fall
-            // back to the image immediately rather than showing a frozen video.
-            bgVideo.play().catch(error => {
-                console.log("Browser blocked autoplay. User interaction required.", error);
-                showFallback();
+    <!-- Interactive Glow Script for Bento Cards -->
+    <script>
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
             });
         });
     </script>
