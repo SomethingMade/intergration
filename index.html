@@ -4,19 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vynix — Technology & Software Development</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #000000;
-            --bg-surface: #0a0a0a;
-            --bg-card: rgba(25, 25, 25, 0.4);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --border-hover: rgba(255, 255, 255, 0.2);
-            --text-primary: #FFFFFF;
-            --text-secondary: #888899;
-            --accent-1: #0A84FF;
-            --accent-2: #8B5CF6;
-            --font-brand: 'Inter', -apple-system, sans-serif;
+            /* Grounded, traditional corporate color palette */
+            --bg-base: #ffffff;
+            --bg-alt: #f9fafb;
+            --border-light: #e5e7eb;
+            --border-dark: #d1d5db;
+            --text-main: #111827;
+            --text-muted: #4b5563;
+            --brand-primary: #0f172a;
+            --brand-accent: #2563eb;
+            --brand-accent-hover: #1d4ed8;
+            --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --shadow-subtle: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         * {
@@ -24,114 +27,73 @@
             margin: 0;
             padding: 0;
             scroll-behavior: smooth;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             background-color: var(--bg-base);
-            color: var(--text-primary);
-            font-family: var(--font-brand);
+            color: var(--text-main);
+            font-family: var(--font-stack);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
         }
 
-        /* Typography */
-        h1, h2, h3 {
-            letter-spacing: -0.03em;
-            line-height: 1.1;
+        h1, h2, h3, h4 {
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            color: var(--text-main);
+            font-weight: 600;
         }
 
-        .gradient-text {
-            background: linear-gradient(135deg, var(--text-primary) 0%, #666 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .accent-text {
-            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* Layout */
         .container {
+            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 24px;
         }
 
-        /* Navigation */
-        nav {
+        /* Standard, professional Navigation */
+        header {
             position: fixed;
-            top: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 48px);
-            max-width: 1152px;
-            background: rgba(10, 10, 10, 0.6);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--border-color);
-            border-radius: 100px;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-light);
+            z-index: 1000;
+        }
+
+        nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 24px;
-            z-index: 1000;
+            height: 72px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
         }
 
         .nav-links {
             display: flex;
             gap: 32px;
+            align-items: center;
         }
 
         .nav-links a {
-            color: var(--text-secondary);
+            color: var(--text-muted);
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
-            transition: color 0.3s ease;
+            transition: color 0.15s ease;
         }
 
         .nav-links a:hover {
-            color: var(--text-primary);
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 10px 24px;
-            border-radius: 100px;
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .btn-primary {
-            background: var(--text-primary);
-            color: var(--bg-base);
-            border: 1px solid transparent;
-        }
-
-        .btn-primary:hover {
-            background: #e0e0e0;
-            transform: translateY(-1px);
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-outline:hover {
-            border-color: var(--border-hover);
-            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
         }
 
         .nav-actions {
@@ -140,386 +102,432 @@
             align-items: center;
         }
 
-        /* Hero Section */
-        .hero {
-            min-height: 100vh;
-            display: flex;
+        /* Solid, standard buttons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            position: relative;
-            padding-top: 80px;
+            gap: 8px;
+            cursor: pointer;
+            min-height: 44px;
+            white-space: nowrap;
         }
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, rgba(10,132,255,0.05) 50%, rgba(0,0,0,0) 70%);
-            filter: blur(60px);
-            z-index: -1;
-            border-radius: 50%;
+        .btn-primary {
+            background-color: var(--brand-primary);
+            color: #ffffff;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary:hover {
+            background-color: #1e293b;
+        }
+
+        .btn-accent {
+            background-color: var(--brand-accent);
+            color: #ffffff;
+            border: 1px solid transparent;
+        }
+
+        .btn-accent:hover {
+            background-color: var(--brand-accent-hover);
+        }
+
+        .btn-outline {
+            background-color: #ffffff;
+            color: var(--text-main);
+            border: 1px solid var(--border-dark);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-alt);
+        }
+
+        /* Clean Hero Section */
+        .hero {
+            padding-top: 180px;
+            padding-bottom: 100px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-light);
+            background-color: var(--bg-alt);
         }
 
         .hero h1 {
-            font-size: clamp(40px, 6vw, 72px);
+            font-size: clamp(36px, 5vw, 64px);
             font-weight: 700;
             margin-bottom: 24px;
-            max-width: 900px;
         }
 
         .hero p {
             font-size: clamp(16px, 2vw, 20px);
-            color: var(--text-secondary);
-            max-width: 600px;
+            color: var(--text-muted);
+            max-width: 640px;
             margin: 0 auto 40px;
         }
 
-        /* Bento Grid Companies */
-        .section-padding {
-            padding: 120px 0;
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
+        /* Section Layouts */
+        .section-padding {
+            padding: 100px 0;
+        }
+
+        .bg-white { background-color: var(--bg-base); }
+        .bg-gray { background-color: var(--bg-alt); border-top: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light); }
+
         .section-header {
-            margin-bottom: 64px;
+            margin-bottom: 48px;
+            max-width: 700px;
         }
 
         .section-header h2 {
-            font-size: 32px;
+            font-size: clamp(28px, 4vw, 36px);
             margin-bottom: 16px;
         }
 
         .section-header p {
-            color: var(--text-secondary);
+            color: var(--text-muted);
             font-size: 18px;
-            max-width: 600px;
         }
 
-        .bento-grid {
+        /* Traditional Cards */
+        .grid-2 {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 24px;
         }
 
         .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 48px;
-            transition: transform 0.3s ease, border-color 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            background-color: #ffffff;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 40px;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-start;
         }
 
         .card:hover {
-            transform: translateY(-4px);
-            border-color: var(--border-hover);
+            border-color: var(--border-dark);
+            box-shadow: var(--shadow-card);
         }
 
-        .card::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.03), transparent 40%);
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-
-        .card:hover::after {
-            opacity: 1;
-        }
-
-        .card-tag {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 100px;
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 4px;
             font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 24px;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
         }
 
-        .tag-live { background: rgba(52, 199, 89, 0.1); color: #34C759; }
-        .tag-dev { background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); }
+        .badge-live { background-color: #dcfce7; color: #166534; }
+        .badge-dev { background-color: #f3f4f6; color: #4b5563; }
 
         .card h3 {
-            font-size: 28px;
+            font-size: 22px;
             margin-bottom: 12px;
         }
 
         .card p {
-            color: var(--text-secondary);
+            color: var(--text-muted);
             font-size: 15px;
             margin-bottom: 32px;
         }
 
         /* Features Grid */
-        .features-grid {
+        .grid-4 {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 24px;
         }
 
-        .feature-card {
-            padding: 32px 24px;
-            border-top: 1px solid var(--border-color);
-            transition: border-color 0.3s;
+        .feature-block {
+            padding: 0;
         }
 
-        .feature-card:hover {
-            border-top-color: var(--accent-1);
+        .feature-block h4 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .feature-card h4 {
-            font-size: 18px;
-            margin-bottom: 12px;
+        .feature-block h4::before {
+            content: '';
+            display: block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--brand-accent);
+            border-radius: 50%;
         }
 
-        .feature-card p {
+        .feature-block p {
             font-size: 14px;
-            color: var(--text-secondary);
+            color: var(--text-muted);
         }
 
         /* Process Steps */
-        .process-grid {
+        .grid-3 {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
-        }
-        
-        .process-step {
-            position: relative;
-            padding-top: 24px;
-            border-top: 1px solid var(--border-color);
+            gap: 32px;
         }
 
-        .process-num {
+        .step-block {
+            border-top: 2px solid var(--border-light);
+            padding-top: 24px;
+        }
+
+        .step-num {
             font-family: monospace;
-            color: var(--accent-1);
+            font-weight: 600;
+            color: var(--brand-accent);
             margin-bottom: 16px;
             font-size: 14px;
         }
 
         /* Footer */
         footer {
-            border-top: 1px solid var(--border-color);
-            padding: 64px 0;
+            padding: 48px 0;
             text-align: center;
-            color: var(--text-secondary);
+            color: var(--text-muted);
             font-size: 14px;
+            background-color: #ffffff;
         }
 
-        @media (max-width: 992px) {
-            .bento-grid, .features-grid, .process-grid { grid-template-columns: 1fr; }
-            .features-grid { grid-template-columns: repeat(2, 1fr); }
-            nav { width: calc(100% - 32px); padding: 12px 16px; }
-            .nav-links { display: none; }
-            .nav-actions .btn-primary { display: none; } /* Hide contact on mobile to fit download */
+        /* Mobile Adjustments */
+        @media (max-width: 900px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .grid-4 { grid-template-columns: repeat(2, 1fr); }
+            .hero { padding-top: 140px; padding-bottom: 80px; }
         }
-        
-        @media (max-width: 600px) {
-            .features-grid { grid-template-columns: 1fr; }
-            .card { padding: 32px 24px; }
-            .nav-actions .btn-outline { padding: 8px 16px; font-size: 12px; }
+
+        @media (max-width: 640px) {
+            nav { height: 64px; }
+            .nav-links { display: none; }
+            .grid-4 { grid-template-columns: 1fr; gap: 32px; }
+            .card { padding: 24px; }
+            .hero-cta { flex-direction: column; width: 100%; }
+            .hero-cta .btn { width: 100%; }
+            .nav-actions { width: 100%; justify-content: flex-end; }
+            .nav-actions .btn { min-height: 40px; padding: 0 12px; font-size: 13px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Navigation -->
-    <nav>
-        <a href="#" class="logo">
-            <!-- Exact Original SVG Logo -->
-            <svg width="48" height="40" viewBox="0 0 48 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="vynixLogoGrad" x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0%" stop-color="#0A84FF"/>
-                        <stop offset="100%" stop-color="#8B5CF6"/>
-                    </linearGradient>
-                </defs>
-                <line x1="24" y1="18" x2="10" y2="8" stroke="url(#vynixLogoGrad)" stroke-width="2"/>
-                <line x1="24" y1="18" x2="38" y2="8" stroke="url(#vynixLogoGrad)" stroke-width="2"/>
-                <line x1="24" y1="18" x2="24" y2="34" stroke="url(#vynixLogoGrad)" stroke-width="2"/>
-                <circle cx="10" cy="8" r="4" fill="url(#vynixLogoGrad)" opacity="0.85"/>
-                <circle cx="38" cy="8" r="4" fill="url(#vynixLogoGrad)" opacity="0.85"/>
-                <circle cx="24" cy="34" r="4" fill="url(#vynixLogoGrad)" opacity="0.85"/>
-                <circle cx="24" cy="18" r="6.5" fill="url(#vynixLogoGrad)"/>
-            </svg>
-        </a>
-        
-        <div class="nav-links">
-            <a href="#ventures">Ventures</a>
-            <a href="#latch">Latch</a>
-            <a href="#xoxa">Xoxa</a>
-            <a href="#process">Process</a>
+    <!-- Standard Corporate Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo" aria-label="Vynix Home">
+                    <!-- Clean, solid color logo -->
+                    <svg width="36" height="30" viewBox="0 0 48 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="24" y1="18" x2="10" y2="8" stroke="#0f172a" stroke-width="3"/>
+                        <line x1="24" y1="18" x2="38" y2="8" stroke="#0f172a" stroke-width="3"/>
+                        <line x1="24" y1="18" x2="24" y2="34" stroke="#0f172a" stroke-width="3"/>
+                        <circle cx="10" cy="8" r="4" fill="#0f172a"/>
+                        <circle cx="38" cy="8" r="4" fill="#0f172a"/>
+                        <circle cx="24" cy="34" r="4" fill="#0f172a"/>
+                        <circle cx="24" cy="18" r="6" fill="#0f172a"/>
+                    </svg>
+                    <span style="margin-left: 12px; font-weight: 700; font-size: 18px; color: var(--brand-primary); letter-spacing: -0.5px;">Vynix</span>
+                </a>
+                
+                <div class="nav-links">
+                    <a href="#ventures">Ventures</a>
+                    <a href="#latch">Latch</a>
+                    <a href="#xoxa">Xoxa</a>
+                    <a href="#process">Process</a>
+                </div>
+
+                <div class="nav-actions">
+                    <a href="https://firebasestorage.googleapis.com/v0/b/newstart-64c43.firebasestorage.app/o/xoxa%20chatz.apk?alt=media&token=e5e2c6f9-b78c-4b06-bb49-b6e84d8712b2" target="_blank" rel="noopener noreferrer" class="btn btn-outline" aria-label="Download Xoxa APK">
+                        <!-- Standard Android Icon -->
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="#16a34a">
+                            <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4483-.9993.9993-.9993c.5511 0 .9993.4483.9993.9993.0001.5511-.4482.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4483-.9993.9993-.9993c.551 0 .9993.4483.9993.9993 0 .5511-.4483.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.2439 13.8533 7.8508 12 7.8508s-3.5902.3931-5.1367 1.0989L4.841 5.4467a.4161.4161 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3435-4.1021-2.6892-7.5743-6.1185-9.4396"/>
+                        </svg>
+                        Xoxa APK
+                    </a>
+                    <a href="mailto:hello@vynix.com" class="btn btn-primary">Contact</a>
+                </div>
+            </nav>
         </div>
+    </header>
 
-        <div class="nav-actions">
-            <a href="https://firebasestorage.googleapis.com/v0/b/newstart-64c43.firebasestorage.app/o/xoxa%20chatz.apk?alt=media&token=e5e2c6f9-b78c-4b06-bb49-b6e84d8712b2" target="_blank" rel="noopener noreferrer" class="btn btn-outline" aria-label="Download Xoxa for Android">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="#3DDC84" aria-hidden="true">
-                    <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4483-.9993.9993-.9993c.5511 0 .9993.4483.9993.9993.0001.5511-.4482.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4483-.9993.9993-.9993c.551 0 .9993.4483.9993.9993 0 .5511-.4483.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.2439 13.8533 7.8508 12 7.8508s-3.5902.3931-5.1367 1.0989L4.841 5.4467a.4161.4161 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3435-4.1021-2.6892-7.5743-6.1185-9.4396"/>
-                </svg>
-                Xoxa APK
-            </a>
-            <a href="mailto:hello@vynix.com" class="btn btn-primary">Contact Us</a>
-        </div>
-    </nav>
-
-    <!-- Hero -->
-    <section class="hero container">
-        <div>
-            <h1 class="gradient-text">We build the platforms <br><span class="accent-text">people live on</span></h1>
-            <p>Vynix designs, builds, and operates a portfolio of independent software products, engineered from the ground up to solve complex problems at scale.</p>
-            <div style="display: flex; gap: 16px; justify-content: center;">
-                <a href="#ventures" class="btn btn-primary">Explore Our Work</a>
-                <a href="#process" class="btn btn-outline">Our Process</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Companies / Ventures -->
-    <section id="ventures" class="section-padding container">
-        <div class="section-header">
-            <h2>One team. Multiple ventures.</h2>
-            <p>Vynix is the parent company behind a growing portfolio of independent products, each built and operated to solve a distinct problem at scale.</p>
-        </div>
-
-        <div class="bento-grid">
-            <div class="card">
-                <span class="card-tag tag-live">Live</span>
-                <h3>Xoxa Messenger</h3>
-                <p><strong>Real-time messaging platform:</strong> Secure, real-time chat, stories, and managed groups — built for speed, privacy, and deep enterprise integration.</p>
-                <a href="#xoxa" class="btn btn-outline">Explore Xoxa →</a>
-            </div>
-
-            <div class="card">
-                <span class="card-tag tag-live">Live</span>
-                <h3>Silo</h3>
-                <p><strong>Managed Cloud Storage:</strong> Multi-tenant object storage for companies — secure, metered, and billed by usage, with dedicated dashboards and API access.</p>
-                <a href="#" class="btn btn-outline">Partner with Silo →</a>
-            </div>
-
-            <div class="card">
-                <span class="card-tag tag-live">Live</span>
-                <h3>Latch</h3>
-                <p><strong>Employee Identity Verification:</strong> Verify the identity of every new hire before day one — document checks, liveness matching, and a compliance-ready audit trail.</p>
-                <a href="#latch" class="btn btn-outline">Explore Latch →</a>
-            </div>
-
-            <div class="card">
-                <span class="card-tag tag-dev">In Development</span>
-                <h3>Project 03</h3>
-                <p><strong>Machine Learning:</strong> A third AI-centric initiative is on our roadmap. Details will be announced when the foundation is established.</p>
-                <span style="color: var(--text-secondary); font-size: 14px; font-weight: 500;">TBA</span>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>We build platforms people live on.</h1>
+            <p>Vynix designs, builds, and operates a portfolio of independent software products engineered to solve complex problems at scale.</p>
+            <div class="hero-cta">
+                <a href="#ventures" class="btn btn-primary">Explore Ventures</a>
+                <a href="#process" class="btn btn-outline">View Process</a>
             </div>
         </div>
     </section>
 
-    <!-- Latch Features -->
-    <section id="latch" class="section-padding container">
-        <div class="section-header">
-            <h2 class="accent-text">Identity Verification Engine</h2>
-            <p>Latch verifies the identity of every new hire during onboarding, delivered through a simple API call.</p>
-        </div>
-        <div class="features-grid">
-            <div class="feature-card">
-                <h4>Document Verification</h4>
-                <p>Extract, validate, and check documents for authenticity across a broad range of formats.</p>
+    <!-- Ventures Section -->
+    <section id="ventures" class="section-padding bg-white">
+        <div class="container">
+            <div class="section-header">
+                <h2>One team. Multiple ventures.</h2>
+                <p>A portfolio of independent digital products, built and operated to deliver seamless connectivity and high performance.</p>
             </div>
-            <div class="feature-card">
-                <h4>Liveness & Face Match</h4>
-                <p>A quick selfie confirms the person completing onboarding is the same person on the document.</p>
-            </div>
-            <div class="feature-card">
-                <h4>Proof of Address</h4>
-                <p>Confirm where someone actually lives for payroll, tax, and jurisdiction-specific compliance.</p>
-            </div>
-            <div class="feature-card">
-                <h4>Compliance Dashboard</h4>
-                <p>Every check produces a timestamped record to track verification status across every hire.</p>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div>
+                        <span class="status-badge badge-live">Live Product</span>
+                        <h3>Xoxa Messenger</h3>
+                        <p>Secure real-time chat, stories, and managed groups. Built for speed, privacy, and deep integration.</p>
+                    </div>
+                    <a href="#xoxa" class="btn btn-outline">Explore Xoxa</a>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <span class="status-badge badge-live">Live Product</span>
+                        <h3>Silo Storage</h3>
+                        <p>Multi-tenant object storage for companies. Secure, metered, and accessible via comprehensive APIs.</p>
+                    </div>
+                    <a href="#" class="btn btn-outline">View Silo Docs</a>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <span class="status-badge badge-live">Live Product</span>
+                        <h3>Latch Verification</h3>
+                        <p>Verify new hires before day one with automated document checks, liveness matching, and compliance trails.</p>
+                    </div>
+                    <a href="#latch" class="btn btn-outline">Explore Latch</a>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <span class="status-badge badge-dev">In Development</span>
+                        <h3>Project 03</h3>
+                        <p>An AI-centric initiative currently on our product roadmap. Details will be announced upon foundation completion.</p>
+                    </div>
+                    <span style="color: var(--text-muted); font-size: 14px; font-weight: 500;">Details TBA</span>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Xoxa Features -->
-    <section id="xoxa" class="section-padding container">
-        <div class="section-header">
-            <h2 class="accent-text">Xoxa Infrastructure</h2>
-            <p style="margin-bottom: 24px;">Built with lightweight architecture and dynamic variables, maximizing privacy and connectivity speeds.</p>
-            <a href="https://firebasestorage.googleapis.com/v0/b/newstart-64c43.firebasestorage.app/o/xoxa%20chatz.apk?alt=media&token=e5e2c6f9-b78c-4b06-bb49-b6e84d8712b2" target="_blank" rel="noopener noreferrer" class="btn btn-primary" aria-label="Download Xoxa for Android">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                    <path d="M17.523 15.34a1.06 1.06 0 1 1 0-2.12 1.06 1.06 0 0 1 0 2.12zm-11.046 0a1.06 1.06 0 1 1 0-2.12 1.06 1.06 0 0 1 0 2.12zm11.4-6.02-1.86-3.23a.35.35 0 0 1 .128-.478.35.35 0 0 1 .478.128l1.885 3.264a11.24 11.24 0 0 1 4.99 9.02H0a11.24 11.24 0 0 1 4.99-9.02L3.105 5.74a.35.35 0 0 1 .478-.128.35.35 0 0 1 .128.478L1.85 9.32a11.16 11.16 0 0 1 9.65-4.61c3.71 0 7.02 1.78 9.377 4.61z"/>
-                </svg>
-                Download for Android
-            </a>
-        </div>
-        <div class="features-grid">
-            <div class="feature-card">
-                <h4>Voice Notes Tracker</h4>
-                <p>Record, preview, and track audio interactions instantly with inline tracking bars.</p>
+    <!-- Latch Section -->
+    <section id="latch" class="section-padding bg-gray">
+        <div class="container">
+            <div class="section-header">
+                <h2>Identity Verification Engine</h2>
+                <p>Latch verifies candidate identity seamlessly during onboarding through straightforward API integration.</p>
             </div>
-            <div class="feature-card">
-                <h4>Immersive Media</h4>
-                <p>Distribute media securely, log telemetry, and maintain high-fidelity pipelines.</p>
-            </div>
-            <div class="feature-card">
-                <h4>Advanced Group Matrices</h4>
-                <p>Establish public context discovery clusters or isolated private structures instantly.</p>
-            </div>
-            <div class="feature-card">
-                <h4>True Adaptive Engine</h4>
-                <p>Seamless synchronization scaling globally without disruption across system themes.</p>
+            <div class="grid-4">
+                <div class="feature-block">
+                    <h4>Document Check</h4>
+                    <p>Extract and validate authenticity across international IDs and official documents.</p>
+                </div>
+                <div class="feature-block">
+                    <h4>Liveness Match</h4>
+                    <p>A quick selfie confirms the onboarding user matches their official document photos.</p>
+                </div>
+                <div class="feature-block">
+                    <h4>Address Audit</h4>
+                    <p>Confirm user residence for automated tax routing and regulatory compliance.</p>
+                </div>
+                <div class="feature-block">
+                    <h4>Audit Trail</h4>
+                    <p>Generate secure, timestamped compliance records for every verification check.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Process -->
-    <section id="process" class="section-padding container">
-        <div class="section-header">
-            <h2>How we build software</h2>
-            <p>Our lifecycle focuses on resilient architecture, rapid iterations, and deploying scalable environments.</p>
+    <!-- Xoxa Section -->
+    <section id="xoxa" class="section-padding bg-white">
+        <div class="container">
+            <div class="section-header">
+                <h2>Xoxa Infrastructure</h2>
+                <p style="margin-bottom: 24px;">Lightweight architecture designed for instant audio delivery, dynamic messaging, and high global performance.</p>
+                <a href="https://firebasestorage.googleapis.com/v0/b/newstart-64c43.firebasestorage.app/o/xoxa%20chatz.apk?alt=media&token=e5e2c6f9-b78c-4b06-bb49-b6e84d8712b2" target="_blank" rel="noopener noreferrer" class="btn btn-accent" aria-label="Download Xoxa for Android">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                        <path d="M17.523 15.34a1.06 1.06 0 1 1 0-2.12 1.06 1.06 0 0 1 0 2.12zm-11.046 0a1.06 1.06 0 1 1 0-2.12 1.06 1.06 0 0 1 0 2.12zm11.4-6.02-1.86-3.23a.35.35 0 0 1 .128-.478.35.35 0 0 1 .478.128l1.885 3.264a11.24 11.24 0 0 1 4.99 9.02H0a11.24 11.24 0 0 1 4.99-9.02L3.105 5.74a.35.35 0 0 1 .478-.128.35.35 0 0 1 .128.478L1.85 9.32a11.16 11.16 0 0 1 9.65-4.61c3.71 0 7.02 1.78 9.377 4.61z"/>
+                    </svg>
+                    Download for Android (APK)
+                </a>
+            </div>
+            <div class="grid-4">
+                <div class="feature-block">
+                    <h4>Voice Notes</h4>
+                    <p>Record, preview, and track audio interactions with accurate inline waveforms.</p>
+                </div>
+                <div class="feature-block">
+                    <h4>Immersive Media</h4>
+                    <p>Distribute media securely and log telemetry with low-latency delivery networks.</p>
+                </div>
+                <div class="feature-block">
+                    <h4>Group Matrices</h4>
+                    <p>Establish public discovery hubs or deploy isolated private channels instantly.</p>
+                </div>
+                <div class="feature-block">
+                    <h4>Adaptive Engine</h4>
+                    <p>Global state synchronization scaling smoothly across platform themes and hardware.</p>
+                </div>
+            </div>
         </div>
-        <div class="process-grid">
-            <div class="process-step">
-                <div class="process-num">01</div>
-                <h4>Architecture & Logic</h4>
-                <p style="color: var(--text-secondary); font-size: 15px; margin-top: 12px;">We map out robust database schemas, secure authentication workflows, and system requirements.</p>
+    </section>
+
+    <!-- Process Section -->
+    <section id="process" class="section-padding bg-gray">
+        <div class="container">
+            <div class="section-header">
+                <h2>Engineering Process</h2>
+                <p>Our lifecycle prioritizes clean logic, rapid iterations, and scalable deployment infrastructure.</p>
             </div>
-            <div class="process-step">
-                <div class="process-num">02</div>
-                <h4>Development Sprints</h4>
-                <p style="color: var(--text-secondary); font-size: 15px; margin-top: 12px;">Engineering modules with modern stacks, emphasizing clean API integrations and accessible UIs.</p>
-            </div>
-            <div class="process-step">
-                <div class="process-num">03</div>
-                <h4>Deployment & Scale</h4>
-                <p style="color: var(--text-secondary); font-size: 15px; margin-top: 12px;">Leveraging highly available cloud infrastructures to push code safely and scale automatically.</p>
+            <div class="grid-3">
+                <div class="step-block">
+                    <div class="step-num">01. Architecture</div>
+                    <h4 style="font-size: 18px; margin-bottom: 8px;">Schema & Logic</h4>
+                    <p style="color: var(--text-muted); font-size: 14px;">Designing robust database schemas, state management protocols, and secure authorization flows.</p>
+                </div>
+                <div class="step-block">
+                    <div class="step-num">02. Sprints</div>
+                    <h4 style="font-size: 18px; margin-bottom: 8px;">Active Development</h4>
+                    <p style="color: var(--text-muted); font-size: 14px;">Building with high-performance frameworks, clean API integrations, and accessible user interfaces.</p>
+                </div>
+                <div class="step-block">
+                    <div class="step-num">03. Scale</div>
+                    <h4 style="font-size: 18px; margin-bottom: 8px;">Cloud Deployment</h4>
+                    <p style="color: var(--text-muted); font-size: 14px;">Deploying to resilient cloud infrastructures that automatically scale up with user load demands.</p>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2026 Vynix Technology Group. All rights reserved.</p>
+        <div class="container">
+            <p>&copy; 2026 Vynix Technology Group. All rights reserved.</p>
+        </div>
     </footer>
 
-    <!-- Interactive Glow Script for Bento Cards -->
-    <script>
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('mousemove', e => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                card.style.setProperty('--mouse-x', `${x}px`);
-                card.style.setProperty('--mouse-y', `${y}px`);
-            });
-        });
-    </script>
 </body>
 </html>
