@@ -172,6 +172,43 @@
             align-items: center;
         }
 
+        /* ===== MOBILE MENU TOGGLE ===== */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border: 1px solid var(--border-medium);
+            border-radius: 10px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .menu-toggle.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .menu-toggle.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
         /* ===== BUTTONS ===== */
         .btn {
             padding: 10px 22px;
@@ -866,21 +903,67 @@
             .cta-section { margin: 0 16px; }
         }
 
+        @media (max-width: 768px) {
+            .menu-toggle { display: flex; }
+
+            .nav-links {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 4px;
+                position: fixed;
+                top: 64px;
+                left: 12px;
+                right: 12px;
+                background: var(--bg-surface);
+                border: 1px solid var(--border-subtle);
+                border-radius: var(--radius-lg);
+                padding: 10px;
+                box-shadow: var(--shadow-lg);
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-8px);
+                transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+
+            .nav-links.open {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+
+            .nav-links a {
+                text-align: center;
+                padding: 12px 16px;
+                font-size: 15px;
+            }
+        }
+
         @media (max-width: 640px) {
             .container { padding: 0 20px; }
             nav { height: 64px; }
-            .nav-links { display: none; }
+            header.scrolled nav { height: 60px; }
+            .nav-links { top: 60px; }
             .grid-4 { grid-template-columns: 1fr; gap: 32px; }
             .card { padding: 28px; }
             .hero-cta { flex-direction: column; width: 100%; }
             .hero-cta .btn { width: 100%; }
-            .nav-actions { width: 100%; justify-content: flex-end; }
+            .nav-actions { justify-content: flex-end; }
             .nav-actions .btn { min-height: 40px; padding: 0 14px; font-size: 13px; }
+            .nav-actions .btn svg { width: 14px; height: 14px; }
             .hero-stats { flex-direction: column; gap: 24px; }
-            .section-padding { padding: 80px 0; }
+            .section-padding { padding: 64px 0; }
             .footer-grid { grid-template-columns: 1fr; gap: 32px; }
             .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
             .step-block { padding: 28px; }
+            .hero { padding-top: 140px; padding-bottom: 72px; }
+        }
+
+        @media (max-width: 420px) {
+            .container { padding: 0 16px; }
+            .hero-badge { font-size: 12px; padding: 6px 12px; }
+            .nav-actions .btn { padding: 0 10px; font-size: 12px; }
+            .card, .step-block { padding: 22px; }
         }
     </style>
 </head>
@@ -917,8 +1000,13 @@
                         </svg>
                         Download Xoxa
                     </a>
-                    <a href="mailto:hello@vynix.com" class="btn btn-primary">Contact</a>
                 </div>
+
+                <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </nav>
         </div>
     </header>
@@ -1200,6 +1288,34 @@
     </footer>
 
     <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinksEl = document.querySelector('.nav-links');
+
+        if (menuToggle && navLinksEl) {
+            menuToggle.addEventListener('click', () => {
+                const isOpen = navLinksEl.classList.toggle('open');
+                menuToggle.classList.toggle('open', isOpen);
+                menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+
+            navLinksEl.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinksEl.classList.remove('open');
+                    menuToggle.classList.remove('open');
+                    menuToggle.setAttribute('aria-expanded', 'false');
+                });
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!navLinksEl.contains(e.target) && !menuToggle.contains(e.target)) {
+                    navLinksEl.classList.remove('open');
+                    menuToggle.classList.remove('open');
+                    menuToggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+
         // Header scroll effect
         const header = document.getElementById('header');
         window.addEventListener('scroll', () => {
