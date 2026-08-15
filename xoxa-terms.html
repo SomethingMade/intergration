@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+
+    <title>Terms of Service | Xoxa Chatz</title>
+
+    <meta name="description" content="Xoxa Chatz terms of service — the rules for using the app, your account, content, ads, and our liability.">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #050505;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        ::selection {
+            background: white;
+            color: black;
+        }
+
+        /* =========================
+           GLASS
+        ========================= */
+
+        .glass {
+            background: rgba(255,255,255,.035);
+            border: 1px solid rgba(255,255,255,.09);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow:
+                0 30px 80px rgba(0,0,0,.45),
+                inset 0 1px 0 rgba(255,255,255,.08);
+        }
+
+        .glass-soft {
+            background: rgba(255,255,255,.025);
+            border: 1px solid rgba(255,255,255,.07);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .primary-button {
+            background: white;
+            color: black;
+            transition: .35s ease;
+            box-shadow: 0 15px 40px rgba(255,255,255,.08);
+        }
+
+        .primary-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 50px rgba(255,255,255,.16);
+        }
+
+        /* =========================
+           BACKGROUND
+        ========================= */
+
+        .background {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: -10;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+        }
+
+        .orb-one {
+            width: 500px;
+            height: 500px;
+            left: -250px;
+            top: 5%;
+            background: rgba(255,255,255,.07);
+            animation: floatOne 18s infinite ease-in-out;
+        }
+
+        .orb-two {
+            width: 600px;
+            height: 600px;
+            right: -300px;
+            top: 45%;
+            background: rgba(255,255,255,.055);
+            animation: floatTwo 22s infinite ease-in-out;
+        }
+
+        .orb-three {
+            width: 400px;
+            height: 400px;
+            left: 35%;
+            bottom: -250px;
+            background: rgba(255,255,255,.04);
+            animation: floatThree 20s infinite ease-in-out;
+        }
+
+        @keyframes floatOne {
+            0%,100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(120px,80px) scale(1.1); }
+        }
+
+        @keyframes floatTwo {
+            0%,100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(-100px,-80px) scale(1.08); }
+        }
+
+        @keyframes floatThree {
+            0%,100% { transform: translate(0,0); }
+            50% { transform: translate(50px,-70px); }
+        }
+
+        /* =========================
+           NAVIGATION
+        ========================= */
+
+        nav {
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .nav-inner {
+            height: 72px;
+        }
+
+        .logo-box {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            background: white;
+            padding: 5px;
+        }
+
+        /* =========================
+           SECTION
+        ========================= */
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,.4);
+        }
+
+        .section-title {
+            font-size: clamp(2rem,7vw,3.25rem);
+            line-height: 1.05;
+            letter-spacing: -.05em;
+            font-weight: 800;
+        }
+
+        .section-description {
+            color: rgba(255,255,255,.52);
+            line-height: 1.8;
+        }
+
+        /* =========================
+           POLICY CONTENT
+        ========================= */
+
+        .policy h2 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: -.02em;
+            margin: 52px 0 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(255,255,255,.09);
+        }
+
+        .policy h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .policy h3 {
+            font-size: .82rem;
+            font-weight: 800;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,.45);
+            margin: 26px 0 12px;
+        }
+
+        .policy p {
+            color: rgba(255,255,255,.55);
+            line-height: 1.85;
+            font-size: .95rem;
+            margin: 0 0 14px;
+        }
+
+        .policy ul, .policy ol {
+            padding-left: 0;
+            list-style: none;
+            margin: 0 0 14px;
+            counter-reset: step;
+        }
+
+        .policy ul li {
+            padding-left: 26px;
+            position: relative;
+        }
+
+        .policy ul li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 9px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.3);
+        }
+
+        .policy ol li {
+            counter-increment: step;
+            padding-left: 34px;
+            position: relative;
+        }
+
+        .policy ol li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.14);
+            color: rgba(255,255,255,.85);
+            font-size: .72rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .policy li {
+            color: rgba(255,255,255,.55);
+            line-height: 1.75;
+            font-size: .95rem;
+            margin-bottom: 14px;
+        }
+
+        .policy li strong {
+            color: rgba(255,255,255,.88);
+            font-weight: 700;
+        }
+
+        .policy a {
+            color: white;
+            text-decoration: underline;
+            text-decoration-color: rgba(255,255,255,.3);
+            text-underline-offset: 3px;
+        }
+
+        .policy a:hover {
+            text-decoration-color: white;
+        }
+
+        .warning-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: rgba(255,69,58,.08);
+            border: 1px solid rgba(255,69,58,.28);
+            border-radius: 16px;
+            padding: 18px 22px;
+            margin: 22px 0 30px;
+        }
+
+        .warning-icon {
+            width: 22px;
+            height: 22px;
+            stroke: #FF6B5E;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .warning-box p {
+            margin: 0;
+            color: rgba(255,255,255,.7);
+            font-size: .92rem;
+            line-height: 1.6;
+        }
+
+        .warning-box strong {
+            color: #FF9086;
+            font-weight: 800;
+        }
+
+        .contact-box {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- =========================
+     BACKGROUND
+========================= -->
+
+<div class="background">
+    <div class="orb orb-one"></div>
+    <div class="orb orb-two"></div>
+    <div class="orb orb-three"></div>
+</div>
+
+
+<!-- =========================
+     NAVIGATION
+========================= -->
+
+<nav class="fixed top-0 left-0 w-full z-50 glass border-x-0 border-t-0 border-b-white/5">
+
+    <div class="max-w-7xl mx-auto px-5">
+
+        <div class="nav-inner flex items-center justify-between">
+
+            <a href="/index.html" class="flex items-center gap-3">
+
+                <div class="logo-box">
+                    <img
+                        src="https://i.postimg.cc/FH744fsn/file-00000000aba48246b29bc63b3ecf4ff1.png"
+                        alt="Xoxa Chatz"
+                        class="w-full h-full object-contain"
+                    >
+                </div>
+
+                <span class="font-bold tracking-[.18em] text-sm">
+                    XOxa CHATZ
+                </span>
+
+            </a>
+
+
+            <a
+                href="https://play.google.com/store/apps/details?id=co.median.android.dyzzdkm"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="primary-button px-5 py-2.5 rounded-full text-xs font-bold"
+            >
+                DOWNLOAD
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<section class="relative pt-36 pb-14 md:pt-48 md:pb-16">
+
+    <div class="max-w-4xl mx-auto px-5">
+
+        <div class="section-label mb-5">
+            LEGAL
+        </div>
+
+        <h1 class="section-title mb-6">
+            Terms of
+            <span class="text-white/35">
+                Service.
+            </span>
+        </h1>
+
+        <p class="section-description max-w-2xl">
+            These terms govern your use of Xoxa. By creating an account
+            or using the app, you agree to them — please read them
+            carefully.
+        </p>
+
+        <div class="mt-7 inline-flex items-center gap-3 glass-soft rounded-full px-5 py-3">
+            <span class="text-xs font-bold text-white/50 uppercase tracking-widest">
+                Last updated
+            </span>
+            <span class="text-xs font-bold text-white/80">
+                August 15, 2026
+            </span>
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     POLICY BODY
+========================= -->
+
+<section class="pb-24">
+
+    <div class="max-w-4xl mx-auto px-5">
+
+        <div class="glass rounded-[2.5rem] p-7 md:p-14 policy">
+
+            <p>These Terms of Service ("Terms") are an agreement between you and Vynix ("we", "our", "us"), the developer of Xoxa ("the app"). They govern your access to and use of Xoxa, including messaging, calls, Status, Feed, Discover, Business Accounts, and Ads. By creating an account or using Xoxa, you agree to these Terms.</p>
+
+            <h2>1. Eligibility</h2>
+            <ul>
+                <li>You must be at least 13 years old (or the minimum age required in your country) to use Xoxa.</li>
+                <li>You must be able to receive an OTP at the phone number you register with, and that number must belong to you.</li>
+                <li>You're responsible for keeping your account and device secure, including any PIN or biometric App Lock you set.</li>
+            </ul>
+
+            <h2>2. Your Account</h2>
+            <ul>
+                <li>You may set a display name, username, profile photo, and bio. Usernames can be changed once for free; further changes require a Business Account.</li>
+                <li>You can switch your account between <strong>Personal</strong> and <strong>Business</strong> at any time. Switching from Business back to Personal removes your gold verified badge and business features, and may re-lock your username if you've already used your one-time change — the app will confirm with you before this happens.</li>
+                <li>You're responsible for all activity on your account. Let us know right away if you suspect unauthorized access.</li>
+            </ul>
+
+            <h2>3. Acceptable Use</h2>
+            <p>When using Xoxa, you agree not to:</p>
+            <ul>
+                <li>Send content that is illegal, hateful, harassing, threatening, or that infringes someone else's rights.</li>
+                <li>Impersonate another person or misrepresent your affiliation with a person or organization.</li>
+                <li>Spam, phish, or send unsolicited bulk messages or ads outside the Feed's Ad tools.</li>
+                <li>Upload malware, attempt to breach the app's security, or interfere with its normal operation.</li>
+                <li>Use Xoxa to exploit, endanger, or sexualize minors — content or behavior of this kind will be reported to the relevant authorities where required by law.</li>
+            </ul>
+
+            <h2>4. Content You Post</h2>
+            <ul>
+                <li>You keep ownership of the messages, media, Status updates, and Feed posts you create.</li>
+                <li>By posting public content (Status, Feed posts, Business Page content, Ads), you allow Xoxa to display that content to the audience you chose (e.g. your followers, group members, or the public Feed).</li>
+                <li>You're responsible for having the rights to anything you upload, including photos, video, music, and links used in posts or Ads.</li>
+                <li>We may remove content or restrict accounts that violate these Terms or our Content &amp; Copyright Policy, and act on valid takedown notices within a reasonable time.</li>
+            </ul>
+
+            <h2>5. Business Accounts &amp; Ads</h2>
+            <ul>
+                <li>Switching to a Business Account lets you convert groups into Business Pages and publish posts labeled "Ad" with a destination link and call-to-action button.</li>
+                <li>You're solely responsible for the accuracy of your Ads, the destination link you attach, and compliance with applicable advertising and consumer-protection laws.</li>
+                <li>We may remove Ads or restrict Business Account features that violate these Terms, mislead users, or link to harmful or deceptive destinations.</li>
+                <li>We don't guarantee any level of reach, views, or engagement for Ads or Business Page content.</li>
+            </ul>
+
+            <h2>6. Purchases</h2>
+            <p>Some features (such as a verified badge) may be offered as paid purchases, processed through our third-party payment provider (Yoco). Purchases are subject to the payment provider's own terms, and any applicable app store terms if purchased through one.</p>
+
+            <h2>7. Termination</h2>
+            <ul>
+                <li>You can delete your account at any time — see <a href="/xoxa-account.html">how to delete your account</a>.</li>
+                <li>We may suspend or terminate accounts that violate these Terms, pose a risk to other users, or where required by law.</li>
+            </ul>
+
+            <h2>8. Disclaimers &amp; Limitation of Liability</h2>
+            <div class="warning-box">
+                <svg class="warning-icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <p>Xoxa is provided "as is." We don't control content posted by other users or Business Accounts, including Ad destination links, and we're not responsible for third-party sites you visit through the app. To the extent permitted by law, Vynix isn't liable for indirect or consequential damages arising from your use of Xoxa.</p>
+            </div>
+
+            <h2>9. Changes to These Terms</h2>
+            <p>We may update these Terms from time to time, for example as new features like Ads or Business Accounts evolve. We'll update the "Last updated" date above when changes are made. Continued use of Xoxa after changes means you accept the updated Terms.</p>
+
+            <h2>10. Governing Law</h2>
+            <p>These Terms are governed by the laws of South Africa, without regard to conflict-of-law principles, unless a different law is required to apply where you live.</p>
+
+            <h2>11. Contact Us</h2>
+            <div class="glass-soft rounded-2xl p-6 md:p-7 mt-2">
+                <p class="mb-4">If you have questions about these Terms, contact us at:</p>
+                <div class="contact-box mb-4">
+                    <span class="text-sm"><strong class="text-white/85">Email:</strong> <a href="mailto:lordmade100@gmail.com">lordmade100@gmail.com</a></span>
+                    <span class="text-sm"><strong class="text-white/85">Developer:</strong> <span class="text-white/70">Vynix</span></span>
+                </div>
+                <p class="mb-0">See our <a href="/xoxa-privacy.html">Privacy Policy</a> for how we handle your data.</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer class="border-t border-white/5">
+
+    <div class="max-w-7xl mx-auto px-5 py-10">
+
+        <div class="flex flex-col md:flex-row items-center justify-between gap-7">
+
+
+            <div class="flex items-center gap-3">
+
+                <div class="logo-box w-9 h-9 rounded-xl">
+
+                    <img
+                        src="https://i.postimg.cc/FH744fsn/file-00000000aba48246b29bc63b3ecf4ff1.png"
+                        alt="Xoxa Chatz"
+                        class="w-full h-full object-contain"
+                    >
+
+                </div>
+
+                <div>
+
+                    <div class="text-xs font-bold tracking-widest">
+                        XOxa CHATZ
+                    </div>
+
+                    <div class="text-[9px] text-white/30 mt-1">
+                        Chat. Share. Discover.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="flex items-center gap-7 text-[10px] font-bold uppercase tracking-widest text-white/35">
+
+                <a href="/xoxa-privacy.html" class="hover:text-white transition">
+                    Privacy
+                </a>
+
+                <a href="/xoxa-account.html" class="hover:text-white transition">
+                    Account
+                </a>
+
+                <a href="/xoxa-terms.html" class="hover:text-white transition">
+                    Terms
+                </a>
+
+                <a href="mailto:support@webmessenger.app" class="hover:text-white transition">
+                    Support
+                </a>
+
+            </div>
+
+
+            <div class="text-[9px] text-white/25 uppercase tracking-widest">
+
+                © 2026 XOxa Chatz
+
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+</body>
+</html>
