@@ -1,192 +1,581 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Xoxa Privacy Policy</title>
-<style>
-  :root {
-    --ink: #1a1a2e;
-    --muted: #5a5a72;
-    --accent: #6c5ce7;
-    --bg: #fafafa;
-    --card: #ffffff;
-    --border: #e8e8f0;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    line-height: 1.6;
-  }
-  .wrap {
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 48px 24px 96px;
-  }
-  header {
-    margin-bottom: 40px;
-  }
-  h1 {
-    font-size: 2rem;
-    margin: 0 0 8px;
-    letter-spacing: -0.02em;
-  }
-  .updated {
-    color: var(--muted);
-    font-size: 0.9rem;
-  }
-  h2 {
-    font-size: 1.25rem;
-    margin: 40px 0 12px;
-    color: var(--ink);
-    border-bottom: 2px solid var(--border);
-    padding-bottom: 8px;
-  }
-  h3 {
-    font-size: 1rem;
-    margin: 20px 0 8px;
-    color: var(--accent);
-  }
-  p, li {
-    color: #2e2e3e;
-    font-size: 0.98rem;
-  }
-  ul {
-    padding-left: 22px;
-  }
-  li {
-    margin-bottom: 6px;
-  }
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 28px 32px;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 12px 0;
-    font-size: 0.92rem;
-  }
-  th, td {
-    text-align: left;
-    padding: 8px 10px;
-    border-bottom: 1px solid var(--border);
-    vertical-align: top;
-  }
-  th {
-    color: var(--muted);
-    font-weight: 600;
-  }
-  .contact {
-    background: #f4f2ff;
-    border-radius: 10px;
-    padding: 20px 24px;
-    margin-top: 16px;
-  }
-  a { color: var(--accent); }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+
+    <title>Privacy Policy | Xoxa Chatz</title>
+
+    <meta name="description" content="Xoxa Chatz privacy policy — what information we collect, how we use it, and the choices you have.">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #050505;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        ::selection {
+            background: white;
+            color: black;
+        }
+
+        /* =========================
+           GLASS
+        ========================= */
+
+        .glass {
+            background: rgba(255,255,255,.035);
+            border: 1px solid rgba(255,255,255,.09);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow:
+                0 30px 80px rgba(0,0,0,.45),
+                inset 0 1px 0 rgba(255,255,255,.08);
+        }
+
+        .glass-soft {
+            background: rgba(255,255,255,.025);
+            border: 1px solid rgba(255,255,255,.07);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .primary-button {
+            background: white;
+            color: black;
+            transition: .35s ease;
+            box-shadow: 0 15px 40px rgba(255,255,255,.08);
+        }
+
+        .primary-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 50px rgba(255,255,255,.16);
+        }
+
+        /* =========================
+           BACKGROUND
+        ========================= */
+
+        .background {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: -10;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+        }
+
+        .orb-one {
+            width: 500px;
+            height: 500px;
+            left: -250px;
+            top: 5%;
+            background: rgba(255,255,255,.07);
+            animation: floatOne 18s infinite ease-in-out;
+        }
+
+        .orb-two {
+            width: 600px;
+            height: 600px;
+            right: -300px;
+            top: 45%;
+            background: rgba(255,255,255,.055);
+            animation: floatTwo 22s infinite ease-in-out;
+        }
+
+        .orb-three {
+            width: 400px;
+            height: 400px;
+            left: 35%;
+            bottom: -250px;
+            background: rgba(255,255,255,.04);
+            animation: floatThree 20s infinite ease-in-out;
+        }
+
+        @keyframes floatOne {
+            0%,100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(120px,80px) scale(1.1); }
+        }
+
+        @keyframes floatTwo {
+            0%,100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(-100px,-80px) scale(1.08); }
+        }
+
+        @keyframes floatThree {
+            0%,100% { transform: translate(0,0); }
+            50% { transform: translate(50px,-70px); }
+        }
+
+        /* =========================
+           NAVIGATION
+        ========================= */
+
+        nav {
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .nav-inner {
+            height: 72px;
+        }
+
+        .logo-box {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            background: white;
+            padding: 5px;
+        }
+
+        /* =========================
+           SECTION
+        ========================= */
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,.4);
+        }
+
+        .section-title {
+            font-size: clamp(2rem,7vw,3.25rem);
+            line-height: 1.05;
+            letter-spacing: -.05em;
+            font-weight: 800;
+        }
+
+        .section-description {
+            color: rgba(255,255,255,.52);
+            line-height: 1.8;
+        }
+
+        /* =========================
+           POLICY CONTENT
+        ========================= */
+
+        .policy h2 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: -.02em;
+            margin: 52px 0 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(255,255,255,.09);
+        }
+
+        .policy h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .policy h3 {
+            font-size: .82rem;
+            font-weight: 800;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,.45);
+            margin: 26px 0 12px;
+        }
+
+        .policy p {
+            color: rgba(255,255,255,.55);
+            line-height: 1.85;
+            font-size: .95rem;
+            margin: 0 0 14px;
+        }
+
+        .policy ul {
+            padding-left: 0;
+            list-style: none;
+            margin: 0 0 14px;
+        }
+
+        .policy li {
+            color: rgba(255,255,255,.55);
+            line-height: 1.75;
+            font-size: .95rem;
+            margin-bottom: 12px;
+            padding-left: 26px;
+            position: relative;
+        }
+
+        .policy li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 9px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.3);
+        }
+
+        .policy li strong {
+            color: rgba(255,255,255,.88);
+            font-weight: 700;
+        }
+
+        .policy a {
+            color: white;
+            text-decoration: underline;
+            text-decoration-color: rgba(255,255,255,.3);
+            text-underline-offset: 3px;
+        }
+
+        .policy a:hover {
+            text-decoration-color: white;
+        }
+
+        .policy-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8px 0 18px;
+            font-size: .88rem;
+        }
+
+        .policy-table th, .policy-table td {
+            text-align: left;
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+            vertical-align: top;
+            color: rgba(255,255,255,.55);
+        }
+
+        .policy-table th {
+            color: rgba(255,255,255,.4);
+            font-weight: 700;
+            font-size: .72rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .policy-table td:first-child {
+            color: rgba(255,255,255,.85);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .contact-box {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+    </style>
 </head>
+
 <body>
-<div class="wrap">
-  <div class="card">
-    <header>
-      <h1>Xoxa Privacy Policy</h1>
-      <div class="updated">Last updated: August 4, 2026</div>
-    </header>
 
-    <p>Xoxa ("we", "our", "the app") is a messaging application developed by Vynix. This policy explains what information we collect, how we use it, and the choices you have. By using Xoxa, you agree to the practices described here.</p>
+<!-- =========================
+     BACKGROUND
+========================= -->
 
-    <h2>1. Information We Collect</h2>
-
-    <h3>Account Information</h3>
-    <ul>
-      <li><strong>Phone number</strong> — used to create your account and verify your identity via a one-time password (OTP).</li>
-      <li><strong>Profile information</strong> — display name, profile photo, and status/bio you choose to add.</li>
-    </ul>
-
-    <h3>Messages and Media</h3>
-    <ul>
-      <li>Text messages, voice notes, photos, videos, and view-once media sent within chats and groups.</li>
-      <li>Timestamps, delivery status, and read receipts.</li>
-      <li>Group information, including group membership, business page details, and content posted to group/business pages.</li>
-    </ul>
-
-    <h3>Status/Discover Content</h3>
-    <ul>
-      <li>Videos and captions you upload to your Status.</li>
-      <li>Interactions such as likes and reshares on Status content.</li>
-    </ul>
-
-    <h3>Calls</h3>
-    <ul>
-      <li>Metadata about voice calls (1:1 and group), such as call duration and participants. Call audio is transmitted directly between participants (peer-to-peer) and is not stored by us.</li>
-    </ul>
-
-    <h3>Device and Push Notification Data</h3>
-    <ul>
-      <li>Device push token, used to deliver notifications through our push provider (OneSignal).</li>
-      <li>Basic device/app information (OS version, app version) for troubleshooting and compatibility.</li>
-    </ul>
-
-    <h3>Payment Information</h3>
-    <ul>
-      <li>If you purchase a verified badge or other paid feature, payment is processed by our third-party payment provider (Yoco). We do not store your card details — only the transaction status and purchase record.</li>
-    </ul>
-
-    <h2>2. How We Use Your Information</h2>
-    <ul>
-      <li>To create and secure your account, and verify you via OTP.</li>
-      <li>To deliver messages, media, calls, and notifications between you and other users.</li>
-      <li>To operate features such as read receipts, group management, Status, and Discover.</li>
-      <li>To process purchases (e.g. verified badges) via our payment provider.</li>
-      <li>To maintain, secure, and improve the app, including diagnosing bugs.</li>
-      <li>To communicate with you about your account or important service updates.</li>
-    </ul>
-
-    <h2>3. How Information Is Shared</h2>
-    <table>
-      <tr><th>Recipient</th><th>Purpose</th></tr>
-      <tr><td>Other users you chat with</td><td>Messages, media, calls, profile info, read receipts are shared directly with the people/groups you communicate with.</td></tr>
-      <tr><td>Firebase (Google)</td><td>Backend infrastructure — authentication, database, storage, hosting.</td></tr>
-      <tr><td>OneSignal</td><td>Push notification delivery to your device.</td></tr>
-      <tr><td>Yoco</td><td>Payment processing for in-app purchases.</td></tr>
-    </table>
-    <p>We do not sell your personal information to third parties.</p>
-
-    <h2>4. Data Storage and Security</h2>
-    <ul>
-      <li>Data is stored using Firebase infrastructure with industry-standard security practices.</li>
-      <li>Data is encrypted in transit (HTTPS/TLS).</li>
-      <li>View-once media is deleted after being viewed, consistent with its intended purpose.</li>
-      <li>We retain account and message data for as long as your account is active, or as needed to provide the service.</li>
-    </ul>
-
-    <h2>5. Your Rights and Choices</h2>
-    <ul>
-      <li><strong>Access & correction</strong> — you can view and edit your profile information within the app.</li>
-      <li><strong>Blocking</strong> — you can block or unblock other users at any time.</li>
-      <li><strong>Deletion</strong> — you may request deletion of your account and associated data at any time. See <a href="/xoxa-account.html">how to delete your account</a> for step-by-step instructions.</li>
-      <li><strong>Notifications</strong> — you can disable push notifications through your device settings.</li>
-    </ul>
-
-    <h2>6. Children's Privacy</h2>
-    <p>Xoxa is not intended for children under 13 (or the minimum age required by your country). We do not knowingly collect information from children under this age. If you believe a child has provided us with personal information, please contact us so we can remove it.</p>
-
-    <h2>7. Changes to This Policy</h2>
-    <p>We may update this privacy policy from time to time. We'll update the "Last updated" date above when changes are made. Continued use of Xoxa after changes means you accept the updated policy.</p>
-
-    <h2>8. Contact Us</h2>
-    <div class="contact">
-      <p>If you have questions about this privacy policy or want to request data deletion, contact us at:</p>
-      <p><strong>Email:</strong> lordmade100@gmail.com<br>
-      <strong>Developer:</strong> Vynix</p>
-    </div>
-  </div>
+<div class="background">
+    <div class="orb orb-one"></div>
+    <div class="orb orb-two"></div>
+    <div class="orb orb-three"></div>
 </div>
+
+
+<!-- =========================
+     NAVIGATION
+========================= -->
+
+<nav class="fixed top-0 left-0 w-full z-50 glass border-x-0 border-t-0 border-b-white/5">
+
+    <div class="max-w-7xl mx-auto px-5">
+
+        <div class="nav-inner flex items-center justify-between">
+
+            <a href="/index.html" class="flex items-center gap-3">
+
+                <div class="logo-box">
+                    <img
+                        src="https://i.postimg.cc/FH744fsn/file-00000000aba48246b29bc63b3ecf4ff1.png"
+                        alt="Xoxa Chatz"
+                        class="w-full h-full object-contain"
+                    >
+                </div>
+
+                <span class="font-bold tracking-[.18em] text-sm">
+                    XOxa CHATZ
+                </span>
+
+            </a>
+
+
+            <a
+                href="https://play.google.com/store/apps/details?id=co.median.android.dyzzdkm"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="primary-button px-5 py-2.5 rounded-full text-xs font-bold"
+            >
+                DOWNLOAD
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<section class="relative pt-36 pb-14 md:pt-48 md:pb-16">
+
+    <div class="max-w-4xl mx-auto px-5">
+
+        <div class="section-label mb-5">
+            LEGAL
+        </div>
+
+        <h1 class="section-title mb-6">
+            Privacy
+            <span class="text-white/35">
+                Policy.
+            </span>
+        </h1>
+
+        <p class="section-description max-w-2xl">
+            This explains what information Xoxa collects, how we use it,
+            and the choices you have. By using Xoxa, you agree to the
+            practices described here.
+        </p>
+
+        <div class="mt-7 inline-flex items-center gap-3 glass-soft rounded-full px-5 py-3">
+            <span class="text-xs font-bold text-white/50 uppercase tracking-widest">
+                Last updated
+            </span>
+            <span class="text-xs font-bold text-white/80">
+                August 15, 2026
+            </span>
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     POLICY BODY
+========================= -->
+
+<section class="pb-24">
+
+    <div class="max-w-4xl mx-auto px-5">
+
+        <div class="glass rounded-[2.5rem] p-7 md:p-14 policy">
+
+            <p>Xoxa ("we", "our", "the app") is a messaging and social application developed by Vynix. This policy explains what information we collect, how we use it, and the choices you have. By using Xoxa, you agree to the practices described here.</p>
+
+            <h2>1. Information We Collect</h2>
+
+            <h3>Account Information</h3>
+            <ul>
+                <li><strong>Phone number</strong> — used to create your account and verify your identity via a one-time password (OTP).</li>
+                <li><strong>Profile information</strong> — display name, username, profile photo, and status/bio you choose to add.</li>
+                <li><strong>Account type</strong> — whether your account is set as a personal or Business Account.</li>
+            </ul>
+
+            <h3>Messages and Media</h3>
+            <ul>
+                <li>Text messages, voice notes, photos, videos, and view-once media sent within chats and groups.</li>
+                <li>Timestamps, delivery status, and read receipts.</li>
+                <li>Group information, including group membership, Business Page details, and content posted to group/Business Pages.</li>
+            </ul>
+
+            <h3>Status, Feed and Discover Content</h3>
+            <ul>
+                <li>Videos, photos, text posts and captions you upload to your Status or Feed.</li>
+                <li>Interactions such as likes, comments and reshares on Status or Feed content.</li>
+                <li>Basic view/impression counts on your own posts, shown to you in Account Insights.</li>
+            </ul>
+
+            <h3>Calls</h3>
+            <ul>
+                <li>Metadata about voice calls (1:1 and group), such as call duration and participants. Call audio is transmitted directly between participants (peer-to-peer) and is not stored by us.</li>
+            </ul>
+
+            <h3>Device and Push Notification Data</h3>
+            <ul>
+                <li>Device push token, used to deliver notifications through our push provider (OneSignal).</li>
+                <li>Basic device/app information (OS version, app version) for troubleshooting and compatibility.</li>
+            </ul>
+
+            <h3>Payment Information</h3>
+            <ul>
+                <li>If you purchase a verified badge or other paid feature, payment is processed by our third-party payment provider (Yoco). We do not store your card details — only the transaction status and purchase record.</li>
+            </ul>
+
+            <h2>2. Business Accounts &amp; Ads</h2>
+
+            <p>Xoxa lets any account switch to a Business Account. Ads on Xoxa are created and published by Business Accounts themselves through the post composer — we do not run a separate ad-serving network, and we do not sell your data to advertisers.</p>
+
+            <ul>
+                <li><strong>Ad posts</strong> — a Business Account can label a post as an Ad and attach a destination link and call-to-action button (e.g. "Learn More", "Shop Now"). These posts are shown in the Feed alongside regular posts and are clearly marked "Ad".</li>
+                <li><strong>Destination links</strong> — the link behind an Ad's call-to-action button is set by the Business Account that created it, not by us. Tapping it takes you to a third-party site outside Xoxa; we don't control that site's content, privacy practices, or security.</li>
+                <li><strong>Business Page content</strong> — converting a group to a Business Page, and any content, username, or badge associated with it, is visible to anyone who can view that page.</li>
+                <li><strong>Post performance</strong> — Business Accounts can see aggregate view counts for their own posts and Ads in Account Insights. We don't provide advertisers with data about who specifically viewed or clicked a post.</li>
+                <li><strong>No cross-app ad tracking</strong> — we don't use third-party ad networks, ad trackers, or cross-app/cross-site tracking to target ads to you within Xoxa.</li>
+            </ul>
+
+            <h2>3. How We Use Your Information</h2>
+            <ul>
+                <li>To create and secure your account, and verify you via OTP.</li>
+                <li>To deliver messages, media, calls, and notifications between you and other users.</li>
+                <li>To operate features such as read receipts, group management, Status, Feed and Discover.</li>
+                <li>To display Ads that Business Accounts publish, and to show Business Accounts aggregate performance for their own posts.</li>
+                <li>To process purchases (e.g. verified badges) via our payment provider.</li>
+                <li>To maintain, secure, and improve the app, including diagnosing bugs.</li>
+                <li>To communicate with you about your account or important service updates.</li>
+            </ul>
+
+            <h2>4. How Information Is Shared</h2>
+
+            <table class="policy-table">
+                <tr><th>Recipient</th><th>Purpose</th></tr>
+                <tr><td>Other users you chat with</td><td>Messages, media, calls, profile info, and read receipts are shared directly with the people/groups you communicate with.</td></tr>
+                <tr><td>Anyone viewing the Feed</td><td>Public posts, Status content, and Ads (including a Business Account's name, badge, and post content) are visible to anyone who can view that content.</td></tr>
+                <tr><td>Firebase (Google)</td><td>Backend infrastructure — authentication, database, storage, hosting.</td></tr>
+                <tr><td>OneSignal</td><td>Push notification delivery to your device.</td></tr>
+                <tr><td>Yoco</td><td>Payment processing for in-app purchases.</td></tr>
+            </table>
+
+            <p>We do not sell your personal information to third parties.</p>
+
+            <h2>5. Data Storage and Security</h2>
+            <ul>
+                <li>Data is stored using Firebase infrastructure with industry-standard security practices.</li>
+                <li>Data is encrypted in transit (HTTPS/TLS).</li>
+                <li>View-once media is deleted after being viewed, consistent with its intended purpose.</li>
+                <li>We retain account, message, and post data for as long as your account is active, or as needed to provide the service.</li>
+            </ul>
+
+            <h2>6. Your Rights and Choices</h2>
+            <ul>
+                <li><strong>Access &amp; correction</strong> — you can view and edit your profile information within the app.</li>
+                <li><strong>Business Account</strong> — you can switch between a personal and Business Account at any time; the app will warn you about what changes before you switch back.</li>
+                <li><strong>Blocking</strong> — you can block or unblock other users at any time.</li>
+                <li><strong>Deletion</strong> — you may request deletion of your account and associated data at any time. See <a href="/xoxa-account.html">how to delete your account</a> for step-by-step instructions.</li>
+                <li><strong>Notifications</strong> — you can disable push notifications through your device settings.</li>
+            </ul>
+
+            <h2>7. Children's Privacy</h2>
+            <p>Xoxa is not intended for children under 13 (or the minimum age required by your country). We do not knowingly collect information from children under this age, and Ads on Xoxa are not directed at children. If you believe a child has provided us with personal information, please contact us so we can remove it.</p>
+
+            <h2>8. Changes to This Policy</h2>
+            <p>We may update this privacy policy from time to time — for example, as Ads or Business Account features change. We'll update the "Last updated" date above when changes are made. Continued use of Xoxa after changes means you accept the updated policy.</p>
+
+            <h2>9. Contact Us</h2>
+            <div class="glass-soft rounded-2xl p-6 md:p-7 mt-2">
+                <p class="mb-4">If you have questions about this privacy policy or want to request data deletion, contact us at:</p>
+                <div class="contact-box">
+                    <span class="text-sm"><strong class="text-white/85">Email:</strong> <a href="mailto:lordmade100@gmail.com">lordmade100@gmail.com</a></span>
+                    <span class="text-sm"><strong class="text-white/85">Developer:</strong> <span class="text-white/70">Vynix</span></span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer class="border-t border-white/5">
+
+    <div class="max-w-7xl mx-auto px-5 py-10">
+
+        <div class="flex flex-col md:flex-row items-center justify-between gap-7">
+
+
+            <div class="flex items-center gap-3">
+
+                <div class="logo-box w-9 h-9 rounded-xl">
+
+                    <img
+                        src="https://i.postimg.cc/FH744fsn/file-00000000aba48246b29bc63b3ecf4ff1.png"
+                        alt="Xoxa Chatz"
+                        class="w-full h-full object-contain"
+                    >
+
+                </div>
+
+                <div>
+
+                    <div class="text-xs font-bold tracking-widest">
+                        XOxa CHATZ
+                    </div>
+
+                    <div class="text-[9px] text-white/30 mt-1">
+                        Chat. Share. Discover.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="flex items-center gap-7 text-[10px] font-bold uppercase tracking-widest text-white/35">
+
+                <a href="/xoxa-privacy.html" class="hover:text-white transition text-white">
+                    Privacy
+                </a>
+
+                <a href="#" class="hover:text-white transition">
+                    Terms
+                </a>
+
+                <a href="mailto:support@webmessenger.app" class="hover:text-white transition">
+                    Support
+                </a>
+
+            </div>
+
+
+            <div class="text-[9px] text-white/25 uppercase tracking-widest">
+
+                © 2026 XOxa Chatz
+
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
 </body>
 </html>
