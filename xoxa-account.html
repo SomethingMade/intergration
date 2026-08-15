@@ -1,129 +1,564 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Delete Your Xoxa Account</title>
-<style>
-  :root {
-    --ink: #1a1a2e;
-    --muted: #5a5a72;
-    --accent: #6c5ce7;
-    --bg: #fafafa;
-    --card: #ffffff;
-    --border: #e8e8f0;
-    --danger: #e74c3c;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    line-height: 1.6;
-  }
-  .wrap {
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 48px 24px 96px;
-  }
-  header { margin-bottom: 40px; }
-  h1 {
-    font-size: 2rem;
-    margin: 0 0 8px;
-    letter-spacing: -0.02em;
-  }
-  .updated { color: var(--muted); font-size: 0.9rem; }
-  h2 {
-    font-size: 1.25rem;
-    margin: 36px 0 12px;
-    border-bottom: 2px solid var(--border);
-    padding-bottom: 8px;
-  }
-  h3 { font-size: 1rem; margin: 20px 0 8px; color: var(--accent); }
-  p, li { color: #2e2e3e; font-size: 0.98rem; }
-  ul, ol { padding-left: 22px; }
-  li { margin-bottom: 6px; }
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 28px 32px;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 12px 0;
-    font-size: 0.92rem;
-  }
-  th, td {
-    text-align: left;
-    padding: 8px 10px;
-    border-bottom: 1px solid var(--border);
-    vertical-align: top;
-  }
-  th { color: var(--muted); font-weight: 600; }
-  .contact {
-    background: #f4f2ff;
-    border-radius: 10px;
-    padding: 20px 24px;
-    margin-top: 16px;
-  }
-  .warning {
-    background: #fdecea;
-    border: 1px solid rgba(231, 76, 60, 0.3);
-    border-radius: 10px;
-    padding: 16px 20px;
-    margin: 16px 0;
-  }
-  .warning strong { color: var(--danger); }
-  a { color: var(--accent); }
-  .steps li { margin-bottom: 12px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+
+    <title>Delete Your Account | Xoxa Chatz</title>
+
+    <meta name="description" content="How to request deletion of your Xoxa account and data, and what happens afterward.">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #050505;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        ::selection {
+            background: white;
+            color: black;
+        }
+
+        /* =========================
+           GLASS
+        ========================= */
+
+        .glass {
+            background: rgba(255,255,255,.035);
+            border: 1px solid rgba(255,255,255,.09);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow:
+                0 30px 80px rgba(0,0,0,.45),
+                inset 0 1px 0 rgba(255,255,255,.08);
+        }
+
+        .glass-soft {
+            background: rgba(255,255,255,.025);
+            border: 1px solid rgba(255,255,255,.07);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .primary-button {
+            background: white;
+            color: black;
+            transition: .35s ease;
+            box-shadow: 0 15px 40px rgba(255,255,255,.08);
+        }
+
+        .primary-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 50px rgba(255,255,255,.16);
+        }
+
+        /* =========================
+           BACKGROUND
+        ========================= */
+
+        .background {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: -10;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+        }
+
+        .orb-one {
+            width: 500px;
+            height: 500px;
+            left: -250px;
+            top: 5%;
+            background: rgba(255,255,255,.07);
+            animation: floatOne 18s infinite ease-in-out;
+        }
+
+        .orb-two {
+            width: 600px;
+            height: 600px;
+            right: -300px;
+            top: 45%;
+            background: rgba(255,255,255,.055);
+            animation: floatTwo 22s infinite ease-in-out;
+        }
+
+        .orb-three {
+            width: 400px;
+            height: 400px;
+            left: 35%;
+            bottom: -250px;
+            background: rgba(255,255,255,.04);
+            animation: floatThree 20s infinite ease-in-out;
+        }
+
+        @keyframes floatOne {
+            0%,100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(120px,80px) scale(1.1); }
+        }
+
+        @keyframes floatTwo {
+            0%,100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(-100px,-80px) scale(1.08); }
+        }
+
+        @keyframes floatThree {
+            0%,100% { transform: translate(0,0); }
+            50% { transform: translate(50px,-70px); }
+        }
+
+        /* =========================
+           NAVIGATION
+        ========================= */
+
+        nav {
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .nav-inner {
+            height: 72px;
+        }
+
+        .logo-box {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            background: white;
+            padding: 5px;
+        }
+
+        /* =========================
+           SECTION
+        ========================= */
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,.4);
+        }
+
+        .section-title {
+            font-size: clamp(2rem,7vw,3.25rem);
+            line-height: 1.05;
+            letter-spacing: -.05em;
+            font-weight: 800;
+        }
+
+        .section-description {
+            color: rgba(255,255,255,.52);
+            line-height: 1.8;
+        }
+
+        /* =========================
+           POLICY CONTENT
+        ========================= */
+
+        .policy h2 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: -.02em;
+            margin: 52px 0 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(255,255,255,.09);
+        }
+
+        .policy h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .policy p {
+            color: rgba(255,255,255,.55);
+            line-height: 1.85;
+            font-size: .95rem;
+            margin: 0 0 14px;
+        }
+
+        .policy ul, .policy ol {
+            padding-left: 0;
+            list-style: none;
+            margin: 0 0 14px;
+            counter-reset: step;
+        }
+
+        .policy ul li {
+            padding-left: 26px;
+            position: relative;
+        }
+
+        .policy ul li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 9px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.3);
+        }
+
+        .policy ol li {
+            counter-increment: step;
+            padding-left: 34px;
+            position: relative;
+        }
+
+        .policy ol li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.14);
+            color: rgba(255,255,255,.85);
+            font-size: .72rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .policy li {
+            color: rgba(255,255,255,.55);
+            line-height: 1.75;
+            font-size: .95rem;
+            margin-bottom: 14px;
+        }
+
+        .policy li strong {
+            color: rgba(255,255,255,.88);
+            font-weight: 700;
+        }
+
+        .policy a {
+            color: white;
+            text-decoration: underline;
+            text-decoration-color: rgba(255,255,255,.3);
+            text-underline-offset: 3px;
+        }
+
+        .policy a:hover {
+            text-decoration-color: white;
+        }
+
+        .policy-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8px 0 18px;
+            font-size: .88rem;
+        }
+
+        .policy-table th, .policy-table td {
+            text-align: left;
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+            vertical-align: top;
+            color: rgba(255,255,255,.55);
+        }
+
+        .policy-table th {
+            color: rgba(255,255,255,.4);
+            font-weight: 700;
+            font-size: .72rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .policy-table td:first-child {
+            color: rgba(255,255,255,.85);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .warning-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: rgba(255,69,58,.08);
+            border: 1px solid rgba(255,69,58,.28);
+            border-radius: 16px;
+            padding: 18px 22px;
+            margin: 22px 0 30px;
+        }
+
+        .warning-icon {
+            width: 22px;
+            height: 22px;
+            stroke: #FF6B5E;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .warning-box p {
+            margin: 0;
+            color: rgba(255,255,255,.7);
+            font-size: .92rem;
+            line-height: 1.6;
+        }
+
+        .warning-box strong {
+            color: #FF9086;
+            font-weight: 800;
+        }
+
+        .contact-box {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+    </style>
 </head>
+
 <body>
-<div class="wrap">
-  <div class="card">
-    <header>
-      <h1>Delete Your Xoxa Account</h1>
-      <div class="updated">Last updated: August 4, 2026</div>
-    </header>
 
-    <p>You can request deletion of your Xoxa account and associated data at any time. This page explains how to request deletion, and what happens to your data afterward.</p>
+<!-- =========================
+     BACKGROUND
+========================= -->
 
-    <h2>How to Request Account Deletion</h2>
-    <ol class="steps">
-      <li><strong>In-app (recommended):</strong> Open Xoxa, go to <em>Settings → Account → Delete Account</em>, confirm your phone number, and follow the on-screen steps to permanently delete your account.</li>
-      <li><strong>By email:</strong> If you can't access the app, send an email to <strong>lordmade100@gmail.com</strong> from the address associated with your account (or including your registered phone number), with the subject line "Account Deletion Request." Include your registered phone number so we can locate your account.</li>
-    </ol>
-
-    <div class="warning">
-      <strong>This action is permanent.</strong> Once your account is deleted, it cannot be recovered.
-    </div>
-
-    <h2>What Gets Deleted</h2>
-    <table>
-      <tr><th>Data</th><th>What happens</th></tr>
-      <tr><td>Profile info (name, photo, status)</td><td>Deleted</td></tr>
-      <tr><td>Phone number</td><td>Deleted</td></tr>
-      <tr><td>Messages and media you've sent</td><td>Deleted from our systems. Copies previously delivered to other users' devices may remain in their chat history, consistent with how messaging apps work.</td></tr>
-      <tr><td>Status/Discover uploads</td><td>Deleted</td></tr>
-      <tr><td>Group memberships</td><td>Removed from all groups</td></tr>
-      <tr><td>Push notification tokens</td><td>Deleted</td></tr>
-      <tr><td>Purchase/transaction records (verified badge, etc.)</td><td>Retained only where required for financial/legal record-keeping, then deleted per standard retention limits</td></tr>
-    </table>
-
-    <h2>Processing Time</h2>
-    <p>Account deletion requests are typically processed within a few business days. You'll receive a confirmation once your account and associated data have been removed.</p>
-
-    <h2>Questions</h2>
-    <div class="contact">
-      <p>If you have questions about account deletion or data retention, contact us at:</p>
-      <p><strong>Email:</strong> lordmade100@gmail.com<br>
-      <strong>Developer:</strong> Vynix</p>
-      <p>See our full <a href="/xoxa-privacy.html">Privacy Policy</a> for more on how we handle your data.</p>
-    </div>
-  </div>
+<div class="background">
+    <div class="orb orb-one"></div>
+    <div class="orb orb-two"></div>
+    <div class="orb orb-three"></div>
 </div>
+
+
+<!-- =========================
+     NAVIGATION
+========================= -->
+
+<nav class="fixed top-0 left-0 w-full z-50 glass border-x-0 border-t-0 border-b-white/5">
+
+    <div class="max-w-7xl mx-auto px-5">
+
+        <div class="nav-inner flex items-center justify-between">
+
+            <a href="/index.html" class="flex items-center gap-3">
+
+                <div class="logo-box">
+                    <img
+                        src="https://i.postimg.cc/FH744fsn/file-00000000aba48246b29bc63b3ecf4ff1.png"
+                        alt="Xoxa Chatz"
+                        class="w-full h-full object-contain"
+                    >
+                </div>
+
+                <span class="font-bold tracking-[.18em] text-sm">
+                    XOxa CHATZ
+                </span>
+
+            </a>
+
+
+            <a
+                href="https://play.google.com/store/apps/details?id=co.median.android.dyzzdkm"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="primary-button px-5 py-2.5 rounded-full text-xs font-bold"
+            >
+                DOWNLOAD
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<section class="relative pt-36 pb-14 md:pt-48 md:pb-16">
+
+    <div class="max-w-4xl mx-auto px-5">
+
+        <div class="section-label mb-5">
+            ACCOUNT
+        </div>
+
+        <h1 class="section-title mb-6">
+            Delete your
+            <span class="text-white/35">
+                account.
+            </span>
+        </h1>
+
+        <p class="section-description max-w-2xl">
+            You can request deletion of your Xoxa account and associated
+            data at any time. This page explains how to request deletion,
+            and what happens to your data afterward.
+        </p>
+
+        <div class="mt-7 inline-flex items-center gap-3 glass-soft rounded-full px-5 py-3">
+            <span class="text-xs font-bold text-white/50 uppercase tracking-widest">
+                Last updated
+            </span>
+            <span class="text-xs font-bold text-white/80">
+                August 15, 2026
+            </span>
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     POLICY BODY
+========================= -->
+
+<section class="pb-24">
+
+    <div class="max-w-4xl mx-auto px-5">
+
+        <div class="glass rounded-[2.5rem] p-7 md:p-14 policy">
+
+            <h2>How to Request Account Deletion</h2>
+            <ol>
+                <li><strong>In-app (recommended):</strong> Open Xoxa, go to <em>Settings → Account → Delete Account</em>, confirm your phone number, and follow the on-screen steps to permanently delete your account.</li>
+                <li><strong>By email:</strong> If you can't access the app, send an email to <strong>lordmade100@gmail.com</strong> from the address associated with your account (or including your registered phone number), with the subject line "Account Deletion Request." Include your registered phone number so we can locate your account.</li>
+            </ol>
+
+            <div class="warning-box">
+                <svg class="warning-icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <p><strong>This action is permanent.</strong> Once your account is deleted, it cannot be recovered.</p>
+            </div>
+
+            <h2>What Gets Deleted</h2>
+            <table class="policy-table">
+                <tr><th>Data</th><th>What happens</th></tr>
+                <tr><td>Profile info (name, photo, status)</td><td>Deleted</td></tr>
+                <tr><td>Phone number</td><td>Deleted</td></tr>
+                <tr><td>Username</td><td>Deleted and released for others to use</td></tr>
+                <tr><td>Messages and media you've sent</td><td>Deleted from our systems. Copies previously delivered to other users' devices may remain in their chat history, consistent with how messaging apps work.</td></tr>
+                <tr><td>Status/Feed/Discover uploads</td><td>Deleted</td></tr>
+                <tr><td>Business Account status, Business Pages you own, and Ad posts</td><td>Deleted. Business Pages you own are removed; your membership in other Business Pages/groups ends.</td></tr>
+                <tr><td>Group memberships</td><td>Removed from all groups</td></tr>
+                <tr><td>Push notification tokens</td><td>Deleted</td></tr>
+                <tr><td>Purchase/transaction records (verified badge, etc.)</td><td>Retained only where required for financial/legal record-keeping, then deleted per standard retention limits</td></tr>
+            </table>
+
+            <h2>Processing Time</h2>
+            <p>Account deletion requests are typically processed within a few business days. You'll receive a confirmation once your account and associated data have been removed.</p>
+
+            <h2>Questions</h2>
+            <div class="glass-soft rounded-2xl p-6 md:p-7 mt-2">
+                <p class="mb-4">If you have questions about account deletion or data retention, contact us at:</p>
+                <div class="contact-box mb-4">
+                    <span class="text-sm"><strong class="text-white/85">Email:</strong> <a href="mailto:lordmade100@gmail.com">lordmade100@gmail.com</a></span>
+                    <span class="text-sm"><strong class="text-white/85">Developer:</strong> <span class="text-white/70">Vynix</span></span>
+                </div>
+                <p class="mb-0">See our full <a href="/xoxa-privacy.html">Privacy Policy</a> for more on how we handle your data.</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer class="border-t border-white/5">
+
+    <div class="max-w-7xl mx-auto px-5 py-10">
+
+        <div class="flex flex-col md:flex-row items-center justify-between gap-7">
+
+
+            <div class="flex items-center gap-3">
+
+                <div class="logo-box w-9 h-9 rounded-xl">
+
+                    <img
+                        src="https://i.postimg.cc/FH744fsn/file-00000000aba48246b29bc63b3ecf4ff1.png"
+                        alt="Xoxa Chatz"
+                        class="w-full h-full object-contain"
+                    >
+
+                </div>
+
+                <div>
+
+                    <div class="text-xs font-bold tracking-widest">
+                        XOxa CHATZ
+                    </div>
+
+                    <div class="text-[9px] text-white/30 mt-1">
+                        Chat. Share. Discover.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="flex items-center gap-7 text-[10px] font-bold uppercase tracking-widest text-white/35">
+
+                <a href="/xoxa-privacy.html" class="hover:text-white transition">
+                    Privacy
+                </a>
+
+                <a href="#" class="hover:text-white transition">
+                    Terms
+                </a>
+
+                <a href="mailto:support@webmessenger.app" class="hover:text-white transition">
+                    Support
+                </a>
+
+            </div>
+
+
+            <div class="text-[9px] text-white/25 uppercase tracking-widest">
+
+                © 2026 XOxa Chatz
+
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
 </body>
 </html>
