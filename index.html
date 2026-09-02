@@ -23,8 +23,9 @@
         }
 
         :root {
-            --bg: #F2F4F8;
+            --bg: #0A0A0D;
             --ink: #12131A;
+            --paper: #F5F6FA;
             --accent: #2F6FED;
             --accent-2: #6C5CE7;
         }
@@ -33,13 +34,13 @@
             margin: 0;
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: var(--bg);
-            color: var(--ink);
+            color: var(--paper);
             overflow-x: hidden;
         }
 
         ::selection {
-            background: var(--ink);
-            color: white;
+            background: var(--paper);
+            color: var(--bg);
         }
 
         /* =========================
@@ -47,8 +48,8 @@
         ========================= */
 
         .glass {
-            background: rgba(18,19,26,.035);
-            border: 1px solid rgba(18,19,26,.08);
+            background: rgba(255,255,255,.035);
+            border: 1px solid rgba(255,255,255,.08);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             box-shadow:
@@ -57,15 +58,15 @@
         }
 
         .glass-soft {
-            background: rgba(18,19,26,.03);
-            border: 1px solid rgba(18,19,26,.07);
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.07);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
         }
 
         .glass-button {
-            background: rgba(18,19,26,.05);
-            border: 1px solid rgba(18,19,26,.12);
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.12);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             box-shadow:
@@ -75,8 +76,8 @@
         }
 
         .glass-button:hover {
-            background: rgba(18,19,26,.09);
-            border-color: rgba(18,19,26,.22);
+            background: rgba(255,255,255,.09);
+            border-color: rgba(255,255,255,.22);
             transform: translateY(-2px);
         }
 
@@ -84,13 +85,13 @@
             background: var(--ink);
             color: white;
             transition: .35s ease;
-            box-shadow: 0 15px 40px rgba(18,19,26,.22);
+            box-shadow: 0 15px 40px rgba(255,255,255,.22);
         }
 
         .primary-button:hover {
             background: #000000;
             transform: translateY(-3px);
-            box-shadow: 0 20px 55px rgba(18,19,26,.32);
+            box-shadow: 0 20px 55px rgba(255,255,255,.32);
         }
 
         /* =========================
@@ -185,7 +186,7 @@
             height: 42px;
             border-radius: 13px;
             background: white;
-            border: 1px solid rgba(18,19,26,.08);
+            border: 1px solid rgba(255,255,255,.08);
             box-shadow: 0 6px 16px rgba(24,26,40,.08);
             padding: 5px;
         }
@@ -461,7 +462,7 @@
             font-weight: 800;
             letter-spacing: .22em;
             text-transform: uppercase;
-            color: rgba(18,19,26,.45);
+            color: rgba(255,255,255,.45);
         }
 
         .section-title {
@@ -472,7 +473,7 @@
         }
 
         .section-description {
-            color: rgba(18,19,26,.55);
+            color: rgba(255,255,255,.55);
             line-height: 1.8;
         }
 
@@ -488,7 +489,7 @@
 
         .feature-card:hover {
             transform: translateY(-6px);
-            background: rgba(18,19,26,.055);
+            background: rgba(255,255,255,.055);
         }
 
         .feature-icon {
@@ -498,15 +499,15 @@
             align-items: center;
             justify-content: center;
             border-radius: 15px;
-            background: rgba(18,19,26,.06);
-            border: 1px solid rgba(18,19,26,.09);
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.09);
             margin-bottom: 22px;
         }
 
         .feature-icon svg {
             width: 22px;
             height: 22px;
-            stroke: var(--ink);
+            stroke: var(--paper);
             fill: none;
             stroke-width: 1.7;
             stroke-linecap: round;
@@ -516,7 +517,7 @@
         .check-icon {
             width: 9px;
             height: 9px;
-            stroke: var(--ink);
+            stroke: var(--paper);
             fill: none;
             stroke-width: 2.5;
             stroke-linecap: round;
@@ -526,7 +527,7 @@
         .lock-icon {
             width: 26px;
             height: 26px;
-            stroke: var(--ink);
+            stroke: var(--paper);
             fill: none;
             stroke-width: 1.6;
             stroke-linecap: round;
@@ -536,7 +537,7 @@
         .pin-icon {
             width: 14px;
             height: 14px;
-            stroke: var(--ink);
+            stroke: var(--paper);
             fill: none;
             stroke-width: 2;
             stroke-linecap: round;
@@ -600,7 +601,7 @@
             font-size: 70px;
             line-height: 1;
             font-weight: 800;
-            color: rgba(18,19,26,.08);
+            color: rgba(255,255,255,.08);
         }
 
         .hero-title {
@@ -686,7 +687,7 @@
      NAVIGATION
 ========================= -->
 
-<nav class="fixed top-0 left-0 w-full z-50 glass border-x-0 border-t-0 border-b-black/5">
+<nav class="fixed top-0 left-0 w-full z-50 glass border-x-0 border-t-0 border-b-white/10">
 
     <div class="max-w-7xl mx-auto px-5">
 
@@ -750,7 +751,7 @@
                     <h1 class="hero-wrap delay-1 hero-title text-5xl md:text-7xl font-extrabold tracking-[-.07em] leading-[.98] mb-7">
 
                         Meet
-                        <span class="text-black/40 font-light">
+                        <span class="text-white/40 font-light">
                             Haba.
                         </span>
 
@@ -762,14 +763,14 @@
 
                         <br>
 
-                        <span class="text-black/35 font-light">
+                        <span class="text-white/35 font-light">
                             connected.
                         </span>
 
                     </h1>
 
 
-                    <p class="hero-wrap delay-2 text-base md:text-lg text-black/55 leading-8 max-w-xl mb-9">
+                    <p class="hero-wrap delay-2 text-base md:text-lg text-white/55 leading-8 max-w-xl mb-9">
 
                         Haba is a social messaging app built for
                         real conversations, sharing moments, discovering
@@ -799,7 +800,7 @@
 
                     </div>
 
-                    <div class="hero-wrap delay-3 flex items-center gap-3 mt-7 text-xs text-black/35">
+                    <div class="hero-wrap delay-3 flex items-center gap-3 mt-7 text-xs text-white/35">
 
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M3 5h18v14H3z"/>
@@ -1006,7 +1007,7 @@
                     Private Messaging
                 </h3>
 
-                <p class="text-sm text-black/45 leading-7">
+                <p class="text-sm text-white/45 leading-7">
                     Have direct conversations with the people
                     you connect with. Keep your chats simple,
                     personal and easy to follow.
@@ -1027,7 +1028,7 @@
                     Voice Notes
                 </h3>
 
-                <p class="text-sm text-black/45 leading-7">
+                <p class="text-sm text-white/45 leading-7">
                     Sometimes talking is easier than typing.
                     Record and send voice notes directly in
                     your conversations.
@@ -1048,7 +1049,7 @@
                     Photos & Videos
                 </h3>
 
-                <p class="text-sm text-black/45 leading-7">
+                <p class="text-sm text-white/45 leading-7">
                     Share photos and videos in your conversations
                     and group chats to keep people involved in
                     the moment.
@@ -1069,7 +1070,7 @@
                     Groups
                 </h3>
 
-                <p class="text-sm text-black/45 leading-7">
+                <p class="text-sm text-white/45 leading-7">
                     Bring multiple people together in group
                     conversations and share messages and media
                     with everyone at once.
@@ -1090,7 +1091,7 @@
                     Stories
                 </h3>
 
-                <p class="text-sm text-black/45 leading-7">
+                <p class="text-sm text-white/45 leading-7">
                     Share moments through stories and interact
                     with the people you follow through likes,
                     replies and resharing.
@@ -1111,7 +1112,7 @@
                     Social Feed
                 </h3>
 
-                <p class="text-sm text-black/45 leading-7">
+                <p class="text-sm text-white/45 leading-7">
                     Discover posts and video content from the
                     Haba community and interact with what you
                     find interesting.
@@ -1132,7 +1133,7 @@
                     Music
                 </h3>
 
-                <p class="text-sm text-black/45 leading-7">
+                <p class="text-sm text-white/45 leading-7">
                     Add music to your content and make the things
                     you share feel more personal.
                 </p>
@@ -1152,7 +1153,7 @@
                     GIFs & More
                 </h3>
 
-                <p class="text-sm text-black/45 leading-7">
+                <p class="text-sm text-white/45 leading-7">
                     Express yourself beyond words with GIFs and
                     other creative media while chatting or
                     creating content.
@@ -1173,7 +1174,7 @@
                     Notifications
                 </h3>
 
-                <p class="text-sm text-black/45 leading-7">
+                <p class="text-sm text-white/45 leading-7">
                     Stay updated when something happens around
                     your conversations and social activity.
                 </p>
@@ -1209,7 +1210,7 @@
 
                     <h2 class="section-title mb-7">
                         Don't just message.
-                        <span class="text-black/35">
+                        <span class="text-white/35">
                             Share your world.
                         </span>
                     </h2>
@@ -1238,7 +1239,7 @@
                                     Share your moments
                                 </div>
 
-                                <div class="text-xs text-black/35 mt-1">
+                                <div class="text-xs text-white/35 mt-1">
                                     Post content and stories for your community.
                                 </div>
 
@@ -1259,7 +1260,7 @@
                                     Discover people and content
                                 </div>
 
-                                <div class="text-xs text-black/35 mt-1">
+                                <div class="text-xs text-white/35 mt-1">
                                     Explore what's happening around you on Haba.
                                 </div>
 
@@ -1280,7 +1281,7 @@
                                     Keep conversations going
                                 </div>
 
-                                <div class="text-xs text-black/35 mt-1">
+                                <div class="text-xs text-white/35 mt-1">
                                     Move naturally from posts into conversations.
                                 </div>
 
@@ -1644,7 +1645,7 @@
 
             <h2 class="section-title mb-6">
                 Your app.
-                <span class="text-black/35">
+                <span class="text-white/35">
                     Your lock.
                 </span>
             </h2>
@@ -1662,7 +1663,7 @@
 
                 <svg class="pin-icon" viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="11" rx="2"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/><circle cx="12" cy="14" r="1.5"/></svg>
 
-                <span class="text-xs font-bold text-black/70">
+                <span class="text-xs font-bold text-white/70">
                     PIN & biometric App Lock
                 </span>
 
@@ -1715,7 +1716,7 @@
                     Create your account
                 </h3>
 
-                <p class="text-sm text-black/40 leading-6">
+                <p class="text-sm text-white/40 leading-6">
                     Join Haba and set up your profile.
                 </p>
 
@@ -1732,7 +1733,7 @@
                     Find your people
                 </h3>
 
-                <p class="text-sm text-black/40 leading-6">
+                <p class="text-sm text-white/40 leading-6">
                     Connect with people and start building
                     your Haba network.
                 </p>
@@ -1750,7 +1751,7 @@
                     Start chatting
                 </h3>
 
-                <p class="text-sm text-black/40 leading-6">
+                <p class="text-sm text-white/40 leading-6">
                     Send messages, photos, videos, GIFs
                     and voice notes.
                 </p>
@@ -1768,7 +1769,7 @@
                     Share your world
                 </h3>
 
-                <p class="text-sm text-black/40 leading-6">
+                <p class="text-sm text-white/40 leading-6">
                     Post stories, discover content and
                     interact with your community.
                 </p>
@@ -1793,7 +1794,7 @@
 
         <div class="glass rounded-[3rem] p-9 md:p-16 text-center relative overflow-hidden">
 
-            <div class="absolute inset-0 bg-gradient-to-b from-black/5 to-transparent pointer-events-none"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
 
             <div class="relative">
 
@@ -1817,7 +1818,7 @@
 
                     Chat.
                     Share.
-                    <span class="text-black/35">
+                    <span class="text-white/35">
                         Discover.
                     </span>
 
@@ -1869,7 +1870,7 @@
      FOOTER
 ========================= -->
 
-<footer class="border-t border-black/5">
+<footer class="border-t border-white/10">
 
     <div class="max-w-7xl mx-auto px-5 py-10">
 
@@ -1894,7 +1895,7 @@
                         HABA
                     </div>
 
-                    <div class="text-[9px] text-black/30 mt-1">
+                    <div class="text-[9px] text-white/30 mt-1">
                         Chat. Share. Discover.
                     </div>
 
@@ -1903,28 +1904,28 @@
             </div>
 
 
-            <div class="flex items-center gap-7 text-[10px] font-bold uppercase tracking-widest text-black/35">
+            <div class="flex items-center gap-7 text-[10px] font-bold uppercase tracking-widest text-white/35">
 
-                <a href="xoxa-privacy.html" class="hover:text-black transition">
+                <a href="haba-privacy.html" class="hover:text-white transition">
                     Privacy
                 </a>
 
-                <a href="/xoxa-account.html" class="hover:text-black transition">
+                <a href="/haba-account.html" class="hover:text-white transition">
                     Account
                 </a>
 
-                <a href="#" class="hover:text-black transition">
+                <a href="haba-terms.html" class="hover:text-white transition">
                     Terms
                 </a>
 
-                <a href="mailto:support@webmessenger.app" class="hover:text-black transition">
+                <a href="mailto:support@webmessenger.app" class="hover:text-white transition">
                     Support
                 </a>
 
             </div>
 
 
-            <div class="text-[9px] text-black/25 uppercase tracking-widest">
+            <div class="text-[9px] text-white/25 uppercase tracking-widest">
 
                 © 2026 Haba
 
