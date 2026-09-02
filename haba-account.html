@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+
+    <title>Account | Haba</title>
+
+    <meta name="description" content="Manage your Haba account, data and deletion requests.">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        :root {
+            --bg: #0A0A0D;
+            --ink: #12131A;
+            --paper: #F5F6FA;
+            --accent: #2F6FED;
+            --accent-2: #6C5CE7;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            color: var(--paper);
+            overflow-x: hidden;
+        }
+
+        ::selection {
+            background: var(--paper);
+            color: var(--bg);
+        }
+
+        .glass {
+            background: rgba(255,255,255,.035);
+            border: 1px solid rgba(255,255,255,.08);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow:
+                0 30px 80px rgba(24,26,40,.10),
+                inset 0 1px 0 rgba(255,255,255,.7);
+        }
+
+        .glass-soft {
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.07);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .glass-button {
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.12);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.6),
+                0 10px 30px rgba(24,26,40,.06);
+            transition: .35s ease;
+        }
+
+        .glass-button:hover {
+            background: rgba(255,255,255,.09);
+            border-color: rgba(255,255,255,.22);
+            transform: translateY(-2px);
+        }
+
+        .primary-button {
+            background: var(--paper);
+            color: var(--bg);
+            transition: .35s ease;
+            box-shadow: 0 15px 40px rgba(0,0,0,.45);
+        }
+
+        .primary-button:hover {
+            background: #FFFFFF;
+            transform: translateY(-3px);
+            box-shadow: 0 20px 55px rgba(0,0,0,.55);
+        }
+
+        .danger-button {
+            background: rgba(239,68,68,.12);
+            color: #FCA5A5;
+            border: 1px solid rgba(239,68,68,.35);
+            transition: .35s ease;
+        }
+
+        .danger-button:hover {
+            background: rgba(239,68,68,.2);
+            transform: translateY(-2px);
+        }
+
+        .background {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: -10;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+        }
+
+        .orb-one {
+            width: 500px;
+            height: 500px;
+            left: -250px;
+            top: 5%;
+            background: rgba(47,111,237,.16);
+            animation: floatOne 18s infinite ease-in-out;
+        }
+
+        .orb-two {
+            width: 600px;
+            height: 600px;
+            right: -300px;
+            top: 45%;
+            background: rgba(108,92,231,.13);
+            animation: floatTwo 22s infinite ease-in-out;
+        }
+
+        .orb-three {
+            width: 400px;
+            height: 400px;
+            left: 35%;
+            bottom: -250px;
+            background: rgba(47,111,237,.10);
+            animation: floatThree 20s infinite ease-in-out;
+        }
+
+        @keyframes floatOne {
+            0%,100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(120px,80px) scale(1.1); }
+        }
+
+        @keyframes floatTwo {
+            0%,100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(-100px,-80px) scale(1.08); }
+        }
+
+        @keyframes floatThree {
+            0%,100% { transform: translate(0,0); }
+            50% { transform: translate(50px,-70px); }
+        }
+
+        nav {
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .nav-inner {
+            height: 72px;
+        }
+
+        .logo-box {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            background: white;
+            border: 1px solid rgba(255,255,255,.08);
+            box-shadow: 0 6px 16px rgba(24,26,40,.08);
+            padding: 5px;
+        }
+
+        .logo-box.brand-mark {
+            background: var(--ink);
+            border-color: var(--ink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 9px;
+        }
+
+        .section {
+            padding: 90px 0;
+        }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,.45);
+        }
+
+        .section-title {
+            font-size: clamp(2rem,7vw,3.4rem);
+            line-height: 1.05;
+            letter-spacing: -.045em;
+            font-weight: 800;
+        }
+
+        .section-description {
+            color: rgba(255,255,255,.55);
+            line-height: 1.8;
+        }
+
+        .legal h2 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: -.01em;
+            margin-top: 2.6em;
+            margin-bottom: .8em;
+        }
+
+        .legal h2:first-child {
+            margin-top: 0;
+        }
+
+        .legal p, .legal li {
+            color: rgba(255,255,255,.6);
+            line-height: 1.85;
+            font-size: .95rem;
+        }
+
+        .legal ul {
+            list-style: none;
+            padding: 0;
+            margin: 1em 0;
+        }
+
+        .legal li {
+            position: relative;
+            padding-left: 22px;
+            margin-bottom: .7em;
+        }
+
+        .legal li:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: .65em;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.3);
+        }
+
+        .legal strong {
+            color: rgba(255,255,255,.85);
+            font-weight: 700;
+        }
+
+        .legal a {
+            color: rgba(255,255,255,.85);
+            text-decoration: underline;
+            text-decoration-color: rgba(255,255,255,.25);
+            text-underline-offset: 3px;
+        }
+
+        .legal a:hover {
+            text-decoration-color: rgba(255,255,255,.7);
+        }
+
+        .field-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 18px 22px;
+        }
+
+        .field-row + .field-row {
+            border-top: 1px solid rgba(255,255,255,.07);
+        }
+
+        @media (max-width: 640px) {
+            .section {
+                padding: 64px 0;
+            }
+
+            .nav-inner {
+                height: 64px;
+            }
+
+            .logo-box {
+                width: 38px;
+                height: 38px;
+            }
+
+            a.primary-button,
+            a.glass-button,
+            button.primary-button,
+            button.danger-button {
+                min-height: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .orb { animation: none !important; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="background">
+    <div class="orb orb-one"></div>
+    <div class="orb orb-two"></div>
+    <div class="orb orb-three"></div>
+</div>
+
+
+<nav class="fixed top-0 left-0 w-full z-50 glass border-x-0 border-t-0 border-b-white/10">
+
+    <div class="max-w-7xl mx-auto px-5">
+
+        <div class="nav-inner flex items-center justify-between">
+
+            <a href="index.html" class="flex items-center gap-3">
+
+                <div class="logo-box brand-mark">
+                    <svg viewBox="0 0 200 200" class="w-full h-full" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Haba">
+                        <polygon points="20,80 170,30 80,110" fill="#FFFFFF" fill-opacity="0.75"/>
+                        <polygon points="120,180 170,30 80,110" fill="#FFFFFF"/>
+                        <polygon points="20,80 80,110 80,140" fill="#FFFFFF" fill-opacity="0.55"/>
+                    </svg>
+                </div>
+
+                <span class="font-bold tracking-[.18em] text-sm">
+                    HABA
+                </span>
+
+            </a>
+
+            <a
+                href="index.html"
+                class="glass-button px-5 py-2.5 rounded-full text-xs font-bold"
+            >
+                BACK HOME
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+<section class="relative pt-36 pb-10 md:pt-48">
+
+    <div class="max-w-4xl mx-auto px-5">
+
+        <div class="section-label mb-5">
+            YOUR ACCOUNT
+        </div>
+
+        <h1 class="section-title mb-6">
+            Manage your Haba account.
+        </h1>
+
+        <p class="section-description max-w-2xl">
+            Sign-in, profile and account deletion for Haba are handled
+            in the app. This page explains how, and lets you request
+            account or data deletion if you no longer have the app
+            installed.
+        </p>
+
+    </div>
+
+</section>
+
+<section class="section pt-6">
+
+    <div class="max-w-4xl mx-auto px-5 space-y-8">
+
+        <div class="glass rounded-[2.5rem] overflow-hidden">
+
+            <div class="p-8 md:p-10 pb-4">
+                <div class="section-label mb-3">IN THE APP</div>
+                <h2 class="text-xl font-bold mb-2">Signing in</h2>
+                <p class="text-sm text-white/45 leading-7">
+                    Haba uses your phone number to sign in — enter your
+                    number and confirm the 6-digit code sent to you by
+                    SMS. No password is required.
+                </p>
+            </div>
+
+            <div class="field-row">
+                <span class="text-sm font-semibold text-white/80">Phone number sign-in</span>
+                <span class="text-xs text-white/35">Settings → Account</span>
+            </div>
+
+            <div class="field-row">
+                <span class="text-sm font-semibold text-white/80">Edit profile & avatar</span>
+                <span class="text-xs text-white/35">Settings → Profile</span>
+            </div>
+
+            <div class="field-row">
+                <span class="text-sm font-semibold text-white/80">App Lock (PIN / biometric)</span>
+                <span class="text-xs text-white/35">Settings → Security</span>
+            </div>
+
+            <div class="field-row">
+                <span class="text-sm font-semibold text-white/80">Notification preferences</span>
+                <span class="text-xs text-white/35">Settings → Notifications</span>
+            </div>
+
+        </div>
+
+
+        <div class="glass rounded-[2.5rem] p-8 md:p-10">
+
+            <div class="section-label mb-3">DATA</div>
+            <h2 class="text-xl font-bold mb-2">Your data</h2>
+            <p class="text-sm text-white/45 leading-7 mb-6">
+                Your messages, media and profile information are tied to
+                your account. Private one-to-one chats are end-to-end
+                encrypted, so only you and the person you're messaging
+                can read them.
+            </p>
+
+            <a
+                href="mailto:support@webmessenger.app?subject=Haba%20data%20export%20request"
+                class="glass-button inline-flex items-center gap-3 rounded-full px-6 py-3 text-xs font-bold"
+            >
+                Request a copy of your data
+            </a>
+
+        </div>
+
+
+        <div class="glass rounded-[2.5rem] p-8 md:p-10">
+
+            <div class="section-label mb-3">DELETE</div>
+            <h2 class="text-xl font-bold mb-2">Delete your account</h2>
+            <p class="text-sm text-white/45 leading-7 mb-6">
+                You can delete your account directly from the app under
+                Settings → Account → Delete Account. This removes your
+                profile, messages, posts and media within a reasonable
+                period. If you no longer have the app installed, you can
+                request deletion here instead.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+
+                <a
+                    href="mailto:support@webmessenger.app?subject=Haba%20account%20deletion%20request"
+                    class="danger-button inline-flex items-center justify-center gap-3 rounded-full px-6 py-3 text-xs font-bold"
+                >
+                    Request account deletion
+                </a>
+
+                <a
+                    href="haba-privacy.html"
+                    class="glass-button inline-flex items-center justify-center gap-3 rounded-full px-6 py-3 text-xs font-bold"
+                >
+                    Read the Privacy Policy
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<footer class="border-t border-white/10">
+
+    <div class="max-w-7xl mx-auto px-5 py-10">
+
+        <div class="flex flex-col md:flex-row items-center justify-between gap-7">
+
+            <div class="flex items-center gap-3">
+
+                <div class="logo-box brand-mark w-9 h-9 rounded-xl">
+
+                    <svg viewBox="0 0 200 200" class="w-full h-full" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Haba">
+                        <polygon points="20,80 170,30 80,110" fill="#FFFFFF" fill-opacity="0.75"/>
+                        <polygon points="120,180 170,30 80,110" fill="#FFFFFF"/>
+                        <polygon points="20,80 80,110 80,140" fill="#FFFFFF" fill-opacity="0.55"/>
+                    </svg>
+
+                </div>
+
+                <div>
+
+                    <div class="text-xs font-bold tracking-widest">
+                        HABA
+                    </div>
+
+                    <div class="text-[9px] text-white/30 mt-1">
+                        Chat. Share. Discover.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="flex items-center gap-7 text-[10px] font-bold uppercase tracking-widest text-white/35">
+
+                <a href="haba-privacy.html" class="hover:text-white transition">
+                    Privacy
+                </a>
+
+                <a href="/haba-account.html" class="hover:text-white transition">
+                    Account
+                </a>
+
+                <a href="haba-terms.html" class="hover:text-white transition">
+                    Terms
+                </a>
+
+                <a href="mailto:support@webmessenger.app" class="hover:text-white transition">
+                    Support
+                </a>
+
+            </div>
+
+
+            <div class="text-[9px] text-white/25 uppercase tracking-widest">
+
+                © 2026 Haba
+
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+</body>
+</html>
