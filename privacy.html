@@ -4,57 +4,56 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>Privacy Policy — Vynix Messenger</title>
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#111210">
 <link rel="apple-touch-icon" href="https://i.postimg.cc/G2mGF81c/1000057023-removebg-preview.png">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    :root {
-        --bg-base: #000000;
-        --bg-base-rgb: 0, 0, 0;
-        --bg-surface: #0a0a0a;
-        --border-color: #222222;
-        --text-primary: #FFFFFF;
-        --text-secondary: #888888;
-    }
-    @media(prefers-color-scheme: light) {
-        :root {
-            --bg-base: #FFFFFF;
-            --bg-base-rgb: 255, 255, 255;
-            --bg-surface: #FAFAFA;
-            --border-color: #EAEAEA;
-            --text-primary: #000000;
-            --text-secondary: #666666;
-        }
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
-    body { background-color: var(--bg-base); color: var(--text-primary); line-height: 1.7; -webkit-font-smoothing: antialiased; }
-    header { position: sticky; top: 0; width: 100%; background: rgba(var(--bg-base-rgb), 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); z-index: 100; }
-    .nav-container { max-width: 800px; margin: 0 auto; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
-    .logo { display: flex; align-items: center; gap: 14px; font-weight: 700; font-size: 20px; letter-spacing: -0.5px; text-decoration: none; color: var(--text-primary); }
-    .logo img { height: 30px; width: auto; object-fit: contain; display: block; }
-    .back-link { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
-    .back-link:hover { color: var(--text-primary); }
-    main { max-width: 720px; margin: 0 auto; padding: 60px 24px 100px; }
-    h1 { font-size: 34px; font-weight: 600; letter-spacing: -1px; margin-bottom: 6px; }
-    .updated { color: var(--text-secondary); font-size: 14px; margin-bottom: 40px; }
-    h2 { font-size: 18px; font-weight: 600; margin-top: 36px; margin-bottom: 10px; color: var(--text-primary); }
-    p, li { font-size: 15px; color: var(--text-secondary); }
-    ul { padding-left: 20px; margin-top: 8px; }
-    li { margin-bottom: 6px; }
-    a.inline { color: var(--text-primary); text-decoration: underline; }
-    table { border-collapse: collapse; width: 100%; margin-top: 14px; border: 1px solid var(--border-color); }
-    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border-color); font-size: 14px; color: var(--text-secondary); }
-    th { color: var(--text-primary); background: var(--bg-surface); }
-    footer { border-top: 1px solid var(--border-color); padding: 32px 24px; text-align: center; color: var(--text-secondary); font-size: 13px; }
-    footer a { color: var(--text-secondary); margin: 0 10px; text-decoration: none; }
-    footer a:hover { color: var(--text-primary); }
+  :root{
+    --ink:#111210;
+    --card:#1A1B17;
+    --paper:#F7F4EC;
+    --muted:#8A8A80;
+    --accent:#3D5AFE;
+    --line:rgba(247,244,236,.12);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ink);color:var(--paper);font-family:'Inter',-apple-system,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased}
+  .serif{font-family:'Fraunces',serif}
+  a{color:inherit}
+  header{position:sticky;top:0;width:100%;background:rgba(17,18,16,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);z-index:100}
+  .nav-container{max-width:760px;margin:0 auto;padding:20px 24px;display:flex;justify-content:space-between;align-items:center}
+  .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--paper)}
+  .logo svg{display:block}
+  .logo span{font-family:'Fraunces',serif;font-weight:600;font-size:18px;letter-spacing:-.01em}
+  .back-link{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;transition:color .2s}
+  .back-link:hover{color:var(--paper)}
+  main{max-width:680px;margin:0 auto;padding:64px 24px 110px}
+  h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.9rem,5vw,2.6rem);letter-spacing:-.02em;margin-bottom:8px}
+  .updated{color:var(--muted);font-size:13px;margin-bottom:40px}
+  h2{font-family:'Fraunces',serif;font-weight:600;font-size:17px;margin-top:40px;margin-bottom:12px}
+  p,li{font-size:14.5px;color:rgba(247,244,236,.6)}
+  ul{padding-left:20px;margin-top:8px}
+  li{margin-bottom:7px}
+  a.inline{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(61,90,254,.35)}
+  a.inline:hover{border-bottom-color:var(--accent)}
+  table{border-collapse:collapse;width:100%;margin-top:16px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);font-size:13.5px;color:rgba(247,244,236,.6)}
+  tr:last-child td{border-bottom:none}
+  th{color:var(--paper);background:var(--card);font-weight:600}
+  footer{border-top:1px solid var(--line);padding:36px 24px;text-align:center;color:var(--muted);font-size:12.5px}
+  footer a{margin:0 10px;text-decoration:none;color:var(--muted)}
+  footer a:hover{color:var(--paper)}
 </style>
 </head>
 <body>
     <header>
         <div class="nav-container">
             <a href="/" class="logo">
-                <img src="https://i.postimg.cc/mDCTJNwh/1000057023-removebg-preview.png" alt="Vynix Logo">
+                <svg width="26" height="26" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vynix">
+                    <polygon points="20,80 170,30 80,110" fill="var(--paper)" fill-opacity="0.7"/>
+                    <polygon points="120,180 170,30 80,110" fill="var(--accent)"/>
+                    <polygon points="20,80 80,110 80,140" fill="var(--paper)" fill-opacity="0.4"/>
+                </svg>
                 <span>Vynix</span>
             </a>
             <a href="/" class="back-link">← Back to Vynix</a>
