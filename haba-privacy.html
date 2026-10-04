@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Privacy Policy | Haba</title>
-<meta name="description" content="Haba Privacy Policy - how we handle your information.">
+<meta name="description" content="Privacy Policy for Haba and Haba Messenger - how we handle your information.">
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -59,7 +59,7 @@
     <p class="text-xs font-medium" style="color:var(--muted)">Legal</p>
     <h1 class="serif font-semibold leading-[1.05] tracking-tight mt-5" style="font-size:clamp(2rem,5vw,3rem)">Privacy Policy</h1>
     <p class="mt-6 text-sm leading-7 max-w-lg" style="color:rgba(247,244,236,.6)">
-      This explains what information Haba collects, how it's used, and the choices you have. Last updated 19 September 2026.
+      This explains what information Haba and Haba Messenger collect, how it's used, and the choices you have. Last updated 4 October 2026.
     </p>
   </div>
 </section>
@@ -68,12 +68,18 @@
   <div class="wrap">
     <div class="card p-8 md:p-14 legal">
 
+      <h2>About this policy</h2>
+      <p>This policy covers <strong>Haba</strong> (our social, messaging and ride sharing app) and <strong>Haba Messenger</strong> (our standalone private messaging app). Both use the same Haba account and the same secure back end, so your profile and one-to-one chats are the same in each. Sections that mention ride sharing apply to the Haba app only; Haba Messenger does not offer rides.</p>
+
       <h2>1. Information we collect</h2>
       <p>To create and run your Haba account, and to provide features such as messaging and ride sharing, we collect the information below.</p>
       <ul>
-        <li><strong>Account details</strong> — your phone number (used for OTP sign-in), display name, avatar and any profile info you add.</li>
+        <li><strong>Account details</strong> — your phone number (used for OTP sign-in) or, in Haba Messenger, your email address, plus your display name, avatar and any profile info you add.</li>
         <li><strong>Content you share</strong> — messages, photos, videos, voice notes, documents, stories, feed posts and comments you send or post.</li>
         <li><strong>Usage data</strong> — device type, app version, crash logs and general interaction data used to keep Haba working reliably.</li>
+        <li><strong>Presence and activity</strong> — your online status, last-seen time, and read receipts (the ticks that show a message was delivered and read), so the people you chat with can see when you're online and when you've read their messages.</li>
+        <li><strong>Encryption keys</strong> — the public key that lets others encrypt messages to you, and, if you set one up, an encrypted backup of your key protected by a PIN that only you know. Your private key stays on your device.</li>
+        <li><strong>Microphone, camera and files</strong> — only if you record a voice message or attach a photo, video, document or sticker. Haba asks for the matching permission on your device, and you can change it at any time in your device settings.</li>
         <li><strong>Push notification tokens</strong> — used only to deliver notifications for messages, likes, comments and other activity.</li>
         <li><strong>Location data</strong> — when you use ride sharing, your device location (to set your pickup point, find nearby drivers and follow your trip), plus the pickup and destination addresses you enter.</li>
         <li><strong>Ride details</strong> — your ride requests, the route, fare and time estimates, trip status and timestamps, the driver assigned to your trip, and any support requests about a ride.</li>
@@ -85,8 +91,20 @@
 
       <h2>3. Private messages</h2>
       <p>One-to-one direct messages support end-to-end encryption: message text and media are encrypted on your device before they're sent, and only you and the person you're messaging can decrypt them. Group chats, the AI assistant thread, GIFs and stickers are not end-to-end encrypted. View-once media is deleted after it's viewed and is not kept in your chat history.</p>
+      <p>You can protect your encryption key with a backup PIN so you can restore your chat history on a new device. Haba never sees or stores your PIN, so we can't recover it for you. If you lose it, you can reset your encryption keys and keep messaging, but messages encrypted with the old key can't be read afterwards.</p>
 
-      <h2>4. Ride sharing and your location</h2>
+      <h2>4. Haba Messenger</h2>
+      <p>Haba Messenger is built for private one-to-one conversations. In addition to what's described above, here is how its main features handle your information.</p>
+      <ul>
+        <li><strong>Signing in</strong> — you can sign in with your phone number (we send a one-time code, and verification and anti-abuse checks are handled by our authentication provider) or with your email address and a password.</li>
+        <li><strong>Messages and media</strong> — text, voice messages, photos, videos, documents, GIFs and stickers you send are stored on our secure cloud and media hosting so they sync across your devices. One-to-one text and media are end-to-end encrypted as described in section 3.</li>
+        <li><strong>Disappearing messages</strong> — if you or your contact turns this on for a chat, new messages are removed after the timer you choose (24 hours, 7 days or 90 days). It doesn't affect messages sent before it was turned on, and anyone in the chat can still screenshot or copy messages before they disappear.</li>
+        <li><strong>Archive, block and delete chat</strong> — long-pressing a chat lets you archive it, block the contact, or delete the chat. Archiving only hides the chat from your main list. When you block someone, we store that choice on your account so their new messages stop reaching you; the person isn't told. Deleting a chat removes it from your chat list and hides the earlier messages for you; it doesn't delete the other person's copy.</li>
+        <li><strong>What Haba Messenger doesn't use</strong> — it doesn't request your location and doesn't read your device contacts.</li>
+        <li><strong>Notifications and sounds</strong> — if you allow notifications, we use a push token to alert you to new messages. Alert sounds are generated on your device.</li>
+      </ul>
+
+      <h2>5. Ride sharing and your location (Haba app)</h2>
       <p>Haba lets you request rides and connect with drivers. To make that work, we handle some information that is more sensitive than the rest of the app, so here is exactly how it's used.</p>
       <ul>
         <li><strong>Location</strong> — we use your location to set your pickup point, show your position on the map, find available drivers and follow the trip. Location access depends on the permission you give Haba on your device, and you can change it at any time in your device settings. Ride features that need your location may not work fully if you turn it off.</li>
@@ -96,9 +114,10 @@
         <li><strong>Your messages stay separate</strong> — ride sharing doesn't change how your private messages are protected, and we don't use the contents of your end-to-end encrypted chats to provide rides.</li>
       </ul>
 
-      <h2>5. How we use your information</h2>
+      <h2>6. How we use your information</h2>
       <ul>
-        <li>To operate core features — messaging, calls, stories, groups and the social feed.</li>
+        <li>To operate core features — messaging (in Haba and Haba Messenger), calls, stories, groups and the social feed.</li>
+        <li>To show presence, last seen and read receipts, and to apply your block, archive and disappearing-message settings.</li>
         <li>To provide ride sharing — connecting you with drivers, showing routes and trip progress, and calculating fares and arrival times.</li>
         <li>To send notifications about activity relevant to you.</li>
         <li>To maintain safety and security, including blocking and abuse prevention.</li>
@@ -108,28 +127,30 @@
       </ul>
       <p>We do not sell your personal information.</p>
 
-      <h2>6. Sharing your information</h2>
-      <p>We share information only where necessary to run Haba: with our cloud hosting and media storage providers, our payment processors for purchases, and push notification services to deliver alerts. For ride sharing, we also share the details needed to complete your trip with your driver, and with our mapping and dispatch providers, as described in section 4. We may disclose ride or account information if the law requires it or to protect the safety of riders, drivers or others. Content you post publicly — such as feed posts, stories or comments — is visible to other users according to your privacy settings.</p>
+      <h2>7. Sharing your information</h2>
+      <p>We share information only where necessary to run Haba: with our cloud hosting and media storage providers, our payment processors for purchases, and push notification services to deliver alerts. For ride sharing, we also share the details needed to complete your trip with your driver, and with our mapping and dispatch providers, as described in section 5. We may disclose ride or account information if the law requires it or to protect the safety of riders, drivers or others. Content you post publicly — such as feed posts, stories or comments — is visible to other users according to your privacy settings.</p>
 
-      <h2>7. Your choices</h2>
+      <h2>8. Your choices</h2>
       <ul>
         <li>Edit or remove your profile information at any time in Settings.</li>
         <li>Turn off push notifications from your device settings.</li>
         <li>Turn location access on or off for Haba from your device settings.</li>
-        <li>Block or report other users directly from a chat or profile.</li>
+        <li>Block or report other users directly from a chat or profile, or long-press a chat to archive, block or delete it.</li>
+        <li>Turn on disappearing messages for a chat, and unblock a contact at any time.</li>
+        <li>Allow or deny microphone, camera and file access from your device settings.</li>
         <li>Request deletion of your account and associated data — see the <a href="haba-account.html">Account</a> page.</li>
       </ul>
 
-      <h2>8. Data retention</h2>
-      <p>We keep your information for as long as your account is active. If you delete your account, we remove your profile and content within a reasonable period, except where we're required to retain limited records for legal or safety reasons. Ride records, such as trip details and payment records, may be kept for longer where needed for safety, dispute resolution, fraud prevention, accounting or legal obligations.</p>
+      <h2>9. Data retention</h2>
+      <p>We keep your information for as long as your account is active. If you delete a chat, it's removed from your chat list and hidden for you, but the other person keeps their copy and because the conversation is shared, the underlying messages may remain on our servers. If you delete your account, we remove your profile and content within a reasonable period, except where we're required to retain limited records for legal or safety reasons. Ride records, such as trip details and payment records, may be kept for longer where needed for safety, dispute resolution, fraud prevention, accounting or legal obligations.</p>
 
-      <h2>9. Children's privacy</h2>
+      <h2>10. Children's privacy</h2>
       <p>Haba is not directed at children under 13, and we do not knowingly collect information from them.</p>
 
-      <h2>10. Changes to this policy</h2>
+      <h2>11. Changes to this policy</h2>
       <p>We may update this policy from time to time. We'll update the date at the top of this page when changes are made.</p>
 
-      <h2>11. Contact us</h2>
+      <h2>12. Contact us</h2>
       <p>Questions about this policy or your data can be sent to <a href="mailto:support@webmessenger.app">support@webmessenger.app</a>.</p>
 
     </div>
